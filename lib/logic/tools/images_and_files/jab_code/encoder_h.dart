@@ -16,6 +16,8 @@
 
 import 'dart:typed_data';
 
+import 'jabcode_h.dart';
+
 /**
  * @brief Default color palette in RGB format
 */
@@ -32,8 +34,8 @@ final jab_default_palette = Int8List.fromList([0, 	0, 		0, 		//0: black
 /**
  * @brief Color palette placement index in master symbol
 */
-static const jab_int32 master_palette_placement_index[4][8] = List<List<int>>.from({0, 3, 5, 6, 1, 2, 4, 7}, {0, 6, 5, 3, 1, 2, 4, 7},
-															   {6, 0, 5, 3, 1, 2, 4, 7}, {3, 0, 5, 6, 1, 2, 4, 7}};
+final master_palette_placement_index = List<List<int>>.from({{0, 3, 5, 6, 1, 2, 4, 7}, {0, 6, 5, 3, 1, 2, 4, 7},
+															                               {6, 0, 5, 3, 1, 2, 4, 7}, {3, 0, 5, 6, 1, 2, 4, 7}});
 
 /**
  * @brief Color palette placement index in slave symbol
@@ -43,86 +45,86 @@ final slave_palette_placement_index = List<int>.from({3, 6, 5, 0, 1, 2, 4, 7});
 /**
  * @brief Finder pattern core color index in default palette
 */
-#define	FP0_CORE_COLOR	0
-#define	FP1_CORE_COLOR	0
-#define	FP2_CORE_COLOR	6
-#define	FP3_CORE_COLOR	3
+const	FP0_CORE_COLOR = 0;
+const	FP1_CORE_COLOR = 0;
+const	FP2_CORE_COLOR = 6;
+const	FP3_CORE_COLOR = 3;
 
 /**
  * @brief Alignment pattern core color index in default palette
 */
-#define	AP0_CORE_COLOR	3
-#define	AP1_CORE_COLOR	3
-#define	AP2_CORE_COLOR	3
-#define	AP3_CORE_COLOR	3
-#define APX_CORE_COLOR	6
+const	AP0_CORE_COLOR = 3;
+const	AP1_CORE_COLOR = 3;
+const	AP2_CORE_COLOR = 3;
+const	AP3_CORE_COLOR = 3;
+const APX_CORE_COLOR = 6;
 
 /**
  * @brief Finder pattern core color index for all color modes
 */
-static const jab_byte fp0_core_color_index[] = {0, 0, FP0_CORE_COLOR, 0, 0, 0, 0, 0};
-static const jab_byte fp1_core_color_index[] = {0, 0, FP1_CORE_COLOR, 0, 0, 0, 0, 0};
-static const jab_byte fp2_core_color_index[] = {0, 2, FP2_CORE_COLOR, 14, 30, 60, 124, 252};
-static const jab_byte fp3_core_color_index[] = {0, 3, FP3_CORE_COLOR, 3, 7, 15, 15, 31};
+final fp0_core_color_index = Int8List.fromList([0, 0, FP0_CORE_COLOR, 0, 0, 0, 0, 0]);
+final fp1_core_color_index = Int8List.fromList([0, 0, FP1_CORE_COLOR, 0, 0, 0, 0, 0]);
+final fp2_core_color_index = Int8List.fromList([0, 2, FP2_CORE_COLOR, 14, 30, 60, 124, 252]);
+final fp3_core_color_index = Int8List.fromList([0, 3, FP3_CORE_COLOR, 3, 7, 15, 15, 31]);
 /**
  * @brief Alignment pattern core color index for all color modes
 */
-static const jab_byte apn_core_color_index[] = {0, 3, AP0_CORE_COLOR, 3, 7, 15, 15, 31};
-static const jab_byte apx_core_color_index[] = {0, 2, APX_CORE_COLOR, 14, 30, 60, 124, 252};
+final apn_core_color_index = Int8List.fromList([0, 3, AP0_CORE_COLOR, 3, 7, 15, 15, 31]);
+final apx_core_color_index = Int8List.fromList([0, 2, APX_CORE_COLOR, 14, 30, 60, 124, 252]);
 
 /**
  * @brief Finder pattern types
 */
-#define FP0		0
-#define FP1		1
-#define FP2		2
-#define FP3		3
+const FP0 = 0;
+const FP1 = 1;
+const FP2 = 2;
+const FP3 = 3;
 
 /**
  * @brief Alignment pattern types
 */
-#define AP0	0
-#define AP1	1
-#define AP2	2
-#define AP3	3
-#define APX	4
+const AP0	= 0;
+const AP1	= 1;
+const AP2	= 2;
+const AP3	= 3;
+const APX	= 4;
 
 /**
  * @brief Code parameters
 */
-typedef struct {
-	jab_int32 		dimension;				///<Module size in pixel
+class jab_code {
+	int 		dimension;				///<Module size in pixel
 	jab_vector2d	code_size;				///<Code size in symbol
-	jab_int32 		min_x;
-	jab_int32 		min_y;
-	jab_int32		rows;
-	jab_int32 		cols;
-	jab_int32*		row_height;
-	jab_int32*		col_width;
-}jab_code;
+	int 		min_x;
+  int 		min_y;
+  int		rows;
+  int 		cols;
+	List<int>		row_height;
+  List<int>		col_width;
+}
 
 /**
  * @brief Decoding order of cascaded symbols
 */
-static const jab_vector2d jab_symbol_pos[MAX_SYMBOL_NUMBER] =
-		{ 	{ 0, 0},
+final jab_symbol_pos = List<jab_vector2d>.from(
+		{ { 0, 0},
 			{ 0,-1}, { 0, 1}, {-1, 0}, { 1, 0}, { 0,-2}, {-1,-1}, { 1,-1}, { 0, 2}, {-1, 1}, { 1, 1},
 			{-2, 0}, { 2, 0}, { 0,-3}, {-1,-2}, { 1,-2}, {-2,-1}, { 2,-1}, { 0, 3}, {-1, 2}, { 1, 2},
 			{-2, 1}, { 2, 1}, {-3, 0}, { 3, 0},	{ 0,-4}, {-1,-3}, { 1,-3}, {-2,-2}, { 2,-2}, {-3,-1},
 			{ 3,-1}, { 0, 4}, {-1, 3}, { 1, 3}, {-2, 2}, { 2, 2}, {-3, 1}, { 3, 1}, {-4, 0}, { 4, 0},
 			{ 0,-5}, {-1,-4}, { 1,-4}, {-2,-3}, { 2,-3}, {-3,-2}, { 3,-2}, {-4,-1},	{ 4,-1}, { 0, 5},
 			{-1, 4}, { 1, 4}, {-2, 3}, { 2, 3}, {-3, 2}, { 3, 2}, {-4, 1}, { 4, 1}, {-5, 0}, { 5, 0}
-		};
+		});
 
 /**
  * @brief Nc color encoding table
 */
-static const jab_byte nc_color_encode_table[8][2] = {{0,0}, {0,3}, {0,6}, {3,0}, {3,3}, {3,6}, {6,0}, {6,3}};
+final nc_color_encode_table = List<Int8List>.from({{0,0}, {0,3}, {0,6}, {3,0}, {3,3}, {3,6}, {6,0}, {6,3}});
 
 /**
  * @brief Encoding table
 */
-static const jab_int32 jab_enconing_table[MAX_SIZE_ENCODING_MODE][JAB_ENCODING_MODES]=
+final jab_enconing_table = List<List<int>>.from(
         {{-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1},
          {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,16,-1},
          {-1,-1,-1,-1,17,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-19,-1},{-1,-1,-1,-1,-1,-1},
@@ -174,12 +176,12 @@ static const jab_int32 jab_enconing_table[MAX_SIZE_ENCODING_MODE][JAB_ENCODING_M
          {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1},
          {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,30,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1},
          {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,31,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1},
-         {-1,-1,-1,-1,-1,-1}};
+         {-1,-1,-1,-1,-1,-1}});
 
 /**
  * @brief Switch mode length
 */
-static const jab_int32 latch_shift_to[14][14]=
+final latch_shift_to = List<List<int>>.from(
         {{0,5,5,ENC_MAX,ENC_MAX,5,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,5,7,ENC_MAX,11},
          {7,0,5,ENC_MAX,ENC_MAX,5,ENC_MAX,5,ENC_MAX,ENC_MAX,5,7,ENC_MAX,11},
          {4,6,0,ENC_MAX,ENC_MAX,9,ENC_MAX,6,ENC_MAX,ENC_MAX,4,6,ENC_MAX,10},
@@ -193,43 +195,43 @@ static const jab_int32 latch_shift_to[14][14]=
          {ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,0,0,0,ENC_MAX,ENC_MAX,0,ENC_MAX},
          {ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,0,0,0,ENC_MAX,ENC_MAX,0,ENC_MAX},
          {8,13,13,ENC_MAX,ENC_MAX,0,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,8,8,ENC_MAX,12},
-         {ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,0,0,0,0,ENC_MAX,ENC_MAX,0,0}};//First latch then shift
+         {ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,0,0,0,0,ENC_MAX,ENC_MAX,0,0}});//First latch then shift
 
 //Encoding is based on following mode order:
 //1.upper, 2.lower, 3.numeric, 4.punct, 5.mixed, 6.alphanumeric, 7.byte
 /**
  * @brief Size of message mode
 */
-static const jab_int32 character_size[7]={5,5,4,4,5,6,8};
+final character_size = List<int>.from({5,5,4,4,5,6,8});
 
 /**
  * @brief Mode switch message
 */
 //first latch followed by shift to and the last two are ECI and FNC1
-static const jab_int32 mode_switch[7][16]=
+final mode_switch = List<List<int>>.from(
         {{-1,28,29,-1,-1,30,-1,-1,-1,-1,27,125,-1,124,126,-1},		//from upper case mode to all other modes; -1 indicates not possible mode switch
          {126,-1,29,-1,-1,30,-1,28,-1,127,27,125,-1,124,-1,127},	//lower case mode
          {14,63,-1,-1,-1,478,-1,62,-1,-1,13,61,-1,60,-1,-1},		//numeric mode
          {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},			//punctuation mode
          {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},			//mixed mode
          {255,8188,8189,-1,-1,-1,-1,-1,-1,-1,254,253,-1,252,-1,-1},	//alphanumeric
-         {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}};		//byte mode
+         {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}});		//byte mode
 
 
 /**
  * @brief code rate of each ecc level
 */
-static const jab_float ecclevel2coderate[11] = {0.55f, 0.63f, 0.57f, 0.55f, 0.50f, 0.43f, 0.34f, 0.25f, 0.20f, 0.17f, 0.14f};
+final ecclevel2coderate = List<double>.from({0.55, 0.63, 0.57, 0.55, 0.50, 0.43, 0.34, 0.25, 0.20, 0.17, 0.14});
 
 /**
  * @brief wc and wr
 */
-static const jab_int32 ecclevel2wcwr[11][2] = {{4, 9}, {3, 8}, {3, 7}, {4, 9}, {3, 6}, {4, 7}, {4, 6}, {3, 4}, {4, 5}, {5, 6}, {6, 7}};
+final ecclevel2wcwr = List<List<int>>.from({{4, 9}, {3, 8}, {3, 7}, {4, 9}, {3, 6}, {4, 7}, {4, 6}, {3, 4}, {4, 5}, {5, 6}, {6, 7}});
 
 /**
  * @brief Positions of finder/alignment patterns (side-version 1-32)
 */
-static const jab_int32 jab_ap_pos[32][9] = { {4, 18, 0, 0, 0, 0, 0, 0, 0},
+final jab_ap_pos = List<List<int>>.from({ {4, 18, 0, 0, 0, 0, 0, 0, 0},
 											 {4, 22, 0, 0, 0, 0, 0, 0, 0},
 											 {4, 26, 0, 0, 0, 0, 0, 0, 0},
 											 {4, 30, 0, 0, 0, 0, 0, 0, 0},
@@ -261,22 +263,22 @@ static const jab_int32 jab_ap_pos[32][9] = { {4, 18, 0, 0, 0, 0, 0, 0, 0},
 											 {4, 14, 32, 49, 67, 84, 102, 112, 134},
 											 {4, 17, 35, 53, 71, 89, 107, 119, 138},
 											 {4, 20, 38, 55, 73, 91, 108, 126, 142}
-										   };
+										   });
 /**
  * @brief Number of finder/alignment patterns on row/column (side-version 1-32)
 */
-static const jab_int32 jab_ap_num[32] = {2, 2, 2, 2, 2,
+final jab_ap_num = List<int>.from({2, 2, 2, 2, 2,
 										 3, 3, 3, 3,
 										 4, 4, 4, 4,
 										 5, 5, 5, 5,
 										 6, 6, 6, 6,
 										 7, 7, 7, 7,
 										 8, 8, 8, 8,
-										 9, 9, 9};
+										 9, 9, 9});
 
-extern void interleaveData(jab_data* data);
-extern jab_int32 maskCode(jab_encode* enc, jab_code* cp);
-extern void maskSymbols(jab_encode* enc, jab_int32 mask_type, jab_int32* masked, jab_code* cp);
-extern void getNextMetadataModuleInMaster(jab_int32 matrix_height, jab_int32 matrix_width, jab_int32 next_module_count, jab_int32* x, jab_int32* y);
-
-#endif
+// extern void interleaveData(jab_data* data);
+// extern jab_int32 maskCode(jab_encode* enc, jab_code* cp);
+// extern void maskSymbols(jab_encode* enc, jab_int32 mask_type, jab_int32* masked, jab_code* cp);
+// extern void getNextMetadataModuleInMaster(jab_int32 matrix_height, jab_int32 matrix_width, jab_int32 next_module_count, jab_int32* x, jab_int32* y);
+//
+// #endif
