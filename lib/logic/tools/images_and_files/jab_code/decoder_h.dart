@@ -41,7 +41,7 @@ final slave_palette_position = List<jab_vector2d>.from(
 /**
  * @brief Decoding tables
 */
-final  jab_decoding_table_upper   = Int8List.fromList([32, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90]);
+final jab_decoding_table_upper   = Int8List.fromList([32, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90]);
 final jab_decoding_table_lower   = Int8List.fromList([32, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122]);
 final jab_decoding_table_numeric = Int8List.fromList([32, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 44, 46]);
 final jab_decoding_table_punct   = Int8List.fromList([33, 34, 36, 37, 38, 39, 40, 41, 44, 45, 46, 47, 58, 59, 63, 64]);

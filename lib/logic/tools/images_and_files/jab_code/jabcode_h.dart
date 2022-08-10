@@ -143,9 +143,9 @@ class jab_encode {
 */
 class jab_metadata {
 	bool default_mode;
-	Int8 Nc;
-	Int8 mask_type;
-	Int8 docked_position;
+	int Nc;
+	int mask_type;
+	int docked_position;
 	jab_vector2d side_version;
 	jab_vector2d ecl;
 }
@@ -162,7 +162,7 @@ class jab_decoded_symbol {
 	var pattern_positions = List<jab_point>.filled(4, null); //4
 	jab_metadata metadata;
 	var slave_metadata = List<jab_metadata>.filled(4, null); //4
-	Int8 palette;
+	Int8List palette;
 	jab_data data;
 }
 
