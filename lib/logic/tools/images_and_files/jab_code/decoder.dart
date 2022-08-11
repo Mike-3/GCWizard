@@ -26,7 +26,10 @@ import 'dart:ffi';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:tuple/tuple.dart';
+
 import 'decoder_h.dart';
+import 'detector_h.dart';
 import 'encoder_h.dart';
 import 'jabcode_h.dart';
 import 'jabcode_h.dart';
@@ -759,10 +762,10 @@ int decodeNcModuleColor(Int8 module1_color, Int8 module2_color)
  * @param y the y coordinate of the current and the next module
  * @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED
 */
-int decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, List<Int8> data_map, int module_count, int x, int y) //ToDo module_count, x und y als Referenz/ Rückgabewert
+int decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, int module_count, int x, int y) //ToDo module_count, x und y als Referenz/ Rückgabewert
 {
 	//decode Nc module color
-	var module_color = List<Int8>.filled(MASTER_METADATA_PART1_MODULE_NUMBER, 0);
+	var module_color = Int8List(MASTER_METADATA_PART1_MODULE_NUMBER);
 	int mtx_bytes_per_pixel = (matrix.bits_per_pixel / 8).toInt();
 	int mtx_bytes_per_row = matrix.width * mtx_bytes_per_pixel;
 	int mtx_offset;
@@ -788,8 +791,8 @@ int decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, List
 
 	//decode encoded Nc
 	var bits = List<int>.filled(2, null);
-	bits[0] = decodeNcModuleColor(module_color[0], module_color[1]);	//the first 3 bits
-	bits[1] = decodeNcModuleColor(module_color[2], module_color[3]);	//the last 3 bits
+	bits[0] = decodeNcModuleColor(module_color[0] as Int8, module_color[1] as Int8);	//the first 3 bits
+	bits[1] = decodeNcModuleColor(module_color[2] as Int8, module_color[3] as Int8);	//the last 3 bits
 	if(bits[0] > 7 || bits[1] > 7)
 	{
 // #if TEST_MODE
@@ -813,9 +816,9 @@ int decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, List
 	//decode ldpc for part1
 	if( !decodeLDPChd(part1, MASTER_METADATA_PART1_LENGTH, MASTER_METADATA_PART1_LENGTH > 36 ? 4 : 3, 0) )
 	{
-#if TEST_MODE
-		reportError("LDPC decoding for master metadata part 1 failed");
-#endif
+// #if TEST_MODE
+// 		reportError("LDPC decoding for master metadata part 1 failed");
+// #endif
 		return JAB_FAILURE;
 	}
 	//parse part1
@@ -836,7 +839,7 @@ int decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, List
  * @param y the y coordinate of the current and the next module
  * @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED | FATAL_ERROR
 */
-int decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, List<Int8> data_map, List<double> norm_palette, List<double> pal_ths, int module_count, int x, int y)
+int decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths, int module_count, int x, int y)
 {
 	var part2 = List<int>.filled(MASTER_METADATA_PART2_LENGTH, 0);			//38 encoded bits
 	int part2_bit_count = 0;
@@ -866,9 +869,9 @@ int decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, Lis
 			}
 		}
 		//set data map
-		data_map[(*y) * matrix.width + (*x)] = 1;
+		data_map[y * matrix.width + (*x)] = 1;
 		//go to the next module
-		(*module_count)++;
+		module_count++;
 		getNextMetadataModuleInMaster(matrix.height, matrix.width, (*module_count), x, y);
     }
 
@@ -949,7 +952,7 @@ int decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, Lis
  * @param pal_ths the palette RGB value thresholds
  * @return the decoded data | NULL if failed
 */
-jab_data readRawModuleData(jab_bitmap matrix, jab_decoded_symbol symbol, List<Int8> data_map, List<double> norm_palette, List<double> pal_ths)
+jab_data readRawModuleData(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths)
 {
     int color_number = pow(2, symbol.metadata.Nc + 1);
 	int module_count = 0;
@@ -1064,7 +1067,7 @@ jab_data rawModuleData2RawData(jab_data raw_module_data, int bits_per_module)
  * @param height the height of the data map
  * @param type the symbol type, 0: master, 1: slave
 */
-void fillDataMap(List<Int8> data_map, int width, int height, int type)
+void fillDataMap(Int8List data_map, int width, int height, int type)
 {
 	int side_ver_x_index = SIZE2VERSION(width) - 1;
 	int side_ver_y_index = SIZE2VERSION(height) - 1;
@@ -1078,49 +1081,49 @@ void fillDataMap(List<Int8> data_map, int width, int height, int type)
 			int x_offset = jab_ap_pos[side_ver_x_index][j] - 1;
             int y_offset = jab_ap_pos[side_ver_y_index][i] - 1;
 			//the cross
-			data_map[y_offset 	* width + x_offset]		  	= 1 as Int8;
-			data_map[y_offset		* width + (x_offset - 1)] = 1 as Int8;
-			data_map[y_offset		* width + (x_offset + 1)] = 1 as Int8;
-			data_map[(y_offset - 1) * width + x_offset] 	= 1 as Int8;
-			data_map[(y_offset + 1) * width + x_offset] 	= 1 as Int8;
+			data_map[y_offset 	* width + x_offset]		  	= 1;
+			data_map[y_offset		* width + (x_offset - 1)] = 1;
+			data_map[y_offset		* width + (x_offset + 1)] = 1;
+			data_map[(y_offset - 1) * width + x_offset] 	= 1;
+			data_map[(y_offset + 1) * width + x_offset] 	= 1;
 
 			//the diagonal modules
 			if(i == 0 && (j == 0 || j == number_of_ap_x - 1))	//at finder pattern 0 and 1 positions
 			{
-				data_map[(y_offset - 1) * width + (x_offset - 1)] = 1 as Int8;
-				data_map[(y_offset + 1) * width + (x_offset + 1)] = 1 as Int8;
+				data_map[(y_offset - 1) * width + (x_offset - 1)] = 1;
+				data_map[(y_offset + 1) * width + (x_offset + 1)] = 1;
 				if(type == 0)	//master symbol
 				{
-					data_map[(y_offset - 2) * width + (x_offset - 2)] = 1 as Int8;
-					data_map[(y_offset - 2) * width + (x_offset - 1)] = 1 as Int8;
-					data_map[(y_offset - 2) * width +  x_offset] 	    = 1 as Int8;
-					data_map[(y_offset - 1) * width + (x_offset - 2)] = 1 as Int8;
-					data_map[ y_offset		  * width + (x_offset - 2)] = 1 as Int8;
+					data_map[(y_offset - 2) * width + (x_offset - 2)] = 1;
+					data_map[(y_offset - 2) * width + (x_offset - 1)] = 1;
+					data_map[(y_offset - 2) * width +  x_offset] 	    = 1;
+					data_map[(y_offset - 1) * width + (x_offset - 2)] = 1;
+					data_map[ y_offset		  * width + (x_offset - 2)] = 1;
 
-					data_map[(y_offset + 2) * width + (x_offset + 2)] = 1 as Int8;
-					data_map[(y_offset + 2) * width + (x_offset + 1)] = 1 as Int8;
-					data_map[(y_offset + 2) * width +  x_offset] 	    = 1 as Int8;
-					data_map[(y_offset + 1) * width + (x_offset + 2)] = 1 as Int8;
-					data_map[ y_offset		* width + (x_offset + 2)]   =  1 as Int8;
+					data_map[(y_offset + 2) * width + (x_offset + 2)] = 1;
+					data_map[(y_offset + 2) * width + (x_offset + 1)] = 1;
+					data_map[(y_offset + 2) * width +  x_offset] 	    = 1;
+					data_map[(y_offset + 1) * width + (x_offset + 2)] = 1;
+					data_map[ y_offset		* width + (x_offset + 2)]   =  1;
 				}
 			}
 			else if(i == number_of_ap_y - 1 && (j == 0 || j == number_of_ap_x - 1))	//at finder pattern 2 and 3 positions
 			{
-				data_map[(y_offset - 1) * width + (x_offset + 1)] = 1 as Int8;
-				data_map[(y_offset + 1) * width + (x_offset - 1)] =  1 as Int8;
+				data_map[(y_offset - 1) * width + (x_offset + 1)] = 1;
+				data_map[(y_offset + 1) * width + (x_offset - 1)] =  1;
 				if(type == 0) 	//master symbol
 				{
-					data_map[(y_offset - 2) * width + (x_offset + 2)] = 1 as Int8;
-					data_map[(y_offset - 2) * width + (x_offset + 1)] = 1 as Int8;
-					data_map[(y_offset - 2) * width +  x_offset] 	    = 1 as Int8;
-					data_map[(y_offset - 1) * width + (x_offset + 2)] = 1 as Int8;
-					data_map[ y_offset		* width + (x_offset + 2)]   =  1 as Int8;
+					data_map[(y_offset - 2) * width + (x_offset + 2)] = 1;
+					data_map[(y_offset - 2) * width + (x_offset + 1)] = 1;
+					data_map[(y_offset - 2) * width +  x_offset] 	    = 1;
+					data_map[(y_offset - 1) * width + (x_offset + 2)] = 1;
+					data_map[ y_offset		* width + (x_offset + 2)]   =  1;
 
-					data_map[(y_offset + 2) * width + (x_offset - 2)] = 1 as Int8;
-					data_map[(y_offset + 2) * width + (x_offset - 1)] = 1 as Int8;
-					data_map[(y_offset + 2) * width +  x_offset] 	    = 1 as Int8;
-					data_map[(y_offset + 1) * width + (x_offset - 2)] = 1 as Int8;
-					data_map[ y_offset		* width + (x_offset - 2)]   = 1 as Int8;
+					data_map[(y_offset + 2) * width + (x_offset - 2)] = 1;
+					data_map[(y_offset + 2) * width + (x_offset - 1)] = 1;
+					data_map[(y_offset + 2) * width +  x_offset] 	    = 1;
+					data_map[(y_offset + 1) * width + (x_offset - 2)] = 1;
+					data_map[ y_offset		* width + (x_offset - 2)]   = 1;
 				}
 			}
 			else	//at other positions
@@ -1128,14 +1131,14 @@ void fillDataMap(List<Int8> data_map, int width, int height, int type)
 				//even row, even column / odd row, odd column
 				if( (i % 2 == 0 && j % 2 == 0) || (i % 2 == 1 && j % 2 == 1))
 				{
-					data_map[(y_offset - 1) * width + (x_offset - 1)] = 1 as Int8;
-					data_map[(y_offset + 1) * width + (x_offset + 1)] = 1 as Int8;
+					data_map[(y_offset - 1) * width + (x_offset - 1)] = 1;
+					data_map[(y_offset + 1) * width + (x_offset + 1)] = 1;
 				}
 				//odd row, even column / even row, old column
 				else
 				{
-					data_map[(y_offset - 1) * width + (x_offset + 1)] = 1 as Int8;
-					data_map[(y_offset + 1) * width + (x_offset - 1)] = 1 as Int8;
+					data_map[(y_offset - 1) * width + (x_offset + 1)] = 1 ;
+					data_map[(y_offset + 1) * width + (x_offset - 1)] = 1;
 				}
 			}
 		}
@@ -1153,7 +1156,7 @@ void loadDefaultMasterMetadata(jab_bitmap matrix, jab_decoded_symbol symbol)
 // 	JAB_REPORT_INFO(("Loading default master metadata"))
 // #endif
 	//set default metadata values
-	symbol.metadata.default_mode = 1;
+	symbol.metadata.default_mode = true;
 	symbol.metadata.Nc = DEFAULT_MODULE_COLOR_MODE;
 	symbol.metadata.ecl.x = ecclevel2wcwr[DEFAULT_ECC_LEVEL][0];
 	symbol.metadata.ecl.y = ecclevel2wcwr[DEFAULT_ECC_LEVEL][1];
@@ -1173,7 +1176,7 @@ void loadDefaultMasterMetadata(jab_bitmap matrix, jab_decoded_symbol symbol)
  * @param type the symbol type, 0: master, 1: slave
  * @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED | FATAL_ERROR
 */
-int decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, List<Int8> data_map, List<double> norm_palette, List<double> pal_ths, int type)
+int decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths, int type)
 {
 // #if TEST_MODE
 // 	int color_number = (int)pow(2, symbol.metadata.Nc + 1);
@@ -1218,7 +1221,7 @@ int decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, List<Int8> data_m
 
 	//demask
 	demaskSymbol(raw_module_data, data_map, symbol.side_size, symbol.metadata.mask_type, pow(2, symbol.metadata.Nc + 1));
-	free(data_map);
+	// free(data_map);
 // #if TEST_MODE
 // 	fp = fopen("jab_demasked_module_data.bin", "wb");
 // 	fwrite(raw_module_data.data, raw_module_data.length, 1, fp);
@@ -1237,7 +1240,7 @@ int decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, List<Int8> data_m
 	//calculate Pn and Pg
 	int wc = symbol.metadata.ecl.x;
 	int wr = symbol.metadata.ecl.y;
-	int Pg = (raw_data.length / wr) * wr;	//max_gross_payload = floor(capacity / wr) * wr
+	int Pg = ((raw_data.length / wr) * wr).toInt();	//max_gross_payload = floor(capacity / wr) * wr
 	int Pn = (Pg * (wr - wc) / wr).toInt();				//code_rate = 1 - wc/wr = (wr - wc)/wr, max_net_payload = max_gross_payload * code_rate
 
 	//deinterleave data
@@ -1301,23 +1304,24 @@ int decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, List<Int8> data_m
 		// free(raw_data);
 		return FATAL_ERROR;
 	}
-	symbol.data.length = net_data_length;
-	memcpy(symbol.data.data, raw_data.data, net_data_length);
+	// symbol.data.length = net_data_length;
+	// memcpy(symbol.data.data, raw_data.data, net_data_length);
+	symbol.data.data.insertAll(0, raw_data.data);
 
 	//clean memory
 	// free(raw_data);
 	return JAB_SUCCESS;
 }
 
-void normalizeColorPalette(jab_decoded_symbol* symbol, double* norm_palette, int color_number)
+void normalizeColorPalette(jab_decoded_symbol symbol, List<double> norm_palette, int color_number)
 {
 	for(int i=0; i<(color_number * COLOR_PALETTE_NUMBER); i++)
 	{
-		double rgb_max = MAX(symbol.palette[i*3 + 0], MAX(symbol.palette[i*3 + 1], symbol.palette[i*3 + 2]));
-		norm_palette[i*4 + 0] = (double)symbol.palette[i*3 + 0] / rgb_max;
-		norm_palette[i*4 + 1] = (double)symbol.palette[i*3 + 1] / rgb_max;
-		norm_palette[i*4 + 2] = (double)symbol.palette[i*3 + 2] / rgb_max;
-		norm_palette[i*4 + 3] = ((symbol.palette[i*3 + 0] + symbol.palette[i*3 + 1] + symbol.palette[i*3 + 2]) / 3.0f) / 255.0f; ;
+		double rgb_max = (max(symbol.palette[i*3 + 0], max(symbol.palette[i*3 + 1], symbol.palette[i*3 + 2]))).toDouble();
+		norm_palette[i*4 + 0] = symbol.palette[i*3 + 0] / rgb_max;
+		norm_palette[i*4 + 1] = symbol.palette[i*3 + 1] / rgb_max;
+		norm_palette[i*4 + 2] = symbol.palette[i*3 + 2] / rgb_max;
+		norm_palette[i*4 + 3] = ((symbol.palette[i*3 + 0] + symbol.palette[i*3 + 1] + symbol.palette[i*3 + 2]) / 3.0) / 255.0;
 	}
 }
 
@@ -1327,16 +1331,16 @@ void normalizeColorPalette(jab_decoded_symbol* symbol, double* norm_palette, int
  * @param symbol the master symbol
  * @return JAB_SUCCESS | JAB_FAILURE | FATAL_ERROR
 */
-int decodeMaster(jab_bitmap* matrix, jab_decoded_symbol* symbol)
+int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol)
 {
-	if(matrix == NULL)
+	if(matrix == null)
 	{
-		reportError("Invalid master symbol matrix");
+		// reportError("Invalid master symbol matrix");
 		return FATAL_ERROR;
 	}
 
 	//create data map
-	var data_map = List<Int8>();// (Int8*)calloc(1, matrix.width*matrix.height*sizeof(Int8));
+	var data_map = Int8List(matrix.width*matrix.height);// (Int8*)calloc(1, matrix.width*matrix.height*sizeof(Int8));
 	if(data_map == null)
 	{
 		// reportError("Memory allocation for data map in master failed");
@@ -1361,34 +1365,34 @@ int decodeMaster(jab_bitmap* matrix, jab_decoded_symbol* symbol)
 		y = MASTER_METADATA_Y;
 		module_count = 0;
 		//clear data_map
-		memset(data_map, 0, matrix.width*matrix.height*sizeof(Int8));
+		data_map = Int8List(matrix.width*matrix.height); //memset(data_map, 0, matrix.width*matrix.height*sizeof(Int8));
 		//load default metadata and color palette
 		loadDefaultMasterMetadata(matrix, symbol);
 	}
 
 	//read color palettes
-    if(readColorPaletteInMaster(matrix, symbol, data_map, &module_count, &x, &y) < 0)
+    if(readColorPaletteInMaster(matrix, symbol, data_map, module_count, x, y) < 0)
 	{
-		reportError("Reading color palettes in master symbol failed");
+		// reportError("Reading color palettes in master symbol failed");
 		return JAB_FAILURE;
 	}
 
 	//normalize the RGB values in color palettes
-	int color_number = (int)pow(2, symbol.metadata.Nc + 1);
-	double norm_palette[color_number * 4 * COLOR_PALETTE_NUMBER];	//each color contains 4 normalized values, i.e. R, G, B and Luminance
+	int color_number = pow(2, symbol.metadata.Nc + 1);
+	var norm_palette = List<double>.filled(color_number * 4 * COLOR_PALETTE_NUMBER, 0);	//each color contains 4 normalized values, i.e. R, G, B and Luminance
 	normalizeColorPalette(symbol, norm_palette, color_number);
 
 	//get the palette RGB thresholds
-	double pal_ths[3 * COLOR_PALETTE_NUMBER];
+	var pal_ths = List<double>.filled(3 * COLOR_PALETTE_NUMBER, 0);
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++)
 	{
-		getPaletteThreshold(symbol.palette + (color_number*3)*i, color_number, &pal_ths[i*3]);
+		getPaletteThreshold(symbol.palette + (color_number*3)*i, color_number, pal_ths[i*3]);
 	}
 
 	//decode metadata PartII
 	if(decode_partI_ret == JAB_SUCCESS)
 	{
-		if(decodeMasterMetadataPartII(matrix, symbol, data_map, norm_palette, pal_ths, &module_count, &x, &y) <= 0)
+		if(decodeMasterMetadataPartII(matrix, symbol, data_map, norm_palette, pal_ths, module_count, x, y) <= 0) //ToDo &module_count, &x, &y
 		{
 			return JAB_FAILURE;
 		}
@@ -1404,40 +1408,40 @@ int decodeMaster(jab_bitmap* matrix, jab_decoded_symbol* symbol)
  * @param symbol the slave symbol
  * @return JAB_SUCCESS | JAB_FAILURE | FATAL_ERROR
 */
-int decodeSlave(jab_bitmap* matrix, jab_decoded_symbol* symbol)
+int decodeSlave(jab_bitmap matrix, jab_decoded_symbol symbol)
 {
-	if(matrix == NULL)
+	if(matrix == null)
 	{
-		reportError("Invalid slave symbol matrix");
+		// reportError("Invalid slave symbol matrix");
 		return FATAL_ERROR;
 	}
 
 	//create data map
-	Int8* data_map = (Int8*)calloc(1, matrix.width*matrix.height*sizeof(Int8));
-	if(data_map == NULL)
+	var data_map = Int8List(matrix.width*matrix.height); // (Int8*)calloc(1, matrix.width*matrix.height*sizeof(Int8));
+	if(data_map == null)
 	{
-		reportError("Memory allocation for data map in slave failed");
+		// reportError("Memory allocation for data map in slave failed");
 		return FATAL_ERROR;
 	}
 
 	//read color palettes
 	if(readColorPaletteInSlave(matrix, symbol, data_map) < 0)
 	{
-		reportError("Reading color palettes in slave symbol failed");
-		free(data_map);
+		// reportError("Reading color palettes in slave symbol failed");
+		data_map = null; //free(data_map);
 		return FATAL_ERROR;
 	}
 
 	//normalize the RGB values in color palettes
-	int color_number = (int)pow(2, symbol.metadata.Nc + 1);
-	double norm_palette[color_number * 4 * COLOR_PALETTE_NUMBER];	//each color contains 4 normalized values, i.e. R, G, B and Luminance
+	int color_number = pow(2, symbol.metadata.Nc + 1);
+	var norm_palette = List<double>.filled(color_number * 4 * COLOR_PALETTE_NUMBER, 0);	//each color contains 4 normalized values, i.e. R, G, B and Luminance
 	normalizeColorPalette(symbol, norm_palette, color_number);
 
 	//get the palette RGB thresholds
-	double pal_ths[3 * COLOR_PALETTE_NUMBER];
+	var pal_ths = List<double>.filled(3 * COLOR_PALETTE_NUMBER, 0);
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++)
 	{
-		getPaletteThreshold(symbol.palette + i*3, color_number, &pal_ths[i*3]);
+		getPaletteThreshold(symbol.palette + i*3, color_number, pal_ths[i*3]); //&pal_ths[i*3]
 	}
 
 	//decode slave symbol
@@ -1452,7 +1456,7 @@ int decodeSlave(jab_bitmap* matrix, jab_decoded_symbol* symbol)
  * @param value the read data
  * @return the length of the read data
 */
-int readData(jab_data* data, int start, int length, int* value)
+Tuple2<int,int> readData(jab_data data, int start, int length) //int* value
 {
 	int i;
 	int val = 0;
@@ -1460,8 +1464,8 @@ int readData(jab_data* data, int start, int length, int* value)
 	{
 		val += data.data[i] << (length - 1 - (i - start));
 	}
-	*value = val;
-	return (i - start);
+	// value = val;
+	return Tuple2<int,int>((i - start), val);
 }
 
 /**
@@ -1469,30 +1473,32 @@ int readData(jab_data* data, int start, int length, int* value)
  * @param bits the input bits
  * @return the data message
 */
-jab_data* decodeData(jab_data* bits)
+jab_data decodeData(jab_data bits)
 {
-	Int8* decoded_bytes = (Int8 *)malloc(bits.length * sizeof(Int8));
-	if(decoded_bytes == NULL)
-	{
-		reportError("Memory allocation for decoded bytes failed");
-		return NULL;
-	}
+	var decoded_bytes = Int8List(bits.length); //Int8 *)malloc(bits.length * sizeof(Int8));
+	// if(decoded_bytes == NULL)
+	// {
+	// 	reportError("Memory allocation for decoded bytes failed");
+	// 	return NULL;
+	// }
 
-	jab_encode_mode mode = Upper;
-	jab_encode_mode pre_mode = None;
+	var mode = jab_encode_mode.Upper;
+	var pre_mode = jab_encode_mode.None;
 	int index = 0;	//index of input bits
 	int count = 0;	//index of decoded bytes
 
 	while(index < bits.length)
 	{
 		//read the encoded value
-		jab_boolean flag = 0;
+		bool flag = false;
 		int value = 0;
         int n;
-        if(mode != Byte)
+        if(mode != jab_encode_mode.Byte)
         {
-            n = readData(bits, index, character_size[mode], &value);
-            if(n < character_size[mode])	//did not read enough bits
+						var result = readData(bits, index, character_size[mode]);
+						n = result.item1;
+						value = result.item2;
+						if(n < character_size[mode])	//did not read enough bits
                 break;
             //update index
             index += character_size[mode];
@@ -1501,39 +1507,41 @@ jab_data* decodeData(jab_data* bits)
 		//decode value
 		switch(mode)
 		{
-			case Upper:
+			case jab_encode_mode.Upper:
 				if(value <= 26)
 				{
 					decoded_bytes[count++] = jab_decoding_table_upper[value];
-					if(pre_mode != None)
+					if(pre_mode != jab_encode_mode.None)
 						mode = pre_mode;
 				}
 				else
 				{
-					switch(value)
+					switch(value as int)
 					{
 						case 27:
-							mode = Punct;
-							pre_mode = Upper;
+							mode = jab_encode_mode.Punct;
+							pre_mode = jab_encode_mode.Upper;
 							break;
 						case 28:
-							mode = Lower;
-							pre_mode = None;
+							mode = jab_encode_mode.Lower;
+							pre_mode = jab_encode_mode.None;
 							break;
 						case 29:
-							mode = Numeric;
-							pre_mode = None;
+							mode = jab_encode_mode.Numeric;
+							pre_mode = jab_encode_mode.None;
 							break;
 						case 30:
-							mode = Alphanumeric;
-							pre_mode = None;
+							mode = jab_encode_mode.Alphanumeric;
+							pre_mode = jab_encode_mode.None;
 							break;
 						case 31:
 							//read 2 bits more
-							n = readData(bits, index, 2, &value);
+							var result = readData(bits, index, 2);
+							n = result.item1;
+							value = result.item2;
 							if(n < 2)	//did not read enough bits
 							{
-								flag = 1;
+								flag = true;
 								break;
 							}
 							//update index
@@ -1541,34 +1549,34 @@ jab_data* decodeData(jab_data* bits)
 							switch(value)
 							{
 								case 0:
-									mode = Byte;
-									pre_mode = Upper;
+									mode = jab_encode_mode.Byte;
+									pre_mode = jab_encode_mode.Upper;
 									break;
 								case 1:
-									mode = Mixed;
-									pre_mode = Upper;
+									mode = jab_encode_mode.Mixed;
+									pre_mode = jab_encode_mode.Upper;
 									break;
 								case 2:
-									mode = ECI;
-									pre_mode = None;
+									mode = jab_encode_mode.ECI;
+									pre_mode = jab_encode_mode.None;
 									break;
 								case 3:
-									flag = 1;		//end of message (EOM)
+									flag = true;		//end of message (EOM)
 									break;
 							}
 							break;
 						default:
-							reportError("Invalid value decoded");
-							free(decoded_bytes);
-							return NULL;
+							// reportError("Invalid value decoded");
+							decoded_bytes = null ;//free(decoded_bytes);
+							return null;
 					}
 				}
 				break;
-			case Lower:
+			case jab_encode_mode.Lower:
 				if(value <= 26)
 				{
 					decoded_bytes[count++] = jab_decoding_table_lower[value];
-					if(pre_mode != None)
+					if(pre_mode != jab_encode_mode.None)
 						mode = pre_mode;
 				}
 				else
@@ -1576,27 +1584,29 @@ jab_data* decodeData(jab_data* bits)
 					switch(value)
 					{
 						case 27:
-							mode = Punct;
-							pre_mode = Lower;
+							mode = jab_encode_mode.Punct;
+							pre_mode = jab_encode_mode.Lower;
 							break;
 						case 28:
-							mode = Upper;
-							pre_mode = Lower;
+							mode = jab_encode_mode.Upper;
+							pre_mode = jab_encode_mode.Lower;
 							break;
 						case 29:
-							mode = Numeric;
-							pre_mode = None;
+							mode = jab_encode_mode.Numeric;
+							pre_mode = jab_encode_mode.None;
 							break;
 						case 30:
-							mode = Alphanumeric;
-							pre_mode = None;
+							mode = jab_encode_mode.Alphanumeric;
+							pre_mode = jab_encode_mode.None;
 							break;
 						case 31:
 							//read 2 bits more
-							n = readData(bits, index, 2, &value);
+							var result = readData(bits, index, 2);
+							n = result.item1;
+							value = result.item2;
 							if(n < 2)	//did not read enough bits
 							{
-								flag = 1;
+								flag = true;
 								break;
 							}
 							//update index
@@ -1604,35 +1614,35 @@ jab_data* decodeData(jab_data* bits)
 							switch(value)
 							{
 								case 0:
-									mode = Byte;
-									pre_mode = Lower;
+									mode = jab_encode_mode.Byte;
+									pre_mode = jab_encode_mode.Lower;
 									break;
 								case 1:
-									mode = Mixed;
-									pre_mode = Lower;
+									mode = jab_encode_mode.Mixed;
+									pre_mode = jab_encode_mode.Lower;
 									break;
 								case 2:
-									mode = Upper;
-									pre_mode = None;
+									mode = jab_encode_mode.Upper;
+									pre_mode = jab_encode_mode.None;
 									break;
 								case 3:
-									mode = FNC1;
-									pre_mode = None;
+									mode = jab_encode_mode.FNC1;
+									pre_mode = jab_encode_mode.None;
 									break;
 							}
 							break;
 						default:
-							reportError("Invalid value decoded");
-							free(decoded_bytes);
-							return NULL;
+							// reportError("Invalid value decoded");
+							decoded_bytes = null ; //free(decoded_bytes);
+							return null;
 					}
 				}
 				break;
-			case Numeric:
+			case jab_encode_mode.Numeric:
 				if(value <= 12)
 				{
 					decoded_bytes[count++] = jab_decoding_table_numeric[value];
-					if(pre_mode != None)
+					if(pre_mode != jab_encode_mode.None)
 						mode = pre_mode;
 				}
 				else
@@ -1640,19 +1650,21 @@ jab_data* decodeData(jab_data* bits)
 					switch(value)
 					{
 						case 13:
-							mode = Punct;
-							pre_mode = Numeric;
+							mode = jab_encode_mode.Punct;
+							pre_mode = jab_encode_mode.Numeric;
 							break;
 						case 14:
-							mode = Upper;
-							pre_mode = None;
+							mode = jab_encode_mode.Upper;
+							pre_mode = jab_encode_mode.None;
 							break;
 						case 15:
 							//read 2 bits more
-							n = readData(bits, index, 2, &value);
+							var result = readData(bits, index, 2);
+							n = result.item1;
+							value = result.item2;
 							if(n < 2)	//did not read enough bits
 							{
-								flag = 1;
+								flag = true;
 								break;
 							}
 							//update index
@@ -1660,31 +1672,31 @@ jab_data* decodeData(jab_data* bits)
 							switch(value)
 							{
 								case 0:
-									mode = Byte;
-									pre_mode = Numeric;
+									mode = jab_encode_mode.Byte;
+									pre_mode = jab_encode_mode.Numeric;
 									break;
 								case 1:
-									mode = Mixed;
-									pre_mode = Numeric;
+									mode = jab_encode_mode.Mixed;
+									pre_mode = jab_encode_mode.Numeric;
 									break;
 								case 2:
-									mode = Upper;
-									pre_mode = Numeric;
+									mode = jab_encode_mode.Upper;
+									pre_mode = jab_encode_mode.Numeric;
 									break;
 								case 3:
-									mode = Lower;
-									pre_mode = None;
+									mode = jab_encode_mode.Lower;
+									pre_mode = jab_encode_mode.None;
 									break;
 							}
 							break;
 						default:
-							reportError("Invalid value decoded");
-							free(decoded_bytes);
-							return NULL;
+						// reportError("Invalid value decoded");
+							decoded_bytes = null ; //free(decoded_bytes);
+							return null;
 					}
 				}
 				break;
-			case Punct:
+			case jab_encode_mode.Punct:
 				if(value >=0 && value <= 15)
 				{
 					decoded_bytes[count++] = jab_decoding_table_punct[value];
@@ -1692,12 +1704,12 @@ jab_data* decodeData(jab_data* bits)
 				}
 				else
 				{
-					reportError("Invalid value decoded");
-					free(decoded_bytes);
-					return NULL;
+					// reportError("Invalid value decoded");
+					decoded_bytes = null ; //free(decoded_bytes);
+					return null;
 				}
 				break;
-			case Mixed:
+			case jab_encode_mode.Mixed:
 				if(value >=0 && value <= 31)
 				{
 					if(value == 19)
@@ -1728,25 +1740,27 @@ jab_data* decodeData(jab_data* bits)
 				}
 				else
 				{
-					reportError("Invalid value decoded");
-					free(decoded_bytes);
-					return NULL;
+					// reportError("Invalid value decoded");
+					decoded_bytes = null ; //free(decoded_bytes);
+					return null;
 				}
 				break;
-			case Alphanumeric:
+			case jab_encode_mode.Alphanumeric:
 				if(value <= 62)
 				{
 					decoded_bytes[count++] = jab_decoding_table_alphanumeric[value];
-					if(pre_mode != None)
+					if(pre_mode != jab_encode_mode.None)
 						mode = pre_mode;
 				}
 				else if(value == 63)
 				{
 					//read 2 bits more
-					n = readData(bits, index, 2, &value);
+					var result = readData(bits, index, 2);
+					n = result.item1;
+					value = result.item2;
 					if(n < 2)	//did not read enough bits
 					{
-						flag = 1;
+						flag = true;
 						break;
 					}
 					//update index
@@ -1754,51 +1768,55 @@ jab_data* decodeData(jab_data* bits)
 					switch(value)
 					{
 						case 0:
-							mode = Byte;
-							pre_mode = Alphanumeric;
+							mode = jab_encode_mode.Byte;
+							pre_mode = jab_encode_mode.Alphanumeric;
 							break;
 						case 1:
-							mode = Mixed;
-							pre_mode = Alphanumeric;
+							mode = jab_encode_mode.Mixed;
+							pre_mode = jab_encode_mode.Alphanumeric;
 							break;
 						case 2:
-							mode = Punct;
-							pre_mode = Alphanumeric;
+							mode = jab_encode_mode.Punct;
+							pre_mode = jab_encode_mode.Alphanumeric;
 							break;
 						case 3:
-							mode = Upper;
-							pre_mode = None;
+							mode = jab_encode_mode.Upper;
+							pre_mode = jab_encode_mode.None;
 							break;
 					}
 				}
 				else
 				{
-					reportError("Invalid value decoded");
-					free(decoded_bytes);
-					return NULL;
+					// reportError("Invalid value decoded");
+					decoded_bytes = null; // free(decoded_bytes);
+					return null;
 				}
 				break;
-			case Byte:
+			case jab_encode_mode.Byte:
 			{
 				//read 4 bits more
-				n = readData(bits, index, 4, &value);
+				var result = readData(bits, index, 4);
+				n = result.item1;
+				value = result.item2;
 				if(n < 4)	//did not read enough bits
 				{
-                    reportError("Not enough bits to decode");
-					free(decoded_bytes);
-					return NULL;
+          // reportError("Not enough bits to decode");
+					decoded_bytes = null; // free(decoded_bytes);
+					return null;
 				}
 				//update index
 				index += 4;
 				if(value == 0)		//read the next 13 bits
 				{
 					//read 13 bits more
-					n = readData(bits, index, 13, &value);
+					var result = readData(bits, index, 13);
+					n = result.item1;
+					value = result.item2;
 					if(n < 13)	//did not read enough bits
 					{
-                        reportError("Not enough bits to decode");
-						free(decoded_bytes);
-						return NULL;
+						// reportError("Not enough bits to decode");
+						decoded_bytes = null; // free(decoded_bytes);
+						return null;
 					}
                     value += 15+1;	//the number of encoded bytes = value + 15
 					//update index
@@ -1808,30 +1826,32 @@ jab_data* decodeData(jab_data* bits)
 				//read the next (byte_length * 8) bits
 				for(int i=0; i<byte_length; i++)
 				{
-					n = readData(bits, index, 8, &value);
+					var result = readData(bits, index, 8);
+					n = result.item1;
+					value = result.item2;
 					if(n < 8)	//did not read enough bits
 					{
-                        reportError("Not enough bits to decode");
-						free(decoded_bytes);
-						return NULL;
+            // reportError("Not enough bits to decode");
+						decoded_bytes = null; // free(decoded_bytes);
+						return null;
 					}
 					//update index
 					index += 8;
-					decoded_bytes[count++] = (Int8)value;
+					decoded_bytes[count++] = value;
 				}
 				mode = pre_mode;
 				break;
 			}
-			case ECI:
+			case jab_encode_mode.ECI:
 				//TODO: not implemented
 				index += bits.length;
 				break;
-			case FNC1:
+			case jab_encode_mode.FNC1:
 				//TODO: not implemented
 				index += bits.length;
 				break;
-			case None:
-				reportError("Decoding mode is None.");
+			case jab_encode_mode.None:
+				// reportError("Decoding mode is None.");
 				index += bits.length;
 				break;
 		}

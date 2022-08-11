@@ -50,8 +50,8 @@ const	JAB_FAILURE		= 0;
 const NORMAL_DECODE		= 0;
 const COMPATIBLE_DECODE	= 1;
 
-// const VERSION2SIZE(x)		(x * 4 + 17)
-// const SIZE2VERSION(x)		((x - 17) / 4)
+int VERSION2SIZE(int x) {return (x * 4 + 17);}
+int SIZE2VERSION(int x) { return ((x - 17) / 4).toInt();}
 // const MAX(a,b) 			({__typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b;})
 // const MIN(a,b) 			({__typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b;})
 
@@ -91,7 +91,7 @@ double	y;
 */
 class jab_data {
 	int	length;
-	String	data;
+	Int8List	data;
 }
 
 /**

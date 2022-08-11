@@ -53,16 +53,16 @@ final jab_decoding_table_alphanumeric = Int8List.fromList([32, 48, 49, 50, 51, 5
  * @brief Encoding mode
 */
 class jab_encode_mode {
-	static var None = -1;
-	static var Upper = 0;
-	static var Lower = 1;
-	static var Numeric = 2;
-	static var Punct = 3;
-	static var Mixed = 4;
-	static var Alphanumeric = 5;
-	static var Byte = 6;
-	static var ECI = 7;
-	static var FNC1 = 8;
+	static const None = -1;
+	static const Upper = 0;
+	static const Lower = 1;
+	static const Numeric = 2;
+	static const Punct = 3;
+	static const Mixed = 4;
+	static const Alphanumeric = 5;
+	static const Byte = 6;
+	static const ECI = 7;
+	static const FNC1 = 8;
 }
 
 // extern jab_int32 decodeMaster(jab_bitmap* matrix, jab_decoded_symbol* symbol);
