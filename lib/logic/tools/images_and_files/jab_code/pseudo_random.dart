@@ -1,10 +1,12 @@
-#import 'dart:ffi';
 
-include "pseudo_random.h"
 
-static uint64_t lcg64_seed = 42;
+// include "pseudo_random.h"
 
-uint32_t temper(uint32_t x)
+import 'dart:ffi';
+
+int lcg64_seed = 42 ;
+
+int temper(int x)
 {
     x ^= x>>11;
     x ^= x<<7 & 0x9D2C5680;
@@ -13,13 +15,13 @@ uint32_t temper(uint32_t x)
     return x;
 }
 
-uint32_t lcg64_temper()
+int lcg64_temper()
 {
-    lcg64_seed = 6364136223846793005ULL * lcg64_seed + 1;
+    lcg64_seed = 6364136223846793005 * lcg64_seed + 1; //6364136223846793005ULL
     return temper(lcg64_seed >> 32);
 }
 
-void setSeed(UnsignedLong seed)
+void setSeed(int seed)
 {
 	lcg64_seed = seed;
 }

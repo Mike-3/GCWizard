@@ -1,5 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random.dart';
+import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random_h.dart';
+
 import 'jabcode_h.dart';
 
 /**
@@ -32,7 +35,7 @@ void interleaveData(jab_data data)
     setSeed(INTERLEAVE_SEED);
     for (int i=0; i<data.length; i++)
     {
-        int pos = (lcg64_temper() / UINT32_MAX * (data.length - i) );
+        int pos = (lcg64_temper() / UINT32_MAX * (data.length - i) ).toInt();
         int  tmp = data.data[data.length - 1 -i];
         data.data[data.length - 1 - i] = data.data[pos];
         data.data[pos] = tmp;
@@ -59,7 +62,7 @@ void deinterleaveData(jab_data data)
     setSeed(INTERLEAVE_SEED);
     for(int i=0; i<data.length; i++)
     {
-		int pos = (int)( (jab_float)lcg64_temper() / (jab_float)UINT32_MAX * (data.length - i) );
+		int pos = ( lcg64_temper() / UINT32_MAX * (data.length - i) ).toInt();
 		int tmp = index[data.length - 1 - i];
 		index[data.length - 1 -i] = index[pos];
 		index[pos] = tmp;
