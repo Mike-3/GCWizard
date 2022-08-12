@@ -229,7 +229,7 @@ jab_bitmap readImage(Uint8List image)
 			// reportError("Reading png image failed");
 		// 	return null;
 		// }
-	}
+	// }
 	// else
 	// {
 	// 	reportError(image.message);

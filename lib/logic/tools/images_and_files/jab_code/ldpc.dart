@@ -98,7 +98,7 @@ List<int> createMatrixA(int wc, int wr, int capacity)
  * @param encode specifies if function is called by the encoder or decoder
  * @return 0: success | 1: fatal error (out of memory)
 */
-int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, List<int> matrix_rank, bool encode)
+int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
 {
     int loop=0;
     int nb_pcb;
@@ -194,7 +194,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, List<int> matri
         }
     }
 
-    matrix_rank=nb_pcb-zero_lines;
+    var matrix_rank=nb_pcb-zero_lines;
     int loop2=0;
     for(int i= matrix_rank;i<nb_pcb;i++)
     {
@@ -225,7 +225,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, List<int> matri
         if(processed_column[kl] == 0 && loop1 < loop-loop2)
         {
             column_arrangement[kl]=column_arrangement[swap_col[2*loop1]];
-            processed_column[kl]=1;
+            processed_column[kl]=true;
             swap_col[2*loop1+1]=kl;
             loop1++;
         }
@@ -718,7 +718,7 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
         return 0;
     }
     bool encode=false;
-    if(GaussJordan(matrixA, wc, wr, Pg_sub_block, &matrix_rank,encode))
+    if(GaussJordan(matrixA, wc, wr, Pg_sub_block,encode) != 0) // &matrix_rank,encode
     {
         // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
         // free(matrixA);
@@ -741,7 +741,7 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
                 return 0;
             }
             bool encode=false;
-            if(GaussJordan(matrixA1, wc, wr, Pg_sub_block, &matrix_rank,encode))
+            if(GaussJordan(matrixA1, wc, wr, Pg_sub_block, encode)!= 0) //, &matrix_rank,encode
             {
                 // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
                 // free(matrixA1);

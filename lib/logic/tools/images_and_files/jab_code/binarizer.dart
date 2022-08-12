@@ -549,8 +549,8 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 /**
  * @brief Get the average and variance of RGB values
  * @param rgb the pixel with RGB values
- * @param ave the average value
- * @param var the variance value
+ * @result item1 the average value
+ * @result item2 the variance value
 */
 Tuple2<double, double> getAveVar(Uint8List rgb)
 {
@@ -565,39 +565,41 @@ Tuple2<double, double> getAveVar(Uint8List rgb)
 	return Tuple2<double, double>(ave, sum / 3);
 }
 
-// /**
-//  * @brief Swap two variables
-// */
-// void swap(jab_int32* a, jab_int32* b)
-// {
-// 	jab_int32 tmp;
-// 	tmp = *a;
-// 	*a = *b;
-// 	*b = tmp;
-// }
+/**
+ * @brief Swap two variables
+*/
+void swap(int a, int b, List<int> list)
+{
+	int tmp;
+	tmp = list[a];
+	list[a] = list[b];
+	list[b] = tmp;
+}
 
-// /**
-//  * @brief Get the min, middle and max value of three values and the corresponding indexes
-//  * @param rgb the pixel with RGB values
-//  * @param min the min value
-//  * @param mid the middle value
-//  * @param max the max value
-// */
-// void getMinMax(Int8List rgb, Int8 min, Int8 mid, Int8 max, int index_min, int index_mid, jab_int32* index_max)
-// {
-// 	*index_min = 0;
-// 	*index_mid = 1;
-// 	*index_max = 2;
-// 	if(rgb[*index_min] > rgb[*index_max])
-// 		swap(index_min, index_max);
-// 	if(rgb[*index_min] > rgb[*index_mid])
-// 		swap(index_min, index_mid);
-// 	if(rgb[*index_mid] > rgb[*index_max])
-// 		swap(index_mid, index_max);
-// 	*min = rgb[*index_min];
-// 	*mid = rgb[*index_mid];
-// 	*max = rgb[*index_max];
-// }
+/**
+ * @brief Get the min, middle and max value of three values and the corresponding indexes
+ * @param rgb the pixel with RGB values
+ * @result item1 index min value
+ * @result item2 index middle value
+ * @result item3 index max value
+*/
+Tuple3<int, int, int> getMinMax(Uint8List rgb)
+{
+	const index_min = 0;
+	const index_mid = 1;
+	const index_max = 2;
+	var index = [index_min, index_mid, index_max];
+	if(rgb[index_min] > rgb[index_max])
+		swap(index_min, index_max, index);
+	if(rgb[index_min] > rgb[index_mid])
+		swap(index_min, index_mid, index);
+	if(rgb[index_mid] > rgb[index_max])
+		swap(index_mid, index_max, index);
+	// *min = rgb[*index_min];
+	// *mid = rgb[*index_mid];
+	// *max = rgb[*index_max];
+return Tuple3<int, int, int>(index[index_min], index[index_mid], index[index_max]);
+}
 //
 // /**
 //  * @brief Binarize a color channel of a bitmap using local binarization algorithm

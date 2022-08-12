@@ -556,19 +556,19 @@ int decodeModuleNc(Uint8List rgb)
 	double std = sqrt(result.item2);	//standard deviation
 	// int min, mid, max;
 	// int index_min, index_mid, index_max;
-	// getMinMax(rgb, &min, &mid, &max, &index_min, &index_mid, &index_max);
-	std /= rgb.reduce((curr, next) => curr > next ? curr: next); // max;	//normalize std
+	var result1 = getMinMax(rgb);
+	std /= rgb[result1.item3]; // max;	//normalize std
 	var bits = List<int>.filled(3, 0);
 	if(std > ths_std)
 	{
-		bits[index_max] = 1;
-		bits[index_min] = 0;
-		double r1 = rgb[index_mid] / rgb[index_min];
-		double r2 = rgb[index_max] / rgb[index_mid];
+		bits[result1.item3] = 1;
+		bits[result1.item1] = 0;
+		double r1 = rgb[result1.item2] / rgb[result1.item1];
+		double r2 = rgb[result1.item3] / rgb[result1.item2];
 		if(r1 > r2)
-			bits[index_mid] = 1;
+			bits[result1.item2] = 1;
 		else
-			bits[index_mid] = 0;
+			bits[result1.item2] = 0;
 	}
 	else
 	{
