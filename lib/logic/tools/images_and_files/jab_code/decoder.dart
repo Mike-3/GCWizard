@@ -28,11 +28,13 @@ import 'dart:typed_data';
 
 import 'package:tuple/tuple.dart';
 
+import 'binarizer.dart';
 import 'decoder_h.dart';
 import 'detector_h.dart';
 import 'encoder_h.dart';
 import 'jabcode_h.dart';
-import 'jabcode_h.dart';
+import 'ldpc.dart';
+
 
 
 memcpy(Int8List palette,int dst, int src, int length) {
@@ -539,7 +541,7 @@ int decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<d
  * @param rgb the pixel value in RGB format
  * @return the decoded value
 */
-int decodeModuleNc(Int8List rgb)
+int decodeModuleNc(Uint8List rgb)
 {
 	int ths_black = 80;
 	double ths_std = 0.08;
@@ -549,13 +551,13 @@ int decodeModuleNc(Int8List rgb)
 		return 0;//000
 	}
 	//check color
-	double ave, var;
-	getAveVar(rgb, &ave, &var);
-	double std = sqrt(var);	//standard deviation
-	int min, mid, max;
-	int index_min, index_mid, index_max;
-	getMinMax(rgb, &min, &mid, &max, &index_min, &index_mid, &index_max);
-	std /= max;	//normalize std
+	// double ave, vari;
+	var result = getAveVar(rgb);
+	double std = sqrt(result.item2);	//standard deviation
+	// int min, mid, max;
+	// int index_min, index_mid, index_max;
+	// getMinMax(rgb, &min, &mid, &max, &index_min, &index_mid, &index_max);
+	std /= rgb.reduce((curr, next) => curr > next ? curr: next); // max;	//normalize std
 	var bits = List<int>.filled(3, 0);
 	if(std > ths_std)
 	{
@@ -801,7 +803,7 @@ int decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int8
 		return DECODE_METADATA_FAILED;
 	}
 	//set bits in part1
-	var part1 =List<int>.filled(MASTER_METADATA_PART1_LENGTH, 0);			//6 encoded bits
+	var part1 = Uint8List(MASTER_METADATA_PART1_LENGTH);			//6 encoded bits
 	int bit_count = 0;
 	for(int n=0; n<2; n++)
 	{
@@ -814,7 +816,7 @@ int decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int8
 	}
 
 	//decode ldpc for part1
-	if( !decodeLDPChd(part1, MASTER_METADATA_PART1_LENGTH, MASTER_METADATA_PART1_LENGTH > 36 ? 4 : 3, 0) )
+	if( decodeLDPChd(part1, MASTER_METADATA_PART1_LENGTH, MASTER_METADATA_PART1_LENGTH > 36 ? 4 : 3, 0) == 0)
 	{
 // #if TEST_MODE
 // 		reportError("LDPC decoding for master metadata part 1 failed");

@@ -103,7 +103,7 @@ class jab_bitmap {
    int	bits_per_pixel;
    int	bits_per_channel;
    int	channel_count;
-   Int8List		pixel;
+   Uint8List		pixel;
 }
 
 /**

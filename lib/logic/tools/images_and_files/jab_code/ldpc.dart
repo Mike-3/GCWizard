@@ -87,205 +87,205 @@ List<int> createMatrixA(int wc, int wr, int capacity)
     // free(permutation);
     return matrixA;
 }
-//
-// /**
-//  * @brief Gauss Jordan elimination algorithm
-//  * @param matrixA the matrix
-//  * @param wc the number of '1's in a column
-//  * @param wr the number of '1's in a row
-//  * @param capacity the number of columns of the matrix
-//  * @param matrix_rank the rank of the matrix
-//  * @param encode specifies if function is called by the encoder or decoder
-//  * @return 0: success | 1: fatal error (out of memory)
-// */
-// int GaussJordan(int* matrixA, int wc, int wr, int capacity, int* matrix_rank, jab_boolean encode)
-// {
-//     int loop=0;
-//     int nb_pcb;
-//     if(wr<4)
-//         nb_pcb=capacity/2;
-//     else
-//         nb_pcb=capacity/wr*wc;
-//
-//     int offset=ceil(capacity/(jab_float)32);
-//
-//     int*matrixH=(int *)calloc(offset*nb_pcb,sizeof(int));
-//     if(matrixH == null)
-//     {
-//         reportError("Memory allocation for matrix in LDPC failed");
-//         return 1;
-//     }
-//     memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
-//
-//     int* column_arrangement=(int *)calloc(capacity, sizeof(int));
-//     if(column_arrangement == null)
-//     {
-//         reportError("Memory allocation for matrix in LDPC failed");
-//         free(matrixH);
-//         return 1;
-//     }
-//     jab_boolean* processed_column=(jab_boolean *)calloc(capacity, sizeof(jab_boolean));
-//     if(processed_column == null)
-//     {
-//         reportError("Memory allocation for matrix in LDPC failed");
-//         free(matrixH);
-//         free(column_arrangement);
-//         return 1;
-//     }
-//     int* zero_lines_nb=(int *)calloc(nb_pcb, sizeof(int));
-//     if(zero_lines_nb == null)
-//     {
-//         reportError("Memory allocation for matrix in LDPC failed");
-//         free(matrixH);
-//         free(column_arrangement);
-//         free(processed_column);
-//         return 1;
-//     }
-//     int* swap_col=(int *)calloc(2*capacity, sizeof(int));
-//     if(swap_col == null)
-//     {
-//         reportError("Memory allocation for matrix in LDPC failed");
-//         free(matrixH);
-//         free(column_arrangement);
-//         free(processed_column);
-//         free(zero_lines_nb);
-//         return 1;
-//     }
-//
-//     int zero_lines=0;
-//
-//     for (int i=0; i<nb_pcb; i++)
-//     {
-//         int pivot_column=capacity+1;
-//         for (int j=0; j<capacity; j++)
-//         {
-//             if((matrixH[(offset*32*i+j)/32] >> (31-(offset*32*i+j)%32)) & 1)
-//             {
-//                 pivot_column=j;
-//                 break;
-//             }
-//         }
-//         if(pivot_column < capacity)
-//         {
-//             processed_column[pivot_column]=1;
-//             column_arrangement[pivot_column]=i;
-//             if (pivot_column>=nb_pcb)
-//             {
-//                 swap_col[2*loop]=pivot_column;
-//                 loop++;
-//             }
-//
-//             int off_index=pivot_column/32;
-//             int off_index1=pivot_column%32;
-//             for (int j=0; j<nb_pcb; j++)
-//             {
-//                 if (((matrixH[off_index+j*offset] >> (31-off_index1)) & 1) && j != i)
-//                 {
-//                     //subtract pivot row GF(2)
-//                     for (int k=0;k<offset;k++)
-//                         matrixH[k+offset*j] ^= matrixH[k+offset*i];
-//                 }
-//             }
-//         }
-//         else //zero line
-//         {
-//             zero_lines_nb[zero_lines]=i;
-//             zero_lines++;
-//         }
-//     }
-//
-//     *matrix_rank=nb_pcb-zero_lines;
-//     int loop2=0;
-//     for(int i=*matrix_rank;i<nb_pcb;i++)
-//     {
-//         if(column_arrangement[i] > 0)
-//         {
-//             for (int j=0;j < nb_pcb;j++)
-//             {
-//                 if (processed_column[j] == 0)
-//                 {
-//                     column_arrangement[j]=column_arrangement[i];
-//                     column_arrangement[i]=0;
-//                     processed_column[j]=1;
-//                     processed_column[i]=0;
-//                     swap_col[2*loop]=i;
-//                     swap_col[2*loop+1]=j;
-//                     column_arrangement[i]=j;
-//                     loop++;
-//                     loop2++;
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-//
-//     int loop1=0;
-//     for (int kl=0;kl< nb_pcb;kl++)
-//     {
-//         if(processed_column[kl] == 0 && loop1 < loop-loop2)
-//         {
-//             column_arrangement[kl]=column_arrangement[swap_col[2*loop1]];
-//             processed_column[kl]=1;
-//             swap_col[2*loop1+1]=kl;
-//             loop1++;
-//         }
-//     }
-//
-//     loop1=0;
-//     for (int kl=0;kl< nb_pcb;kl++)
-//     {
-//         if(processed_column[kl]==0)
-//         {
-//             column_arrangement[kl]=zero_lines_nb[loop1];
-//             loop1++;
-//         }
-//     }
-//     //rearrange matrixH if encoder and store it in matrixA
-//     //rearrange matrixA if decoder
-//     if(encode)
-//     {
-//         for(int i=0;i< nb_pcb;i++)
-//             memcpy(matrixA+i*offset,matrixH+column_arrangement[i]*offset,offset*sizeof(int));
-//
-//         //swap columns
-//         int tmp=0;
-//         for(int i=0;i<loop;i++)
-//         {
-//             for (int j=0;j<nb_pcb;j++)
-//             {
-//                 tmp ^= (-((matrixA[swap_col[2*i]/32+j*offset] >> (31-swap_col[2*i]%32)) & 1) ^ tmp) & (1 << 0);
-//                 matrixA[swap_col[2*i]/32+j*offset]   ^= (-((matrixA[swap_col[2*i+1]/32+j*offset] >> (31-swap_col[2*i+1]%32)) & 1) ^ matrixA[swap_col[2*i]/32+j*offset]) & (1 << (31-swap_col[2*i]%32));
-//                 matrixA[swap_col[2*i+1]/32+offset*j] ^= (-((tmp >> 0) & 1) ^ matrixA[swap_col[2*i+1]/32+offset*j]) & (1 << (31-swap_col[2*i+1]%32));
-//             }
-//         }
-//     }
-//     else
-//     {
-//     //    memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
-//         for(int i=0;i< nb_pcb;i++)
-//             memcpy(matrixH+i*offset,matrixA+column_arrangement[i]*offset,offset*sizeof(int));
-//
-//         //swap columns
-//         int tmp=0;
-//         for(int i=0;i<loop;i++)
-//         {
-//             for (int j=0;j<nb_pcb;j++)
-//             {
-//                 tmp ^= (-((matrixH[swap_col[2*i]/32+j*offset] >> (31-swap_col[2*i]%32)) & 1) ^ tmp) & (1 << 0);
-//                 matrixH[swap_col[2*i]/32+j*offset]   ^= (-((matrixH[swap_col[2*i+1]/32+j*offset] >> (31-swap_col[2*i+1]%32)) & 1) ^ matrixH[swap_col[2*i]/32+j*offset]) & (1 << (31-swap_col[2*i]%32));
-//                 matrixH[swap_col[2*i+1]/32+offset*j] ^= (-((tmp >> 0) & 1) ^ matrixH[swap_col[2*i+1]/32+offset*j]) & (1 << (31-swap_col[2*i+1]%32));
-//             }
-//         }
-//         memcpy(matrixA,matrixH,offset*nb_pcb*sizeof(int));
-//     }
-//
-//     free(column_arrangement);
-//     free(processed_column);
-//     free(zero_lines_nb);
-//     free(swap_col);
-//     free(matrixH);
-//     return 0;
-// }
+
+/**
+ * @brief Gauss Jordan elimination algorithm
+ * @param matrixA the matrix
+ * @param wc the number of '1's in a column
+ * @param wr the number of '1's in a row
+ * @param capacity the number of columns of the matrix
+ * @param matrix_rank the rank of the matrix
+ * @param encode specifies if function is called by the encoder or decoder
+ * @return 0: success | 1: fatal error (out of memory)
+*/
+int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, List<int> matrix_rank, bool encode)
+{
+    int loop=0;
+    int nb_pcb;
+    if(wr<4)
+        nb_pcb=(capacity/2).toInt();
+    else
+        nb_pcb=(capacity/wr*wc).toInt();
+
+    int offset=(capacity/32.0).ceil();
+
+    var matrixH=List<int>.filled(offset*nb_pcb, 0);// (int *)calloc(offset*nb_pcb,sizeof(int));
+    if(matrixH == null)
+    {
+        // reportError("Memory allocation for matrix in LDPC failed");
+        return 1;
+    }
+    matrixH.setRange(0, offset*nb_pcb, matrixA);// memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
+
+    var column_arrangement=List<int>.filled(capacity, 0);
+    if(column_arrangement == null)
+    {
+        // reportError("Memory allocation for matrix in LDPC failed");
+        // free(matrixH);
+        return 1;
+    }
+    var processed_column=List<bool>.filled(capacity, false);
+    if(processed_column == null)
+    {
+        // reportError("Memory allocation for matrix in LDPC failed");
+        // free(matrixH);
+        // free(column_arrangement);
+        return 1;
+    }
+    var zero_lines_nb=List<int>.filled(nb_pcb, 0);
+    if(zero_lines_nb == null)
+    {
+        // reportError("Memory allocation for matrix in LDPC failed");
+        // free(matrixH);
+        // free(column_arrangement);
+        // free(processed_column);
+        return 1;
+    }
+    var swap_col=List<int>.filled(2*capacity, 0);
+    if(swap_col == null)
+    {
+        // reportError("Memory allocation for matrix in LDPC failed");
+        // free(matrixH);
+        // free(column_arrangement);
+        // free(processed_column);
+        // free(zero_lines_nb);
+        return 1;
+    }
+
+    int zero_lines=0;
+
+    for (int i=0; i<nb_pcb; i++)
+    {
+        int pivot_column=capacity+1;
+        for (int j=0; j<capacity; j++)
+        {
+            if(((matrixH[((offset*32*i+j)/32).toInt()] >> (31-(offset*32*i+j)%32)) & 1) != 0)
+            {
+                pivot_column=j;
+                break;
+            }
+        }
+        if(pivot_column < capacity)
+        {
+            processed_column[pivot_column]=1;
+            column_arrangement[pivot_column]=i;
+            if (pivot_column>=nb_pcb)
+            {
+                swap_col[2*loop]=pivot_column;
+                loop++;
+            }
+
+            int off_index=(pivot_column/32).toInt();
+            int off_index1=pivot_column%32;
+            for (int j=0; j<nb_pcb; j++)
+            {
+                if ((((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) && j) != i)
+                {
+                    //subtract pivot row GF(2)
+                    for (int k=0;k<offset;k++)
+                        matrixH[k+offset*j] ^= matrixH[k+offset*i];
+                }
+            }
+        }
+        else //zero line
+        {
+            zero_lines_nb[zero_lines]=i;
+            zero_lines++;
+        }
+    }
+
+    matrix_rank=nb_pcb-zero_lines;
+    int loop2=0;
+    for(int i= matrix_rank;i<nb_pcb;i++)
+    {
+        if(column_arrangement[i] > 0)
+        {
+            for (int j=0;j < nb_pcb;j++)
+            {
+                if (processed_column[j] == 0)
+                {
+                    column_arrangement[j]=column_arrangement[i];
+                    column_arrangement[i]=0;
+                    processed_column[j]=true;
+                    processed_column[i]=false;
+                    swap_col[2*loop]=i;
+                    swap_col[2*loop+1]=j;
+                    column_arrangement[i]=j;
+                    loop++;
+                    loop2++;
+                    break;
+                }
+            }
+        }
+    }
+
+    int loop1=0;
+    for (int kl=0;kl< nb_pcb;kl++)
+    {
+        if(processed_column[kl] == 0 && loop1 < loop-loop2)
+        {
+            column_arrangement[kl]=column_arrangement[swap_col[2*loop1]];
+            processed_column[kl]=1;
+            swap_col[2*loop1+1]=kl;
+            loop1++;
+        }
+    }
+
+    loop1=0;
+    for (int kl=0;kl< nb_pcb;kl++)
+    {
+        if(processed_column[kl]==0)
+        {
+            column_arrangement[kl]=zero_lines_nb[loop1];
+            loop1++;
+        }
+    }
+    //rearrange matrixH if encoder and store it in matrixA
+    //rearrange matrixA if decoder
+    if(encode)
+    {
+        for(int i=0;i< nb_pcb;i++)
+            matrixA.setRange(i*offset, end, iterable); //memcpy(matrixA+i*offset,matrixH+column_arrangement[i]*offset,offset*sizeof(int));
+
+        //swap columns
+        int tmp=0;
+        for(int i=0;i<loop;i++)
+        {
+            for (int j=0;j<nb_pcb;j++)
+            {
+                tmp ^= (-((matrixA[(swap_col[2*i]/32+j*offset).toInt()] >> (31-swap_col[2*i]%32)) & 1) ^ tmp) & (1 << 0);
+                matrixA[(swap_col[2*i]/32+j*offset).toInt()]   ^= (-((matrixA[(swap_col[2*i+1]/32+j*offset).toInt()] >> (31-swap_col[2*i+1]%32)) & 1) ^ matrixA[(swap_col[2*i]/32+j*offset).toInt()]) & (1 << (31-swap_col[2*i]%32));
+                matrixA[(swap_col[2*i+1]/32+offset*j).toInt()] ^= (-((tmp >> 0) & 1) ^ matrixA[(swap_col[2*i+1]/32+offset*j).toInt()]) & (1 << (31-swap_col[2*i+1]%32));
+            }
+        }
+    }
+    else
+    {
+    //    memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
+        for(int i=0;i< nb_pcb;i++)
+             memcpy(matrixH+i*offset,matrixA+column_arrangement[i]*offset,offset*sizeof(int));
+
+        //swap columns
+        int tmp=0;
+        for(int i=0;i<loop;i++)
+        {
+            for (int j=0;j<nb_pcb;j++)
+            {
+                tmp ^= (-((matrixH[(swap_col[2*i]/32+j*offset).toInt()] >> (31-swap_col[2*i]%32)) & 1) ^ tmp) & (1 << 0);
+                matrixH[(swap_col[2*i]/32+j*offset).toInt()]   ^= (-((matrixH[(swap_col[2*i+1]/32+j*offset).toInt()] >> (31-swap_col[2*i+1]%32)) & 1) ^ matrixH[(swap_col[2*i]/32+j*offset).toInt()]) & (1 << (31-swap_col[2*i]%32));
+                matrixH[(swap_col[2*i+1]/32+offset*j).toInt()] ^= (-((tmp >> 0) & 1) ^ matrixH[(swap_col[2*i+1]/32+offset*j).toInt()]) & (1 << (31-swap_col[2*i+1]%32));
+            }
+        }
+        matrixA.setRange(0, offset*nb_pcb, matrixH); //memcpy(,,offset*nb_pcb*sizeof(int));
+    }
+
+    // free(column_arrangement);
+    // free(processed_column);
+    // free(zero_lines_nb);
+    // free(swap_col);
+    // free(matrixH);
+    return 0;
+}
 //
 /**
  * @brief Create the error correction matrix for the metadata
@@ -293,42 +293,42 @@ List<int> createMatrixA(int wc, int wr, int capacity)
  * @param capacity the number of columns of the matrix
  * @return the error correction matrix | null if failed
 */
-int createMetadataMatrixA(int wc, int capacity)
+List<int> createMetadataMatrixA(int wc, int capacity)
 {
     int nb_pcb=(capacity/2).toInt();
-    int offset=ceil(capacity/(jab_float)32);
+    int offset=(capacity/32.0).ceil();
     //create a matrix with '0' entries
-    int*matrixA=(int *)calloc(offset*nb_pcb,sizeof(int));
+    var matrixA = List<int>.filled(offset*nb_pcb, 0); //(int *)calloc(offset*nb_pcb,sizeof(int));
     if(matrixA == null)
     {
-        reportError("Memory allocation for matrix in LDPC failed");
+        // reportError("Memory allocation for matrix in LDPC failed");
         return null;
     }
-    int* permutation=(int *)calloc(capacity, sizeof(int));
+    var permutation = List<int>.filled(capacity, 0); //calloc(, sizeof(int));
     if(permutation == null)
     {
-        reportError("Memory allocation for matrix in LDPC failed");
-        free(matrixA);
+        // reportError("Memory allocation for matrix in LDPC failed");
+        // free(matrixA);
         return null;
     }
     for (int i=0;i<capacity;i++)
         permutation[i]=i;
     setSeed(LPDC_METADATA_SEED);
-    int nb_once=capacity*nb_pcb/(jab_float)wc+3;
-    nb_once=nb_once/nb_pcb;
+    int nb_once=(capacity*nb_pcb/wc+3.0).toInt();
+    nb_once=(nb_once/nb_pcb).toInt();
     //Fill matrix randomly
     for (int i=0;i<nb_pcb;i++)
     {
         for (int j=0; j< nb_once; j++)
         {
-            int pos = (int)( (jab_float)lcg64_temper() / (jab_float)UINT32_MAX * (capacity-j) );
-            matrixA[i*offset+permutation[pos]/32] |= 1 << (31-permutation[pos]%32);
+            int pos = ( lcg64_temper() / UINT32_MAX * (capacity-j) ).toInt();
+            matrixA[(i*offset+permutation[pos]/32).toInt()] |= 1 << (31-permutation[pos]%32);
             int  tmp = permutation[capacity - 1 -j];
             permutation[capacity - 1 -j] = permutation[pos];
             permutation[pos] = tmp;
         }
     }
-    free(permutation);
+    // free(permutation);
     return matrixA;
 }
 //
@@ -733,32 +733,32 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
         {
             matrix_rank=0;
             Pg_sub_block=Pg - decoding_iterations * Pg_sub_block;
-            Pn_sub_block=Pg_sub_block * (wr-wc) / wr;
-            int* matrixA1 = createMatrixA(wc, wr, Pg_sub_block);
+            Pn_sub_block=(Pg_sub_block * (wr-wc) / wr).toInt();
+            var matrixA1 = createMatrixA(wc, wr, Pg_sub_block);
             if(matrixA1 == null)
             {
-                reportError("LDPC matrix could not be created in decoder.");
+                // reportError("LDPC matrix could not be created in decoder.");
                 return 0;
             }
-            jab_boolean encode=0;
+            bool encode=false;
             if(GaussJordan(matrixA1, wc, wr, Pg_sub_block, &matrix_rank,encode))
             {
-                reportError("Gauss Jordan Elimination in LDPC encoder failed.");
-                free(matrixA1);
+                // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
+                // free(matrixA1);
                 return 0;
             }
             //ldpc decoding
             //first check syndrom
-            jab_boolean is_correct=1;
-            int offset=ceil(Pg_sub_block/(jab_float)32);
+            bool is_correct=true;
+            int offset=(Pg_sub_block/32.0).ceil();
             for (int i=0;i< matrix_rank; i++)
             {
                 int temp=0;
                 for (int j=0;j<Pg_sub_block;j++)
-                    temp ^= (((matrixA1[i*offset+j/32] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0; //
-                if (temp)
+                    temp ^= (((matrixA1[(i*offset+j/32).toInt()] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0; //
+                if (temp != 0)
                 {
-                    is_correct=(jab_boolean) 0;//message not correct
+                    is_correct=false;//message not correct
                     break;
                 }
             }
@@ -769,48 +769,48 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
                 int success=decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter, &is_correct,start_pos);
                 if(success == 0)
                 {
-                    reportError("LDPC decoder error.");
-                    free(matrixA1);
+                    // reportError("LDPC decoder error.");
+                    // free(matrixA1);
                     return 0;
                 }
             }
             if(is_correct==0)
             {
-                jab_boolean is_correct=1;
+                bool is_correct=true;
                 for (int i=0;i< matrix_rank; i++)
                 {
                     int temp=0;
                     for (int j=0;j<Pg_sub_block;j++)
-                        temp ^= (((matrixA1[i*offset+j/32] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-                    if (temp)
+                        temp ^= (((matrixA1[(i*offset+j/32).toInt()] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
+                    if (temp != 0)
                     {
-                        is_correct=(jab_boolean) 0;//message not correct
+                        is_correct=false;//message not correct
                         break;
                     }
                 }
                 if(is_correct==0)
                 {
-                    reportError("Too many errors in message. LDPC decoding failed.");
-                    free(matrixA1);
+                    // reportError("Too many errors in message. LDPC decoding failed.");
+                    // free(matrixA1);
                     return 0;
                 }
             }
-            free(matrixA1);
+            // free(matrixA1);
         }
         else
         {
             //ldpc decoding
             //first check syndrom
-            jab_boolean is_correct=1;
-            int offset=ceil(Pg_sub_block/(jab_float)32);
+            bool is_correct=true;
+            int offset=(Pg_sub_block/32.0).ceil();
             for (int i=0;i< matrix_rank; i++)
             {
                 int temp=0;
                 for (int j=0;j<Pg_sub_block;j++)
-                    temp ^= (((matrixA[i*offset+j/32] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-                if (temp)
+                    temp ^= (((matrixA[(i*offset+j/32).toInt()] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
+                if (temp != 0)
                 {
-                    is_correct=(jab_boolean) 0;//message not correct
+                    is_correct=false;//message not correct
                     break;
                 }
             }
@@ -821,8 +821,8 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
                 int success=decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, &is_correct, start_pos);
                 if(success == 0)
                 {
-                    reportError("LDPC decoder error.");
-                    free(matrixA);
+                    // reportError("LDPC decoder error.");
+                    // free(matrixA);
                     return 0;
                 }
                 is_correct=1;
@@ -830,17 +830,17 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
                 {
                     int temp=0;
                     for (int j=0;j<Pg_sub_block;j++)
-                        temp ^= (((matrixA[i*offset+j/32] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-                    if (temp)
+                        temp ^= (((matrixA[(i*offset+j/32).toInt()] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
+                    if (temp != 0)
                     {
-                        is_correct=(jab_boolean)0;//message not correct
+                        is_correct=false;//message not correct
                         break;
                     }
                 }
                 if(is_correct==0)
                 {
-                    reportError("Too many errors in message. LDPC decoding failed.");
-                    free(matrixA);
+                    // reportError("Too many errors in message. LDPC decoding failed.");
+                    // free(matrixA);
                     return 0;
                 }
             }
@@ -852,7 +852,7 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
             loop++;
         }
     }
-    free(matrixA);
+    // free(matrixA);
     return decoded_data_len;
 }
 
