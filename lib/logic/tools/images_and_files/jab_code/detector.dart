@@ -26,11 +26,11 @@
 //  * @param module_size the module size
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean checkPatternCross(jab_int32* state_count, jab_float* module_size)
+// jab_boolean checkPatternCross(int* state_count, jab_float* module_size)
 // {
-//     jab_int32 layer_number = 3;
-//     jab_int32 inside_layer_size = 0;
-//     for(jab_int32 i=1; i<layer_number+1; i++)
+//     int layer_number = 3;
+//     int inside_layer_size = 0;
+//     for(int i=1; i<layer_number+1; i++)
 //     {
 //         if(state_count[i] == 0)
 //             return JAB_FAILURE;
@@ -101,15 +101,15 @@
 //  * @param skip the number of pixels to be skipped in the next scan
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean seekPattern(jab_bitmap* ch, jab_int32 row, jab_int32 col, jab_int32* start, jab_int32* end, jab_float* center, jab_float* module_size, jab_int32* skip)
+// jab_boolean seekPattern(jab_bitmap* ch, int row, int col, int* start, int* end, jab_float* center, jab_float* module_size, int* skip)
 // {
-//     jab_int32 state_number = 5;
-//     jab_int32 cur_state = 0;
-//     jab_int32 state_count[5] = {0};
+//     int state_number = 5;
+//     int cur_state = 0;
+//     int state_count[5] = {0};
 //
-//     jab_int32 min = *start;
-//     jab_int32 max = *end;
-//     for(jab_int32 p=min; p<max; p++)
+//     int min = *start;
+//     int max = *end;
+//     for(int p=min; p<max; p++)
 //     {
 //         //first pixel in a scanline
 //         if(p == min)
@@ -186,7 +186,7 @@
 //                     {
 //                         *end = p+1;
 //                         if(skip)  *skip = state_count[0];
-// 						jab_int32 end_pos;
+// 						int end_pos;
 // 						if(p == (max - 1) && curr == prev) end_pos = p + 1;
 // 						else end_pos = p;
 // 						*center = (jab_float)(end_pos - state_count[4] - state_count[3]) - (jab_float)state_count[2] / 2.0f;
@@ -195,7 +195,7 @@
 //                     else //check failed, update state_count
 //                     {
 //                         *start += state_count[0];
-//                         for(jab_int32 k=0; k<state_number-1; k++)
+//                         for(int k=0; k<state_number-1; k++)
 //                         {
 //                             state_count[k] = state_count[k+1];
 //                         }
@@ -220,15 +220,15 @@
 //  * @param skip the number of pixels to be skipped in the next scan
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean seekPatternHorizontal(jab_byte* row, jab_int32* startx, jab_int32* endx, jab_float* centerx, jab_float* module_size, jab_int32* skip)
+// jab_boolean seekPatternHorizontal(jab_byte* row, int* startx, int* endx, jab_float* centerx, jab_float* module_size, int* skip)
 // {
-//     jab_int32 state_number = 5;
-//     jab_int32 cur_state = 0;
-//     jab_int32 state_count[5] = {0};
+//     int state_number = 5;
+//     int cur_state = 0;
+//     int state_count[5] = {0};
 //
-//     jab_int32 min = *startx;
-//     jab_int32 max = *endx;
-//     for(jab_int32 j=min; j<max; j++)
+//     int min = *startx;
+//     int max = *endx;
+//     for(int j=min; j<max; j++)
 //     {
 //         //first pixel in a scanline
 //         if(j == min)
@@ -290,7 +290,7 @@
 //                     {
 //                         *endx = j+1;
 //                         if(skip)  *skip = state_count[0];
-// 						jab_int32 end;
+// 						int end;
 // 						if(j == (max - 1) && row[j] == row[j-1]) end = j + 1;
 // 						else end = j;
 // 						*centerx = (jab_float)(end - state_count[4] - state_count[3]) - (jab_float)state_count[2] / 2.0f;
@@ -299,7 +299,7 @@
 //                     else //check failed, update state_count
 //                     {
 //                         *startx += state_count[0];
-//                         for(jab_int32 k=0; k<state_number-1; k++)
+//                         for(int k=0; k<state_number-1; k++)
 //                         {
 //                             state_count[k] = state_count[k+1];
 //                         }
@@ -326,12 +326,12 @@
 //  * @param both_dir scan both diagonal scanlines
 //  * @return the number of confirmed diagonal scanlines
 // */
-// jab_int32 crossCheckPatternDiagonal(jab_bitmap* image, jab_int32 type, jab_float module_size_max, jab_float* centerx, jab_float* centery, jab_float* module_size, jab_int32* dir, jab_boolean both_dir)
+// int crossCheckPatternDiagonal(jab_bitmap* image, int type, jab_float module_size_max, jab_float* centerx, jab_float* centery, jab_float* module_size, int* dir, jab_boolean both_dir)
 // {
-//     jab_int32 state_number = 5;
-//     jab_int32 state_middle = (state_number - 1) / 2;
+//     int state_number = 5;
+//     int state_middle = (state_number - 1) / 2;
 //
-//     jab_int32 offset_x, offset_y;
+//     int offset_x, offset_y;
 //     jab_boolean fix_dir = 0;
 //     //if the direction is given, ONLY check the given direction
 //     if((*dir) != 0)
@@ -368,19 +368,19 @@
 // 		}
 //     }
 //
-//     jab_int32 confirmed = 0;
+//     int confirmed = 0;
 //     jab_boolean flag = 0;
-//     jab_int32 try_count = 0;
+//     int try_count = 0;
 //     jab_float tmp_module_size = 0.0f;
 //     do
 //     {
 // 		flag = 0;
 // 		try_count++;
 //
-// 		jab_int32 i, j, state_index;
-//         jab_int32 state_count[5] = {0};
-//         jab_int32 startx = (jab_int32)(*centerx);
-//         jab_int32 starty = (jab_int32)(*centery);
+// 		int i, j, state_index;
+//         int state_count[5] = {0};
+//         int startx = (int)(*centerx);
+//         int starty = (int)(*centery);
 //
 //         state_count[state_middle]++;
 //         for(j=1, state_index=0; (starty+j*offset_y)>=0 && (starty+j*offset_y)<image->height && (startx+j*offset_x)>=0 && (startx+j*offset_x)<image->width && state_index<=state_middle; j++)
@@ -499,15 +499,15 @@
 //  * @param module_size the module size in vertical direction
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckPatternVertical(jab_bitmap* image, jab_int32 module_size_max, jab_float centerx, jab_float* centery, jab_float* module_size)
+// jab_boolean crossCheckPatternVertical(jab_bitmap* image, int module_size_max, jab_float centerx, jab_float* centery, jab_float* module_size)
 // {
-// 	jab_int32 state_number = 5;
-// 	jab_int32 state_middle = (state_number - 1) / 2;
-//     jab_int32 state_count[5] = {0};
+// 	int state_number = 5;
+// 	int state_middle = (state_number - 1) / 2;
+//     int state_count[5] = {0};
 //
-//     jab_int32 centerx_int = (jab_int32)centerx;
-// 	jab_int32 centery_int = (jab_int32)(*centery);
-//     jab_int32 i, state_index;
+//     int centerx_int = (int)centerx;
+// 	int centery_int = (int)(*centery);
+//     int i, state_index;
 //
 //     state_count[1]++;
 //     for(i=1, state_index=0; i<=centery_int && state_index<=state_middle; i++)
@@ -584,13 +584,13 @@
 // */
 // jab_boolean crossCheckPatternHorizontal(jab_bitmap* image, jab_float module_size_max, jab_float* centerx, jab_float centery, jab_float* module_size)
 // {
-//     jab_int32 state_number = 5;
-//     jab_int32 state_middle = (state_number - 1) / 2;
-//     jab_int32 state_count[5] = {0};
+//     int state_number = 5;
+//     int state_middle = (state_number - 1) / 2;
+//     int state_count[5] = {0};
 //
-//     jab_int32 startx = (jab_int32)(*centerx);
-//     jab_int32 offset = (jab_int32)centery * image->width;
-//     jab_int32 i, state_index;
+//     int startx = (int)(*centerx);
+//     int offset = (int)centery * image->width;
+//     int i, state_index;
 //
 //     state_count[state_middle]++;
 //     for(i=1, state_index=0; i<=startx && state_index<=state_middle; i++)
@@ -667,16 +667,16 @@
 //  * @param dir the check direction
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckColor(jab_bitmap* image, jab_int32 color, jab_int32 module_size, jab_int32 module_number, jab_int32 centerx, jab_int32 centery, jab_int32 dir)
+// jab_boolean crossCheckColor(jab_bitmap* image, int color, int module_size, int module_number, int centerx, int centery, int dir)
 // {
-// 	jab_int32 tolerance = 3;
+// 	int tolerance = 3;
 // 	//horizontal
 // 	if(dir == 0)
 // 	{
-// 		jab_int32 length = module_size * (module_number - 1); //module number minus one for better tolerance
-// 		jab_int32 startx = (centerx - length/2) < 0 ? 0 : (centerx - length/2);
-// 		jab_int32 unmatch = 0;
-// 		for(jab_int32 j=startx; j<(startx+length) && j<image->width; j++)
+// 		int length = module_size * (module_number - 1); //module number minus one for better tolerance
+// 		int startx = (centerx - length/2) < 0 ? 0 : (centerx - length/2);
+// 		int unmatch = 0;
+// 		for(int j=startx; j<(startx+length) && j<image->width; j++)
 // 		{
 // 			if(image->pixel[centery * image->width + j] != color) unmatch++;
 // 			else
@@ -690,10 +690,10 @@
 // 	//vertical
 // 	else if(dir == 1)
 // 	{
-// 		jab_int32 length = module_size * (module_number - 1);
-// 		jab_int32 starty = (centery - length/2) < 0 ? 0 : (centery - length/2);
-// 		jab_int32 unmatch = 0;
-// 		for(jab_int32 i=starty; i<(starty+length) && i<image->height; i++)
+// 		int length = module_size * (module_number - 1);
+// 		int starty = (centery - length/2) < 0 ? 0 : (centery - length/2);
+// 		int unmatch = 0;
+// 		for(int i=starty; i<(starty+length) && i<image->height; i++)
 // 		{
 // 			if(image->pixel[image->width * i + centerx] != color) unmatch++;
 // 			else
@@ -707,14 +707,14 @@
 // 	//diagonal
 // 	else if(dir == 2)
 // 	{
-// 		jab_int32 offset = module_size * (module_number / (2.0f * 1.41421f)); // e.g. for FP, module_size * (5/(2*sqrt(2));
-// 		jab_int32 length = offset * 2;
+// 		int offset = module_size * (module_number / (2.0f * 1.41421f)); // e.g. for FP, module_size * (5/(2*sqrt(2));
+// 		int length = offset * 2;
 //
 // 		//one direction
-// 		jab_int32 unmatch = 0;
-// 		jab_int32 startx = (centerx - offset) < 0 ? 0 : (centerx - offset);
-// 		jab_int32 starty = (centery - offset) < 0 ? 0 : (centery - offset);
-// 		for(jab_int32 i=0; i<length && (starty+i)<image->height; i++)
+// 		int unmatch = 0;
+// 		int startx = (centerx - offset) < 0 ? 0 : (centerx - offset);
+// 		int starty = (centery - offset) < 0 ? 0 : (centery - offset);
+// 		for(int i=0; i<length && (starty+i)<image->height; i++)
 // 		{
 // 			if(image->pixel[image->width * (starty+i) + (startx+i)] != color) unmatch++;
 // 			else
@@ -729,7 +729,7 @@
 // 		unmatch = 0;
 // 		startx = (centerx - offset) < 0 ? 0 : (centerx - offset);
 // 		starty = (centery + offset) > (image->height - 1) ? (image->height - 1) : (centery + offset);
-// 		for(jab_int32 i=0; i<length && (starty-i)>=0; i++)
+// 		for(int i=0; i<length && (starty-i)>=0; i++)
 // 		{
 // 			if(image->pixel[image->width * (starty-i) + (startx+i)] != color) unmatch++;
 // 			else
@@ -760,7 +760,7 @@
 //  * @param dcc the diagonal crosscheck result
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckPatternCh(jab_bitmap* ch, jab_int32 type, jab_int32 h_v, jab_float module_size_max, jab_float* module_size, jab_float* centerx, jab_float* centery, jab_int32* dir, jab_int32* dcc)
+// jab_boolean crossCheckPatternCh(jab_bitmap* ch, int type, int h_v, jab_float module_size_max, jab_float* module_size, jab_float* centerx, jab_float* centery, int* dir, int* dcc)
 // {
 // 	jab_float module_size_v = 0.0f;
 // 	jab_float module_size_h = 0.0f;
@@ -822,7 +822,7 @@
 //  * @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckPattern(jab_bitmap* ch[], jab_finder_pattern* fp, jab_int32 h_v)
+// jab_boolean crossCheckPattern(jab_bitmap* ch[], jab_finder_pattern* fp, int h_v)
 // {
 //     jab_float module_size_max = fp->module_size * 2.0f;
 //
@@ -830,8 +830,8 @@
 // 	jab_float module_size_g;
 //     jab_float centerx_g = fp->center.x;
 //     jab_float centery_g = fp->center.y;
-//     jab_int32 dir_g = 0;
-//     jab_int32 dcc_g = 0;
+//     int dir_g = 0;
+//     int dcc_g = 0;
 //     if(!crossCheckPatternCh(ch[1], fp->type, h_v, module_size_max, &module_size_g, &centerx_g, &centery_g, &dir_g, &dcc_g))
 // 		return JAB_FAILURE;
 //
@@ -842,8 +842,8 @@
 // 		jab_float module_size_r;
 // 		jab_float centerx_r = fp->center.x;
 // 		jab_float centery_r = fp->center.y;
-// 		jab_int32 dir_r = 0;
-// 		jab_int32 dcc_r = 0;
+// 		int dir_r = 0;
+// 		int dcc_r = 0;
 // 		if(!crossCheckPatternCh(ch[0], fp->type, h_v, module_size_max, &module_size_r, &centerx_r, &centery_r, &dir_r, &dcc_r))
 // 			return JAB_FAILURE;
 //
@@ -855,12 +855,12 @@
 // 		fp->center.y = (centery_r + centery_g) / 2.0f;
 //
 // 		//check b channel
-// 		jab_int32 core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (jab_int32)fp->module_size, 5, (jab_int32)fp->center.x, (jab_int32)fp->center.y, 0))
+// 		int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 0))
 // 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (jab_int32)fp->module_size, 5, (jab_int32)fp->center.x, (jab_int32)fp->center.y, 1))
+// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 1))
 // 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (jab_int32)fp->module_size, 5, (jab_int32)fp->center.x, (jab_int32)fp->center.y, 2))
+// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 2))
 // 			return JAB_FAILURE;
 //
 // 		if(dcc_r == 2 || dcc_g == 2)
@@ -876,8 +876,8 @@
 // 		jab_float module_size_b;
 // 		jab_float centerx_b = fp->center.x;
 // 		jab_float centery_b = fp->center.y;
-// 		jab_int32 dir_b = 0;
-// 		jab_int32 dcc_b = 0;
+// 		int dir_b = 0;
+// 		int dcc_b = 0;
 // 		if(!crossCheckPatternCh(ch[2], fp->type, h_v, module_size_max, &module_size_b, &centerx_b, &centery_b, &dir_b, &dcc_b))
 // 			return JAB_FAILURE;
 //
@@ -889,12 +889,12 @@
 // 		fp->center.y = (centery_g + centery_b) / 2.0f;
 //
 // 		//check r channel
-// 		jab_int32 core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (jab_int32)fp->module_size, 5, (jab_int32)fp->center.x, (jab_int32)fp->center.y, 0))
+// 		int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 0))
 // 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (jab_int32)fp->module_size, 5, (jab_int32)fp->center.x, (jab_int32)fp->center.y, 1))
+// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 1))
 // 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (jab_int32)fp->module_size, 5, (jab_int32)fp->center.x, (jab_int32)fp->center.y, 2))
+// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 2))
 // 			return JAB_FAILURE;
 //
 // 		if(dcc_g == 2 || dcc_b == 2)
@@ -913,10 +913,10 @@
 //  * @param counter the number of alignment patterns in the list
 //  * @return  -1 if added as a new alignment pattern | the alignment pattern index if combined with an existing pattern
 // */
-// jab_int32 saveAlignmentPattern(jab_alignment_pattern* ap, jab_alignment_pattern* aps, jab_int32* counter)
+// int saveAlignmentPattern(jab_alignment_pattern* ap, jab_alignment_pattern* aps, int* counter)
 // {
 //     //combine the alignment patterns at the same position with the same size
-//     for(jab_int32 i=0; i<(*counter); i++)
+//     for(int i=0; i<(*counter); i++)
 //     {
 //         if(aps[i].found_count > 0)
 //         {
@@ -945,10 +945,10 @@
 //  * @param counter the number of finder patterns in the list
 //  * @param fp_type_count the number of finder pattern types in the list
 // */
-// void saveFinderPattern(jab_finder_pattern* fp, jab_finder_pattern* fps, jab_int32* counter, jab_int32* fp_type_count)
+// void saveFinderPattern(jab_finder_pattern* fp, jab_finder_pattern* fps, int* counter, int* fp_type_count)
 // {
 //     //combine the finder patterns at the same position with the same size
-//     for(jab_int32 i=0; i<(*counter); i++)
+//     for(int i=0; i<(*counter); i++)
 //     {
 //         if(fps[i].found_count > 0)
 //         {
@@ -972,20 +972,20 @@
 // }
 //
 // #if TEST_MODE
-// void drawFoundFinderPatterns(jab_finder_pattern* fps, jab_int32 number, jab_int32 color)
+// void drawFoundFinderPatterns(jab_finder_pattern* fps, int number, int color)
 // {
-//     jab_int32 bytes_per_pixel = test_mode_bitmap->bits_per_pixel / 8;
-//     jab_int32 bytes_per_row = test_mode_bitmap->width * bytes_per_pixel;
-//     for(jab_int32 k = 0; k<number; k++)
+//     int bytes_per_pixel = test_mode_bitmap->bits_per_pixel / 8;
+//     int bytes_per_row = test_mode_bitmap->width * bytes_per_pixel;
+//     for(int k = 0; k<number; k++)
 //     {
 //         if(fps[k].found_count > 0)
 //         {
-//             jab_int32 centerx = (jab_int32)(fps[k].center.x + 0.5f);
-//             jab_int32 centery = (jab_int32)(fps[k].center.y + 0.5f);
+//             int centerx = (int)(fps[k].center.x + 0.5f);
+//             int centery = (int)(fps[k].center.y + 0.5f);
 //
-//             jab_int32 starty = (jab_int32)(fps[k].center.y - fps[k].module_size/2 + 0.5f);
-//             jab_int32 endy = (jab_int32)(fps[k].center.y + fps[k].module_size/2 + 1 + 0.5f);
-//             for(jab_int32 i=starty; i<endy; i++)
+//             int starty = (int)(fps[k].center.y - fps[k].module_size/2 + 0.5f);
+//             int endy = (int)(fps[k].center.y + fps[k].module_size/2 + 1 + 0.5f);
+//             for(int i=starty; i<endy; i++)
 //             {
 // 				if(i*bytes_per_row + centerx*bytes_per_pixel + 2 < test_mode_bitmap->width * test_mode_bitmap->height * bytes_per_pixel)
 // 				{
@@ -1000,9 +1000,9 @@
 // 				}
 //             }
 //
-//             jab_int32 startx = (jab_int32)(fps[k].center.x - fps[k].module_size/2 + 0.5f);
-//             jab_int32 endx = (jab_int32)(fps[k].center.x + fps[k].module_size/2 + 1 + 0.5f);
-//             for(jab_int32 i=startx; i<endx; i++)
+//             int startx = (int)(fps[k].center.x - fps[k].module_size/2 + 0.5f);
+//             int endx = (int)(fps[k].center.x + fps[k].module_size/2 + 1 + 0.5f);
+//             for(int i=startx; i<endx; i++)
 //             {
 // 				if(centery*bytes_per_row + i*bytes_per_pixel + 2 < test_mode_bitmap->width * test_mode_bitmap->height * bytes_per_pixel)
 // 				{
@@ -1028,11 +1028,11 @@
 //  * @param mean the average module size
 //  * @param threshold the tolerance threshold
 // */
-// void removeBadPatterns(jab_finder_pattern* fps, jab_int32 fp_count, jab_float mean, jab_float threshold)
+// void removeBadPatterns(jab_finder_pattern* fps, int fp_count, jab_float mean, jab_float threshold)
 // {
-//     jab_int32 remove_count = 0;
-//     jab_int32 backup[fp_count];
-//     for(jab_int32 i=0; i<fp_count; i++)
+//     int remove_count = 0;
+//     int backup[fp_count];
+//     for(int i=0; i<fp_count; i++)
 //     {
 //         if( fps[i].found_count < 2 || fabs(fps[i].module_size - mean) > threshold )
 //         {
@@ -1045,8 +1045,8 @@
 //     if(remove_count == fp_count)
 //     {
 //         jab_float min = (threshold + mean)* 100;
-//         jab_int32 min_index = 0;
-//         for(jab_int32 i=0; i<fp_count; i++)
+//         int min_index = 0;
+//         for(int i=0; i<fp_count; i++)
 //         {
 //             jab_float diff = (jab_float)fabs(fps[i].module_size - mean);
 //             if(diff < min)
@@ -1065,11 +1065,11 @@
 //  * @param fps the finder pattern list
 //  * @param fp_count the number of finder patterns in the list
 // */
-// jab_finder_pattern getBestPattern(jab_finder_pattern* fps, jab_int32 fp_count)
+// jab_finder_pattern getBestPattern(jab_finder_pattern* fps, int fp_count)
 // {
-//     jab_int32 counter = 0;
+//     int counter = 0;
 //     jab_float total_module_size = 0;
-//     for(jab_int32 i=0; i<fp_count; i++)
+//     for(int i=0; i<fp_count; i++)
 //     {
 //         if(fps[i].found_count > 0)
 //         {
@@ -1079,10 +1079,10 @@
 //     }
 //     jab_float mean = total_module_size / (jab_float)counter;
 //
-//     jab_int32 max_found_count = 0;
+//     int max_found_count = 0;
 //     jab_float min_diff = 100;
-//     jab_int32 max_found_count_index = 0;
-//     for(jab_int32 i=0; i<fp_count; i++)
+//     int max_found_count_index = 0;
+//     for(int i=0; i<fp_count; i++)
 //     {
 //         if(fps[i].found_count > 0)
 //         {
@@ -1114,16 +1114,16 @@
 //  * @param fp_type_count the number of each finder pattern type
 //  * @return the number of missing finder pattern types
 // */
-// jab_int32 selectBestPatterns(jab_finder_pattern* fps, jab_int32 fp_count, jab_int32* fp_type_count)
+// int selectBestPatterns(jab_finder_pattern* fps, int fp_count, int* fp_type_count)
 // {
 //     //classify finder patterns into four types
 //     jab_finder_pattern fps0[fp_type_count[FP0]];
 //     jab_finder_pattern fps1[fp_type_count[FP1]];
 //     jab_finder_pattern fps2[fp_type_count[FP2]];
 //     jab_finder_pattern fps3[fp_type_count[FP3]];
-//     jab_int32 counter0 = 0, counter1 = 0, counter2 = 0, counter3 = 0;
+//     int counter0 = 0, counter1 = 0, counter2 = 0, counter3 = 0;
 //
-//     for(jab_int32 i=0; i<fp_count; i++)
+//     for(int i=0; i<fp_count; i++)
 //     {
 //         //abandon the finder patterns which are founds less than 3 times,
 //         //which means a module shall not be smaller than 3 pixels.
@@ -1175,15 +1175,15 @@
 // 		memset(&fps[3], 0, sizeof(jab_finder_pattern));
 //
 //     //if the found-count of a FP is smaller than the half of the max-found-count, abandon it
-//     jab_int32 max_found_count = 0;
-//     for(jab_int32 i=0; i<4; i++)
+//     int max_found_count = 0;
+//     for(int i=0; i<4; i++)
 //     {
 //         if(fps[i].found_count > max_found_count)
 //         {
 //             max_found_count = fps[i].found_count;
 //         }
 //     }
-//     for(jab_int32 i=0; i<4; i++)
+//     for(int i=0; i<4; i++)
 //     {
 //         if(fps[i].found_count > 0)
 //         {
@@ -1193,8 +1193,8 @@
 //     }
 //
 // 	//check how many finder patterns are not found
-// 	jab_int32 missing_fp_count = 0;
-// 	for(jab_int32 i=0; i<4; i++)
+// 	int missing_fp_count = 0;
+// 	for(int i=0; i<4; i++)
 // 	{
 // 		if(fps[i].found_count == 0)
 // 			missing_fp_count++;
@@ -1210,19 +1210,19 @@
 //  * @param fp_type_count the number of found finder patterns for each type
 //  * @param total_finder_patterns the number of totally found finder patterns
 // */
-// void scanPatternVertical(jab_bitmap* ch[], jab_int32 min_module_size, jab_finder_pattern* fps, jab_int32* fp_type_count, jab_int32* total_finder_patterns)
+// void scanPatternVertical(jab_bitmap* ch[], int min_module_size, jab_finder_pattern* fps, int* fp_type_count, int* total_finder_patterns)
 // {
 //     jab_boolean done = 0;
 //
-//     for(jab_int32 j=0; j<ch[0]->width && done == 0; j+=min_module_size)
+//     for(int j=0; j<ch[0]->width && done == 0; j+=min_module_size)
 //     {
-//         jab_int32 starty = 0;
-//         jab_int32 endy = ch[0]->height;
-//         jab_int32 skip = 0;
+//         int starty = 0;
+//         int endy = ch[0]->height;
+//         int skip = 0;
 //
 //         do
 //         {
-//         	jab_int32 type_r, type_g, type_b;
+//         	int type_r, type_g, type_b;
 // 			jab_float centery_r, centery_g, centery_b;
 // 			jab_float module_size_r, module_size_g, module_size_b;
 // 			jab_boolean finder_pattern1_found = JAB_FAILURE;
@@ -1233,18 +1233,18 @@
 //             //green channel
 //             if(seekPattern(ch[1], -1, j, &starty, &endy, &centery_g, &module_size_g, &skip))
 //             {
-//                 type_g = ch[1]->pixel[(jab_int32)(centery_g)*ch[0]->width + j] > 0 ? 255 : 0;
+//                 type_g = ch[1]->pixel[(int)(centery_g)*ch[0]->width + j] > 0 ? 255 : 0;
 //
 //                 centery_r = centery_g;
 //                 centery_b = centery_g;
 //                 //check blue channel for Finder Pattern UL and LL
 //                 if(crossCheckPatternVertical(ch[2], module_size_g*2, (jab_float)j, &centery_b, &module_size_b))
 //                 {
-//                     type_b = ch[2]->pixel[(jab_int32)(centery_b)*ch[2]->width + j] > 0 ? 255 : 0;
+//                     type_b = ch[2]->pixel[(int)(centery_b)*ch[2]->width + j] > 0 ? 255 : 0;
 //                     //check red channel
 //                     module_size_r = module_size_g;
-//                     jab_int32 core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-//                     if(crossCheckColor(ch[0], core_color_in_red_channel, module_size_r, 5, j, (jab_int32)centery_r, 1))
+//                     int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+//                     if(crossCheckColor(ch[0], core_color_in_red_channel, module_size_r, 5, j, (int)centery_r, 1))
 //                     {
 //                     	type_r = 0;
 //                     	finder_pattern1_found = JAB_SUCCESS;
@@ -1253,11 +1253,11 @@
 //                 //check red channel for Finder Pattern UR and LR
 //                 else if(crossCheckPatternVertical(ch[0], module_size_g*2, (jab_float)j, &centery_r, &module_size_r))
 // 				{
-// 					type_r = ch[0]->pixel[(jab_int32)(centery_r)*ch[0]->width + j] > 0 ? 255 : 0;
+// 					type_r = ch[0]->pixel[(int)(centery_r)*ch[0]->width + j] > 0 ? 255 : 0;
 // 					//check blue channel
 // 					module_size_b = module_size_g;
-// 					jab_int32 core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-//                     if(crossCheckColor(ch[2], core_color_in_blue_channel, module_size_b, 5, j, (jab_int32)centery_b, 1))
+// 					int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+//                     if(crossCheckColor(ch[2], core_color_in_blue_channel, module_size_b, 5, j, (int)centery_b, 1))
 //                     {
 //                     	type_b = 0;
 //                     	finder_pattern2_found = JAB_SUCCESS;
@@ -1335,19 +1335,19 @@
 //  * @param fps the finder patterns
 //  * @param miss_fp_index the index of the missing finder pattern
 // */
-// void seekMissingFinderPattern(jab_bitmap* bitmap, jab_finder_pattern* fps, jab_int32 miss_fp_index)
+// void seekMissingFinderPattern(jab_bitmap* bitmap, jab_finder_pattern* fps, int miss_fp_index)
 // {
 // 	//determine the search area
 // 	jab_float radius = fps[miss_fp_index].module_size * 5;	//search radius
-// 	jab_int32 start_x = (fps[miss_fp_index].center.x - radius) >= 0 ? (fps[miss_fp_index].center.x - radius) : 0;
-// 	jab_int32 start_y = (fps[miss_fp_index].center.y - radius) >= 0 ? (fps[miss_fp_index].center.y - radius) : 0;
-// 	jab_int32 end_x	  = (fps[miss_fp_index].center.x + radius) <= (bitmap->width - 1) ? (fps[miss_fp_index].center.x + radius) : (bitmap->width - 1);
-// 	jab_int32 end_y   = (fps[miss_fp_index].center.y + radius) <= (bitmap->height- 1) ? (fps[miss_fp_index].center.y + radius) : (bitmap->height- 1);
-// 	jab_int32 area_width = end_x - start_x;
-// 	jab_int32 area_height= end_y - start_y;
+// 	int start_x = (fps[miss_fp_index].center.x - radius) >= 0 ? (fps[miss_fp_index].center.x - radius) : 0;
+// 	int start_y = (fps[miss_fp_index].center.y - radius) >= 0 ? (fps[miss_fp_index].center.y - radius) : 0;
+// 	int end_x	  = (fps[miss_fp_index].center.x + radius) <= (bitmap->width - 1) ? (fps[miss_fp_index].center.x + radius) : (bitmap->width - 1);
+// 	int end_y   = (fps[miss_fp_index].center.y + radius) <= (bitmap->height- 1) ? (fps[miss_fp_index].center.y + radius) : (bitmap->height- 1);
+// 	int area_width = end_x - start_x;
+// 	int area_height= end_y - start_y;
 //
 // 	jab_bitmap* rgb[3];
-// 	for(jab_int32 i=0; i<3; i++)
+// 	for(int i=0; i<3; i++)
 // 	{
 // 		rgb[i] = (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + area_height*area_width*sizeof(jab_byte));
 // 		if(rgb[i] == NULL)
@@ -1363,15 +1363,15 @@
 // 	}
 //
 // 	//calculate average pixel value
-// 	jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
-//     jab_int32 bytes_per_row = bitmap->width * bytes_per_pixel;
+// 	int bytes_per_pixel = bitmap->bits_per_pixel / 8;
+//     int bytes_per_row = bitmap->width * bytes_per_pixel;
 // 	jab_float pixel_sum[3] = {0, 0, 0};
 // 	jab_float pixel_ave[3];
-// 	for(jab_int32 i=start_y; i<end_y; i++)
+// 	for(int i=start_y; i<end_y; i++)
 // 	{
-// 		for(jab_int32 j=start_x; j<end_x; j++)
+// 		for(int j=start_x; j<end_x; j++)
 // 		{
-// 			jab_int32 offset = i * bytes_per_row + j * bytes_per_pixel;
+// 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 // 			pixel_sum[0] += bitmap->pixel[offset + 0];
 // 			pixel_sum[1] += bitmap->pixel[offset + 1];
 // 			pixel_sum[2] += bitmap->pixel[offset + 2];
@@ -1382,11 +1382,11 @@
 // 	pixel_ave[2] = pixel_sum[2] / (jab_float)(area_width * area_height);
 //
 // 	//quantize the pixels inside the search area to black, cyan and yellow
-// 	for(jab_int32 i=start_y, y=0; i<end_y; i++, y++)
+// 	for(int i=start_y, y=0; i<end_y; i++, y++)
 // 	{
-// 		for(jab_int32 j=start_x, x=0; j<end_x; j++, x++)
+// 		for(int j=start_x, x=0; j<end_x; j++, x++)
 // 		{
-// 			jab_int32 offset = i * bytes_per_row + j * bytes_per_pixel;
+// 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 // 			//check black pixel
 // 			if(bitmap->pixel[offset + 0] < pixel_ave[0] && bitmap->pixel[offset + 1] < pixel_ave[1] && bitmap->pixel[offset + 2] < pixel_ave[2])
 // 			{
@@ -1410,7 +1410,7 @@
 // 	}
 //
 // 	//set the core type of the expected finder pattern
-// 	jab_int32 exp_type_r=0, exp_type_g=0, exp_type_b=0;
+// 	int exp_type_r=0, exp_type_g=0, exp_type_b=0;
 // 	switch(miss_fp_index)
 // 	{
 // 	case 0:
@@ -1437,26 +1437,26 @@
 //         reportError("Memory allocation for finder patterns failed, the missing finder pattern can not be found.");
 //         return;
 //     }
-//     jab_int32 total_finder_patterns = 0;
+//     int total_finder_patterns = 0;
 //     jab_boolean done = 0;
-//     jab_int32 fp_type_count[4] = {0};
+//     int fp_type_count[4] = {0};
 //
-// 	for(jab_int32 i=0; i<area_height && done == 0; i++)
+// 	for(int i=0; i<area_height && done == 0; i++)
 //     {
 //         //get row
 //         jab_byte* row_r = rgb[0]->pixel + i*rgb[0]->width;
 //         jab_byte* row_g = rgb[1]->pixel + i*rgb[1]->width;
 //         jab_byte* row_b = rgb[2]->pixel + i*rgb[2]->width;
 //
-//         jab_int32 startx = 0;
-//         jab_int32 endx = rgb[0]->width;
-//         jab_int32 skip = 0;
+//         int startx = 0;
+//         int endx = rgb[0]->width;
+//         int skip = 0;
 //
 //         do
 //         {
 //         	jab_finder_pattern fp;
 //
-//         	jab_int32 type_r, type_g, type_b;
+//         	int type_r, type_g, type_b;
 // 			jab_float centerx_r, centerx_g, centerx_b;
 // 			jab_float module_size_r, module_size_g, module_size_b;
 // 			jab_boolean finder_pattern_found = JAB_FAILURE;
@@ -1466,7 +1466,7 @@
 //             //green channel
 //             if(seekPatternHorizontal(row_g, &startx, &endx, &centerx_g, &module_size_g, &skip))
 //             {
-//                 type_g = row_g[(jab_int32)(centerx_g)] > 0 ? 255 : 0;
+//                 type_g = row_g[(int)(centerx_g)] > 0 ? 255 : 0;
 //                 if(type_g != exp_type_g) continue;
 //
 //                 centerx_r = centerx_g;
@@ -1478,12 +1478,12 @@
 // 					//check blue channel for Finder Pattern UL and LL
 // 					if(crossCheckPatternHorizontal(rgb[2], module_size_g*2, &centerx_b, (jab_float)i, &module_size_b))
 // 					{
-// 						type_b = row_b[(jab_int32)(centerx_b)] > 0 ? 255 : 0;
+// 						type_b = row_b[(int)(centerx_b)] > 0 ? 255 : 0;
 // 						if(type_b != exp_type_b) continue;
 // 						//check red channel
 // 						module_size_r = module_size_g;
-// 						jab_int32 core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-// 						if(crossCheckColor(rgb[0], core_color_in_red_channel, module_size_r, 5, (jab_int32)centerx_r, i, 0))
+// 						int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+// 						if(crossCheckColor(rgb[0], core_color_in_red_channel, module_size_r, 5, (int)centerx_r, i, 0))
 // 						{
 // 							type_r = 0;
 // 							finder_pattern_found = JAB_SUCCESS;
@@ -1501,12 +1501,12 @@
 // 					//check red channel for Finder Pattern UR and LR
 // 					if(crossCheckPatternHorizontal(rgb[0], module_size_g*2, &centerx_r, (jab_float)i, &module_size_r))
 // 					{
-// 						type_r = row_r[(jab_int32)(centerx_r)] > 0 ? 255 : 0;
+// 						type_r = row_r[(int)(centerx_r)] > 0 ? 255 : 0;
 // 						if(type_r != exp_type_r) continue;
 // 						//check blue channel
 // 						module_size_b = module_size_g;
-// 						jab_int32 core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-// 						if(crossCheckColor(rgb[2], core_color_in_blue_channel, module_size_b, 5, (jab_int32)centerx_b, i, 0))
+// 						int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+// 						if(crossCheckColor(rgb[2], core_color_in_blue_channel, module_size_b, 5, (int)centerx_b, i, 0))
 // 						{
 // 							type_b = 0;
 // 							finder_pattern_found = JAB_SUCCESS;
@@ -1544,9 +1544,9 @@
 // 	//if the missing FP is found, get the best found
 // 	if(total_finder_patterns > 0)
 //     {
-//         jab_int32 max_found = 0;
-//         jab_int32 max_index = 0;
-//         for(jab_int32 i=0; i<total_finder_patterns; i++)
+//         int max_found = 0;
+//         int max_index = 0;
+//         for(int i=0; i<total_finder_patterns; i++)
 //         {
 //             if(fps_miss[i].found_count > max_found)
 //             {
@@ -1569,10 +1569,10 @@
 //  * @param status the detection status
 //  * @return the finder pattern list | NULL
 // */
-// jab_finder_pattern* findMasterSymbol(jab_bitmap* bitmap, jab_bitmap* ch[], jab_detect_mode mode, jab_int32* status)
+// jab_finder_pattern* findMasterSymbol(jab_bitmap* bitmap, jab_bitmap* ch[], jab_detect_mode mode, int* status)
 // {
 //     //suppose the code size is minimally 1/4 image size
-//     jab_int32 min_module_size = ch[0]->height / (2 * MAX_SYMBOL_ROWS * MAX_MODULES);
+//     int min_module_size = ch[0]->height / (2 * MAX_SYMBOL_ROWS * MAX_MODULES);
 //     if(min_module_size < 1 || mode == INTENSIVE_DETECT) min_module_size = 1;
 //
 //     jab_finder_pattern* fps = (jab_finder_pattern*)calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
@@ -1582,24 +1582,24 @@
 //         *status = FATAL_ERROR;
 //         return NULL;
 //     }
-//     jab_int32 total_finder_patterns = 0;
+//     int total_finder_patterns = 0;
 //     jab_boolean done = 0;
-//     jab_int32 fp_type_count[4] = {0};
+//     int fp_type_count[4] = {0};
 //
-//     for(jab_int32 i=0; i<ch[0]->height && done == 0; i+=min_module_size)
+//     for(int i=0; i<ch[0]->height && done == 0; i+=min_module_size)
 //     {
 //         //get row
 //         jab_byte* row_r = ch[0]->pixel + i*ch[0]->width;
 //         jab_byte* row_g = ch[1]->pixel + i*ch[1]->width;
 //         jab_byte* row_b = ch[2]->pixel + i*ch[2]->width;
 //
-//         jab_int32 startx = 0;
-//         jab_int32 endx = ch[0]->width;
-//         jab_int32 skip = 0;
+//         int startx = 0;
+//         int endx = ch[0]->width;
+//         int skip = 0;
 //
 //         do
 //         {
-//         	jab_int32 type_r, type_g, type_b;
+//         	int type_r, type_g, type_b;
 // 			jab_float centerx_r, centerx_g, centerx_b;
 // 			jab_float module_size_r, module_size_g, module_size_b;
 // 			jab_boolean finder_pattern1_found = JAB_FAILURE;
@@ -1610,18 +1610,18 @@
 //             //green channel
 //             if(seekPatternHorizontal(row_g, &startx, &endx, &centerx_g, &module_size_g, &skip))
 //             {
-//                 type_g = row_g[(jab_int32)(centerx_g)] > 0 ? 255 : 0;
+//                 type_g = row_g[(int)(centerx_g)] > 0 ? 255 : 0;
 //
 //                 centerx_r = centerx_g;
 //                 centerx_b = centerx_g;
 //                 //check blue channel for Finder Pattern UL and LL
 //                 if(crossCheckPatternHorizontal(ch[2], module_size_g*2, &centerx_b, (jab_float)i, &module_size_b))
 //                 {
-//                     type_b = row_b[(jab_int32)(centerx_b)] > 0 ? 255 : 0;
+//                     type_b = row_b[(int)(centerx_b)] > 0 ? 255 : 0;
 //                     //check red channel
 //                     module_size_r = module_size_g;
-//                     jab_int32 core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-//                     if(crossCheckColor(ch[0], core_color_in_red_channel, module_size_r, 5, (jab_int32)centerx_r, i, 0))
+//                     int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+//                     if(crossCheckColor(ch[0], core_color_in_red_channel, module_size_r, 5, (int)centerx_r, i, 0))
 //                     {
 //                     	type_r = 0;
 //                     	finder_pattern1_found = JAB_SUCCESS;
@@ -1630,11 +1630,11 @@
 //                 //check red channel for Finder Pattern UR and LR
 //                 else if(crossCheckPatternHorizontal(ch[0], module_size_g*2, &centerx_r, (jab_float)i, &module_size_r))
 //                 {
-//                 	type_r = row_r[(jab_int32)(centerx_r)] > 0 ? 255 : 0;
+//                 	type_r = row_r[(int)(centerx_r)] > 0 ? 255 : 0;
 //                 	//check blue channel
 //                     module_size_b = module_size_g;
-//                     jab_int32 core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-//                     if(crossCheckColor(ch[2], core_color_in_blue_channel, module_size_b, 5, (jab_int32)centerx_b, i, 0))
+//                     int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+//                     if(crossCheckColor(ch[2], core_color_in_blue_channel, module_size_b, 5, (int)centerx_b, i, 0))
 //                     {
 //                     	type_b = 0;
 //                     	finder_pattern2_found = JAB_SUCCESS;
@@ -1717,7 +1717,7 @@
 // #if TEST_MODE
 //     //output all found finder patterns
 //     JAB_REPORT_INFO(("Total found: %d", total_finder_patterns))
-//     for(jab_int32 i=0; i<total_finder_patterns; i++)
+//     for(int i=0; i<total_finder_patterns; i++)
 //     {
 //         JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
 //     }
@@ -1726,12 +1726,12 @@
 // #endif
 //
 //     //set finder patterns' direction
-// 	for(jab_int32 i=0; i<total_finder_patterns; i++)
+// 	for(int i=0; i<total_finder_patterns; i++)
 // 	{
 // 		fps[i].direction = fps[i].direction >=0 ? 1 : -1;
 // 	}
 // 	//select best patterns
-// 	jab_int32 missing_fp_count = selectBestPatterns(fps, total_finder_patterns, fp_type_count);
+// 	int missing_fp_count = selectBestPatterns(fps, total_finder_patterns, fp_type_count);
 //
 // 	//if more than one finder patterns are missing, detection fails
 // 	if(missing_fp_count > 1)
@@ -1745,7 +1745,7 @@
 //     if(missing_fp_count == 1)
 //     {
 //         //estimate the missing finder pattern
-//         jab_int32 miss_fp = 0;
+//         int miss_fp = 0;
 //         if(fps[0].found_count == 0)
 //         {
 // 			miss_fp = 0;
@@ -1813,7 +1813,7 @@
 // #if TEST_MODE
 //     //output the final selected 4 patterns
 //     JAB_REPORT_INFO(("Final patterns:"))
-//     for(jab_int32 i=0; i<4; i++)
+//     for(int i=0; i<4; i++)
 //     {
 //         JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
 //     }
@@ -1833,9 +1833,9 @@
 //  * @param dir the alignment pattern direction
 //  * @return the y coordinate of the diagonal scanline center | -1 if failed
 // */
-// jab_float crossCheckPatternDiagonalAP(jab_bitmap* image, jab_int32 ap_type, jab_int32 module_size_max, jab_point center, jab_int32* dir)
+// jab_float crossCheckPatternDiagonalAP(jab_bitmap* image, int ap_type, int module_size_max, jab_point center, int* dir)
 // {
-//     jab_int32 offset_x, offset_y;
+//     int offset_x, offset_y;
 //     jab_boolean fix_dir = 0;
 //     //if the direction is given, ONLY check the given direction
 // 	if((*dir) != 0)
@@ -1873,16 +1873,16 @@
 // 	}
 //
 //     jab_boolean flag = 0;
-//     jab_int32 try_count = 0;
+//     int try_count = 0;
 //     do
 //     {
 //     	flag = 0;
 //         try_count++;
 //
-//         jab_int32 i, state_index;
-//         jab_int32 state_count[3] = {0};
-//         jab_int32 startx = (jab_int32)center.x;
-//         jab_int32 starty = (jab_int32)center.y;
+//         int i, state_index;
+//         int state_count[3] = {0};
+//         int startx = (int)center.x;
+//         int starty = (int)center.y;
 //
 //         state_count[1]++;
 //         for(i=1, state_index=0; i<=starty && i<=startx && state_index<=1; i++)
@@ -1987,12 +1987,12 @@
 //  * @param module_size the module size in vertical direction
 //  * @return the y coordinate of the vertical scanline center | -1 if failed
 // */
-// jab_float crossCheckPatternVerticalAP(jab_bitmap* image, jab_point center, jab_int32 module_size_max, jab_float* module_size)
+// jab_float crossCheckPatternVerticalAP(jab_bitmap* image, jab_point center, int module_size_max, jab_float* module_size)
 // {
-//     jab_int32 state_count[3] = {0};
-//     jab_int32 centerx = (jab_int32)center.x;
-// 	jab_int32 centery = (jab_int32)center.y;
-//     jab_int32 i, state_index;
+//     int state_count[3] = {0};
+//     int centerx = (int)center.x;
+// 	int centery = (int)center.y;
+//     int i, state_index;
 //
 //     state_count[1]++;
 //     for(i=1, state_index=0; i<=centery && state_index<=1; i++)
@@ -2069,9 +2069,9 @@
 //  * @param module_size the module size in horizontal direction
 //  * @return the x coordinate of the horizontal scanline center | -1 if failed
 // */
-// jab_float crossCheckPatternHorizontalAP(jab_byte* row, jab_int32 channel, jab_int32 startx, jab_int32 endx, jab_int32 centerx, jab_int32 ap_type, jab_float module_size_max, jab_float* module_size)
+// jab_float crossCheckPatternHorizontalAP(jab_byte* row, int channel, int startx, int endx, int centerx, int ap_type, jab_float module_size_max, jab_float* module_size)
 // {
-//     jab_int32 core_color = -1;
+//     int core_color = -1;
 //     switch(ap_type)
 //     {
 //         case AP0:
@@ -2093,8 +2093,8 @@
 //     if(row[centerx] != core_color)
 //         return -1;
 //
-//     jab_int32 state_count[3] = {0};
-//     jab_int32 i, state_index;
+//     int state_count[3] = {0};
+//     int i, state_index;
 //
 //     state_count[1]++;
 //     for(i=1, state_index=0; (centerx-i)>=startx && state_index<=1; i++)
@@ -2174,7 +2174,7 @@
 //  * @param dir the alignment pattern direction
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckPatternAP(jab_bitmap* ch[], jab_int32 y, jab_int32 minx, jab_int32 maxx, jab_int32 cur_x, jab_int32 ap_type, jab_float max_module_size, jab_float* centerx, jab_float* centery, jab_float* module_size, jab_int32* dir)
+// jab_boolean crossCheckPatternAP(jab_bitmap* ch[], int y, int minx, int maxx, int cur_x, int ap_type, jab_float max_module_size, jab_float* centerx, jab_float* centery, jab_float* module_size, int* dir)
 // {
 // 	//get row
 // 	jab_byte* row_r = ch[0]->pixel + y*ch[0]->width;
@@ -2189,7 +2189,7 @@
 // 	l_centerx[0] = crossCheckPatternHorizontalAP(row_r, 0, minx, maxx, cur_x, ap_type, max_module_size, &l_module_size_h[0]);
 // 	if(l_centerx[0] < 0) return JAB_FAILURE;
 // 	//check b channel horizontally
-// 	l_centerx[2] = crossCheckPatternHorizontalAP(row_b, 2, minx, maxx, (jab_int32)l_centerx[0], ap_type, max_module_size, &l_module_size_h[2]);
+// 	l_centerx[2] = crossCheckPatternHorizontalAP(row_b, 2, minx, maxx, (int)l_centerx[0], ap_type, max_module_size, &l_module_size_h[2]);
 // 	if(l_centerx[2] < 0) return JAB_FAILURE;
 // 	//calculate the center and the module size
 // 	jab_point center;
@@ -2197,7 +2197,7 @@
 // 	center.y = y;
 // 	(*module_size) = (l_module_size_h[0] + l_module_size_h[2]) / 2.0f;
 // 	//check g channel horizontally
-// 	jab_int32 core_color_in_green_channel = -1;
+// 	int core_color_in_green_channel = -1;
 //     switch(ap_type)
 //     {
 //         case AP0:
@@ -2216,14 +2216,14 @@
 // 			core_color_in_green_channel = jab_default_palette[APX_CORE_COLOR * 3 + 1];
 // 			break;
 //     }
-// 	if(!crossCheckColor(ch[1], core_color_in_green_channel, (jab_int32)(*module_size), 3, (jab_int32)center.x, (jab_int32)center.y, 0))
+// 	if(!crossCheckColor(ch[1], core_color_in_green_channel, (int)(*module_size), 3, (int)center.x, (int)center.y, 0))
 // 		return JAB_FAILURE;
 //
 // 	//check r channel vertically
 // 	l_centery[0] = crossCheckPatternVerticalAP(ch[0], center, max_module_size, &l_module_size_v[0]);
 // 	if(l_centery[0] < 0) return JAB_FAILURE;
 // 	//again horizontally
-// 	row_r = ch[0]->pixel + ((jab_int32)l_centery[0])*ch[0]->width;
+// 	row_r = ch[0]->pixel + ((int)l_centery[0])*ch[0]->width;
 // 	l_centerx[0] = crossCheckPatternHorizontalAP(row_r, 0, minx, maxx, center.x, ap_type, max_module_size, &l_module_size_h[0]);
 // 	if(l_centerx[0] < 0) return JAB_FAILURE;
 //
@@ -2231,7 +2231,7 @@
 // 	l_centery[2] = crossCheckPatternVerticalAP(ch[2], center, max_module_size, &l_module_size_v[2]);
 // 	if(l_centery[2] < 0) return JAB_FAILURE;
 // 	//again horizontally
-// 	row_b = ch[2]->pixel + ((jab_int32)l_centery[2])*ch[2]->width;
+// 	row_b = ch[2]->pixel + ((int)l_centery[2])*ch[2]->width;
 // 	l_centerx[2] = crossCheckPatternHorizontalAP(row_b, 2, minx, maxx, center.x, ap_type, max_module_size, &l_module_size_h[2]);
 // 	if(l_centerx[2] < 0) return JAB_FAILURE;
 //
@@ -2243,14 +2243,14 @@
 // 	center.y = (*centery);
 //
 // 	//check g channel vertically
-// 	if(!crossCheckColor(ch[1], core_color_in_green_channel, (jab_int32)(*module_size), 3, (jab_int32)center.x, (jab_int32)center.y, 1))
+// 	if(!crossCheckColor(ch[1], core_color_in_green_channel, (int)(*module_size), 3, (int)center.x, (int)center.y, 1))
 // 		return JAB_FAILURE;
 //
 // 	//diagonal check
-// 	jab_int32 l_dir[3] = {0};
+// 	int l_dir[3] = {0};
 // 	if(crossCheckPatternDiagonalAP(ch[0], ap_type, (*module_size)*2, center, &l_dir[0]) < 0) return JAB_FAILURE;
 // 	if(crossCheckPatternDiagonalAP(ch[2], ap_type, (*module_size)*2, center, &l_dir[2]) < 0) return JAB_FAILURE;
-// 	if(!crossCheckColor(ch[1], core_color_in_green_channel, (jab_int32)(*module_size), 3, (jab_int32)center.x, (jab_int32)center.y, 2))
+// 	if(!crossCheckColor(ch[1], core_color_in_green_channel, (int)(*module_size), 3, (int)center.x, (int)center.y, 2))
 // 		return JAB_FAILURE;
 // 	(*dir) = (l_dir[0] + l_dir[2]) > 0 ? 1 : -1;
 //
@@ -2266,14 +2266,14 @@
 //  * @param ap_type the alignment pattern type
 //  * @return the found alignment pattern
 // */
-// jab_alignment_pattern findAlignmentPattern(jab_bitmap* ch[], jab_float x, jab_float y, jab_float module_size, jab_int32 ap_type)
+// jab_alignment_pattern findAlignmentPattern(jab_bitmap* ch[], jab_float x, jab_float y, jab_float module_size, int ap_type)
 // {
 //     jab_alignment_pattern ap;
 //     ap.type = -1;
 //     ap.found_count = 0;
 //
 //     //determine the core color of r channel
-// 	jab_int32 core_color_r = -1;
+// 	int core_color_r = -1;
 // 	switch(ap_type)
 // 	{
 // 		case AP0:
@@ -2294,8 +2294,8 @@
 // 	}
 //
 //     //define search range
-//     jab_int32 radius = (jab_int32)(4 * module_size);
-//     jab_int32 radius_max = 4 * radius;
+//     int radius = (int)(4 * module_size);
+//     int radius_max = 4 * radius;
 //
 //     for(; radius<radius_max; radius<<=1)
 //     {
@@ -2306,18 +2306,18 @@
 //             return ap;
 //         }
 //
-//         jab_int32 startx = (jab_int32)MAX(0, x - radius);
-//         jab_int32 starty = (jab_int32)MAX(0, y - radius);
-//         jab_int32 endx = (jab_int32)MIN(ch[0]->width - 1, x + radius);
-//         jab_int32 endy = (jab_int32)MIN(ch[0]->height - 1, y + radius);
+//         int startx = (int)MAX(0, x - radius);
+//         int starty = (int)MAX(0, y - radius);
+//         int endx = (int)MIN(ch[0]->width - 1, x + radius);
+//         int endy = (int)MIN(ch[0]->height - 1, y + radius);
 //         if(endx - startx < 3 * module_size || endy - starty < 3 * module_size) continue;
 //
-//         jab_int32 counter = 0;
-//         for(jab_int32 k=starty; k<endy; k++)
+//         int counter = 0;
+//         for(int k=starty; k<endy; k++)
 //         {
 //             //search from middle outwards
-//             jab_int32 kk = k - starty;
-//             jab_int32 i = y + ((kk & 0x01) == 0 ? (kk + 1) / 2 : -((kk + 1) / 2));
+//             int kk = k - starty;
+//             int i = y + ((kk & 0x01) == 0 ? (kk + 1) / 2 : -((kk + 1) / 2));
 //             if(i < starty)
 // 				continue;
 // 			else if(i > endy)
@@ -2327,12 +2327,12 @@
 //             jab_byte* row_r = ch[0]->pixel + i*ch[0]->width;
 //
 //             jab_float ap_module_size, centerx, centery;
-//             jab_int32 ap_dir;
+//             int ap_dir;
 //
 //             jab_boolean ap_found = 0;
-// 			jab_int32 dir = -1;
-// 			jab_int32 left_tmpx = x;
-// 			jab_int32 right_tmpx = x;
+// 			int dir = -1;
+// 			int left_tmpx = x;
+// 			int right_tmpx = x;
 // 			while((left_tmpx > startx || right_tmpx < endx) && !ap_found)
 // 			{
 // 				if(dir < 0)	//go to left
@@ -2386,7 +2386,7 @@
 //             ap.type = ap_type;
 //             ap.found_count = 1;
 //
-//             jab_int32 index = saveAlignmentPattern(&ap, aps, &counter);
+//             int index = saveAlignmentPattern(&ap, aps, &counter);
 //             if(index >= 0) //if found twice, done!
 //             {
 //                 ap = aps[index];
@@ -2410,7 +2410,7 @@
 //  * @param docked_position the docked position
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean findSlaveSymbol(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* host_symbol, jab_decoded_symbol* slave_symbol, jab_int32 docked_position)
+// jab_boolean findSlaveSymbol(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* host_symbol, jab_decoded_symbol* slave_symbol, int docked_position)
 // {
 //     jab_alignment_pattern* aps = (jab_alignment_pattern*)calloc(4, sizeof(jab_alignment_pattern));
 //     if(aps == NULL)
@@ -2435,9 +2435,9 @@
 //     jab_float disty12 = host_symbol->pattern_positions[2].y - host_symbol->pattern_positions[1].y;
 //
 //     jab_float alpha1 = 0.0f, alpha2 = 0.0f;
-//     jab_int32 sign = 1;
-//     jab_int32 docked_side_size = 0, undocked_side_size;
-//     jab_int32 ap1 = 0, ap2 = 0, ap3 = 0, ap4 = 0, hp1 = 0, hp2 = 0;
+//     int sign = 1;
+//     int docked_side_size = 0, undocked_side_size;
+//     int ap1 = 0, ap2 = 0, ap3 = 0, ap4 = 0, hp1 = 0, hp2 = 0;
 //     switch(docked_position)
 //     {
 //         case 3:
@@ -2624,7 +2624,7 @@
 //
 // #if TEST_MODE
 // 	JAB_REPORT_INFO(("Found alignment patterns in slave symbol %d:", slave_symbol->index))
-//     for(jab_int32 i=0; i<4; i++)
+//     for(int i=0; i<4; i++)
 //     {
 //         JAB_REPORT_INFO(("x: %6.1f\ty: %6.1f\tcount: %d\ttype: %d\tsize: %.2f", aps[i].center.x, aps[i].center.y, aps[i].found_count, aps[i].type, aps[i].module_size))
 //     }
@@ -2642,7 +2642,7 @@
 //  * @param flag the flag indicating the magnitude of error
 //  * @return the nearest valid side size | -1: invalid side size
 // */
-// jab_int32 getSideSize(jab_int32 size, jab_int32* flag)
+// int getSideSize(int size, int* flag)
 // {
 // 	*flag = 1;
 //     switch (size & 0x03) //mod 4
@@ -2679,7 +2679,7 @@
 //  * @param flag2 the detection flag of the second size
 //  * @return the chosen side size
 // */
-// jab_int32 chooseSideSize(jab_int32 size1, jab_int32 flag1, jab_int32 size2, jab_int32 flag2)
+// int chooseSideSize(int size1, int flag1, int size2, int flag2)
 // {
 // 	if(flag1 == -1 && flag2 == -1)
 // 	{
@@ -2702,13 +2702,13 @@
 //  * @param fp2 the second finder/alignment pattern
 //  * @return the number of modules
 // */
-// jab_int32 calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2)
+// int calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2)
 // {
 //     jab_float dist = DIST(fp1.center.x, fp1.center.y, fp2.center.x, fp2.center.y);
 //     //the angle between the scanline and the connection between finder/alignment patterns
 // 	jab_float cos_theta = MAX(fabs(fp2.center.x - fp1.center.x), fabs(fp2.center.y - fp1.center.y)) / dist;
 //     jab_float mean = (fp1.module_size + fp2.module_size)*cos_theta / 2.0f;
-//     jab_int32 number = (jab_int32)(dist / mean + 0.5f);
+//     int number = (int)(dist / mean + 0.5f);
 //     return number;
 // }
 //
@@ -2724,20 +2724,20 @@
 //         3	2
 //     */
 // 	jab_vector2d side_size = {-1, -1};
-// 	jab_int32 flag1, flag2;
+// 	int flag1, flag2;
 //
 // 	//calculate the horizontal side size
-//     jab_int32 size_x_top = calculateModuleNumber(fps[0], fps[1]) + 7;
+//     int size_x_top = calculateModuleNumber(fps[0], fps[1]) + 7;
 //     size_x_top = getSideSize(size_x_top, &flag1);
-//     jab_int32 size_x_bottom = calculateModuleNumber(fps[3], fps[2]) + 7;
+//     int size_x_bottom = calculateModuleNumber(fps[3], fps[2]) + 7;
 // 	size_x_bottom = getSideSize(size_x_bottom, &flag2);
 //
 // 	side_size.x = chooseSideSize(size_x_top, flag1, size_x_bottom, flag2);
 //
 // 	//calculate the vertical side size
-// 	jab_int32 size_y_left = calculateModuleNumber(fps[0], fps[3]) + 7;
+// 	int size_y_left = calculateModuleNumber(fps[0], fps[3]) + 7;
 //     size_y_left = getSideSize(size_y_left, &flag1);
-//     jab_int32 size_y_right = calculateModuleNumber(fps[1], fps[2]) + 7;
+//     int size_y_right = calculateModuleNumber(fps[1], fps[2]) + 7;
 //     size_y_right = getSideSize(size_y_right, &flag2);
 //
 //     side_size.y = chooseSideSize(size_y_left, flag1, size_y_right, flag2);
@@ -2750,7 +2750,7 @@
 //  * @param pos the input position
 //  * @return the nearest valid position | -1: invalid position
 // */
-// jab_int32 getFirstAPPos(jab_int32 pos)
+// int getFirstAPPos(int pos)
 // {
 //     switch (pos % 3)
 //     {
@@ -2774,7 +2774,7 @@
 //  * @param fp2 the second finder pattern
 //  * @return the position of the found alignment pattern | JAB_FAILURE: if not found
 // */
-// jab_int32 detectFirstAP(jab_bitmap* ch[], jab_int32 side_version, jab_finder_pattern fp1, jab_finder_pattern fp2)
+// int detectFirstAP(jab_bitmap* ch[], int side_version, jab_finder_pattern fp1, jab_finder_pattern fp2)
 // {
 //     jab_alignment_pattern ap;
 //      //direction: from FP1 to FP2
@@ -2782,9 +2782,9 @@
 //     jab_float disty = fp2.center.y - fp1.center.y;
 //     jab_float alpha = atan2(disty, distx);
 //
-//     jab_int32 next_version = side_version;
-//     jab_int32 dir = 1;
-//     jab_int32 up = 0, down = 0;
+//     int next_version = side_version;
+//     int dir = 1;
+//     int up = 0, down = 0;
 //     do
 //     {
 //         //distance to FP1
@@ -2798,7 +2798,7 @@
 //         ap = findAlignmentPattern(ch, ap.center.x, ap.center.y, ap.module_size, APX);
 //         if(ap.found_count > 0)
 //         {
-//             jab_int32 pos = getFirstAPPos(4 + calculateModuleNumber(fp1, ap));
+//             int pos = getFirstAPPos(4 + calculateModuleNumber(fp1, ap));
 //             if(pos > 0)
 //                 return pos;
 //         }
@@ -2842,7 +2842,7 @@
 //  * @param ap_positions the positions of the found alignment patterns
 //  * @return the confirmed side version | JAB_FAILURE: if can not be confirmed
 // */
-// jab_int32 confirmSideVersion(jab_int32 side_version, jab_int32 first_ap_pos)
+// int confirmSideVersion(int side_version, int first_ap_pos)
 // {
 //     if(first_ap_pos <= 0)
 //     {
@@ -2852,8 +2852,8 @@
 //         return JAB_FAILURE;
 //     }
 //
-//     jab_int32 v = side_version;
-//     jab_int32 k = 1, sign = -1;
+//     int v = side_version;
+//     int k = 1, sign = -1;
 //     jab_boolean flag = 0;
 //     do
 //     {
@@ -2878,16 +2878,16 @@
 //  * @param symbol the symbol
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_int32 confirmSymbolSize(jab_bitmap* ch[], jab_finder_pattern* fps, jab_decoded_symbol* symbol)
+// int confirmSymbolSize(jab_bitmap* ch[], jab_finder_pattern* fps, jab_decoded_symbol* symbol)
 // {
-//  	jab_int32 first_ap_pos;
+//  	int first_ap_pos;
 //
 // 	//side version x: scan the line between FP0 and FP1
 //     first_ap_pos = detectFirstAP(ch, symbol->metadata.side_version.x, fps[0], fps[1]);
 // #if TEST_MODE
 //     JAB_REPORT_INFO(("The position of the first AP between FP0 and FP1 is %d", first_ap_pos))
 // #endif // TEST_MODE
-//     jab_int32 side_version_x = confirmSideVersion(symbol->metadata.side_version.x, first_ap_pos);
+//     int side_version_x = confirmSideVersion(symbol->metadata.side_version.x, first_ap_pos);
 //     if(side_version_x == 0) //if failed, try the line between FP3 and FP2
 //     {
 //         first_ap_pos = detectFirstAP(ch, symbol->metadata.side_version.x, fps[3], fps[2]);
@@ -2911,7 +2911,7 @@
 // #if TEST_MODE
 //     JAB_REPORT_INFO(("The position of the first AP between FP0 and FP3 is %d", first_ap_pos))
 // #endif // TEST_MODE
-//     jab_int32 side_version_y = confirmSideVersion(symbol->metadata.side_version.y, first_ap_pos);
+//     int side_version_y = confirmSideVersion(symbol->metadata.side_version.y, first_ap_pos);
 //     if(side_version_y == 0) //if failed, try the line between FP1 and FP2
 //     {
 //         first_ap_pos = detectFirstAP(ch, symbol->metadata.side_version.y, fps[1], fps[2]);
@@ -2963,10 +2963,10 @@
 // #endif
 //     }
 //
-//     jab_int32 side_ver_x_index = symbol->metadata.side_version.x - 1;
-// 	jab_int32 side_ver_y_index = symbol->metadata.side_version.y - 1;
-// 	jab_int32 number_of_ap_x = jab_ap_num[side_ver_x_index];
-//     jab_int32 number_of_ap_y = jab_ap_num[side_ver_y_index];
+//     int side_ver_x_index = symbol->metadata.side_version.x - 1;
+// 	int side_ver_y_index = symbol->metadata.side_version.y - 1;
+// 	int number_of_ap_x = jab_ap_num[side_ver_x_index];
+//     int number_of_ap_y = jab_ap_num[side_ver_y_index];
 //
 //     //buffer for all possible alignment patterns
 // 	jab_alignment_pattern* aps = (jab_alignment_pattern *)malloc(number_of_ap_x * number_of_ap_y *sizeof(jab_alignment_pattern));
@@ -2976,11 +2976,11 @@
 // 		return NULL;
 // 	}
 //     //detect all APs
-// 	for(jab_int32 i=0; i<number_of_ap_y; i++)
+// 	for(int i=0; i<number_of_ap_y; i++)
 // 	{
-// 		for(jab_int32 j=0; j<number_of_ap_x; j++)
+// 		for(int j=0; j<number_of_ap_x; j++)
 // 		{
-// 			jab_int32 index = i * number_of_ap_x + j;
+// 			int index = i * number_of_ap_x + j;
 // 			if(i == 0 && j == 0)
 // 				aps[index] = fps[0];
 // 			else if(i == 0 && j == number_of_ap_x - 1)
@@ -3020,9 +3020,9 @@
 // 				else
 // 				{
 // 					//estimate the coordinate of ap[index] from aps[i-1][j-1], aps[i-1][j] and aps[i][j-1]
-// 					jab_int32 index_ap0 = (i-1) * number_of_ap_x + (j-1);	//ap at upper-left
-// 					jab_int32 index_ap1 = (i-1) * number_of_ap_x + j;		//ap at upper-right
-// 					jab_int32 index_ap3 = i * number_of_ap_x + (j-1);		//ap at left
+// 					int index_ap0 = (i-1) * number_of_ap_x + (j-1);	//ap at upper-left
+// 					int index_ap1 = (i-1) * number_of_ap_x + j;		//ap at upper-right
+// 					int index_ap3 = i * number_of_ap_x + (j-1);		//ap at left
 // 					jab_float ave_size_ap01 = (aps[index_ap0].module_size + aps[index_ap1].module_size) / 2.0f;
 // 					jab_float ave_size_ap13 = (aps[index_ap1].module_size + aps[index_ap3].module_size) / 2.0f;
 // 					aps[index].center.x = (aps[index_ap1].center.x - aps[index_ap0].center.x) / ave_size_ap01 * ave_size_ap13 + aps[index_ap3].center.x;
@@ -3049,28 +3049,28 @@
 // #endif
 //
 // 	//determine the minimal sampling rectangle for each block
-// 	jab_int32 block_number = (number_of_ap_x-1) * (number_of_ap_y-1);
+// 	int block_number = (number_of_ap_x-1) * (number_of_ap_y-1);
 // 	jab_vector2d rect[block_number * 2];
-// 	jab_int32 rect_index = 0;
-// 	for(jab_int32 i=0; i<number_of_ap_y-1; i++)
+// 	int rect_index = 0;
+// 	for(int i=0; i<number_of_ap_y-1; i++)
 // 	{
-// 		for(jab_int32 j=0; j<number_of_ap_x-1; j++)
+// 		for(int j=0; j<number_of_ap_x-1; j++)
 // 		{
 // 			jab_vector2d tl={0,0};
 // 			jab_vector2d br={0,0};
 // 			jab_boolean flag = 1;
 //
-// 			for(jab_int32 delta=0; delta<=(number_of_ap_x-2 + number_of_ap_y-2) && flag; delta++)
+// 			for(int delta=0; delta<=(number_of_ap_x-2 + number_of_ap_y-2) && flag; delta++)
 // 			{
-// 				for(jab_int32 dy=0; dy<=MIN(delta, number_of_ap_y-2) && flag; dy++)
+// 				for(int dy=0; dy<=MIN(delta, number_of_ap_y-2) && flag; dy++)
 // 				{
-// 					jab_int32 dx = MIN(delta - dy, number_of_ap_x-2);
-// 					for(jab_int32 dy1=0; dy1<=dy && flag; dy1++)
+// 					int dx = MIN(delta - dy, number_of_ap_x-2);
+// 					for(int dy1=0; dy1<=dy && flag; dy1++)
 // 					{
-// 						jab_int32 dy2 = dy - dy1;
-// 						for(jab_int32 dx1=0; dx1<=dx && flag; dx1++)
+// 						int dy2 = dy - dy1;
+// 						for(int dx1=0; dx1<=dx && flag; dx1++)
 // 						{
-// 							jab_int32 dx2 = dx - dx1;
+// 							int dx2 = dx - dx1;
 //
 // 							tl.x = MAX(j - dx1, 0);
 // 							tl.y = MAX(i - dy1, 0);
@@ -3089,7 +3089,7 @@
 // 			}
 // 			//save the minimal rectangle if there is no duplicate
 // 			jab_boolean dup_flag = 0;
-// 			for(jab_int32 k=0; k<rect_index; k+=2)
+// 			for(int k=0; k<rect_index; k+=2)
 // 			{
 // 				if(rect[k].x == tl.x && rect[k].y == tl.y && rect[k+1].x == br.x && rect[k+1].y == br.y)
 // 				{
@@ -3106,12 +3106,12 @@
 // 		}
 // 	}
 // 	//sort the rectangles in descending order according to the size
-// 	for(jab_int32 i=0; i<rect_index-2; i+=2)
+// 	for(int i=0; i<rect_index-2; i+=2)
 // 	{
-// 		for(jab_int32 j=0; j<rect_index-2-i; j+=2)
+// 		for(int j=0; j<rect_index-2-i; j+=2)
 // 		{
-// 			jab_int32 size0 = (rect[j+1].x - rect[j].x) * (rect[j+1].y - rect[j].y);
-// 			jab_int32 size1 = (rect[j+2+1].x - rect[j+2].x) * (rect[j+2+1].y - rect[j+2].y);
+// 			int size0 = (rect[j+1].x - rect[j].x) * (rect[j+1].y - rect[j].y);
+// 			int size1 = (rect[j+2+1].x - rect[j+2].x) * (rect[j+2+1].y - rect[j+2].y);
 // 			if(size1 > size0)
 // 			{
 // 				jab_vector2d tmp;
@@ -3128,10 +3128,10 @@
 // 	}
 //
 // 	//allocate the buffer for the sampled matrix of the symbol
-//     jab_int32 width = symbol->side_size.x;
-// 	jab_int32 height= symbol->side_size.y;
-// 	jab_int32 mtx_bytes_per_pixel = bitmap->bits_per_pixel / 8;
-// 	jab_int32 mtx_bytes_per_row = width * mtx_bytes_per_pixel;
+//     int width = symbol->side_size.x;
+// 	int height= symbol->side_size.y;
+// 	int mtx_bytes_per_pixel = bitmap->bits_per_pixel / 8;
+// 	int mtx_bytes_per_row = width * mtx_bytes_per_pixel;
 // 	jab_bitmap* matrix = (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*mtx_bytes_per_pixel*sizeof(jab_byte));
 // 	if(matrix == NULL)
 // 	{
@@ -3144,7 +3144,7 @@
 // 	matrix->width = width;
 // 	matrix->height= height;
 //
-// 	for(jab_int32 i=0; i<rect_index; i+=2)
+// 	for(int i=0; i<rect_index; i+=2)
 // 	{
 // 		jab_vector2d blk_size;
 // 		jab_point p0, p1, p2, p3;
@@ -3222,20 +3222,20 @@
 // 			return NULL;
 // 		}
 // 		//save the sampled block in the matrix
-// 		jab_int32 start_x = jab_ap_pos[side_ver_x_index][rect[i].x] - 1;
-// 		jab_int32 start_y = jab_ap_pos[side_ver_y_index][rect[i].y] - 1;
+// 		int start_x = jab_ap_pos[side_ver_x_index][rect[i].x] - 1;
+// 		int start_y = jab_ap_pos[side_ver_y_index][rect[i].y] - 1;
 // 		if(rect[i].x == 0)
 // 			start_x = 0;
 // 		if(rect[i].y == 0)
 // 			start_y = 0;
-// 		jab_int32 blk_bytes_per_pixel = block->bits_per_pixel / 8;
-// 		jab_int32 blk_bytes_per_row = blk_size.x * mtx_bytes_per_pixel;
-// 		for(jab_int32 y=0, mtx_y=start_y; y<blk_size.y && mtx_y<height; y++, mtx_y++)
+// 		int blk_bytes_per_pixel = block->bits_per_pixel / 8;
+// 		int blk_bytes_per_row = blk_size.x * mtx_bytes_per_pixel;
+// 		for(int y=0, mtx_y=start_y; y<blk_size.y && mtx_y<height; y++, mtx_y++)
 // 		{
-// 			for(jab_int32 x=0, mtx_x=start_x; x<blk_size.x && mtx_x<width; x++, mtx_x++)
+// 			for(int x=0, mtx_x=start_x; x<blk_size.x && mtx_x<width; x++, mtx_x++)
 // 			{
-// 				jab_int32 mtx_offset = mtx_y * mtx_bytes_per_row + mtx_x * mtx_bytes_per_pixel;
-// 				jab_int32 blk_offset = y * blk_bytes_per_row + x * blk_bytes_per_pixel;
+// 				int mtx_offset = mtx_y * mtx_bytes_per_row + mtx_x * mtx_bytes_per_pixel;
+// 				int blk_offset = y * blk_bytes_per_row + x * blk_bytes_per_pixel;
 // 				matrix->pixel[mtx_offset] 	  = block->pixel[blk_offset];
 // 				matrix->pixel[mtx_offset + 1] = block->pixel[blk_offset + 1];
 // 				matrix->pixel[mtx_offset + 2] = block->pixel[blk_offset + 2];
@@ -3265,25 +3265,25 @@
 //     jab_float b_ave[4] = {0, 0, 0, 0};
 //
 //     //calculate average pixel value around each found FP
-//     for(jab_int32 i=0; i<4; i++)
+//     for(int i=0; i<4; i++)
 //     {
 //         if(fps[i].found_count <= 0) continue;
 //
 //         jab_float radius = fps[i].module_size * 4;
-//         jab_int32 start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius) : 0;
-//         jab_int32 start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius) : 0;
-//         jab_int32 end_x	  = (fps[i].center.x + radius) <= (bitmap->width - 1) ? (fps[i].center.x + radius) : (bitmap->width - 1);
-//         jab_int32 end_y   = (fps[i].center.y + radius) <= (bitmap->height- 1) ? (fps[i].center.y + radius) : (bitmap->height- 1);
-//         jab_int32 area_width = end_x - start_x;
-//         jab_int32 area_height= end_y - start_y;
+//         int start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius) : 0;
+//         int start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius) : 0;
+//         int end_x	  = (fps[i].center.x + radius) <= (bitmap->width - 1) ? (fps[i].center.x + radius) : (bitmap->width - 1);
+//         int end_y   = (fps[i].center.y + radius) <= (bitmap->height- 1) ? (fps[i].center.y + radius) : (bitmap->height- 1);
+//         int area_width = end_x - start_x;
+//         int area_height= end_y - start_y;
 //
-//         jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
-//         jab_int32 bytes_per_row = bitmap->width * bytes_per_pixel;
-//         for(jab_int32 y=start_y; y<end_y; y++)
+//         int bytes_per_pixel = bitmap->bits_per_pixel / 8;
+//         int bytes_per_row = bitmap->width * bytes_per_pixel;
+//         for(int y=start_y; y<end_y; y++)
 //         {
-//             for(jab_int32 x=start_x; x<end_x; x++)
+//             for(int x=start_x; x<end_x; x++)
 //             {
-//                 jab_int32 offset = y * bytes_per_row + x * bytes_per_pixel;
+//                 int offset = y * bytes_per_row + x * bytes_per_pixel;
 //                 r_ave[i] += bitmap->pixel[offset + 0];
 //                 g_ave[i] += bitmap->pixel[offset + 1];
 //                 b_ave[i] += bitmap->pixel[offset + 2];
@@ -3296,8 +3296,8 @@
 //
 //     //calculate the average values of the average pixel values
 //     jab_float rgb_sum[3] = {0, 0, 0};
-//     jab_int32 rgb_count[3] = {0, 0, 0};
-//     for(jab_int32 i=0; i<4; i++)
+//     int rgb_count[3] = {0, 0, 0};
+//     for(int i=0; i<4; i++)
 //     {
 //         if(r_ave[i] > 0)
 //         {
@@ -3331,7 +3331,7 @@
 // {
 //     //find master symbol
 //     jab_finder_pattern* fps;
-//     jab_int32 status;
+//     int status;
 //     fps = findMasterSymbol(bitmap, ch, INTENSIVE_DETECT, &status);
 //     if(status == FATAL_ERROR) return JAB_FAILURE;
 //     else if(status == JAB_FAILURE)
@@ -3344,7 +3344,7 @@
 //         getAveragePixelValue(bitmap, fps, rgb_ave);
 //         free(fps);
 //         //binarize the bitmap using the average pixel values as thresholds
-//         for(jab_int32 i=0; i<3; free(ch[i++]));
+//         for(int i=0; i<3; free(ch[i++]));
 //         if(!binarizerRGB(bitmap, ch, rgb_ave))
 //         {
 //             return JAB_FAILURE;
@@ -3407,7 +3407,7 @@
 // 	master_symbol->pattern_positions[3] = fps[3].center;
 //
 // 	//decode master symbol
-// 	jab_int32 decode_result = decodeMaster(matrix, master_symbol);
+// 	int decode_result = decodeMaster(matrix, master_symbol);
 // 	free(matrix);
 // 	if(decode_result == JAB_SUCCESS)
 // 	{
@@ -3454,7 +3454,7 @@
 //  * @return the sampled slave symbol matrix | NULL if failed
 //  *
 // */
-// jab_bitmap* detectSlave(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* host_symbol, jab_decoded_symbol* slave_symbol, jab_int32 docked_position)
+// jab_bitmap* detectSlave(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* host_symbol, jab_decoded_symbol* slave_symbol, int docked_position)
 // {
 //     if(docked_position < 0 || docked_position > 3)
 //     {
@@ -3503,15 +3503,15 @@
 //  * @param total the number of symbols in the list
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean decodeDockedSlaves(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* symbols, jab_int32 host_index, jab_int32* total)
+// jab_boolean decodeDockedSlaves(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* symbols, int host_index, int* total)
 // {
-//     jab_int32 docked_positions[4] = {0};
+//     int docked_positions[4] = {0};
 //     docked_positions[0] = symbols[host_index].metadata.docked_position & 0x08;
 //     docked_positions[1] = symbols[host_index].metadata.docked_position & 0x04;
 //     docked_positions[2] = symbols[host_index].metadata.docked_position & 0x02;
 //     docked_positions[3] = symbols[host_index].metadata.docked_position & 0x01;
 //
-//     for(jab_int32 j=0; j<4; j++)
+//     for(int j=0; j<4; j++)
 //     {
 //         if(docked_positions[j] > 0 && (*total)<MAX_SYMBOL_NUMBER)
 //         {
@@ -3539,32 +3539,35 @@
 //     return JAB_SUCCESS;
 // }
 //
-// /**
-//  * @brief Extended function to decode a JAB Code
-//  * @param bitmap the image bitmap
-//  * @param mode the decoding mode(NORMAL_DECODE: only output completely decoded data when all symbols are correctly decoded
-//  *								 COMPATIBLE_DECODE: also output partly decoded data even if some symbols are not correctly decoded
-//  * @param status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
-//  * @param symbols the decoded symbols
-//  * @param max_symbol_number the maximal possible number of symbols to be decoded
-//  * @return the decoded data | NULL if failed
-// */
-// jab_data* decodeJABCodeEx(jab_bitmap* bitmap, jab_int32 mode, jab_int32* status, jab_decoded_symbol* symbols, jab_int32 max_symbol_number)
-// {
-// 	if(status) *status = 0;
-// 	if(!symbols)
-// 	{
-// 		reportError("Invalid symbol buffer");
-// 		return NULL;
-// 	}
-//
-// 	//binarize r, g, b channels
-// 	jab_bitmap* ch[3];
-// 	balanceRGB(bitmap);
-//     if(!binarizerRGB(bitmap, ch, 0))
-// 	{
-// 		return NULL;
-// 	}
+import 'binarizer.dart';
+import 'jabcode_h.dart';
+
+/**
+ * @brief Extended function to decode a JAB Code
+ * @param bitmap the image bitmap
+ * @param mode the decoding mode(NORMAL_DECODE: only output completely decoded data when all symbols are correctly decoded
+ *								 COMPATIBLE_DECODE: also output partly decoded data even if some symbols are not correctly decoded
+ * @param status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
+ * @param symbols the decoded symbols
+ * @param max_symbol_number the maximal possible number of symbols to be decoded
+ * @return the decoded data | NULL if failed
+*/
+jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decoded_symbol> symbols, int max_symbol_number)
+{
+	if(status != 0) status = 0;
+	if(symbols = null)
+	{
+		// reportError("Invalid symbol buffer");
+		return null;
+	}
+
+	//binarize r, g, b channels
+	var ch = List<jab_bitmap>.filled(3, null);
+	balanceRGB(bitmap);
+    if(!binarizerRGB(bitmap, ch, 0))
+	{
+		return null;
+	}
 // #if TEST_MODE
 //     saveImage(bitmap, "jab_balanced.png");
 // #endif // TEST_MODE
@@ -3581,100 +3584,100 @@
 //     saveImage(ch[1], "jab_g.png");
 //     saveImage(ch[2], "jab_b.png");
 // #endif
-//
-// 	//initialize symbols buffer
-//     memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
-//     jab_int32 total = 0;	//total number of decoded symbols
-//     jab_boolean res = 1;
-//
-//     //detect and decode master symbol
-//     if(detectMaster(bitmap, ch, &symbols[0]))
-// 	{
-// 		total++;
-// 	}
-//     //detect and decode docked slave symbols recursively
-//     if(total>0)
-//     {
-//         for(jab_int32 i=0; i<total && total<max_symbol_number; i++)
-//         {
-//             if(!decodeDockedSlaves(bitmap, ch, symbols, i, &total))
-//             {
-//                 res = 0;
-//                 break;
-//             }
-//         }
-//     }
-//
-//     //check result
-// 	if(total == 0 || (mode == NORMAL_DECODE && res == 0 ))
-// 	{
-// 		if(symbols[0].module_size > 0 && status)
-// 			*status = 1;
-// 		//clean memory
-// 		for(jab_int32 i=0; i<3; free(ch[i++]));
-// 		for(jab_int32 i=0; i<=MIN(total, max_symbol_number-1); i++)
-// 		{
-// 			free(symbols[i].palette);
-// 			free(symbols[i].data);
-// 		}
-//         return NULL;
-// 	}
-// 	if(mode == COMPATIBLE_DECODE && res == 0)
-// 	{
-// 		if(status) *status = 2;
-// 		res = 1;
-// 	}
-//
-// 	//concatenate the decoded data
-//     jab_int32 total_data_length = 0;
-//     for(jab_int32 i=0; i<total; i++)
-//     {
-//         total_data_length += symbols[i].data->length;
-//     }
-//     jab_data* decoded_bits = (jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
-//     if(decoded_bits == NULL){
-//         reportError("Memory allocation for decoded bits failed");
-//         if(status) *status = 1;
-//         return NULL;
-//     }
-//     jab_int32 offset = 0;
-//     for(jab_int32 i=0; i<total; i++)
-//     {
-//         jab_char* src = symbols[i].data->data;
-//         jab_char* dst = decoded_bits->data;
-//         dst += offset;
-//         memcpy(dst, src, symbols[i].data->length);
-//         offset += symbols[i].data->length;
-//     }
-//     decoded_bits->length = total_data_length;
-//     //decode data
-//     jab_data* decoded_data = decodeData(decoded_bits);
-//     if(decoded_data == NULL)
-// 	{
-// 		reportError("Decoding data failed");
-// 		if(status) *status = 1;
-// 		res = 0;
-// 	}
-//
-//     //clean memory
-//     for(jab_int32 i=0; i<3; free(ch[i++]));
-//     for(jab_int32 i=0; i<=MIN(total, max_symbol_number-1); i++)
-//     {
-// 		free(symbols[i].palette);
-// 		free(symbols[i].data);
-//     }
-//     free(decoded_bits);
-// #if TEST_MODE
-// 	free(test_mode_bitmap);
-// #endif // TEST_MODE
-// 	if(res == 0) return NULL;
-// 	if(status)
-// 	{
-// 		if(*status != 2)
-// 			*status = 3;
-// 	}
-//     return decoded_data;
-// }
+
+	//initialize symbols buffer
+    memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
+    int total = 0;	//total number of decoded symbols
+    jab_boolean res = 1;
+
+    //detect and decode master symbol
+    if(detectMaster(bitmap, ch, &symbols[0]))
+	{
+		total++;
+	}
+    //detect and decode docked slave symbols recursively
+    if(total>0)
+    {
+        for(int i=0; i<total && total<max_symbol_number; i++)
+        {
+            if(!decodeDockedSlaves(bitmap, ch, symbols, i, &total))
+            {
+                res = 0;
+                break;
+            }
+        }
+    }
+
+    //check result
+	if(total == 0 || (mode == NORMAL_DECODE && res == 0 ))
+	{
+		if(symbols[0].module_size > 0 && status)
+			*status = 1;
+		//clean memory
+		for(int i=0; i<3; free(ch[i++]));
+		for(int i=0; i<=MIN(total, max_symbol_number-1); i++)
+		{
+			free(symbols[i].palette);
+			free(symbols[i].data);
+		}
+        return NULL;
+	}
+	if(mode == COMPATIBLE_DECODE && res == 0)
+	{
+		if(status) *status = 2;
+		res = 1;
+	}
+
+	//concatenate the decoded data
+    int total_data_length = 0;
+    for(int i=0; i<total; i++)
+    {
+        total_data_length += symbols[i].data->length;
+    }
+    jab_data* decoded_bits = (jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
+    if(decoded_bits == NULL){
+        reportError("Memory allocation for decoded bits failed");
+        if(status) *status = 1;
+        return NULL;
+    }
+    int offset = 0;
+    for(int i=0; i<total; i++)
+    {
+        jab_char* src = symbols[i].data->data;
+        jab_char* dst = decoded_bits->data;
+        dst += offset;
+        memcpy(dst, src, symbols[i].data->length);
+        offset += symbols[i].data->length;
+    }
+    decoded_bits->length = total_data_length;
+    //decode data
+    jab_data* decoded_data = decodeData(decoded_bits);
+    if(decoded_data == NULL)
+	{
+		reportError("Decoding data failed");
+		if(status) *status = 1;
+		res = 0;
+	}
+
+    //clean memory
+    for(int i=0; i<3; free(ch[i++]));
+    for(int i=0; i<=MIN(total, max_symbol_number-1); i++)
+    {
+		free(symbols[i].palette);
+		free(symbols[i].data);
+    }
+    free(decoded_bits);
+#if TEST_MODE
+	free(test_mode_bitmap);
+#endif // TEST_MODE
+	if(res == 0) return NULL;
+	if(status)
+	{
+		if(*status != 2)
+			*status = 3;
+	}
+    return decoded_data;
+}
 //
 // /**
 //  * @brief Decode a JAB Code
@@ -3684,7 +3687,7 @@
 //  * @param status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
 //  * @return the decoded data | NULL if failed
 // */
-// jab_data* decodeJABCode(jab_bitmap* bitmap, jab_int32 mode, jab_int32* status)
+// jab_data* decodeJABCode(jab_bitmap* bitmap, int mode, int* status)
 // {
 // 	jab_decoded_symbol symbols[MAX_SYMBOL_NUMBER];
 // 	return decodeJABCodeEx(bitmap, mode, status, symbols, MAX_SYMBOL_NUMBER);

@@ -1,7 +1,11 @@
+import 'dart:core';
 import 'dart:ffi';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:tuple/tuple.dart';
+
+import 'jabcode_h.dart';
 
 /**
  * libjabcode - JABCode Encoding/Decoding Library
@@ -34,16 +38,16 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //  * @param channel the color channel
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean isBiTrimodal(jab_float hist[], jab_int32 channel)
+// jab_boolean isBiTrimodal(double hist[], int channel)
 // {
-// 	jab_int32 modal_number;
+// 	int modal_number;
 // 	if(channel == 1)
 // 		modal_number = 3;
 // 	else
 // 		modal_number = 2;
 //
-//     jab_int32 count = 0;
-//     for(jab_int32 i=1; i<255; i++)
+//     int count = 0;
+//     for(int i=1; i<255; i++)
 //     {
 //         if(hist[i-1]<hist[i] && hist[i+1]<hist[i])
 //         {
@@ -63,37 +67,37 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //  * @param channel the color channel
 //  * @return minimum threshold | -1 if failed
 // */
-// jab_int32 getMinimumThreshold(jab_int32 hist[], jab_int32 channel)
+// int getMinimumThreshold(int hist[], int channel)
 // {
-//     jab_float hist_c[256], hist_s[256];
-//     for (jab_int32 i=0; i<256; i++)
+//     double hist_c[256], hist_s[256];
+//     for (int i=0; i<256; i++)
 //     {
-//         hist_c[i] = (jab_float)hist[i];
-//         hist_s[i] = (jab_float)hist[i];
+//         hist_c[i] = (double)hist[i];
+//         hist_s[i] = (double)hist[i];
 //     }
 //
 //     //smooth histogram
-//     jab_int32 iter = 0;
+//     int iter = 0;
 //     while(!isBiTrimodal(hist_s, channel))
 //     {
 //         hist_s[0] = (hist_c[0] + hist_c[0] + hist_c[1]) / 3;
-//         for (jab_int32 i=1; i<255; i++)
+//         for (int i=1; i<255; i++)
 //             hist_s[i] = (hist_c[i - 1] + hist_c[i] + hist_c[i + 1]) / 3;
 //         hist_s[255] = (hist_c[254] + hist_c[255] + hist_c[255]) / 3;
-//         memcpy(hist_c, hist_s, 256*sizeof(jab_float));
+//         memcpy(hist_c, hist_s, 256*sizeof(double));
 //         iter++;
 //         if (iter >= 1000) return -1;
 //     }
 //
 //     //get the minimum between two peaks as threshold
-//     jab_int32 peak_number;
+//     int peak_number;
 //     if(channel == 1)
 // 		peak_number = 2;
 // 	else
 // 		peak_number = 1;
 //
 //     jab_boolean peak_found = 0;
-// 	for (jab_int32 i=1; i<255; i++)
+// 	for (int i=1; i<255; i++)
 // 	{
 // 		if (hist_s[i-1]<hist_s[i] && hist_s[i+1]<hist_s[i]) peak_found++;
 // 		if (peak_found==peak_number && hist_s[i-1]>=hist_s[i] && hist_s[i+1]>=hist_s[i])
@@ -108,32 +112,32 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //  * @param channel the color channel
 //  * @return binarized bitmap | NULL if failed
 // */
-// jab_bitmap* binarizerHist(jab_bitmap* bitmap, jab_int32 channel)
+// jab_bitmap* binarizerHist(jab_bitmap* bitmap, int channel)
 // {
-// 	jab_bitmap* binary = (jab_bitmap*)malloc(sizeof(jab_bitmap) + bitmap->width*bitmap->height*sizeof(jab_byte));
+// 	jab_bitmap* binary = (jab_bitmap*)malloc(sizeof(jab_bitmap) + bitmap.width*bitmap.height*sizeof(jab_byte));
 // 	if(binary == NULL)
 // 	{
 // 		reportError("Memory allocation for binary bitmap failed");
 // 		return NULL;
 // 	}
-// 	binary->width = bitmap->width;
-// 	binary->height= bitmap->height;
-// 	binary->bits_per_channel = 8;
-// 	binary->bits_per_pixel = 8;
-// 	binary->channel_count = 1;
-// 	jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
+// 	binary.width = bitmap.width;
+// 	binary.height= bitmap.height;
+// 	binary.bits_per_channel = 8;
+// 	binary.bits_per_pixel = 8;
+// 	binary.channel_count = 1;
+// 	int bytes_per_pixel = bitmap.bits_per_pixel / 8;
 //
 // 	//get histogram
-// 	jab_int32 hist[256];
-// 	memset(hist, 0, 256*sizeof(jab_int32));
-// 	for(jab_int32 i=0; i<bitmap->width*bitmap->height; i++)
+// 	int hist[256];
+// 	memset(hist, 0, 256*sizeof(int));
+// 	for(int i=0; i<bitmap.width*bitmap.height; i++)
 // 	{
 // 		if(channel>0)
 // 		{
 // 			jab_byte r, g, b;
-// 			r = bitmap->pixel[i*bytes_per_pixel];
-// 			g = bitmap->pixel[i*bytes_per_pixel + 1];
-// 			b = bitmap->pixel[i*bytes_per_pixel + 2];
+// 			r = bitmap.pixel[i*bytes_per_pixel];
+// 			g = bitmap.pixel[i*bytes_per_pixel + 1];
+// 			b = bitmap.pixel[i*bytes_per_pixel + 2];
 //
 // 			float mean = (float)(r + g + b)/(float)3.0;
 // 			float pr = (float)r/mean;
@@ -164,16 +168,16 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 // 					continue;
 // 			}
 // 		}
-// 		hist[bitmap->pixel[i*bytes_per_pixel + channel]]++;
+// 		hist[bitmap.pixel[i*bytes_per_pixel + channel]]++;
 // 	}
 //
 // 	//get threshold
-// 	jab_int32 ths = getMinimumThreshold(hist, channel);
+// 	int ths = getMinimumThreshold(hist, channel);
 //
 // 	//binarize bitmap
-// 	for(jab_int32 i=0; i<bitmap->width*bitmap->height; i++)
+// 	for(int i=0; i<bitmap.width*bitmap.height; i++)
 // 	{
-// 		binary->pixel[i] = bitmap->pixel[i*bytes_per_pixel + channel] > ths ? 255 : 0;
+// 		binary.pixel[i] = bitmap.pixel[i*bytes_per_pixel + channel] > ths ? 255 : 0;
 // 	}
 //
 // 	return binary;
@@ -186,24 +190,24 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //  * @param threshold the threshold
 //  * @return binarized bitmap | NULL if failed
 // */
-// jab_bitmap* binarizerHard(jab_bitmap* bitmap, jab_int32 channel, jab_int32 threshold)
+// jab_bitmap* binarizerHard(jab_bitmap* bitmap, int channel, int threshold)
 // {
-// 	jab_bitmap* binary = (jab_bitmap*)malloc(sizeof(jab_bitmap) + bitmap->width*bitmap->height*sizeof(jab_byte));
+// 	jab_bitmap* binary = (jab_bitmap*)malloc(sizeof(jab_bitmap) + bitmap.width*bitmap.height*sizeof(jab_byte));
 // 	if(binary == NULL)
 // 	{
 // 		reportError("Memory allocation for binary bitmap failed");
 // 		return NULL;
 // 	}
-// 	binary->width = bitmap->width;
-// 	binary->height= bitmap->height;
-// 	binary->bits_per_channel = 8;
-// 	binary->bits_per_pixel = 8;
-// 	binary->channel_count = 1;
-// 	jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
+// 	binary.width = bitmap.width;
+// 	binary.height= bitmap.height;
+// 	binary.bits_per_channel = 8;
+// 	binary.bits_per_pixel = 8;
+// 	binary.channel_count = 1;
+// 	int bytes_per_pixel = bitmap.bits_per_pixel / 8;
 // 	//binarize bitmap
-// 	for(jab_int32 i=0; i<bitmap->width*bitmap->height; i++)
+// 	for(int i=0; i<bitmap.width*bitmap.height; i++)
 // 	{
-// 		binary->pixel[i] = bitmap->pixel[i*bytes_per_pixel + channel] > threshold ? 255 : 0;
+// 		binary.pixel[i] = bitmap.pixel[i*bytes_per_pixel + channel] > threshold ? 255 : 0;
 // 	}
 // 	return binary;
 // }
@@ -217,46 +221,46 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //  * @param black_points the black points
 //  * @param binary the binarized bitmap
 // */
-// void getBinaryBitmap(jab_bitmap* bitmap, jab_int32 channel, jab_int32 sub_width, jab_int32 sub_height, jab_byte* black_points, jab_bitmap* binary)
+// void getBinaryBitmap(jab_bitmap* bitmap, int channel, int sub_width, int sub_height, jab_byte* black_points, jab_bitmap* binary)
 // {
-//     jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
-//     jab_int32 bytes_per_row = bitmap->width * bytes_per_pixel;
+//     int bytes_per_pixel = bitmap.bits_per_pixel / 8;
+//     int bytes_per_row = bitmap.width * bytes_per_pixel;
 //
-//     for (jab_int32 y=0; y<sub_height; y++)
+//     for (int y=0; y<sub_height; y++)
 //     {
-//         jab_int32 yoffset = y << BLOCK_SIZE_POWER;
-//         jab_int32 max_yoffset = bitmap->height - BLOCK_SIZE;
+//         int yoffset = y << BLOCK_SIZE_POWER;
+//         int max_yoffset = bitmap.height - BLOCK_SIZE;
 //         if (yoffset > max_yoffset)
 //         {
 //             yoffset = max_yoffset;
 //         }
-//         for (jab_int32 x=0; x<sub_width; x++)
+//         for (int x=0; x<sub_width; x++)
 //         {
-//             jab_int32 xoffset = x << BLOCK_SIZE_POWER;
-//             jab_int32 max_xoffset = bitmap->width - BLOCK_SIZE;
+//             int xoffset = x << BLOCK_SIZE_POWER;
+//             int max_xoffset = bitmap.width - BLOCK_SIZE;
 //             if (xoffset > max_xoffset)
 //             {
 //                 xoffset = max_xoffset;
 //             }
-//             jab_int32 left = CAP(x, 2, sub_width - 3);
-//             jab_int32 top = CAP(y, 2, sub_height - 3);
-//             jab_int32 sum = 0;
-//             for (jab_int32 z = -2; z <= 2; z++)
+//             int left = CAP(x, 2, sub_width - 3);
+//             int top = CAP(y, 2, sub_height - 3);
+//             int sum = 0;
+//             for (int z = -2; z <= 2; z++)
 //             {
 //                 jab_byte* black_row = &black_points[(top + z) * sub_width];
 //                 sum += black_row[left - 2] + black_row[left - 1] + black_row[left] + black_row[left + 1] + black_row[left + 2];
 //             }
-//             jab_int32 average = sum / 25;
+//             int average = sum / 25;
 //
 //             //threshold block
-//             for (jab_int32 yy = 0; yy < BLOCK_SIZE; yy++)
+//             for (int yy = 0; yy < BLOCK_SIZE; yy++)
 //             {
-//                 for (jab_int32 xx = 0; xx < BLOCK_SIZE; xx++)
+//                 for (int xx = 0; xx < BLOCK_SIZE; xx++)
 //                 {
-//                     jab_int32 offset = (yoffset + yy) * bytes_per_row + (xoffset + xx) * bytes_per_pixel;
-//                     if (bitmap->pixel[offset + channel] > average)
+//                     int offset = (yoffset + yy) * bytes_per_row + (xoffset + xx) * bytes_per_pixel;
+//                     if (bitmap.pixel[offset + channel] > average)
 //                     {
-//                         binary->pixel[(yoffset + yy) * binary->width + (xoffset + xx)] = 255;
+//                         binary.pixel[(yoffset + yy) * binary.width + (xoffset + xx)] = 255;
 //                     }
 //                 }
 //             }
@@ -272,38 +276,38 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //  * @param sub_height the number of blocks in y direction
 //  * @param black_points the black points
 // */
-// void calculateBlackPoints(jab_bitmap* bitmap, jab_int32 channel, jab_int32 sub_width, jab_int32 sub_height, jab_byte* black_points)
+// void calculateBlackPoints(jab_bitmap* bitmap, int channel, int sub_width, int sub_height, jab_byte* black_points)
 // {
-//     jab_int32 min_dynamic_range = 24;
+//     int min_dynamic_range = 24;
 //
-//     jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
-//     jab_int32 bytes_per_row = bitmap->width * bytes_per_pixel;
+//     int bytes_per_pixel = bitmap.bits_per_pixel / 8;
+//     int bytes_per_row = bitmap.width * bytes_per_pixel;
 //
-//     for(jab_int32 y=0; y<sub_height; y++)
+//     for(int y=0; y<sub_height; y++)
 //     {
-//         jab_int32 yoffset = y << BLOCK_SIZE_POWER;
-//         jab_int32 max_yoffset = bitmap->height - BLOCK_SIZE;
+//         int yoffset = y << BLOCK_SIZE_POWER;
+//         int max_yoffset = bitmap.height - BLOCK_SIZE;
 //         if (yoffset > max_yoffset)
 //         {
 //             yoffset = max_yoffset;
 //         }
-//         for (jab_int32 x=0; x<sub_width; x++)
+//         for (int x=0; x<sub_width; x++)
 //         {
-//             jab_int32 xoffset = x << BLOCK_SIZE_POWER;
-//             jab_int32 max_xoffset = bitmap->width - BLOCK_SIZE;
+//             int xoffset = x << BLOCK_SIZE_POWER;
+//             int max_xoffset = bitmap.width - BLOCK_SIZE;
 //             if (xoffset > max_xoffset)
 //             {
 //                 xoffset = max_xoffset;
 //             }
-//             jab_int32 sum = 0;
-//             jab_int32 min = 0xFF;
-//             jab_int32 max = 0;
-//             for (jab_int32 yy=0; yy<BLOCK_SIZE; yy++)
+//             int sum = 0;
+//             int min = 0xFF;
+//             int max = 0;
+//             for (int yy=0; yy<BLOCK_SIZE; yy++)
 //             {
-//                 for (jab_int32 xx=0; xx<BLOCK_SIZE; xx++)
+//                 for (int xx=0; xx<BLOCK_SIZE; xx++)
 //                 {
-//                     jab_int32 offset = (yoffset + yy) * bytes_per_row + (xoffset + xx) * bytes_per_pixel;
-//                     jab_byte pixel = bitmap->pixel[offset + channel];
+//                     int offset = (yoffset + yy) * bytes_per_row + (xoffset + xx) * bytes_per_pixel;
+//                     jab_byte pixel = bitmap.pixel[offset + channel];
 //                     sum += pixel;
 //                     //check contrast
 //                     if (pixel < min)
@@ -321,22 +325,22 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //                     //finish the rest of the rows quickly
 //                     for (yy++; yy < BLOCK_SIZE; yy++)
 //                     {
-//                         for (jab_int32 xx = 0; xx < BLOCK_SIZE; xx++)
+//                         for (int xx = 0; xx < BLOCK_SIZE; xx++)
 //                         {
-//                             jab_int32 offset = (yoffset + yy) * bytes_per_row + (xoffset + xx) * bytes_per_pixel;
-//                             sum += bitmap->pixel[offset + channel];
+//                             int offset = (yoffset + yy) * bytes_per_row + (xoffset + xx) * bytes_per_pixel;
+//                             sum += bitmap.pixel[offset + channel];
 //                         }
 //                     }
 //                 }
 //             }
 //
-//             jab_int32 average = sum >> (BLOCK_SIZE_POWER * 2);
+//             int average = sum >> (BLOCK_SIZE_POWER * 2);
 //             if (max-min <= min_dynamic_range)	//smooth block
 //             {
 //                 average = min / 2;
 //                 if (y > 0 && x > 0)
 //                 {
-//                     jab_int32 average_neighbor_blackpoint = (black_points[(y-1) * sub_width + x] +
+//                     int average_neighbor_blackpoint = (black_points[(y-1) * sub_width + x] +
 //                                                             (2 * black_points[y * sub_width + x-1]) +
 //                                                             black_points[(y-1) * sub_width + x-1]) / 4;
 //                     if (min < average_neighbor_blackpoint)
@@ -356,11 +360,11 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 // */
 // void filterBinary(jab_bitmap* binary)
 // {
-// 	jab_int32 width = binary->width;
-// 	jab_int32 height= binary->height;
+// 	int width = binary.width;
+// 	int height= binary.height;
 //
-// 	jab_int32 filter_size = 5;
-// 	jab_int32 half_size = (filter_size - 1)/2;
+// 	int filter_size = 5;
+// 	int half_size = (filter_size - 1)/2;
 //
 // 	jab_bitmap* tmp = (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
 // 	if(tmp == NULL)
@@ -371,34 +375,34 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //
 // 	//horizontal filtering
 // 	memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
-// 	for(jab_int32 i=half_size; i<height-half_size; i++)
+// 	for(int i=half_size; i<height-half_size; i++)
 // 	{
-// 		for(jab_int32 j=half_size; j<width-half_size; j++)
+// 		for(int j=half_size; j<width-half_size; j++)
 // 		{
-// 			jab_int32 sum = 0;
-// 			sum += tmp->pixel[i*width + j] > 0 ? 1 : 0;
-// 			for(jab_int32 k=1; k<=half_size; k++)
+// 			int sum = 0;
+// 			sum += tmp.pixel[i*width + j] > 0 ? 1 : 0;
+// 			for(int k=1; k<=half_size; k++)
 // 			{
-// 				sum += tmp->pixel[i*width + (j - k)] > 0 ? 1 : 0;
-// 				sum += tmp->pixel[i*width + (j + k)] > 0 ? 1 : 0;
+// 				sum += tmp.pixel[i*width + (j - k)] > 0 ? 1 : 0;
+// 				sum += tmp.pixel[i*width + (j + k)] > 0 ? 1 : 0;
 // 			}
-// 			binary->pixel[i*width + j] = sum > half_size ? 255 : 0;
+// 			binary.pixel[i*width + j] = sum > half_size ? 255 : 0;
 // 		}
 // 	}
 // 	//vertical filtering
 // 	memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
-// 	for(jab_int32 i=half_size; i<height-half_size; i++)
+// 	for(int i=half_size; i<height-half_size; i++)
 // 	{
-// 		for(jab_int32 j=half_size; j<width-half_size; j++)
+// 		for(int j=half_size; j<width-half_size; j++)
 // 		{
-// 			jab_int32 sum = 0;
-// 			sum += tmp->pixel[i*width + j] > 0 ? 1 : 0;
-// 			for(jab_int32 k=1; k<=half_size; k++)
+// 			int sum = 0;
+// 			sum += tmp.pixel[i*width + j] > 0 ? 1 : 0;
+// 			for(int k=1; k<=half_size; k++)
 // 			{
-// 				sum += tmp->pixel[(i - k)*width + j] > 0 ? 1 : 0;
-// 				sum += tmp->pixel[(i + k)*width + j] > 0 ? 1 : 0;
+// 				sum += tmp.pixel[(i - k)*width + j] > 0 ? 1 : 0;
+// 				sum += tmp.pixel[(i + k)*width + j] > 0 ? 1 : 0;
 // 			}
-// 			binary->pixel[i*width + j] = sum > half_size ? 255 : 0;
+// 			binary.pixel[i*width + j] = sum > half_size ? 255 : 0;
 // 		}
 // 	}
 // 	free(tmp);
@@ -410,13 +414,13 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 //  * @param channel the color channel
 //  * @return binarized bitmap | NULL if failed
 // */
-// jab_bitmap* binarizer(jab_bitmap* bitmap, jab_int32 channel)
+// jab_bitmap* binarizer(jab_bitmap* bitmap, int channel)
 // {
-// 	if(bitmap->width >= MINIMUM_DIMENSION && bitmap->height >= MINIMUM_DIMENSION)
+// 	if(bitmap.width >= MINIMUM_DIMENSION && bitmap.height >= MINIMUM_DIMENSION)
 // 	{
-// 		jab_int32 sub_width = bitmap->width >> BLOCK_SIZE_POWER;
+// 		int sub_width = bitmap.width >> BLOCK_SIZE_POWER;
 // 		if((sub_width & BLOCK_SIZE_MASK) != 0 )	sub_width++;
-// 		jab_int32 sub_height= bitmap->height>> BLOCK_SIZE_POWER;
+// 		int sub_height= bitmap.height>> BLOCK_SIZE_POWER;
 // 		if((sub_height & BLOCK_SIZE_MASK) != 0 )	sub_height++;
 //
 // 		jab_byte* black_points = (jab_byte*)malloc(sub_width * sub_height * sizeof(jab_byte));
@@ -427,17 +431,17 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 // 		}
 // 		calculateBlackPoints(bitmap, channel, sub_width, sub_height, black_points);
 //
-// 		jab_bitmap* binary = (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + bitmap->width*bitmap->height*sizeof(jab_byte));
+// 		jab_bitmap* binary = (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + bitmap.width*bitmap.height*sizeof(jab_byte));
 // 		if(binary == NULL)
 // 		{
 // 			reportError("Memory allocation for binary bitmap failed");
 // 			return NULL;
 // 		}
-// 		binary->width = bitmap->width;
-// 		binary->height= bitmap->height;
-// 		binary->bits_per_channel = 8;
-// 		binary->bits_per_pixel = 8;
-// 		binary->channel_count = 1;
+// 		binary.width = bitmap.width;
+// 		binary.height= bitmap.height;
+// 		binary.bits_per_channel = 8;
+// 		binary.bits_per_pixel = 8;
+// 		binary.channel_count = 1;
 // 		getBinaryBitmap(bitmap, channel, sub_width, sub_height, black_points, binary);
 //
 // 		filterBinary(binary);
@@ -452,100 +456,103 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
 // 	}
 // }
 //
-// /**
-//  * @brief Get the histogram of a color channel
-//  * @param bitmap the image
-//  * @param channel the channel
-//  * @param hist the histogram
-// */
-// void getHistogram(jab_bitmap* bitmap, jab_int32 channel, jab_int32 hist[256])
-// {
-// 	//get histogram
-// 	memset(hist, 0, 256*sizeof(jab_int32));
-// 	jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
-// 	for(jab_int32 i=0; i<bitmap->width*bitmap->height; i++)
-// 	{
-// 		hist[bitmap->pixel[i*bytes_per_pixel + channel]]++;
-// 	}
-// }
-//
-// /**
-//  * @brief Get the min and max index in the histogram whose value is larger than the threshold
-//  * @param hist the histogram
-//  * @param max the max index
-//  * @param min the min index
-//  * @param ths the threshold
-// */
-// void getHistMaxMin(jab_int32 hist[256], jab_int32* max, jab_int32* min, jab_int32 ths)
-// {
-// 	//get min
-// 	*min = 0;
-// 	for(jab_int32 i=0; i<256; i++)
-// 	{
-// 		if(hist[i] > ths)
-// 		{
-// 			*min = i;
-// 			break;
-// 		}
-// 	}
-// 	//get max
-// 	*max = 255;
-// 	for(jab_int32 i=255; i>=0; i--)
-// 	{
-// 		if(hist[i] > ths)
-// 		{
-// 			*max = i;
-// 			break;
-// 		}
-// 	}
-// }
-//
-// /**
-//  * @brief Stretch the histograms of R, G and B channels
-//  * @param bitmap the image
-// */
-// void balanceRGB(jab_bitmap* bitmap)
-// {
-// 	jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
-//     jab_int32 bytes_per_row = bitmap->width * bytes_per_pixel;
-//
-// 	//calculate max and min for each channel
-// 	jab_int32 max_r, max_g, max_b;
-//     jab_int32 min_r, min_g, min_b;
-//     jab_int32 hist_r[256], hist_g[256], hist_b[256];
-//
-//     getHistogram(bitmap, 0, hist_r);
-//     getHistogram(bitmap, 1, hist_g);
-//     getHistogram(bitmap, 2, hist_b);
-//
-//     //threshold for the number of pixels having the max or min values
-// 	jab_int32 count_ths = 20;
-//     getHistMaxMin(hist_r, &max_r, &min_r, count_ths);
-//     getHistMaxMin(hist_g, &max_g, &min_g, count_ths);
-//     getHistMaxMin(hist_b, &max_b, &min_b, count_ths);
-//
-// 	//normalize each channel
-// 	for(jab_int32 i=0; i<bitmap->height; i++)
-// 	{
-// 		for(jab_int32 j=0; j<bitmap->width; j++)
-// 		{
-// 			jab_int32 offset = i * bytes_per_row + j * bytes_per_pixel;
-// 			//R channel
-// 			if		(bitmap->pixel[offset + 0] < min_r)	bitmap->pixel[offset + 0] = 0;
-// 			else if (bitmap->pixel[offset + 0] > max_r)	bitmap->pixel[offset + 0] = 255;
-// 			else 	 bitmap->pixel[offset + 0] = (jab_byte)((jab_double)(bitmap->pixel[offset + 0] - min_r) / (jab_double)(max_r - min_r) * 255.0);
-// 			//G channel
-// 			if		(bitmap->pixel[offset + 1] < min_g)	bitmap->pixel[offset + 1] = 0;
-// 			else if (bitmap->pixel[offset + 1] > max_g)	bitmap->pixel[offset + 1] = 255;
-// 			else 	 bitmap->pixel[offset + 1] = (jab_byte)((jab_double)(bitmap->pixel[offset + 1] - min_g) / (jab_double)(max_g - min_g) * 255.0);
-// 			//B channel
-// 			if		(bitmap->pixel[offset + 2] < min_b) bitmap->pixel[offset + 2] = 0;
-// 			else if	(bitmap->pixel[offset + 2] > max_b)	bitmap->pixel[offset + 2] = 255;
-// 			else 	 bitmap->pixel[offset + 2] = (jab_byte)((jab_double)(bitmap->pixel[offset + 2] - min_b) / (jab_double)(max_b - min_b) * 255.0);
-// 		}
-// 	}
-// }
-//
+/**
+ * @brief Get the histogram of a color channel
+ * @param bitmap the image
+ * @param channel the channel
+ * @param hist the histogram
+*/
+void getHistogram(jab_bitmap bitmap, int channel, List<int> hist)
+{
+	//get histogram
+	// memset(hist, 0, 256*sizeof(int));
+	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+	for(int i=0; i<bitmap.width*bitmap.height; i++)
+	{
+		hist[bitmap.pixel[i*bytes_per_pixel + channel]]++;
+	}
+}
+
+/**
+ * @brief Get the min and max index in the histogram whose value is larger than the threshold
+ * @param hist the histogram
+ * @param ths the threshold
+ * @result item1 the min index
+ * @result item2 the max index
+*/
+Tuple2<int, int> getHistMaxMin(List<int> hist, int ths)
+{
+	//get min
+	var min = 0;
+	for(int i=0; i<256; i++)
+	{
+		if(hist[i] > ths)
+		{
+			min = i;
+			break;
+		}
+	}
+	//get max
+	var max = 255;
+	for(int i=255; i>=0; i--)
+	{
+		if(hist[i] > ths)
+		{
+			max = i;
+			break;
+		}
+	}
+	return Tuple2<int, int>(min, max);
+}
+
+/**
+ * @brief Stretch the histograms of R, G and B channels
+ * @param bitmap the image
+*/
+void balanceRGB(jab_bitmap bitmap)
+{
+	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+    int bytes_per_row = bitmap.width * bytes_per_pixel;
+
+	// int max_r, max_g, max_b;
+  //   int min_r, min_g, min_b;
+    var hist_r = List<int>.filled(256, 0);
+	var hist_g = List<int>.filled(256, 0);
+	var hist_b = List<int>.filled(256, 0);
+
+    getHistogram(bitmap, 0, hist_r);
+    getHistogram(bitmap, 1, hist_g);
+    getHistogram(bitmap, 2, hist_b);
+
+	//calculate max and min for each channel
+    //threshold for the number of pixels having the max or min values
+	int count_ths = 20;
+  var r = getHistMaxMin(hist_r, count_ths);
+	var g = getHistMaxMin(hist_g, count_ths);
+	var b = getHistMaxMin(hist_b, count_ths);
+
+	//normalize each channel
+	for(int i=0; i<bitmap.height; i++)
+	{
+		for(int j=0; j<bitmap.width; j++)
+		{
+			int offset = i * bytes_per_row + j * bytes_per_pixel;
+			//R channel
+			if		(bitmap.pixel[offset + 0] < r.item1)	bitmap.pixel[offset + 0] = 0;
+			else if (bitmap.pixel[offset + 0] > r.item2)	bitmap.pixel[offset + 0] = 255;
+			else 	 bitmap.pixel[offset + 0] = ((bitmap.pixel[offset + 0] - r.item1) / (r.item2 - r.item1) * 255.0).toInt();
+			//G channel
+			if		(bitmap.pixel[offset + 1] < g.item1)	bitmap.pixel[offset + 1] = 0;
+			else if (bitmap.pixel[offset + 1] > g.item2)	bitmap.pixel[offset + 1] = 255;
+			else 	 bitmap.pixel[offset + 1] = ((bitmap.pixel[offset + 1] - g.item1) / (g.item2 - g.item1) * 255.0).toInt();
+			//B channel
+			if		(bitmap.pixel[offset + 2] < b.item1) bitmap.pixel[offset + 2] = 0;
+			else if	(bitmap.pixel[offset + 2] > b.item2)	bitmap.pixel[offset + 2] = 255;
+			else 	 bitmap.pixel[offset + 2] = ((bitmap.pixel[offset + 2] - b.item1) / (b.item2 - b.item1) * 255.0).toInt();
+		}
+	}
+}
+
 /**
  * @brief Get the average and variance of RGB values
  * @param rgb the pixel with RGB values
@@ -600,132 +607,132 @@ Tuple3<int, int, int> getMinMax(Uint8List rgb)
 	// *max = rgb[*index_max];
 return Tuple3<int, int, int>(index[index_min], index[index_mid], index[index_max]);
 }
-//
-// /**
-//  * @brief Binarize a color channel of a bitmap using local binarization algorithm
-//  * @param bitmap the input bitmap
-//  * @param rgb the binarized RGB channels
-//  * @param blk_ths the black color thresholds for RGB channels
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean binarizerRGB(jab_bitmap* bitmap, jab_bitmap* rgb[3], jab_float* blk_ths)
-// {
-// 	for(jab_int32 i=0; i<3; i++)
-// 	{
-// 		rgb[i] = (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + bitmap->width*bitmap->height*sizeof(jab_byte));
-// 		if(rgb[i] == NULL)
-// 		{
-// 			JAB_REPORT_ERROR(("Memory allocation for binary bitmap %d failed", i))
-// 			return JAB_FAILURE;
-// 		}
-// 		rgb[i]->width = bitmap->width;
-// 		rgb[i]->height= bitmap->height;
-// 		rgb[i]->bits_per_channel = 8;
-// 		rgb[i]->bits_per_pixel = 8;
-// 		rgb[i]->channel_count = 1;
-// 	}
-//
-// 	jab_int32 bytes_per_pixel = bitmap->bits_per_pixel / 8;
-//     jab_int32 bytes_per_row = bitmap->width * bytes_per_pixel;
-//
-//     //calculate the average pixel value, block-wise
-//     jab_int32 max_block_size = MAX(bitmap->width, bitmap->height) / 2;
-//     jab_int32 block_num_x = (bitmap->width % max_block_size) != 0 ? (bitmap->width / max_block_size) + 1 : (bitmap->width / max_block_size);
-//     jab_int32 block_num_y = (bitmap->height% max_block_size) != 0 ? (bitmap->height/ max_block_size) + 1 : (bitmap->height/ max_block_size);
-//     jab_int32 block_size_x = bitmap->width / block_num_x;
-//     jab_int32 block_size_y = bitmap->height/ block_num_y;
-//     jab_float pixel_ave[block_num_x*block_num_y][3];
-//     memset(pixel_ave, 0, sizeof(jab_float)*block_num_x*block_num_y*3);
-//     if(blk_ths == 0)
-//     {
-//         for(jab_int32 i=0; i<block_num_y; i++)
-//         {
-//             for(jab_int32 j=0; j<block_num_x; j++)
-//             {
-//                 jab_int32 block_index = i*block_num_x + j;
-//
-//                 jab_int32 sx = j * block_size_x;
-//                 jab_int32 ex = (j == block_num_x-1) ? bitmap->width : (sx + block_size_x);
-//                 jab_int32 sy = i * block_size_y;
-//                 jab_int32 ey = (i == block_num_y-1) ? bitmap->height: (sy + block_size_y);
-//                 jab_int32 counter = 0;
-//                 for(jab_int32 y=sy; y<ey; y++)
-//                 {
-//                     for(jab_int32 x=sx; x<ex; x++)
-//                     {
-//                         jab_int32 offset = y * bytes_per_row + x * bytes_per_pixel;
-//                         pixel_ave[block_index][0] += bitmap->pixel[offset + 0];
-//                         pixel_ave[block_index][1] += bitmap->pixel[offset + 1];
-//                         pixel_ave[block_index][2] += bitmap->pixel[offset + 2];
-//                         counter++;
-//                     }
-//                 }
-//                 pixel_ave[block_index][0] /= (jab_float)counter;
-//                 pixel_ave[block_index][1] /= (jab_float)counter;
-//                 pixel_ave[block_index][2] /= (jab_float)counter;
-//             }
-//         }
-//     }
-//
-// 	//binarize each pixel in each channel
-// 	jab_double ths_std = 0.08;
-// 	jab_float rgb_ths[3] = {0, 0, 0};
-//     for(jab_int32 i=0; i<bitmap->height; i++)
-// 	{
-// 		for(jab_int32 j=0; j<bitmap->width; j++)
-// 		{
-// 			jab_int32 offset = i * bytes_per_row + j * bytes_per_pixel;
-// 			//check black pixel
-// 			if(blk_ths == 0)
-//             {
-//                 jab_int32 block_index = MIN(i/block_size_y, block_num_y-1) * block_num_x + MIN(j/block_size_x, block_num_x-1);
-//                 rgb_ths[0] = pixel_ave[block_index][0];
-//                 rgb_ths[1] = pixel_ave[block_index][1];
-//                 rgb_ths[2] = pixel_ave[block_index][2];
-//             }
-//             else
-//             {
-//                 rgb_ths[0] = blk_ths[0];
-//                 rgb_ths[1] = blk_ths[1];
-//                 rgb_ths[2] = blk_ths[2];
-//             }
-// 			if(bitmap->pixel[offset + 0] < rgb_ths[0] && bitmap->pixel[offset + 1] < rgb_ths[1] && bitmap->pixel[offset + 2] < rgb_ths[2])
-//             {
-//                 rgb[0]->pixel[i*bitmap->width + j] = 0;
-//                 rgb[1]->pixel[i*bitmap->width + j] = 0;
-//                 rgb[2]->pixel[i*bitmap->width + j] = 0;
-//                 continue;
-//             }
-//
-// 			jab_double ave, var;
-// 			getAveVar(&bitmap->pixel[offset], &ave, &var);
-// 			jab_double std = sqrt(var);	//standard deviation
-// 			jab_byte min, mid, max;
-// 			jab_int32 index_min, index_mid, index_max;
-// 			getMinMax(&bitmap->pixel[offset], &min, &mid, &max, &index_min, &index_mid, &index_max);
-// 			std /= (jab_double)max;	//normalize std
-//
-// 			if(std < ths_std && (bitmap->pixel[offset + 0] > rgb_ths[0] && bitmap->pixel[offset + 1] > rgb_ths[1] && bitmap->pixel[offset + 2] > rgb_ths[2]))
-// 			{
-// 				rgb[0]->pixel[i*bitmap->width + j] = 255;
-// 				rgb[1]->pixel[i*bitmap->width + j] = 255;
-// 				rgb[2]->pixel[i*bitmap->width + j] = 255;
-// 			}
-// 			else
-// 			{
-// 				rgb[index_max]->pixel[i*bitmap->width + j] = 255;
-// 				rgb[index_min]->pixel[i*bitmap->width + j] = 0;
-// 				jab_double r1 = (jab_double)bitmap->pixel[offset + index_mid] / (jab_double)bitmap->pixel[offset + index_min];
-// 				jab_double r2 = (jab_double)bitmap->pixel[offset + index_max] / (jab_double)bitmap->pixel[offset + index_mid];
-// 				if(r1 > r2)
-// 					rgb[index_mid]->pixel[i*bitmap->width + j] = 255;
-// 				else
-// 					rgb[index_mid]->pixel[i*bitmap->width + j] = 0;
-// 			}
-// 		}
-// 	}
-// 	filterBinary(rgb[0]);
-// 	filterBinary(rgb[1]);
-// 	filterBinary(rgb[2]);
-// 	return JAB_SUCCESS;
-// }
+
+/**
+ * @brief Binarize a color channel of a bitmap using local binarization algorithm
+ * @param bitmap the input bitmap
+ * @param rgb the binarized RGB channels
+ * @param blk_ths the black color thresholds for RGB channels
+ * @return JAB_SUCCESS | JAB_FAILURE
+*/
+bool binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, double blk_ths)
+{
+	for(int i=0; i<3; i++)
+	{
+		rgb[i] = jab_bitmap(); //(jab_bitmap*)calloc(1, sizeof(jab_bitmap) + bitmap.width*bitmap.height*sizeof(jab_byte));
+		if(rgb[i] == null)
+		{
+			// JAB_REPORT_ERROR(("Memory allocation for binary bitmap %d failed", i))
+			return false; //JAB_FAILURE;
+		}
+		rgb[i].width = bitmap.width;
+		rgb[i].height= bitmap.height;
+		rgb[i].bits_per_channel = 8;
+		rgb[i].bits_per_pixel = 8;
+		rgb[i].channel_count = 1;
+	}
+
+	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+    int bytes_per_row = bitmap.width * bytes_per_pixel;
+
+    //calculate the average pixel value, block-wise
+    int max_block_size = (max(bitmap.width, bitmap.height) / 2).toInt();
+    int block_num_x = ((bitmap.width % max_block_size) != 0 ? (bitmap.width / max_block_size) + 1 : (bitmap.width / max_block_size)).toInt();
+    int block_num_y = ((bitmap.height% max_block_size) != 0 ? (bitmap.height/ max_block_size) + 1 : (bitmap.height/ max_block_size)).toInt();
+    int block_size_x = (bitmap.width / block_num_x).toInt();
+    int block_size_y = (bitmap.height/ block_num_y).toInt();
+    double pixel_ave[block_num_x*block_num_y][3];
+    memset(pixel_ave, 0, sizeof(double)*block_num_x*block_num_y*3);
+    if(blk_ths == 0)
+    {
+        for(int i=0; i<block_num_y; i++)
+        {
+            for(int j=0; j<block_num_x; j++)
+            {
+                int block_index = i*block_num_x + j;
+
+                int sx = j * block_size_x;
+                int ex = (j == block_num_x-1) ? bitmap.width : (sx + block_size_x);
+                int sy = i * block_size_y;
+                int ey = (i == block_num_y-1) ? bitmap.height: (sy + block_size_y);
+                int counter = 0;
+                for(int y=sy; y<ey; y++)
+                {
+                    for(int x=sx; x<ex; x++)
+                    {
+                        int offset = y * bytes_per_row + x * bytes_per_pixel;
+                        pixel_ave[block_index][0] += bitmap.pixel[offset + 0];
+                        pixel_ave[block_index][1] += bitmap.pixel[offset + 1];
+                        pixel_ave[block_index][2] += bitmap.pixel[offset + 2];
+                        counter++;
+                    }
+                }
+                pixel_ave[block_index][0] /= (double)counter;
+                pixel_ave[block_index][1] /= (double)counter;
+                pixel_ave[block_index][2] /= (double)counter;
+            }
+        }
+    }
+
+	//binarize each pixel in each channel
+	jab_double ths_std = 0.08;
+	double rgb_ths[3] = {0, 0, 0};
+    for(int i=0; i<bitmap.height; i++)
+	{
+		for(int j=0; j<bitmap.width; j++)
+		{
+			int offset = i * bytes_per_row + j * bytes_per_pixel;
+			//check black pixel
+			if(blk_ths == 0)
+            {
+                int block_index = MIN(i/block_size_y, block_num_y-1) * block_num_x + MIN(j/block_size_x, block_num_x-1);
+                rgb_ths[0] = pixel_ave[block_index][0];
+                rgb_ths[1] = pixel_ave[block_index][1];
+                rgb_ths[2] = pixel_ave[block_index][2];
+            }
+            else
+            {
+                rgb_ths[0] = blk_ths[0];
+                rgb_ths[1] = blk_ths[1];
+                rgb_ths[2] = blk_ths[2];
+            }
+			if(bitmap.pixel[offset + 0] < rgb_ths[0] && bitmap.pixel[offset + 1] < rgb_ths[1] && bitmap.pixel[offset + 2] < rgb_ths[2])
+            {
+                rgb[0].pixel[i*bitmap.width + j] = 0;
+                rgb[1].pixel[i*bitmap.width + j] = 0;
+                rgb[2].pixel[i*bitmap.width + j] = 0;
+                continue;
+            }
+
+			jab_double ave, var;
+			getAveVar(&bitmap.pixel[offset], &ave, &var);
+			jab_double std = sqrt(var);	//standard deviation
+			jab_byte min, mid, max;
+			int index_min, index_mid, index_max;
+			getMinMax(&bitmap.pixel[offset], &min, &mid, &max, &index_min, &index_mid, &index_max);
+			std /= (jab_double)max;	//normalize std
+
+			if(std < ths_std && (bitmap.pixel[offset + 0] > rgb_ths[0] && bitmap.pixel[offset + 1] > rgb_ths[1] && bitmap.pixel[offset + 2] > rgb_ths[2]))
+			{
+				rgb[0].pixel[i*bitmap.width + j] = 255;
+				rgb[1].pixel[i*bitmap.width + j] = 255;
+				rgb[2].pixel[i*bitmap.width + j] = 255;
+			}
+			else
+			{
+				rgb[index_max].pixel[i*bitmap.width + j] = 255;
+				rgb[index_min].pixel[i*bitmap.width + j] = 0;
+				jab_double r1 = (jab_double)bitmap.pixel[offset + index_mid] / (jab_double)bitmap.pixel[offset + index_min];
+				jab_double r2 = (jab_double)bitmap.pixel[offset + index_max] / (jab_double)bitmap.pixel[offset + index_mid];
+				if(r1 > r2)
+					rgb[index_mid].pixel[i*bitmap.width + j] = 255;
+				else
+					rgb[index_mid].pixel[i*bitmap.width + j] = 0;
+			}
+		}
+	}
+	filterBinary(rgb[0]);
+	filterBinary(rgb[1]);
+	filterBinary(rgb[2]);
+	return JAB_SUCCESS;
+}
