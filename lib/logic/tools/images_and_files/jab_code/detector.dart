@@ -20,6 +20,8 @@
 // #include "decoder.h"
 // #include "encoder.h"
 
+import 'dart:math';
+
 // /**
 //  * @brief Check the proportion of layer sizes in finder pattern
 //  * @param state_count the layer sizes in pixel
@@ -3320,81 +3322,84 @@
 //     if(rgb_count[2] > 0) rgb_ave[2] = rgb_sum[2] / (jab_float)rgb_count[2];
 // }
 //
-// /**
-//  * @brief Detect and decode a master symbol
-//  * @param bitmap the image bitmap
-//  * @param ch the binarized color channels of the image
-//  * @param master_symbol the master symbol
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean detectMaster(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* master_symbol)
-// {
-//     //find master symbol
-//     jab_finder_pattern* fps;
-//     int status;
-//     fps = findMasterSymbol(bitmap, ch, INTENSIVE_DETECT, &status);
-//     if(status == FATAL_ERROR) return JAB_FAILURE;
-//     else if(status == JAB_FAILURE)
-//     {
+import 'binarizer.dart';
+import 'jabcode_h.dart';
+
+/**
+ * @brief Detect and decode a master symbol
+ * @param bitmap the image bitmap
+ * @param ch the binarized color channels of the image
+ * @param master_symbol the master symbol
+ * @return JAB_SUCCESS | JAB_FAILURE
+*/
+bool detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol master_symbol)
+{
+    //find master symbol
+    jab_finder_pattern fps;
+    int status;
+    fps = findMasterSymbol(bitmap, ch, INTENSIVE_DETECT, &status);
+    if(status == FATAL_ERROR) return JAB_FAILURE;
+    else if(status == JAB_FAILURE)
+    {
 // #if TEST_MODE
 //         JAB_REPORT_INFO(("Trying to detect more finder patterns based on the found ones"))
 // #endif
-//         //calculate the average pixel value around the found FPs
-//         jab_float rgb_ave[3];
-//         getAveragePixelValue(bitmap, fps, rgb_ave);
-//         free(fps);
-//         //binarize the bitmap using the average pixel values as thresholds
-//         for(int i=0; i<3; free(ch[i++]));
-//         if(!binarizerRGB(bitmap, ch, rgb_ave))
-//         {
-//             return JAB_FAILURE;
-//         }
-//         //find master symbol
-//         fps = findMasterSymbol(bitmap, ch, INTENSIVE_DETECT, &status);
-//         if(status == JAB_FAILURE || status == FATAL_ERROR)
-//         {
-//             free(fps);
-//             return JAB_FAILURE;
-//         }
-//     }
-//
-//     //calculate the master symbol side size
-//     jab_vector2d side_size = calculateSideSize(fps);
-//     if(side_size.x == -1 || side_size.y == -1)
-//     {
-// 		reportError("Calculating side size failed");
-//         free(fps);
-// 		return JAB_FAILURE;
-//     }
+        //calculate the average pixel value around the found FPs
+        var rgb_ave = List<double>.filled(3, 0);
+        getAveragePixelValue(bitmap, fps, rgb_ave);
+        // free(fps);
+        //binarize the bitmap using the average pixel values as thresholds
+        for(int i=0; i<3; free(ch[i++]));
+        if(!binarizerRGB(bitmap, ch, rgb_ave))
+        {
+            return JAB_FAILURE;
+        }
+        //find master symbol
+        fps = findMasterSymbol(bitmap, ch, INTENSIVE_DETECT, &status);
+        if(status == JAB_FAILURE || status == FATAL_ERROR)
+        {
+            free(fps);
+            return JAB_FAILURE;
+        }
+    }
+
+    //calculate the master symbol side size
+    jab_vector2d side_size = calculateSideSize(fps);
+    if(side_size.x == -1 || side_size.y == -1)
+    {
+		reportError("Calculating side size failed");
+        free(fps);
+		return JAB_FAILURE;
+    }
 // #if TEST_MODE
 // 	JAB_REPORT_INFO(("Side sizes: %d %d", side_size.x, side_size.y))
 // #endif
-//     //try decoding using only finder patterns
-// 	//calculate perspective transform matrix
-// 	jab_perspective_transform* pt = getPerspectiveTransform(fps[0].center, fps[1].center,
-// 															fps[2].center, fps[3].center,
-// 															side_size);
-// 	if(pt == NULL)
-// 	{
-// 		free(fps);
-// 		return JAB_FAILURE;
-// 	}
-//
-// 	//sample master symbol
-// #if TEST_MODE
-// 	test_mode_color = 255;
-// #endif
-// 	jab_bitmap* matrix = sampleSymbol(bitmap, pt, side_size);
-// 	free(pt);
-// #if TEST_MODE
-// 	saveImage(test_mode_bitmap, "jab_sample_pos_fp.png");
-// #endif
-// 	if(matrix == NULL)
-// 	{
-// 		reportError("Sampling master symbol failed");
-// 		free(fps);
-// 		return JAB_FAILURE;
-// 	}
+    //try decoding using only finder patterns
+	//calculate perspective transform matrix
+	jab_perspective_transform* pt = getPerspectiveTransform(fps[0].center, fps[1].center,
+															fps[2].center, fps[3].center,
+															side_size);
+	if(pt == NULL)
+	{
+		free(fps);
+		return JAB_FAILURE;
+	}
+
+	//sample master symbol
+#if TEST_MODE
+	test_mode_color = 255;
+#endif
+	jab_bitmap* matrix = sampleSymbol(bitmap, pt, side_size);
+	free(pt);
+#if TEST_MODE
+	saveImage(test_mode_bitmap, "jab_sample_pos_fp.png");
+#endif
+	if(matrix == NULL)
+	{
+		reportError("Sampling master symbol failed");
+		free(fps);
+		return JAB_FAILURE;
+	}
 //
 // 	//save the detection result
 // 	master_symbol->index = 0;
@@ -3586,9 +3591,9 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
 // #endif
 
 	//initialize symbols buffer
-    memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
+    var symbols = List<jab_decoded_symbol>.filledOf(max_symbol_number, null) // memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
     int total = 0;	//total number of decoded symbols
-    jab_boolean res = 1;
+    bool res = true;
 
     //detect and decode master symbol
     if(detectMaster(bitmap, ch, &symbols[0]))

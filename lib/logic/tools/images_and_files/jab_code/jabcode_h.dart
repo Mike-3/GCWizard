@@ -44,8 +44,8 @@ const BITMAP_BITS_PER_PIXEL	= 32;
 const BITMAP_BITS_PER_CHANNEL	= 8;
 const BITMAP_CHANNEL_COUNT	= 4;
 
-const	JAB_SUCCESS		= 1;
-const	JAB_FAILURE		= 0;
+const	JAB_SUCCESS		= true;
+const	JAB_FAILURE		= false;
 
 const NORMAL_DECODE		= 0;
 const COMPATIBLE_DECODE	= 1;
