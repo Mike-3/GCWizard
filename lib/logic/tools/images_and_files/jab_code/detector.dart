@@ -20,41 +20,45 @@
 // #include "decoder.h"
 // #include "encoder.h"
 
+import 'dart:core';
 import 'dart:math';
+import 'dart:typed_data';
+import 'binarizer.dart';
+import 'jabcode_h.dart';
 
-// /**
-//  * @brief Check the proportion of layer sizes in finder pattern
-//  * @param state_count the layer sizes in pixel
-//  * @param module_size the module size
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean checkPatternCross(int* state_count, jab_float* module_size)
-// {
-//     int layer_number = 3;
-//     int inside_layer_size = 0;
-//     for(int i=1; i<layer_number+1; i++)
-//     {
-//         if(state_count[i] == 0)
-//             return JAB_FAILURE;
-//         inside_layer_size += state_count[i];
-//     }
-//
-//     jab_float layer_size = (jab_float)inside_layer_size / 3.0f;
-//     *module_size = layer_size;
-//     jab_float layer_tolerance = layer_size / 2.0f;
-//
-//     jab_boolean size_condition;
-// 	//layer size proportion must be n-1-1-1-m where n>1, m>1
-// 	size_condition = fabs(layer_size - (jab_float)state_count[1]) < layer_tolerance &&
-// 					 fabs(layer_size - (jab_float)state_count[2]) < layer_tolerance &&
-// 					 fabs(layer_size - (jab_float)state_count[3]) < layer_tolerance &&
-// 					 (jab_float)state_count[0] > 0.5 * layer_tolerance && //the two outside layers can be larger than layer_size
-// 					 (jab_float)state_count[4] > 0.5 * layer_tolerance &&
-// 					 fabs(state_count[1] - state_count[3]) < layer_tolerance; //layer 1 and layer 3 shall be of the same size
-//
-//     return size_condition;
-// }
-//
+/**
+ * @brief Check the proportion of layer sizes in finder pattern
+ * @param state_count the layer sizes in pixel
+ * @param module_size the module size
+ * @return JAB_SUCCESS | JAB_FAILURE
+*/
+int checkPatternCross(List<int> state_count, double module_size)
+{
+    int layer_number = 3;
+    int inside_layer_size = 0;
+    for(int i=1; i<layer_number+1; i++)
+    {
+        if(state_count[i] == 0)
+            return JAB_FAILURE;
+        inside_layer_size += state_count[i];
+    }
+
+    double layer_size = inside_layer_size / 3.0;
+    module_size = layer_size;
+    double layer_tolerance = layer_size / 2.0;
+
+    // int size_condition;
+	//layer size proportion must be n-1-1-1-m where n>1, m>1
+	bool size_condition = (layer_size - state_count[1]).abs() < layer_tolerance &&
+					 (layer_size - state_count[2]).abs() < layer_tolerance &&
+					 (layer_size - state_count[3]).abs() < layer_tolerance &&
+					 state_count[0] > 0.5 * layer_tolerance && //the two outside layers can be larger than layer_size
+					 state_count[4] > 0.5 * layer_tolerance &&
+					 (state_count[1] - state_count[3]).abs() < layer_tolerance; //layer 1 and layer 3 shall be of the same size
+
+    return size_condition ? JAB_SUCCESS : JAB_FAILURE;
+}
+
 // /**
 //  * @brief Check if the input module sizes are the same
 //  * @param size_r the first module size
@@ -62,10 +66,10 @@ import 'dart:math';
 //  * @param size_b the third module size
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean checkModuleSize3(jab_float size_r, jab_float size_g, jab_float size_b)
+// jab_boolean checkModuleSize3(double size_r, double size_g, double size_b)
 // {
-// 	jab_float mean= (size_r + size_g + size_b) / 3.0f;
-// 	jab_float tolerance = mean / 2.5f;
+// 	double mean= (size_r + size_g + size_b) / 3.0f;
+// 	double tolerance = mean / 2.5f;
 //
 // 	jab_boolean condition = fabs(mean - size_r) < tolerance &&
 // 							fabs(mean - size_g) < tolerance &&
@@ -80,10 +84,10 @@ import 'dart:math';
 //
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean checkModuleSize2(jab_float size1, jab_float size2)
+// jab_boolean checkModuleSize2(double size1, double size2)
 // {
-// 	jab_float mean= (size1 + size2) / 2.0f;
-// 	jab_float tolerance = mean / 2.5f;
+// 	double mean= (size1 + size2) / 2.0f;
+// 	double tolerance = mean / 2.5f;
 //
 // 	jab_boolean condition = fabs(mean - size1) < tolerance &&
 // 							fabs(mean - size2) < tolerance;
@@ -103,7 +107,7 @@ import 'dart:math';
 //  * @param skip the number of pixels to be skipped in the next scan
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean seekPattern(jab_bitmap* ch, int row, int col, int* start, int* end, jab_float* center, jab_float* module_size, int* skip)
+// jab_boolean seekPattern(jab_bitmap* ch, int row, int col, int* start, int* end, double* center, double* module_size, int* skip)
 // {
 //     int state_number = 5;
 //     int cur_state = 0;
@@ -126,13 +130,13 @@ import 'dart:math';
 // 			jab_byte curr;
 // 			if(row >= 0)		//horizontal scan
 // 			{
-// 				prev = ch->pixel[row*ch->width + (p-1)];
-// 				curr = ch->pixel[row*ch->width + p];
+// 				prev = ch.pixel[row*ch.width + (p-1)];
+// 				curr = ch.pixel[row*ch.width + p];
 // 			}
 // 			else if(col >= 0)	//vertical scan
 // 			{
-// 				prev = ch->pixel[(p-1)*ch->width + col];
-// 				curr = ch->pixel[p*ch->width + col];
+// 				prev = ch.pixel[(p-1)*ch.width + col];
+// 				curr = ch.pixel[p*ch.width + col];
 // 			}
 // 			else
 // 				return JAB_FAILURE;
@@ -191,7 +195,7 @@ import 'dart:math';
 // 						int end_pos;
 // 						if(p == (max - 1) && curr == prev) end_pos = p + 1;
 // 						else end_pos = p;
-// 						*center = (jab_float)(end_pos - state_count[4] - state_count[3]) - (jab_float)state_count[2] / 2.0f;
+// 						*center = (double)(end_pos - state_count[4] - state_count[3]) - (double)state_count[2] / 2.0f;
 //                         return JAB_SUCCESS;
 //                     }
 //                     else //check failed, update state_count
@@ -211,111 +215,113 @@ import 'dart:math';
 //     *end = max;
 //     return JAB_FAILURE;
 // }
-//
-// /**
-//  * @brief Find a candidate horizontal scanline of finder pattern
-//  * @param row the bitmap row
-//  * @param startx the start position
-//  * @param endx the end position
-//  * @param centerx the center of the candidate scanline
-//  * @param module_size the module size
-//  * @param skip the number of pixels to be skipped in the next scan
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean seekPatternHorizontal(jab_byte* row, int* startx, int* endx, jab_float* centerx, jab_float* module_size, int* skip)
-// {
-//     int state_number = 5;
-//     int cur_state = 0;
-//     int state_count[5] = {0};
-//
-//     int min = *startx;
-//     int max = *endx;
-//     for(int j=min; j<max; j++)
-//     {
-//         //first pixel in a scanline
-//         if(j == min)
-//         {
-//             state_count[cur_state]++;
-//             *startx = j;
-//         }
-//         else
-//         {
-//             //the pixel has the same color as the preceding pixel
-//             if(row[j] == row[j-1])
-//             {
-//                 state_count[cur_state]++;
-//             }
-//             //the pixel has different color from the preceding pixel
-//             if(row[j] != row[j-1] || j == max-1)
-//             {
-//                 //change state
-//                 if(cur_state < state_number-1)
-//                 {
-//                     //check if the current state is valid
-//                     if(state_count[cur_state] < 3)
-//                     {
-//                         if(cur_state == 0)
-//                         {
-//                             state_count[cur_state]=1;
-//                             *startx = j;
-//                         }
-//                         else
-//                         {
-//                             //combine the current state to the previous one and continue the previous state
-//                             state_count[cur_state-1] += state_count[cur_state];
-//                             state_count[cur_state] = 0;
-//                             cur_state--;
-//                             state_count[cur_state]++;
-//                         }
-//                     }
-//                     else
-//                     {
-//                         //enter the next state
-//                         cur_state++;
-//                         state_count[cur_state]++;
-//                     }
-//                 }
-//                 //find a candidate
-//                 else
-//                 {
-//                     if(state_count[cur_state] < 3)
-//                     {
-//                         //combine the current state to the previous one and continue the previous state
-//                         state_count[cur_state-1] += state_count[cur_state];
-//                         state_count[cur_state] = 0;
-//                         cur_state--;
-//                         state_count[cur_state]++;
-//                         continue;
-//                     }
-//                     //check if it is a valid finder pattern
-//                     if(checkPatternCross(state_count, module_size))
-//                     {
-//                         *endx = j+1;
-//                         if(skip)  *skip = state_count[0];
-// 						int end;
-// 						if(j == (max - 1) && row[j] == row[j-1]) end = j + 1;
-// 						else end = j;
-// 						*centerx = (jab_float)(end - state_count[4] - state_count[3]) - (jab_float)state_count[2] / 2.0f;
-//                         return JAB_SUCCESS;
-//                     }
-//                     else //check failed, update state_count
-//                     {
-//                         *startx += state_count[0];
-//                         for(int k=0; k<state_number-1; k++)
-//                         {
-//                             state_count[k] = state_count[k+1];
-//                         }
-//                         state_count[state_number-1] = 1;
-//                         cur_state = state_number-1;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     *endx = max;
-//     return JAB_FAILURE;
-// }
-//
+
+/**
+ * @brief Find a candidate horizontal scanline of finder pattern
+ * @param row the bitmap row
+ * @param startx the start position
+ * @param endx the end position
+ * @param centerx the center of the candidate scanline
+ * @param module_size the module size
+ * @param skip the number of pixels to be skipped in the next scan
+ * @return JAB_SUCCESS | JAB_FAILURE
+ *
+ *
+*/
+int seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, double module_size, int skip)
+{
+    int state_number = 5;
+    int cur_state = 0;
+    var state_count = List<int>.filled(5, 0);
+
+    int min = startx;
+    int max = endx;
+    for(int j=min; j<max; j++)
+    {
+        //first pixel in a scanline
+        if(j == min)
+        {
+            state_count[cur_state]++;
+            startx = j;
+        }
+        else
+        {
+            //the pixel has the same color as the preceding pixel
+            if(row[j] == row[j-1])
+            {
+                state_count[cur_state]++;
+            }
+            //the pixel has different color from the preceding pixel
+            if(row[j] != row[j-1] || j == max-1)
+            {
+                //change state
+                if(cur_state < state_number-1)
+                {
+                    //check if the current state is valid
+                    if(state_count[cur_state] < 3)
+                    {
+                        if(cur_state == 0)
+                        {
+                            state_count[cur_state]=1;
+                            startx = j;
+                        }
+                        else
+                        {
+                            //combine the current state to the previous one and continue the previous state
+                            state_count[cur_state-1] += state_count[cur_state];
+                            state_count[cur_state] = 0;
+                            cur_state--;
+                            state_count[cur_state]++;
+                        }
+                    }
+                    else
+                    {
+                        //enter the next state
+                        cur_state++;
+                        state_count[cur_state]++;
+                    }
+                }
+                //find a candidate
+                else
+                {
+                    if(state_count[cur_state] < 3)
+                    {
+                        //combine the current state to the previous one and continue the previous state
+                        state_count[cur_state-1] += state_count[cur_state];
+                        state_count[cur_state] = 0;
+                        cur_state--;
+                        state_count[cur_state]++;
+                        continue;
+                    }
+                    //check if it is a valid finder pattern
+                    if(checkPatternCross(state_count, module_size) != 0)
+                    {
+                        endx = j+1;
+                        if(skip != 0)  skip = state_count[0];
+												int end;
+												if(j == (max - 1) && row[j] == row[j-1]) end = j + 1;
+												else end = j;
+												centerx = (end - state_count[4] - state_count[3]) - state_count[2] / 2.0;
+                        return JAB_SUCCESS;
+                    }
+                    else //check failed, update state_count
+                    {
+                        startx += state_count[0];
+                        for(int k=0; k<state_number-1; k++)
+                        {
+                            state_count[k] = state_count[k+1];
+                        }
+                        state_count[state_number-1] = 1;
+                        cur_state = state_number-1;
+                    }
+                }
+            }
+        }
+    }
+    endx = max;
+    return JAB_FAILURE;
+}
+
 // /**
 //  * @brief Crosscheck the finder pattern candidate in diagonal direction
 //  * @param image the image bitmap
@@ -328,7 +334,7 @@ import 'dart:math';
 //  * @param both_dir scan both diagonal scanlines
 //  * @return the number of confirmed diagonal scanlines
 // */
-// int crossCheckPatternDiagonal(jab_bitmap* image, int type, jab_float module_size_max, jab_float* centerx, jab_float* centery, jab_float* module_size, int* dir, jab_boolean both_dir)
+// int crossCheckPatternDiagonal(jab_bitmap* image, int type, double module_size_max, double* centerx, double* centery, double* module_size, int* dir, jab_boolean both_dir)
 // {
 //     int state_number = 5;
 //     int state_middle = (state_number - 1) / 2;
@@ -373,7 +379,7 @@ import 'dart:math';
 //     int confirmed = 0;
 //     jab_boolean flag = 0;
 //     int try_count = 0;
-//     jab_float tmp_module_size = 0.0f;
+//     double tmp_module_size = 0.0f;
 //     do
 //     {
 // 		flag = 0;
@@ -385,9 +391,9 @@ import 'dart:math';
 //         int starty = (int)(*centery);
 //
 //         state_count[state_middle]++;
-//         for(j=1, state_index=0; (starty+j*offset_y)>=0 && (starty+j*offset_y)<image->height && (startx+j*offset_x)>=0 && (startx+j*offset_x)<image->width && state_index<=state_middle; j++)
+//         for(j=1, state_index=0; (starty+j*offset_y)>=0 && (starty+j*offset_y)<image.height && (startx+j*offset_x)>=0 && (startx+j*offset_x)<image.width && state_index<=state_middle; j++)
 //         {
-//             if( image->pixel[(starty + j*offset_y)*image->width + (startx + j*offset_x)] == image->pixel[(starty + (j-1)*offset_y)*image->width + (startx + (j-1)*offset_x)] )
+//             if( image.pixel[(starty + j*offset_y)*image.width + (startx + j*offset_x)] == image.pixel[(starty + (j-1)*offset_y)*image.width + (startx + (j-1)*offset_x)] )
 //             {
 //                 state_count[state_middle - state_index]++;
 //             }
@@ -422,9 +428,9 @@ import 'dart:math';
 //
 // 		if(!flag)
 // 		{
-// 			for(i=1, state_index=0; (starty-i*offset_y)>=0 && (starty-i*offset_y)<image->height && (startx-i*offset_x)>=0 && (startx-i*offset_x)<image->width && state_index<=state_middle; i++)
+// 			for(i=1, state_index=0; (starty-i*offset_y)>=0 && (starty-i*offset_y)<image.height && (startx-i*offset_x)>=0 && (startx-i*offset_x)<image.width && state_index<=state_middle; i++)
 // 			{
-// 				if( image->pixel[(starty - i*offset_y)*image->width + (startx - i*offset_x)] == image->pixel[(starty - (i-1)*offset_y)*image->width + (startx - (i-1)*offset_x)] )
+// 				if( image.pixel[(starty - i*offset_y)*image.width + (startx - i*offset_x)] == image.pixel[(starty - (i-1)*offset_y)*image.width + (startx - (i-1)*offset_x)] )
 // 				{
 // 					state_count[state_middle + state_index]++;
 // 				}
@@ -470,9 +476,9 @@ import 'dart:math';
 // 					tmp_module_size = *module_size;
 //
 // 				//calculate the center x
-// 				*centerx = (jab_float)(startx+i - state_count[4] - state_count[3]) - (jab_float)state_count[2] / 2.0f;
+// 				*centerx = (double)(startx+i - state_count[4] - state_count[3]) - (double)state_count[2] / 2.0f;
 // 				//calculate the center y
-// 				*centery = (jab_float)(starty+i - state_count[4] - state_count[3]) - (jab_float)state_count[2] / 2.0f;
+// 				*centery = (double)(starty+i - state_count[4] - state_count[3]) - (double)state_count[2] / 2.0f;
 // 				confirmed++;
 // 				if( !both_dir || try_count == 2 || fix_dir)
 // 				{
@@ -501,7 +507,7 @@ import 'dart:math';
 //  * @param module_size the module size in vertical direction
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckPatternVertical(jab_bitmap* image, int module_size_max, jab_float centerx, jab_float* centery, jab_float* module_size)
+// jab_boolean crossCheckPatternVertical(jab_bitmap* image, int module_size_max, double centerx, double* centery, double* module_size)
 // {
 // 	int state_number = 5;
 // 	int state_middle = (state_number - 1) / 2;
@@ -514,7 +520,7 @@ import 'dart:math';
 //     state_count[1]++;
 //     for(i=1, state_index=0; i<=centery_int && state_index<=state_middle; i++)
 //     {
-//         if( image->pixel[(centery_int-i)*image->width + centerx_int] == image->pixel[(centery_int-(i-1))*image->width + centerx_int] )
+//         if( image.pixel[(centery_int-i)*image.width + centerx_int] == image.pixel[(centery_int-(i-1))*image.width + centerx_int] )
 //         {
 //             state_count[state_middle - state_index]++;
 //         }
@@ -538,9 +544,9 @@ import 'dart:math';
 //     if(state_index < state_middle)
 //         return JAB_FAILURE;
 //
-//     for(i=1, state_index=0; (centery_int+i)<image->height && state_index<=state_middle; i++)
+//     for(i=1, state_index=0; (centery_int+i)<image.height && state_index<=state_middle; i++)
 //     {
-//         if( image->pixel[(centery_int+i)*image->width + centerx_int] == image->pixel[(centery_int+(i-1))*image->width + centerx_int] )
+//         if( image.pixel[(centery_int+i)*image.width + centerx_int] == image.pixel[(centery_int+(i-1))*image.width + centerx_int] )
 //         {
 //             state_count[state_middle + state_index]++;
 //         }
@@ -569,7 +575,7 @@ import 'dart:math';
 //     if(ret && ((*module_size) <= module_size_max))
 //     {
 //         //calculate the center y
-//         *centery = (jab_float)(centery_int + i - state_count[4] - state_count[3]) - (jab_float)state_count[2] / 2.0f;
+//         *centery = (double)(centery_int + i - state_count[4] - state_count[3]) - (double)state_count[2] / 2.0f;
 //         return JAB_SUCCESS;
 //     }
 //     return JAB_FAILURE;
@@ -584,20 +590,20 @@ import 'dart:math';
 //  * @param module_size the module size in horizontal direction
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckPatternHorizontal(jab_bitmap* image, jab_float module_size_max, jab_float* centerx, jab_float centery, jab_float* module_size)
+// jab_boolean crossCheckPatternHorizontal(jab_bitmap* image, double module_size_max, double* centerx, double centery, double* module_size)
 // {
 //     int state_number = 5;
 //     int state_middle = (state_number - 1) / 2;
 //     int state_count[5] = {0};
 //
 //     int startx = (int)(*centerx);
-//     int offset = (int)centery * image->width;
+//     int offset = (int)centery * image.width;
 //     int i, state_index;
 //
 //     state_count[state_middle]++;
 //     for(i=1, state_index=0; i<=startx && state_index<=state_middle; i++)
 //     {
-//         if( image->pixel[offset + (startx - i)] == image->pixel[offset + (startx - (i-1))] )
+//         if( image.pixel[offset + (startx - i)] == image.pixel[offset + (startx - (i-1))] )
 //         {
 //             state_count[state_middle - state_index]++;
 //         }
@@ -621,9 +627,9 @@ import 'dart:math';
 //     if(state_index < state_middle)
 //         return JAB_FAILURE;
 //
-//     for(i=1, state_index=0; (startx+i)<image->width && state_index<=state_middle; i++)
+//     for(i=1, state_index=0; (startx+i)<image.width && state_index<=state_middle; i++)
 //     {
-//         if( image->pixel[offset + (startx + i)] == image->pixel[offset + (startx + (i-1))] )
+//         if( image.pixel[offset + (startx + i)] == image.pixel[offset + (startx + (i-1))] )
 //         {
 //             state_count[state_middle + state_index]++;
 //         }
@@ -652,103 +658,103 @@ import 'dart:math';
 //     if(ret && ((*module_size) <= module_size_max))
 //     {
 //         //calculate the center x
-//         *centerx = (jab_float)(startx+i - state_count[4] - state_count[3]) - (jab_float)state_count[2] / 2.0f;
+//         *centerx = (double)(startx+i - state_count[4] - state_count[3]) - (double)state_count[2] / 2.0f;
 //         return JAB_SUCCESS;
 //     }
 //     return JAB_FAILURE;
 // }
-//
-// /**
-//  * @brief Crosscheck the finder pattern color
-//  * @param image the image bitmap
-//  * @param color the expected module color
-//  * @param module_size the module size
-//  * @param module_number the number of modules that should be checked
-//  * @param centerx the x coordinate of the finder pattern center
-//  * @param centery the y coordinate of the finder pattern center
-//  * @param dir the check direction
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean crossCheckColor(jab_bitmap* image, int color, int module_size, int module_number, int centerx, int centery, int dir)
-// {
-// 	int tolerance = 3;
-// 	//horizontal
-// 	if(dir == 0)
-// 	{
-// 		int length = module_size * (module_number - 1); //module number minus one for better tolerance
-// 		int startx = (centerx - length/2) < 0 ? 0 : (centerx - length/2);
-// 		int unmatch = 0;
-// 		for(int j=startx; j<(startx+length) && j<image->width; j++)
-// 		{
-// 			if(image->pixel[centery * image->width + j] != color) unmatch++;
-// 			else
-// 			{
-// 				if(unmatch <= tolerance) unmatch = 0;
-// 			}
-// 			if(unmatch > tolerance)	return JAB_FAILURE;
-// 		}
-// 		return JAB_SUCCESS;
-// 	}
-// 	//vertical
-// 	else if(dir == 1)
-// 	{
-// 		int length = module_size * (module_number - 1);
-// 		int starty = (centery - length/2) < 0 ? 0 : (centery - length/2);
-// 		int unmatch = 0;
-// 		for(int i=starty; i<(starty+length) && i<image->height; i++)
-// 		{
-// 			if(image->pixel[image->width * i + centerx] != color) unmatch++;
-// 			else
-// 			{
-// 				if(unmatch <= tolerance) unmatch = 0;
-// 			}
-// 			if(unmatch > tolerance)	return JAB_FAILURE;
-// 		}
-// 		return JAB_SUCCESS;
-// 	}
-// 	//diagonal
-// 	else if(dir == 2)
-// 	{
-// 		int offset = module_size * (module_number / (2.0f * 1.41421f)); // e.g. for FP, module_size * (5/(2*sqrt(2));
-// 		int length = offset * 2;
-//
-// 		//one direction
-// 		int unmatch = 0;
-// 		int startx = (centerx - offset) < 0 ? 0 : (centerx - offset);
-// 		int starty = (centery - offset) < 0 ? 0 : (centery - offset);
-// 		for(int i=0; i<length && (starty+i)<image->height; i++)
-// 		{
-// 			if(image->pixel[image->width * (starty+i) + (startx+i)] != color) unmatch++;
-// 			else
-// 			{
-// 				if(unmatch <= tolerance) unmatch = 0;
-// 			}
-// 			if(unmatch > tolerance) break;
-// 		}
-// 		if(unmatch < tolerance) return JAB_SUCCESS;
-//
-// 		//the other direction
-// 		unmatch = 0;
-// 		startx = (centerx - offset) < 0 ? 0 : (centerx - offset);
-// 		starty = (centery + offset) > (image->height - 1) ? (image->height - 1) : (centery + offset);
-// 		for(int i=0; i<length && (starty-i)>=0; i++)
-// 		{
-// 			if(image->pixel[image->width * (starty-i) + (startx+i)] != color) unmatch++;
-// 			else
-// 			{
-// 				if(unmatch <= tolerance) unmatch = 0;
-// 			}
-// 			if(unmatch > tolerance) return JAB_FAILURE;
-// 		}
-// 		return JAB_SUCCESS;
-// 	}
-// 	else
-// 	{
-// 		JAB_REPORT_ERROR(("Invalid direction"))
-// 		return JAB_FAILURE;
-// 	}
-// }
-//
+
+/**
+ * @brief Crosscheck the finder pattern color
+ * @param image the image bitmap
+ * @param color the expected module color
+ * @param module_size the module size
+ * @param module_number the number of modules that should be checked
+ * @param centerx the x coordinate of the finder pattern center
+ * @param centery the y coordinate of the finder pattern center
+ * @param dir the check direction
+ * @return JAB_SUCCESS | JAB_FAILURE
+*/
+int crossCheckColor(jab_bitmap image, int color, int module_size, int module_number, int centerx, int centery, int dir)
+{
+	int tolerance = 3;
+	//horizontal
+	if(dir == 0)
+	{
+		int length = module_size * (module_number - 1); //module number minus one for better tolerance
+		int startx = (centerx - length/2) < 0 ? 0 : (centerx - length/2);
+		int unmatch = 0;
+		for(int j=startx; j<(startx+length) && j<image.width; j++)
+		{
+			if(image.pixel[centery * image.width + j] != color) unmatch++;
+			else
+			{
+				if(unmatch <= tolerance) unmatch = 0;
+			}
+			if(unmatch > tolerance)	return JAB_FAILURE;
+		}
+		return JAB_SUCCESS;
+	}
+	//vertical
+	else if(dir == 1)
+	{
+		int length = module_size * (module_number - 1);
+		int starty = (centery - length/2) < 0 ? 0 : (centery - length/2);
+		int unmatch = 0;
+		for(int i=starty; i<(starty+length) && i<image.height; i++)
+		{
+			if(image.pixel[image.width * i + centerx] != color) unmatch++;
+			else
+			{
+				if(unmatch <= tolerance) unmatch = 0;
+			}
+			if(unmatch > tolerance)	return JAB_FAILURE;
+		}
+		return JAB_SUCCESS;
+	}
+	//diagonal
+	else if(dir == 2)
+	{
+		int offset = module_size * (module_number / (2.0 * 1.41421)).toInt(); // e.g. for FP, module_size * (5/(2*sqrt(2));
+		int length = offset * 2;
+
+		//one direction
+		int unmatch = 0;
+		int startx = (centerx - offset) < 0 ? 0 : (centerx - offset);
+		int starty = (centery - offset) < 0 ? 0 : (centery - offset);
+		for(int i=0; i<length && (starty+i)<image.height; i++)
+		{
+			if(image.pixel[image.width * (starty+i) + (startx+i)] != color) unmatch++;
+			else
+			{
+				if(unmatch <= tolerance) unmatch = 0;
+			}
+			if(unmatch > tolerance) break;
+		}
+		if(unmatch < tolerance) return JAB_SUCCESS;
+
+		//the other direction
+		unmatch = 0;
+		startx = (centerx - offset) < 0 ? 0 : (centerx - offset);
+		starty = (centery + offset) > (image.height - 1) ? (image.height - 1) : (centery + offset);
+		for(int i=0; i<length && (starty-i)>=0; i++)
+		{
+			if(image.pixel[image.width * (starty-i) + (startx+i)] != color) unmatch++;
+			else
+			{
+				if(unmatch <= tolerance) unmatch = 0;
+			}
+			if(unmatch > tolerance) return JAB_FAILURE;
+		}
+		return JAB_SUCCESS;
+	}
+	else
+	{
+		// JAB_REPORT_ERROR(("Invalid direction"))
+		return JAB_FAILURE;
+	}
+}
+
 // /**
 //  * @brief Crosscheck the finder pattern candidate in one channel
 //  * @param ch the binarized color channel
@@ -762,11 +768,11 @@ import 'dart:math';
 //  * @param dcc the diagonal crosscheck result
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckPatternCh(jab_bitmap* ch, int type, int h_v, jab_float module_size_max, jab_float* module_size, jab_float* centerx, jab_float* centery, int* dir, int* dcc)
+// jab_boolean crossCheckPatternCh(jab_bitmap* ch, int type, int h_v, double module_size_max, double* module_size, double* centerx, double* centery, int* dir, int* dcc)
 // {
-// 	jab_float module_size_v = 0.0f;
-// 	jab_float module_size_h = 0.0f;
-// 	jab_float module_size_d = 0.0f;
+// 	double module_size_v = 0.0f;
+// 	double module_size_h = 0.0f;
+// 	double module_size_d = 0.0f;
 //
 // 	if(h_v == 0)
 // 	{
@@ -826,83 +832,83 @@ import 'dart:math';
 // */
 // jab_boolean crossCheckPattern(jab_bitmap* ch[], jab_finder_pattern* fp, int h_v)
 // {
-//     jab_float module_size_max = fp->module_size * 2.0f;
+//     double module_size_max = fp.module_size * 2.0f;
 //
 //     //check g channel
-// 	jab_float module_size_g;
-//     jab_float centerx_g = fp->center.x;
-//     jab_float centery_g = fp->center.y;
+// 	double module_size_g;
+//     double centerx_g = fp.center.x;
+//     double centery_g = fp.center.y;
 //     int dir_g = 0;
 //     int dcc_g = 0;
-//     if(!crossCheckPatternCh(ch[1], fp->type, h_v, module_size_max, &module_size_g, &centerx_g, &centery_g, &dir_g, &dcc_g))
+//     if(!crossCheckPatternCh(ch[1], fp.type, h_v, module_size_max, &module_size_g, &centerx_g, &centery_g, &dir_g, &dcc_g))
 // 		return JAB_FAILURE;
 //
 // 	//Finder Pattern FP1 and FP2
-//     if(fp->type == FP1 || fp->type == FP2)
+//     if(fp.type == FP1 || fp.type == FP2)
 // 	{
 // 		//check r channel
-// 		jab_float module_size_r;
-// 		jab_float centerx_r = fp->center.x;
-// 		jab_float centery_r = fp->center.y;
+// 		double module_size_r;
+// 		double centerx_r = fp.center.x;
+// 		double centery_r = fp.center.y;
 // 		int dir_r = 0;
 // 		int dcc_r = 0;
-// 		if(!crossCheckPatternCh(ch[0], fp->type, h_v, module_size_max, &module_size_r, &centerx_r, &centery_r, &dir_r, &dcc_r))
+// 		if(!crossCheckPatternCh(ch[0], fp.type, h_v, module_size_max, &module_size_r, &centerx_r, &centery_r, &dir_r, &dcc_r))
 // 			return JAB_FAILURE;
 //
 // 		//module size must be consistent
 // 		if(!checkModuleSize2(module_size_r, module_size_g))
 // 			return JAB_FAILURE;
-// 		fp->module_size = (module_size_r + module_size_g) / 2.0f;
-// 		fp->center.x = (centerx_r + centerx_g) / 2.0f;
-// 		fp->center.y = (centery_r + centery_g) / 2.0f;
+// 		fp.module_size = (module_size_r + module_size_g) / 2.0f;
+// 		fp.center.x = (centerx_r + centerx_g) / 2.0f;
+// 		fp.center.y = (centery_r + centery_g) / 2.0f;
 //
 // 		//check b channel
 // 		int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 0))
+// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 0))
 // 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 1))
+// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 1))
 // 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 2))
+// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 2))
 // 			return JAB_FAILURE;
 //
 // 		if(dcc_r == 2 || dcc_g == 2)
-// 			fp->direction = 2;
+// 			fp.direction = 2;
 // 		else
-// 			fp->direction = (dir_r + dir_g) > 0 ? 1 : -1;
+// 			fp.direction = (dir_r + dir_g) > 0 ? 1 : -1;
 // 	}
 //
 // 	//Finder Pattern FP0 and FP3
-// 	if(fp->type == FP0 || fp->type == FP3)
+// 	if(fp.type == FP0 || fp.type == FP3)
 // 	{
 // 		//check b channel
-// 		jab_float module_size_b;
-// 		jab_float centerx_b = fp->center.x;
-// 		jab_float centery_b = fp->center.y;
+// 		double module_size_b;
+// 		double centerx_b = fp.center.x;
+// 		double centery_b = fp.center.y;
 // 		int dir_b = 0;
 // 		int dcc_b = 0;
-// 		if(!crossCheckPatternCh(ch[2], fp->type, h_v, module_size_max, &module_size_b, &centerx_b, &centery_b, &dir_b, &dcc_b))
+// 		if(!crossCheckPatternCh(ch[2], fp.type, h_v, module_size_max, &module_size_b, &centerx_b, &centery_b, &dir_b, &dcc_b))
 // 			return JAB_FAILURE;
 //
 // 		//module size must be consistent
 // 		if(!checkModuleSize2(module_size_g, module_size_b))
 // 			return JAB_FAILURE;
-// 		fp->module_size = (module_size_g + module_size_b) / 2.0f;
-// 		fp->center.x = (centerx_g + centerx_b) / 2.0f;
-// 		fp->center.y = (centery_g + centery_b) / 2.0f;
+// 		fp.module_size = (module_size_g + module_size_b) / 2.0f;
+// 		fp.center.x = (centerx_g + centerx_b) / 2.0f;
+// 		fp.center.y = (centery_g + centery_b) / 2.0f;
 //
 // 		//check r channel
 // 		int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 0))
+// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 0))
 // 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 1))
+// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 1))
 // 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp->module_size, 5, (int)fp->center.x, (int)fp->center.y, 2))
+// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 2))
 // 			return JAB_FAILURE;
 //
 // 		if(dcc_g == 2 || dcc_b == 2)
-// 			fp->direction = 2;
+// 			fp.direction = 2;
 // 		else
-// 			fp->direction = (dir_g + dir_b) > 0 ? 1 : -1;
+// 			fp.direction = (dir_g + dir_b) > 0 ? 1 : -1;
 // 	}
 //
 // 	return JAB_SUCCESS;
@@ -922,13 +928,13 @@ import 'dart:math';
 //     {
 //         if(aps[i].found_count > 0)
 //         {
-//             if( fabs(ap->center.x - aps[i].center.x) <= ap->module_size && fabs(ap->center.y - aps[i].center.y) <= ap->module_size &&
-//                 (fabs(ap->module_size - aps[i].module_size) <= aps[i].module_size || fabs(ap->module_size - aps[i].module_size) <= 1.0) &&
-//                 ap->type == aps[i].type )
+//             if( fabs(ap.center.x - aps[i].center.x) <= ap.module_size && fabs(ap.center.y - aps[i].center.y) <= ap.module_size &&
+//                 (fabs(ap.module_size - aps[i].module_size) <= aps[i].module_size || fabs(ap.module_size - aps[i].module_size) <= 1.0) &&
+//                 ap.type == aps[i].type )
 //             {
-//                 aps[i].center.x = ((jab_float)aps[i].found_count * aps[i].center.x + ap->center.x) / (jab_float)(aps[i].found_count + 1);
-//                 aps[i].center.y = ((jab_float)aps[i].found_count * aps[i].center.y + ap->center.y) / (jab_float)(aps[i].found_count + 1);
-//                 aps[i].module_size = ((jab_float)aps[i].found_count * aps[i].module_size + ap->module_size) / (jab_float)(aps[i].found_count + 1);
+//                 aps[i].center.x = ((double)aps[i].found_count * aps[i].center.x + ap.center.x) / (double)(aps[i].found_count + 1);
+//                 aps[i].center.y = ((double)aps[i].found_count * aps[i].center.y + ap.center.y) / (double)(aps[i].found_count + 1);
+//                 aps[i].module_size = ((double)aps[i].found_count * aps[i].module_size + ap.module_size) / (double)(aps[i].found_count + 1);
 //                 aps[i].found_count++;
 //                 return i;
 //             }
@@ -954,15 +960,15 @@ import 'dart:math';
 //     {
 //         if(fps[i].found_count > 0)
 //         {
-//             if( fabs(fp->center.x - fps[i].center.x) <= fp->module_size && fabs(fp->center.y - fps[i].center.y) <= fp->module_size &&
-//                 (fabs(fp->module_size - fps[i].module_size) <= fps[i].module_size || fabs(fp->module_size - fps[i].module_size) <= 1.0) &&
-//                 fp->type == fps[i].type)
+//             if( fabs(fp.center.x - fps[i].center.x) <= fp.module_size && fabs(fp.center.y - fps[i].center.y) <= fp.module_size &&
+//                 (fabs(fp.module_size - fps[i].module_size) <= fps[i].module_size || fabs(fp.module_size - fps[i].module_size) <= 1.0) &&
+//                 fp.type == fps[i].type)
 //             {
-//                 fps[i].center.x = ((jab_float)fps[i].found_count * fps[i].center.x + fp->center.x) / (jab_float)(fps[i].found_count + 1);
-//                 fps[i].center.y = ((jab_float)fps[i].found_count * fps[i].center.y + fp->center.y) / (jab_float)(fps[i].found_count + 1);
-//                 fps[i].module_size = ((jab_float)fps[i].found_count * fps[i].module_size + fp->module_size) / (jab_float)(fps[i].found_count + 1);
+//                 fps[i].center.x = ((double)fps[i].found_count * fps[i].center.x + fp.center.x) / (double)(fps[i].found_count + 1);
+//                 fps[i].center.y = ((double)fps[i].found_count * fps[i].center.y + fp.center.y) / (double)(fps[i].found_count + 1);
+//                 fps[i].module_size = ((double)fps[i].found_count * fps[i].module_size + fp.module_size) / (double)(fps[i].found_count + 1);
 //                 fps[i].found_count++;
-//                 fps[i].direction += fp->direction;
+//                 fps[i].direction += fp.direction;
 //                 return;
 //             }
 //         }
@@ -970,14 +976,14 @@ import 'dart:math';
 //     //add a new finder pattern
 //     fps[*counter] = *fp;
 //     (*counter)++;
-//     fp_type_count[fp->type]++;
+//     fp_type_count[fp.type]++;
 // }
 //
 // #if TEST_MODE
 // void drawFoundFinderPatterns(jab_finder_pattern* fps, int number, int color)
 // {
-//     int bytes_per_pixel = test_mode_bitmap->bits_per_pixel / 8;
-//     int bytes_per_row = test_mode_bitmap->width * bytes_per_pixel;
+//     int bytes_per_pixel = test_mode_bitmap.bits_per_pixel / 8;
+//     int bytes_per_row = test_mode_bitmap.width * bytes_per_pixel;
 //     for(int k = 0; k<number; k++)
 //     {
 //         if(fps[k].found_count > 0)
@@ -989,11 +995,11 @@ import 'dart:math';
 //             int endy = (int)(fps[k].center.y + fps[k].module_size/2 + 1 + 0.5f);
 //             for(int i=starty; i<endy; i++)
 //             {
-// 				if(i*bytes_per_row + centerx*bytes_per_pixel + 2 < test_mode_bitmap->width * test_mode_bitmap->height * bytes_per_pixel)
+// 				if(i*bytes_per_row + centerx*bytes_per_pixel + 2 < test_mode_bitmap.width * test_mode_bitmap.height * bytes_per_pixel)
 // 				{
-// 					test_mode_bitmap->pixel[i*bytes_per_row + centerx*bytes_per_pixel] 	   = (color >> 16) & 0xff;
-// 					test_mode_bitmap->pixel[i*bytes_per_row + centerx*bytes_per_pixel + 1] = (color >>  8) & 0xff;;
-// 					test_mode_bitmap->pixel[i*bytes_per_row + centerx*bytes_per_pixel + 2] = color & 0xff;
+// 					test_mode_bitmap.pixel[i*bytes_per_row + centerx*bytes_per_pixel] 	   = (color >> 16) & 0xff;
+// 					test_mode_bitmap.pixel[i*bytes_per_row + centerx*bytes_per_pixel + 1] = (color >>  8) & 0xff;;
+// 					test_mode_bitmap.pixel[i*bytes_per_row + centerx*bytes_per_pixel + 2] = color & 0xff;
 //                 }
 //                 else
 //                 {
@@ -1006,11 +1012,11 @@ import 'dart:math';
 //             int endx = (int)(fps[k].center.x + fps[k].module_size/2 + 1 + 0.5f);
 //             for(int i=startx; i<endx; i++)
 //             {
-// 				if(centery*bytes_per_row + i*bytes_per_pixel + 2 < test_mode_bitmap->width * test_mode_bitmap->height * bytes_per_pixel)
+// 				if(centery*bytes_per_row + i*bytes_per_pixel + 2 < test_mode_bitmap.width * test_mode_bitmap.height * bytes_per_pixel)
 // 				{
-// 					test_mode_bitmap->pixel[centery*bytes_per_row + i*bytes_per_pixel] 	   = (color >> 16) & 0xff;
-// 					test_mode_bitmap->pixel[centery*bytes_per_row + i*bytes_per_pixel + 1] = (color >>  8) & 0xff;;
-// 					test_mode_bitmap->pixel[centery*bytes_per_row + i*bytes_per_pixel + 2] = color & 0xff;
+// 					test_mode_bitmap.pixel[centery*bytes_per_row + i*bytes_per_pixel] 	   = (color >> 16) & 0xff;
+// 					test_mode_bitmap.pixel[centery*bytes_per_row + i*bytes_per_pixel + 1] = (color >>  8) & 0xff;;
+// 					test_mode_bitmap.pixel[centery*bytes_per_row + i*bytes_per_pixel + 2] = color & 0xff;
 //                 }
 //                 else
 //                 {
@@ -1030,7 +1036,7 @@ import 'dart:math';
 //  * @param mean the average module size
 //  * @param threshold the tolerance threshold
 // */
-// void removeBadPatterns(jab_finder_pattern* fps, int fp_count, jab_float mean, jab_float threshold)
+// void removeBadPatterns(jab_finder_pattern* fps, int fp_count, double mean, double threshold)
 // {
 //     int remove_count = 0;
 //     int backup[fp_count];
@@ -1046,11 +1052,11 @@ import 'dart:math';
 //     //in case all finder patterns were removed, recover the one whose module size differs from the mean minimally
 //     if(remove_count == fp_count)
 //     {
-//         jab_float min = (threshold + mean)* 100;
+//         double min = (threshold + mean)* 100;
 //         int min_index = 0;
 //         for(int i=0; i<fp_count; i++)
 //         {
-//             jab_float diff = (jab_float)fabs(fps[i].module_size - mean);
+//             double diff = (double)fabs(fps[i].module_size - mean);
 //             if(diff < min)
 //             {
 //                 min = diff;
@@ -1070,7 +1076,7 @@ import 'dart:math';
 // jab_finder_pattern getBestPattern(jab_finder_pattern* fps, int fp_count)
 // {
 //     int counter = 0;
-//     jab_float total_module_size = 0;
+//     double total_module_size = 0;
 //     for(int i=0; i<fp_count; i++)
 //     {
 //         if(fps[i].found_count > 0)
@@ -1079,10 +1085,10 @@ import 'dart:math';
 //             total_module_size += fps[i].module_size;
 //         }
 //     }
-//     jab_float mean = total_module_size / (jab_float)counter;
+//     double mean = total_module_size / (double)counter;
 //
 //     int max_found_count = 0;
-//     jab_float min_diff = 100;
+//     double min_diff = 100;
 //     int max_found_count_index = 0;
 //     for(int i=0; i<fp_count; i++)
 //     {
@@ -1092,14 +1098,14 @@ import 'dart:math';
 //             {
 //                 max_found_count = fps[i].found_count;
 //                 max_found_count_index = i;
-//                 min_diff = (jab_float)fabs(fps[i].module_size - mean);
+//                 min_diff = (double)fabs(fps[i].module_size - mean);
 //             }
 //             else if(fps[i].found_count == max_found_count)
 //             {
 //                 if( fabs(fps[i].module_size - mean) < min_diff )
 //                 {
 //                     max_found_count_index = i;
-//                     min_diff = (jab_float)fabs(fps[i].module_size - mean);
+//                     min_diff = (double)fabs(fps[i].module_size - mean);
 //                 }
 //             }
 //         }
@@ -1216,33 +1222,33 @@ import 'dart:math';
 // {
 //     jab_boolean done = 0;
 //
-//     for(int j=0; j<ch[0]->width && done == 0; j+=min_module_size)
+//     for(int j=0; j<ch[0].width && done == 0; j+=min_module_size)
 //     {
 //         int starty = 0;
-//         int endy = ch[0]->height;
+//         int endy = ch[0].height;
 //         int skip = 0;
 //
 //         do
 //         {
 //         	int type_r, type_g, type_b;
-// 			jab_float centery_r, centery_g, centery_b;
-// 			jab_float module_size_r, module_size_g, module_size_b;
+// 			double centery_r, centery_g, centery_b;
+// 			double module_size_r, module_size_g, module_size_b;
 // 			jab_boolean finder_pattern1_found = JAB_FAILURE;
 // 			jab_boolean finder_pattern2_found = JAB_FAILURE;
 //
 //             starty += skip;
-//             endy = ch[0]->height;
+//             endy = ch[0].height;
 //             //green channel
 //             if(seekPattern(ch[1], -1, j, &starty, &endy, &centery_g, &module_size_g, &skip))
 //             {
-//                 type_g = ch[1]->pixel[(int)(centery_g)*ch[0]->width + j] > 0 ? 255 : 0;
+//                 type_g = ch[1].pixel[(int)(centery_g)*ch[0].width + j] > 0 ? 255 : 0;
 //
 //                 centery_r = centery_g;
 //                 centery_b = centery_g;
 //                 //check blue channel for Finder Pattern UL and LL
-//                 if(crossCheckPatternVertical(ch[2], module_size_g*2, (jab_float)j, &centery_b, &module_size_b))
+//                 if(crossCheckPatternVertical(ch[2], module_size_g*2, (double)j, &centery_b, &module_size_b))
 //                 {
-//                     type_b = ch[2]->pixel[(int)(centery_b)*ch[2]->width + j] > 0 ? 255 : 0;
+//                     type_b = ch[2].pixel[(int)(centery_b)*ch[2].width + j] > 0 ? 255 : 0;
 //                     //check red channel
 //                     module_size_r = module_size_g;
 //                     int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
@@ -1253,9 +1259,9 @@ import 'dart:math';
 //                     }
 //                 }
 //                 //check red channel for Finder Pattern UR and LR
-//                 else if(crossCheckPatternVertical(ch[0], module_size_g*2, (jab_float)j, &centery_r, &module_size_r))
+//                 else if(crossCheckPatternVertical(ch[0], module_size_g*2, (double)j, &centery_r, &module_size_r))
 // 				{
-// 					type_r = ch[0]->pixel[(int)(centery_r)*ch[0]->width + j] > 0 ? 255 : 0;
+// 					type_r = ch[0].pixel[(int)(centery_r)*ch[0].width + j] > 0 ? 255 : 0;
 // 					//check blue channel
 // 					module_size_b = module_size_g;
 // 					int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
@@ -1269,7 +1275,7 @@ import 'dart:math';
 // 				if(finder_pattern1_found || finder_pattern2_found)
 // 				{
 // 					jab_finder_pattern fp;
-// 					fp.center.x = (jab_float)j;
+// 					fp.center.x = (double)j;
 // 					fp.found_count = 1;
 // 					if(finder_pattern1_found)
 // 					{
@@ -1327,7 +1333,7 @@ import 'dart:math';
 // 					}
 // 				}
 //             }
-//         }while(starty < ch[0]->height && endy < ch[0]->height);
+//         }while(starty < ch[0].height && endy < ch[0].height);
 //     }
 // }
 //
@@ -1340,11 +1346,11 @@ import 'dart:math';
 // void seekMissingFinderPattern(jab_bitmap* bitmap, jab_finder_pattern* fps, int miss_fp_index)
 // {
 // 	//determine the search area
-// 	jab_float radius = fps[miss_fp_index].module_size * 5;	//search radius
+// 	double radius = fps[miss_fp_index].module_size * 5;	//search radius
 // 	int start_x = (fps[miss_fp_index].center.x - radius) >= 0 ? (fps[miss_fp_index].center.x - radius) : 0;
 // 	int start_y = (fps[miss_fp_index].center.y - radius) >= 0 ? (fps[miss_fp_index].center.y - radius) : 0;
-// 	int end_x	  = (fps[miss_fp_index].center.x + radius) <= (bitmap->width - 1) ? (fps[miss_fp_index].center.x + radius) : (bitmap->width - 1);
-// 	int end_y   = (fps[miss_fp_index].center.y + radius) <= (bitmap->height- 1) ? (fps[miss_fp_index].center.y + radius) : (bitmap->height- 1);
+// 	int end_x	  = (fps[miss_fp_index].center.x + radius) <= (bitmap.width - 1) ? (fps[miss_fp_index].center.x + radius) : (bitmap.width - 1);
+// 	int end_y   = (fps[miss_fp_index].center.y + radius) <= (bitmap.height- 1) ? (fps[miss_fp_index].center.y + radius) : (bitmap.height- 1);
 // 	int area_width = end_x - start_x;
 // 	int area_height= end_y - start_y;
 //
@@ -1357,31 +1363,31 @@ import 'dart:math';
 // 			JAB_REPORT_INFO(("Memory allocation for binary bitmap failed, the missing finder pattern can not be found."))
 // 			return;
 // 		}
-// 		rgb[i]->width = area_width;
-// 		rgb[i]->height= area_height;
-// 		rgb[i]->bits_per_channel = 8;
-// 		rgb[i]->bits_per_pixel = 8;
-// 		rgb[i]->channel_count = 1;
+// 		rgb[i].width = area_width;
+// 		rgb[i].height= area_height;
+// 		rgb[i].bits_per_channel = 8;
+// 		rgb[i].bits_per_pixel = 8;
+// 		rgb[i].channel_count = 1;
 // 	}
 //
 // 	//calculate average pixel value
-// 	int bytes_per_pixel = bitmap->bits_per_pixel / 8;
-//     int bytes_per_row = bitmap->width * bytes_per_pixel;
-// 	jab_float pixel_sum[3] = {0, 0, 0};
-// 	jab_float pixel_ave[3];
+// 	int bytes_per_pixel = bitmap.bits_per_pixel / 8;
+//     int bytes_per_row = bitmap.width * bytes_per_pixel;
+// 	double pixel_sum[3] = {0, 0, 0};
+// 	double pixel_ave[3];
 // 	for(int i=start_y; i<end_y; i++)
 // 	{
 // 		for(int j=start_x; j<end_x; j++)
 // 		{
 // 			int offset = i * bytes_per_row + j * bytes_per_pixel;
-// 			pixel_sum[0] += bitmap->pixel[offset + 0];
-// 			pixel_sum[1] += bitmap->pixel[offset + 1];
-// 			pixel_sum[2] += bitmap->pixel[offset + 2];
+// 			pixel_sum[0] += bitmap.pixel[offset + 0];
+// 			pixel_sum[1] += bitmap.pixel[offset + 1];
+// 			pixel_sum[2] += bitmap.pixel[offset + 2];
 // 		}
 // 	}
-// 	pixel_ave[0] = pixel_sum[0] / (jab_float)(area_width * area_height);
-// 	pixel_ave[1] = pixel_sum[1] / (jab_float)(area_width * area_height);
-// 	pixel_ave[2] = pixel_sum[2] / (jab_float)(area_width * area_height);
+// 	pixel_ave[0] = pixel_sum[0] / (double)(area_width * area_height);
+// 	pixel_ave[1] = pixel_sum[1] / (double)(area_width * area_height);
+// 	pixel_ave[2] = pixel_sum[2] / (double)(area_width * area_height);
 //
 // 	//quantize the pixels inside the search area to black, cyan and yellow
 // 	for(int i=start_y, y=0; i<end_y; i++, y++)
@@ -1390,23 +1396,23 @@ import 'dart:math';
 // 		{
 // 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 // 			//check black pixel
-// 			if(bitmap->pixel[offset + 0] < pixel_ave[0] && bitmap->pixel[offset + 1] < pixel_ave[1] && bitmap->pixel[offset + 2] < pixel_ave[2])
+// 			if(bitmap.pixel[offset + 0] < pixel_ave[0] && bitmap.pixel[offset + 1] < pixel_ave[1] && bitmap.pixel[offset + 2] < pixel_ave[2])
 // 			{
-// 				rgb[0]->pixel[y*area_width + x] = 0;
-// 				rgb[1]->pixel[y*area_width + x] = 0;
-// 				rgb[2]->pixel[y*area_width + x] = 0;
+// 				rgb[0].pixel[y*area_width + x] = 0;
+// 				rgb[1].pixel[y*area_width + x] = 0;
+// 				rgb[2].pixel[y*area_width + x] = 0;
 // 			}
-// 			else if(bitmap->pixel[offset + 0] < bitmap->pixel[offset + 2])	//R < B
+// 			else if(bitmap.pixel[offset + 0] < bitmap.pixel[offset + 2])	//R < B
 // 			{
-// 				rgb[0]->pixel[y*area_width + x] = 0;
-// 				rgb[1]->pixel[y*area_width + x] = 255;
-// 				rgb[2]->pixel[y*area_width + x] = 255;
+// 				rgb[0].pixel[y*area_width + x] = 0;
+// 				rgb[1].pixel[y*area_width + x] = 255;
+// 				rgb[2].pixel[y*area_width + x] = 255;
 // 			}
 // 			else															//R > B
 // 			{
-// 				rgb[0]->pixel[y*area_width + x] = 255;
-// 				rgb[1]->pixel[y*area_width + x] = 255;
-// 				rgb[2]->pixel[y*area_width + x] = 0;
+// 				rgb[0].pixel[y*area_width + x] = 255;
+// 				rgb[1].pixel[y*area_width + x] = 255;
+// 				rgb[2].pixel[y*area_width + x] = 0;
 // 			}
 // 		}
 // 	}
@@ -1446,12 +1452,12 @@ import 'dart:math';
 // 	for(int i=0; i<area_height && done == 0; i++)
 //     {
 //         //get row
-//         jab_byte* row_r = rgb[0]->pixel + i*rgb[0]->width;
-//         jab_byte* row_g = rgb[1]->pixel + i*rgb[1]->width;
-//         jab_byte* row_b = rgb[2]->pixel + i*rgb[2]->width;
+//         jab_byte* row_r = rgb[0].pixel + i*rgb[0].width;
+//         jab_byte* row_g = rgb[1].pixel + i*rgb[1].width;
+//         jab_byte* row_b = rgb[2].pixel + i*rgb[2].width;
 //
 //         int startx = 0;
-//         int endx = rgb[0]->width;
+//         int endx = rgb[0].width;
 //         int skip = 0;
 //
 //         do
@@ -1459,12 +1465,12 @@ import 'dart:math';
 //         	jab_finder_pattern fp;
 //
 //         	int type_r, type_g, type_b;
-// 			jab_float centerx_r, centerx_g, centerx_b;
-// 			jab_float module_size_r, module_size_g, module_size_b;
+// 			double centerx_r, centerx_g, centerx_b;
+// 			double module_size_r, module_size_g, module_size_b;
 // 			jab_boolean finder_pattern_found = JAB_FAILURE;
 //
 //             startx += skip;
-//             endx = rgb[0]->width;
+//             endx = rgb[0].width;
 //             //green channel
 //             if(seekPatternHorizontal(row_g, &startx, &endx, &centerx_g, &module_size_g, &skip))
 //             {
@@ -1478,7 +1484,7 @@ import 'dart:math';
 // 				case 0:
 // 				case 3:
 // 					//check blue channel for Finder Pattern UL and LL
-// 					if(crossCheckPatternHorizontal(rgb[2], module_size_g*2, &centerx_b, (jab_float)i, &module_size_b))
+// 					if(crossCheckPatternHorizontal(rgb[2], module_size_g*2, &centerx_b, (double)i, &module_size_b))
 // 					{
 // 						type_b = row_b[(int)(centerx_b)] > 0 ? 255 : 0;
 // 						if(type_b != exp_type_b) continue;
@@ -1501,7 +1507,7 @@ import 'dart:math';
 // 				case 1:
 // 				case 2:
 // 					//check red channel for Finder Pattern UR and LR
-// 					if(crossCheckPatternHorizontal(rgb[0], module_size_g*2, &centerx_r, (jab_float)i, &module_size_r))
+// 					if(crossCheckPatternHorizontal(rgb[0], module_size_g*2, &centerx_r, (double)i, &module_size_r))
 // 					{
 // 						type_r = row_r[(int)(centerx_r)] > 0 ? 255 : 0;
 // 						if(type_r != exp_type_r) continue;
@@ -1525,7 +1531,7 @@ import 'dart:math';
 // 				//finder pattern candidate found
 // 				if(finder_pattern_found)
 // 				{
-// 					fp.center.y = (jab_float)i;
+// 					fp.center.y = (double)i;
 // 					fp.found_count = 1;
 // 					fp.type = miss_fp_index;
 // 					//cross check
@@ -1541,7 +1547,7 @@ import 'dart:math';
 // 					}
 // 				}
 //             }
-//         }while(startx < rgb[0]->width && endx < rgb[0]->width);
+//         }while(startx < rgb[0].width && endx < rgb[0].width);
 //     }
 // 	//if the missing FP is found, get the best found
 // 	if(total_finder_patterns > 0)
@@ -1562,270 +1568,270 @@ import 'dart:math';
 //         fps[miss_fp_index].center.y += start_y;
 //     }
 // }
-//
-// /**
-//  * @brief Find the master symbol in the image
-//  * @param bitmap the image bitmap
-//  * @param ch the binarized color channels of the image
-//  * @param mode the detection mode
-//  * @param status the detection status
-//  * @return the finder pattern list | NULL
-// */
-// jab_finder_pattern* findMasterSymbol(jab_bitmap* bitmap, jab_bitmap* ch[], jab_detect_mode mode, int* status)
-// {
-//     //suppose the code size is minimally 1/4 image size
-//     int min_module_size = ch[0]->height / (2 * MAX_SYMBOL_ROWS * MAX_MODULES);
-//     if(min_module_size < 1 || mode == INTENSIVE_DETECT) min_module_size = 1;
-//
-//     jab_finder_pattern* fps = (jab_finder_pattern*)calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
-//     if(fps == NULL)
-//     {
-//         reportError("Memory allocation for finder patterns failed");
-//         *status = FATAL_ERROR;
-//         return NULL;
-//     }
-//     int total_finder_patterns = 0;
-//     jab_boolean done = 0;
-//     int fp_type_count[4] = {0};
-//
-//     for(int i=0; i<ch[0]->height && done == 0; i+=min_module_size)
-//     {
-//         //get row
-//         jab_byte* row_r = ch[0]->pixel + i*ch[0]->width;
-//         jab_byte* row_g = ch[1]->pixel + i*ch[1]->width;
-//         jab_byte* row_b = ch[2]->pixel + i*ch[2]->width;
-//
-//         int startx = 0;
-//         int endx = ch[0]->width;
-//         int skip = 0;
-//
-//         do
-//         {
-//         	int type_r, type_g, type_b;
-// 			jab_float centerx_r, centerx_g, centerx_b;
-// 			jab_float module_size_r, module_size_g, module_size_b;
-// 			jab_boolean finder_pattern1_found = JAB_FAILURE;
-// 			jab_boolean finder_pattern2_found = JAB_FAILURE;
-//
-//             startx += skip;
-//             endx = ch[0]->width;
-//             //green channel
-//             if(seekPatternHorizontal(row_g, &startx, &endx, &centerx_g, &module_size_g, &skip))
-//             {
-//                 type_g = row_g[(int)(centerx_g)] > 0 ? 255 : 0;
-//
-//                 centerx_r = centerx_g;
-//                 centerx_b = centerx_g;
-//                 //check blue channel for Finder Pattern UL and LL
-//                 if(crossCheckPatternHorizontal(ch[2], module_size_g*2, &centerx_b, (jab_float)i, &module_size_b))
-//                 {
-//                     type_b = row_b[(int)(centerx_b)] > 0 ? 255 : 0;
-//                     //check red channel
-//                     module_size_r = module_size_g;
-//                     int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-//                     if(crossCheckColor(ch[0], core_color_in_red_channel, module_size_r, 5, (int)centerx_r, i, 0))
-//                     {
-//                     	type_r = 0;
-//                     	finder_pattern1_found = JAB_SUCCESS;
-//                     }
-//                 }
-//                 //check red channel for Finder Pattern UR and LR
-//                 else if(crossCheckPatternHorizontal(ch[0], module_size_g*2, &centerx_r, (jab_float)i, &module_size_r))
-//                 {
-//                 	type_r = row_r[(int)(centerx_r)] > 0 ? 255 : 0;
-//                 	//check blue channel
-//                     module_size_b = module_size_g;
-//                     int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-//                     if(crossCheckColor(ch[2], core_color_in_blue_channel, module_size_b, 5, (int)centerx_b, i, 0))
-//                     {
-//                     	type_b = 0;
-//                     	finder_pattern2_found = JAB_SUCCESS;
-//                     }
-//                 }
-// 				//finder pattern candidate found
-// 				if(finder_pattern1_found || finder_pattern2_found)
-// 				{
-// 					jab_finder_pattern fp;
-// 					fp.center.y = (jab_float)i;
-// 					fp.found_count = 1;
-// 					if(finder_pattern1_found)
-// 					{
-// 						if(!checkModuleSize2(module_size_g, module_size_b)) continue;
-// 						fp.center.x = (centerx_g + centerx_b) / 2.0f;
-// 						fp.module_size = (module_size_g + module_size_b) / 2.0f;
-// 						if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
-// 							type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
-// 							type_b == jab_default_palette[FP0_CORE_COLOR * 3 + 2])
-// 						{
-// 							fp.type = FP0;	//candidate for fp0
-// 						}
-// 						else if(type_r == jab_default_palette[FP3_CORE_COLOR * 3] &&
-// 								type_g == jab_default_palette[FP3_CORE_COLOR * 3 + 1] &&
-// 								type_b == jab_default_palette[FP3_CORE_COLOR * 3 + 2])
-// 						{
-// 							fp.type = FP3;	//candidate for fp3
-// 						}
-// 						else
-// 						{
-// 							continue;		//invalid type
-// 						}
-// 					}
-// 					else if(finder_pattern2_found)
-// 					{
-// 						if(!checkModuleSize2(module_size_r, module_size_g)) continue;
-// 						fp.center.x = (centerx_r + centerx_g) / 2.0f;
-// 						fp.module_size = (module_size_r + module_size_g) / 2.0f;
-// 						if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
-// 						   type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
-// 						   type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
-// 						{
-// 							fp.type = FP1;	//candidate for fp1
-// 						}
-// 						else if(type_r == jab_default_palette[FP2_CORE_COLOR * 3] &&
-// 								type_g == jab_default_palette[FP2_CORE_COLOR * 3 + 1] &&
-// 								type_b == jab_default_palette[FP2_CORE_COLOR * 3 + 2])
-// 						{
-// 							fp.type = FP2;	//candidate for fp2
-// 						}
-// 						else
-// 						{
-// 							continue;		//invalid type
-// 						}
-// 					}
-// 					//cross check
-// 					if( crossCheckPattern(ch, &fp, 0) )
-// 					{
-// 						saveFinderPattern(&fp, fps, &total_finder_patterns, fp_type_count);
-// 						if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) )
-// 						{
-// 							done = 1;
-// 							break;
-// 						}
-// 					}
-// 				}
-//             }
-//         }while(startx < ch[0]->width && endx < ch[0]->width);
-//     }
-//
-//     //if only FP0 and FP1 are found or only FP2 and FP3 are found, do vertical-scan
-// 	if( (fp_type_count[0] != 0 && fp_type_count[1] !=0 && fp_type_count[2] == 0 && fp_type_count[3] == 0) ||
-// 	    (fp_type_count[0] == 0 && fp_type_count[1] ==0 && fp_type_count[2] != 0 && fp_type_count[3] != 0) )
-// 	{
-// 		scanPatternVertical(ch, min_module_size, fps, fp_type_count, &total_finder_patterns);
-// 		//set dir to 2?
-// 	}
-//
-//
-// #if TEST_MODE
-//     //output all found finder patterns
-//     JAB_REPORT_INFO(("Total found: %d", total_finder_patterns))
-//     for(int i=0; i<total_finder_patterns; i++)
-//     {
-//         JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
-//     }
-//     drawFoundFinderPatterns(fps, total_finder_patterns, 0x00ff00);
-//     saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
-// #endif
-//
-//     //set finder patterns' direction
-// 	for(int i=0; i<total_finder_patterns; i++)
-// 	{
-// 		fps[i].direction = fps[i].direction >=0 ? 1 : -1;
-// 	}
-// 	//select best patterns
-// 	int missing_fp_count = selectBestPatterns(fps, total_finder_patterns, fp_type_count);
-//
-// 	//if more than one finder patterns are missing, detection fails
-// 	if(missing_fp_count > 1)
-// 	{
-// 		reportError("Too few finder pattern found");
-// 		*status = JAB_FAILURE;
-// 		return fps;
-// 	}
-//
-//     //if only one finder pattern is missing, try anyway by estimating the missing one
-//     if(missing_fp_count == 1)
-//     {
-//         //estimate the missing finder pattern
-//         int miss_fp = 0;
-//         if(fps[0].found_count == 0)
-//         {
-// 			miss_fp = 0;
-// 			jab_float ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0f;
-// 			jab_float ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0f;
-// 			fps[0].center.x = (fps[3].center.x - fps[2].center.x) / ave_size_fp23 * ave_size_fp13 + fps[1].center.x;
-// 			fps[0].center.y = (fps[3].center.y - fps[2].center.y) / ave_size_fp23 * ave_size_fp13 + fps[1].center.y;
-// 			fps[0].type = FP0;
-// 			fps[0].found_count = 1;
-// 			fps[0].direction = -fps[1].direction;
-// 			fps[0].module_size = (fps[1].module_size + fps[2].module_size + fps[3].module_size) / 3.0f;
-//         }
-//         else if(fps[1].found_count == 0)
-//         {
-// 			miss_fp = 1;
-// 			jab_float ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0f;
-// 			jab_float ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0f;
-// 			fps[1].center.x = (fps[2].center.x - fps[3].center.x) / ave_size_fp23 * ave_size_fp02 + fps[0].center.x;
-// 			fps[1].center.y = (fps[2].center.y - fps[3].center.y) / ave_size_fp23 * ave_size_fp02 + fps[0].center.y;
-// 			fps[1].type = FP1;
-// 			fps[1].found_count = 1;
-// 			fps[1].direction = -fps[0].direction;
-// 			fps[1].module_size = (fps[0].module_size + fps[2].module_size + fps[3].module_size) / 3.0f;
-//         }
-//         else if(fps[2].found_count == 0)
-//         {
-// 			miss_fp = 2;
-// 			jab_float ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0f;
-// 			jab_float ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0f;
-// 			fps[2].center.x = (fps[1].center.x - fps[0].center.x) / ave_size_fp01 * ave_size_fp13 + fps[3].center.x;
-// 			fps[2].center.y = (fps[1].center.y - fps[0].center.y) / ave_size_fp01 * ave_size_fp13 + fps[3].center.y;
-// 			fps[2].type = FP2;
-// 			fps[2].found_count = 1;
-// 			fps[2].direction = fps[3].direction;
-// 			fps[2].module_size = (fps[0].module_size + fps[1].module_size + fps[3].module_size) / 3.0f;
-//         }
-//         else if(fps[3].found_count == 0)
-//         {
-// 			miss_fp = 3;
-// 			jab_float ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0f;
-// 			jab_float ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0f;
-// 			fps[3].center.x = (fps[0].center.x - fps[1].center.x) / ave_size_fp01 * ave_size_fp02 + fps[2].center.x;
-// 			fps[3].center.y = (fps[0].center.y - fps[1].center.y) / ave_size_fp01 * ave_size_fp02 + fps[2].center.y;
-// 			fps[3].type = FP3;
-// 			fps[3].found_count = 1;
-// 			fps[3].direction = fps[2].direction;
-// 			fps[3].module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size) / 3.0f;
-//         }
-//         //check the position of the missed finder pattern
-// 		if(fps[miss_fp].center.x < 0 || fps[miss_fp].center.x > ch[0]->width - 1 ||
-// 		   fps[miss_fp].center.y < 0 || fps[miss_fp].center.y > ch[0]->height - 1)
-// 		{
-// 			JAB_REPORT_ERROR(("Finder pattern %d out of image", miss_fp))
-// 			fps[miss_fp].found_count = 0;
-// 			*status = JAB_FAILURE;
-// 			return fps;
-// 		}
-//
-// 		//try to find the missing finder pattern by a local search at the estimated position
-// #if TEST_MODE
-// 		JAB_REPORT_INFO(("Trying to confirm the missing finder pattern by a local search"))
-// #endif
-// 		seekMissingFinderPattern(bitmap, fps, miss_fp);
-//     }
-// #if TEST_MODE
-//     //output the final selected 4 patterns
-//     JAB_REPORT_INFO(("Final patterns:"))
-//     for(int i=0; i<4; i++)
-//     {
-//         JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
-//     }
-// 	drawFoundFinderPatterns(fps, 4, 0xff0000);
-// 	saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
-// #endif
-//     *status = JAB_SUCCESS;
-//     return fps;
-// }
-//
+
+/**
+ * @brief Find the master symbol in the image
+ * @param bitmap the image bitmap
+ * @param ch the binarized color channels of the image
+ * @param mode the detection mode
+ * @param status the detection status
+ * @return the finder pattern list | NULL
+*/
+jab_finder_pattern findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode, int status)
+{
+    //suppose the code size is minimally 1/4 image size
+    int min_module_size = (ch[0].height / (2 * MAX_SYMBOL_ROWS * MAX_MODULES)).toInt();
+    if(min_module_size < 1 || mode == jab_detect_mode.INTENSIVE_DETECT) min_module_size = 1;
+
+    var fps = List<jab_finder_pattern>.filled (MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
+    if(fps == null)
+    {
+        // reportError("Memory allocation for finder patterns failed");
+        status = FATAL_ERROR;
+        return null;
+    }
+    int total_finder_patterns = 0;
+    bool done = false;
+    var fp_type_count = List<int>.filled(4, 0);;
+
+    for(int i=0; i<ch[0].height && done == 0; i+=min_module_size)
+    {
+        //get row
+        var row_r = ch[0].pixel.sublist(i*ch[0].width); //ch[0].pixel + i*ch[0].width;
+				var row_g = ch[1].pixel.sublist(i*ch[1].width); //ch[1].pixel + i*ch[1].width
+				var row_b = ch[2].pixel.sublist(i*ch[2].width); //ch[2].pixel + i*ch[2].width
+
+        int startx = 0;
+        int endx = ch[0].width;
+        int skip = 0;
+
+        do
+        {
+        	int type_r, type_g, type_b;
+					double centerx_r, centerx_g, centerx_b;
+					double module_size_r, module_size_g, module_size_b;
+					var finder_pattern1_found = JAB_FAILURE;
+					var finder_pattern2_found = JAB_FAILURE;
+
+            startx += skip;
+            endx = ch[0].width;
+            //green channel
+            if(seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip) == 1)
+            {
+                type_g = row_g[centerx_g] > 0 ? 255 : 0;
+
+                centerx_r = centerx_g;
+                centerx_b = centerx_g;
+                //check blue channel for Finder Pattern UL and LL
+                if(crossCheckPatternHorizontal(ch[2], module_size_g*2, &centerx_b, (double)i, &module_size_b))
+                {
+                    type_b = row_b[centerx_b] > 0 ? 255 : 0;
+                    //check red channel
+                    module_size_r = module_size_g;
+                    int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+                    if(crossCheckColor(ch[0], core_color_in_red_channel, module_size_r, 5, (int)centerx_r, i, 0))
+                    {
+                    	type_r = 0;
+                    	finder_pattern1_found = JAB_SUCCESS;
+                    }
+                }
+                //check red channel for Finder Pattern UR and LR
+                else if(crossCheckPatternHorizontal(ch[0], module_size_g*2, &centerx_r, (double)i, &module_size_r))
+                {
+                	type_r = row_r[(int)(centerx_r)] > 0 ? 255 : 0;
+                	//check blue channel
+                    module_size_b = module_size_g;
+                    int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+                    if(crossCheckColor(ch[2], core_color_in_blue_channel, module_size_b, 5, (int)centerx_b, i, 0))
+                    {
+                    	type_b = 0;
+                    	finder_pattern2_found = JAB_SUCCESS;
+                    }
+                }
+				//finder pattern candidate found
+				if(finder_pattern1_found || finder_pattern2_found)
+				{
+					jab_finder_pattern fp;
+					fp.center.y = (double)i;
+					fp.found_count = 1;
+					if(finder_pattern1_found)
+					{
+						if(!checkModuleSize2(module_size_g, module_size_b)) continue;
+						fp.center.x = (centerx_g + centerx_b) / 2.0f;
+						fp.module_size = (module_size_g + module_size_b) / 2.0f;
+						if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
+							type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
+							type_b == jab_default_palette[FP0_CORE_COLOR * 3 + 2])
+						{
+							fp.type = FP0;	//candidate for fp0
+						}
+						else if(type_r == jab_default_palette[FP3_CORE_COLOR * 3] &&
+								type_g == jab_default_palette[FP3_CORE_COLOR * 3 + 1] &&
+								type_b == jab_default_palette[FP3_CORE_COLOR * 3 + 2])
+						{
+							fp.type = FP3;	//candidate for fp3
+						}
+						else
+						{
+							continue;		//invalid type
+						}
+					}
+					else if(finder_pattern2_found)
+					{
+						if(!checkModuleSize2(module_size_r, module_size_g)) continue;
+						fp.center.x = (centerx_r + centerx_g) / 2.0f;
+						fp.module_size = (module_size_r + module_size_g) / 2.0f;
+						if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
+						   type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
+						   type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
+						{
+							fp.type = FP1;	//candidate for fp1
+						}
+						else if(type_r == jab_default_palette[FP2_CORE_COLOR * 3] &&
+								type_g == jab_default_palette[FP2_CORE_COLOR * 3 + 1] &&
+								type_b == jab_default_palette[FP2_CORE_COLOR * 3 + 2])
+						{
+							fp.type = FP2;	//candidate for fp2
+						}
+						else
+						{
+							continue;		//invalid type
+						}
+					}
+					//cross check
+					if( crossCheckPattern(ch, &fp, 0) )
+					{
+						saveFinderPattern(&fp, fps, &total_finder_patterns, fp_type_count);
+						if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) )
+						{
+							done = 1;
+							break;
+						}
+					}
+				}
+            }
+        }while(startx < ch[0].width && endx < ch[0].width);
+    }
+
+    //if only FP0 and FP1 are found or only FP2 and FP3 are found, do vertical-scan
+	if( (fp_type_count[0] != 0 && fp_type_count[1] !=0 && fp_type_count[2] == 0 && fp_type_count[3] == 0) ||
+	    (fp_type_count[0] == 0 && fp_type_count[1] ==0 && fp_type_count[2] != 0 && fp_type_count[3] != 0) )
+	{
+		scanPatternVertical(ch, min_module_size, fps, fp_type_count, &total_finder_patterns);
+		//set dir to 2?
+	}
+
+
+#if TEST_MODE
+    //output all found finder patterns
+    JAB_REPORT_INFO(("Total found: %d", total_finder_patterns))
+    for(int i=0; i<total_finder_patterns; i++)
+    {
+        JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
+    }
+    drawFoundFinderPatterns(fps, total_finder_patterns, 0x00ff00);
+    saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
+#endif
+
+    //set finder patterns' direction
+	for(int i=0; i<total_finder_patterns; i++)
+	{
+		fps[i].direction = fps[i].direction >=0 ? 1 : -1;
+	}
+	//select best patterns
+	int missing_fp_count = selectBestPatterns(fps, total_finder_patterns, fp_type_count);
+
+	//if more than one finder patterns are missing, detection fails
+	if(missing_fp_count > 1)
+	{
+		reportError("Too few finder pattern found");
+		*status = JAB_FAILURE;
+		return fps;
+	}
+
+    //if only one finder pattern is missing, try anyway by estimating the missing one
+    if(missing_fp_count == 1)
+    {
+        //estimate the missing finder pattern
+        int miss_fp = 0;
+        if(fps[0].found_count == 0)
+        {
+			miss_fp = 0;
+			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0f;
+			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0f;
+			fps[0].center.x = (fps[3].center.x - fps[2].center.x) / ave_size_fp23 * ave_size_fp13 + fps[1].center.x;
+			fps[0].center.y = (fps[3].center.y - fps[2].center.y) / ave_size_fp23 * ave_size_fp13 + fps[1].center.y;
+			fps[0].type = FP0;
+			fps[0].found_count = 1;
+			fps[0].direction = -fps[1].direction;
+			fps[0].module_size = (fps[1].module_size + fps[2].module_size + fps[3].module_size) / 3.0f;
+        }
+        else if(fps[1].found_count == 0)
+        {
+			miss_fp = 1;
+			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0f;
+			double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0f;
+			fps[1].center.x = (fps[2].center.x - fps[3].center.x) / ave_size_fp23 * ave_size_fp02 + fps[0].center.x;
+			fps[1].center.y = (fps[2].center.y - fps[3].center.y) / ave_size_fp23 * ave_size_fp02 + fps[0].center.y;
+			fps[1].type = FP1;
+			fps[1].found_count = 1;
+			fps[1].direction = -fps[0].direction;
+			fps[1].module_size = (fps[0].module_size + fps[2].module_size + fps[3].module_size) / 3.0f;
+        }
+        else if(fps[2].found_count == 0)
+        {
+			miss_fp = 2;
+			double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0f;
+			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0f;
+			fps[2].center.x = (fps[1].center.x - fps[0].center.x) / ave_size_fp01 * ave_size_fp13 + fps[3].center.x;
+			fps[2].center.y = (fps[1].center.y - fps[0].center.y) / ave_size_fp01 * ave_size_fp13 + fps[3].center.y;
+			fps[2].type = FP2;
+			fps[2].found_count = 1;
+			fps[2].direction = fps[3].direction;
+			fps[2].module_size = (fps[0].module_size + fps[1].module_size + fps[3].module_size) / 3.0f;
+        }
+        else if(fps[3].found_count == 0)
+        {
+			miss_fp = 3;
+			double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0f;
+			double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0f;
+			fps[3].center.x = (fps[0].center.x - fps[1].center.x) / ave_size_fp01 * ave_size_fp02 + fps[2].center.x;
+			fps[3].center.y = (fps[0].center.y - fps[1].center.y) / ave_size_fp01 * ave_size_fp02 + fps[2].center.y;
+			fps[3].type = FP3;
+			fps[3].found_count = 1;
+			fps[3].direction = fps[2].direction;
+			fps[3].module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size) / 3.0f;
+        }
+        //check the position of the missed finder pattern
+		if(fps[miss_fp].center.x < 0 || fps[miss_fp].center.x > ch[0].width - 1 ||
+		   fps[miss_fp].center.y < 0 || fps[miss_fp].center.y > ch[0].height - 1)
+		{
+			JAB_REPORT_ERROR(("Finder pattern %d out of image", miss_fp))
+			fps[miss_fp].found_count = 0;
+			*status = JAB_FAILURE;
+			return fps;
+		}
+
+		//try to find the missing finder pattern by a local search at the estimated position
+#if TEST_MODE
+		JAB_REPORT_INFO(("Trying to confirm the missing finder pattern by a local search"))
+#endif
+		seekMissingFinderPattern(bitmap, fps, miss_fp);
+    }
+#if TEST_MODE
+    //output the final selected 4 patterns
+    JAB_REPORT_INFO(("Final patterns:"))
+    for(int i=0; i<4; i++)
+    {
+        JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
+    }
+	drawFoundFinderPatterns(fps, 4, 0xff0000);
+	saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
+#endif
+    *status = JAB_SUCCESS;
+    return fps;
+}
+
 // /**
 //  * @brief Crosscheck the alignment pattern candidate in diagonal direction
 //  * @param image the image bitmap
@@ -1835,7 +1841,7 @@ import 'dart:math';
 //  * @param dir the alignment pattern direction
 //  * @return the y coordinate of the diagonal scanline center | -1 if failed
 // */
-// jab_float crossCheckPatternDiagonalAP(jab_bitmap* image, int ap_type, int module_size_max, jab_point center, int* dir)
+// double crossCheckPatternDiagonalAP(jab_bitmap* image, int ap_type, int module_size_max, jab_point center, int* dir)
 // {
 //     int offset_x, offset_y;
 //     jab_boolean fix_dir = 0;
@@ -1889,7 +1895,7 @@ import 'dart:math';
 //         state_count[1]++;
 //         for(i=1, state_index=0; i<=starty && i<=startx && state_index<=1; i++)
 //         {
-//             if( image->pixel[(starty + i*offset_y)*image->width + (startx + i*offset_x)] == image->pixel[(starty + (i-1)*offset_y)*image->width + (startx + (i-1)*offset_x)] )
+//             if( image.pixel[(starty + i*offset_y)*image.width + (startx + i*offset_x)] == image.pixel[(starty + (i-1)*offset_y)*image.width + (startx + (i-1)*offset_x)] )
 //             {
 //                 state_count[1 - state_index]++;
 //             }
@@ -1924,9 +1930,9 @@ import 'dart:math';
 //
 // 		if(!flag)
 // 		{
-// 			for(i=1, state_index=0; (starty+i)<image->height && (startx+i)<image->width && state_index<=1; i++)
+// 			for(i=1, state_index=0; (starty+i)<image.height && (startx+i)<image.width && state_index<=1; i++)
 // 			{
-// 				if( image->pixel[(starty - i*offset_y)*image->width + (startx - i*offset_x)] == image->pixel[(starty - (i-1)*offset_y)*image->width + (startx - (i-1)*offset_x)] )
+// 				if( image.pixel[(starty - i*offset_y)*image.width + (startx - i*offset_x)] == image.pixel[(starty - (i-1)*offset_y)*image.width + (startx - (i-1)*offset_x)] )
 // 				{
 // 					state_count[1 + state_index]++;
 // 				}
@@ -1965,7 +1971,7 @@ import 'dart:math';
 // 			//check module size, if it is too big, assume it is a false positive
 // 			if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1])
 // 			{
-// 				jab_float new_centery = (jab_float)(starty + i - state_count[2]) - (jab_float)state_count[1] / 2.0f;
+// 				double new_centery = (double)(starty + i - state_count[2]) - (double)state_count[1] / 2.0f;
 // 				return new_centery;
 // 			}
 // 			else
@@ -1989,7 +1995,7 @@ import 'dart:math';
 //  * @param module_size the module size in vertical direction
 //  * @return the y coordinate of the vertical scanline center | -1 if failed
 // */
-// jab_float crossCheckPatternVerticalAP(jab_bitmap* image, jab_point center, int module_size_max, jab_float* module_size)
+// double crossCheckPatternVerticalAP(jab_bitmap* image, jab_point center, int module_size_max, double* module_size)
 // {
 //     int state_count[3] = {0};
 //     int centerx = (int)center.x;
@@ -1999,7 +2005,7 @@ import 'dart:math';
 //     state_count[1]++;
 //     for(i=1, state_index=0; i<=centery && state_index<=1; i++)
 //     {
-//         if( image->pixel[(centery-i)*image->width + centerx] == image->pixel[(centery-(i-1))*image->width + centerx] )
+//         if( image.pixel[(centery-i)*image.width + centerx] == image.pixel[(centery-(i-1))*image.width + centerx] )
 //         {
 //             state_count[1 - state_index]++;
 //         }
@@ -2023,9 +2029,9 @@ import 'dart:math';
 //     if(state_index < 1)
 //         return -1;
 //
-//     for(i=1, state_index=0; (centery+i)<image->height && state_index<=1; i++)
+//     for(i=1, state_index=0; (centery+i)<image.height && state_index<=1; i++)
 //     {
-//         if( image->pixel[(centery+i)*image->width + centerx] == image->pixel[(centery+(i-1))*image->width + centerx] )
+//         if( image.pixel[(centery+i)*image.width + centerx] == image.pixel[(centery+(i-1))*image.width + centerx] )
 //         {
 //             state_count[1 + state_index]++;
 //         }
@@ -2053,7 +2059,7 @@ import 'dart:math';
 //     if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1])
 //     {
 //         *module_size = state_count[1];
-//         jab_float new_centery = (jab_float)(centery + i - state_count[2]) - (jab_float)state_count[1] / 2.0f;
+//         double new_centery = (double)(centery + i - state_count[2]) - (double)state_count[1] / 2.0f;
 //         return new_centery;
 //     }
 //     return -1;
@@ -2071,7 +2077,7 @@ import 'dart:math';
 //  * @param module_size the module size in horizontal direction
 //  * @return the x coordinate of the horizontal scanline center | -1 if failed
 // */
-// jab_float crossCheckPatternHorizontalAP(jab_byte* row, int channel, int startx, int endx, int centerx, int ap_type, jab_float module_size_max, jab_float* module_size)
+// double crossCheckPatternHorizontalAP(jab_byte* row, int channel, int startx, int endx, int centerx, int ap_type, double module_size_max, double* module_size)
 // {
 //     int core_color = -1;
 //     switch(ap_type)
@@ -2155,7 +2161,7 @@ import 'dart:math';
 //     if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1])
 //     {
 //         *module_size = state_count[1];
-//         jab_float new_centerx = (jab_float)(centerx + i - state_count[2]) - (jab_float)state_count[1] / 2.0f;
+//         double new_centerx = (double)(centerx + i - state_count[2]) - (double)state_count[1] / 2.0f;
 //         return new_centerx;
 //     }
 //     return -1;
@@ -2176,16 +2182,16 @@ import 'dart:math';
 //  * @param dir the alignment pattern direction
 //  * @return JAB_SUCCESS | JAB_FAILURE
 // */
-// jab_boolean crossCheckPatternAP(jab_bitmap* ch[], int y, int minx, int maxx, int cur_x, int ap_type, jab_float max_module_size, jab_float* centerx, jab_float* centery, jab_float* module_size, int* dir)
+// jab_boolean crossCheckPatternAP(jab_bitmap* ch[], int y, int minx, int maxx, int cur_x, int ap_type, double max_module_size, double* centerx, double* centery, double* module_size, int* dir)
 // {
 // 	//get row
-// 	jab_byte* row_r = ch[0]->pixel + y*ch[0]->width;
-// 	jab_byte* row_b = ch[2]->pixel + y*ch[2]->width;
+// 	jab_byte* row_r = ch[0].pixel + y*ch[0].width;
+// 	jab_byte* row_b = ch[2].pixel + y*ch[2].width;
 //
-// 	jab_float l_centerx[3] = {0.0f};
-// 	jab_float l_centery[3] = {0.0f};
-// 	jab_float l_module_size_h[3] = {0.0f};
-// 	jab_float l_module_size_v[3] = {0.0f};
+// 	double l_centerx[3] = {0.0f};
+// 	double l_centery[3] = {0.0f};
+// 	double l_module_size_h[3] = {0.0f};
+// 	double l_module_size_v[3] = {0.0f};
 //
 // 	//check r channel horizontally
 // 	l_centerx[0] = crossCheckPatternHorizontalAP(row_r, 0, minx, maxx, cur_x, ap_type, max_module_size, &l_module_size_h[0]);
@@ -2225,7 +2231,7 @@ import 'dart:math';
 // 	l_centery[0] = crossCheckPatternVerticalAP(ch[0], center, max_module_size, &l_module_size_v[0]);
 // 	if(l_centery[0] < 0) return JAB_FAILURE;
 // 	//again horizontally
-// 	row_r = ch[0]->pixel + ((int)l_centery[0])*ch[0]->width;
+// 	row_r = ch[0].pixel + ((int)l_centery[0])*ch[0].width;
 // 	l_centerx[0] = crossCheckPatternHorizontalAP(row_r, 0, minx, maxx, center.x, ap_type, max_module_size, &l_module_size_h[0]);
 // 	if(l_centerx[0] < 0) return JAB_FAILURE;
 //
@@ -2233,7 +2239,7 @@ import 'dart:math';
 // 	l_centery[2] = crossCheckPatternVerticalAP(ch[2], center, max_module_size, &l_module_size_v[2]);
 // 	if(l_centery[2] < 0) return JAB_FAILURE;
 // 	//again horizontally
-// 	row_b = ch[2]->pixel + ((int)l_centery[2])*ch[2]->width;
+// 	row_b = ch[2].pixel + ((int)l_centery[2])*ch[2].width;
 // 	l_centerx[2] = crossCheckPatternHorizontalAP(row_b, 2, minx, maxx, center.x, ap_type, max_module_size, &l_module_size_h[2]);
 // 	if(l_centerx[2] < 0) return JAB_FAILURE;
 //
@@ -2268,7 +2274,7 @@ import 'dart:math';
 //  * @param ap_type the alignment pattern type
 //  * @return the found alignment pattern
 // */
-// jab_alignment_pattern findAlignmentPattern(jab_bitmap* ch[], jab_float x, jab_float y, jab_float module_size, int ap_type)
+// jab_alignment_pattern findAlignmentPattern(jab_bitmap* ch[], double x, double y, double module_size, int ap_type)
 // {
 //     jab_alignment_pattern ap;
 //     ap.type = -1;
@@ -2310,8 +2316,8 @@ import 'dart:math';
 //
 //         int startx = (int)MAX(0, x - radius);
 //         int starty = (int)MAX(0, y - radius);
-//         int endx = (int)MIN(ch[0]->width - 1, x + radius);
-//         int endy = (int)MIN(ch[0]->height - 1, y + radius);
+//         int endx = (int)MIN(ch[0].width - 1, x + radius);
+//         int endy = (int)MIN(ch[0].height - 1, y + radius);
 //         if(endx - startx < 3 * module_size || endy - starty < 3 * module_size) continue;
 //
 //         int counter = 0;
@@ -2326,9 +2332,9 @@ import 'dart:math';
 // 				continue;
 //
 //             //get r channel row
-//             jab_byte* row_r = ch[0]->pixel + i*ch[0]->width;
+//             jab_byte* row_r = ch[0].pixel + i*ch[0].width;
 //
-//             jab_float ap_module_size, centerx, centery;
+//             double ap_module_size, centerx, centery;
 //             int ap_dir;
 //
 //             jab_boolean ap_found = 0;
@@ -2422,21 +2428,21 @@ import 'dart:math';
 //     }
 //
 //     //get slave symbol side size from its metadata
-//     slave_symbol->side_size.x = VERSION2SIZE(slave_symbol->metadata.side_version.x);
-//     slave_symbol->side_size.y = VERSION2SIZE(slave_symbol->metadata.side_version.y);
+//     slave_symbol.side_size.x = VERSION2SIZE(slave_symbol.metadata.side_version.x);
+//     slave_symbol.side_size.y = VERSION2SIZE(slave_symbol.metadata.side_version.y);
 //
 //     //docked horizontally
-//     jab_float distx01 = host_symbol->pattern_positions[1].x - host_symbol->pattern_positions[0].x;
-//     jab_float disty01 = host_symbol->pattern_positions[1].y - host_symbol->pattern_positions[0].y;
-//     jab_float distx32 = host_symbol->pattern_positions[2].x - host_symbol->pattern_positions[3].x;
-//     jab_float disty32 = host_symbol->pattern_positions[2].y - host_symbol->pattern_positions[3].y;
+//     double distx01 = host_symbol.pattern_positions[1].x - host_symbol.pattern_positions[0].x;
+//     double disty01 = host_symbol.pattern_positions[1].y - host_symbol.pattern_positions[0].y;
+//     double distx32 = host_symbol.pattern_positions[2].x - host_symbol.pattern_positions[3].x;
+//     double disty32 = host_symbol.pattern_positions[2].y - host_symbol.pattern_positions[3].y;
 //     //docked vertically
-//     jab_float distx03 = host_symbol->pattern_positions[3].x - host_symbol->pattern_positions[0].x;
-//     jab_float disty03 = host_symbol->pattern_positions[3].y - host_symbol->pattern_positions[0].y;
-//     jab_float distx12 = host_symbol->pattern_positions[2].x - host_symbol->pattern_positions[1].x;
-//     jab_float disty12 = host_symbol->pattern_positions[2].y - host_symbol->pattern_positions[1].y;
+//     double distx03 = host_symbol.pattern_positions[3].x - host_symbol.pattern_positions[0].x;
+//     double disty03 = host_symbol.pattern_positions[3].y - host_symbol.pattern_positions[0].y;
+//     double distx12 = host_symbol.pattern_positions[2].x - host_symbol.pattern_positions[1].x;
+//     double disty12 = host_symbol.pattern_positions[2].y - host_symbol.pattern_positions[1].y;
 //
-//     jab_float alpha1 = 0.0f, alpha2 = 0.0f;
+//     double alpha1 = 0.0f, alpha2 = 0.0f;
 //     int sign = 1;
 //     int docked_side_size = 0, undocked_side_size;
 //     int ap1 = 0, ap2 = 0, ap3 = 0, ap4 = 0, hp1 = 0, hp2 = 0;
@@ -2453,15 +2459,15 @@ import 'dart:math';
 //             alpha1 = atan2(disty01, distx01);
 //             alpha2 = atan2(disty32, distx32);
 //             sign = 1;
-//             docked_side_size   = slave_symbol->side_size.y;
-//             undocked_side_size = slave_symbol->side_size.x;
+//             docked_side_size   = slave_symbol.side_size.y;
+//             undocked_side_size = slave_symbol.side_size.x;
 //             ap1 = AP0;	//ap[0]
 //             ap2 = AP3;	//ap[3]
 //             ap3 = AP1;	//ap[1]
 //             ap4 = AP2;	//ap[2]
 //             hp1 = FP1;	//fp[1] or ap[1] of the host
 //             hp2 = FP2;	//fp[2] or ap[2] of the host
-//             slave_symbol->host_position = 2;
+//             slave_symbol.host_position = 2;
 //             break;
 //         case 2:
 //             /*
@@ -2474,15 +2480,15 @@ import 'dart:math';
 //             alpha1 = atan2(disty32, distx32);
 //             alpha2 = atan2(disty01, distx01);
 //             sign = -1;
-//             docked_side_size   = slave_symbol->side_size.y;
-//             undocked_side_size = slave_symbol->side_size.x;
+//             docked_side_size   = slave_symbol.side_size.y;
+//             undocked_side_size = slave_symbol.side_size.x;
 //             ap1 = AP2;	//ap[2]
 //             ap2 = AP1;	//ap[1]
 //             ap3 = AP3;	//ap[3]
 //             ap4 = AP0;	//ap[0]
 //             hp1 = FP3;	//fp[3] or ap[3] of the host
 //             hp2 = FP0;	//fp[0] or ap[0] of the host
-//             slave_symbol->host_position = 3;
+//             slave_symbol.host_position = 3;
 //             break;
 //         case 1:
 //             /*
@@ -2502,15 +2508,15 @@ import 'dart:math';
 //             alpha1 = atan2(disty12, distx12);
 //             alpha2 = atan2(disty03, distx03);
 //             sign = 1;
-//             docked_side_size   = slave_symbol->side_size.x;
-//             undocked_side_size = slave_symbol->side_size.y;
+//             docked_side_size   = slave_symbol.side_size.x;
+//             undocked_side_size = slave_symbol.side_size.y;
 //             ap1 = AP1;	//ap[1]
 //             ap2 = AP0;	//ap[0]
 //             ap3 = AP2;	//ap[2]
 //             ap4 = AP3;	//ap[3]
 //             hp1 = FP2;	//fp[2] or ap[2] of the host
 //             hp2 = FP3;	//fp[3] or ap[3] of the host
-//             slave_symbol->host_position = 0;
+//             slave_symbol.host_position = 0;
 //             break;
 //         case 0:
 //             /*
@@ -2530,52 +2536,52 @@ import 'dart:math';
 //             alpha1 = atan2(disty03, distx03);
 //             alpha2 = atan2(disty12, distx12);
 //             sign = -1;
-//             docked_side_size   = slave_symbol->side_size.x;
-//             undocked_side_size = slave_symbol->side_size.y;
+//             docked_side_size   = slave_symbol.side_size.x;
+//             undocked_side_size = slave_symbol.side_size.y;
 //             ap1 = AP3;	//ap[3]
 //             ap2 = AP2;	//ap[2]
 //             ap3 = AP0;	//ap[0]
 //             ap4 = AP1;	//ap[1]
 //             hp1 = FP0;	//fp[0] or ap[0] of the host
 //             hp2 = FP1;	//fp[1] or ap[1] of the host
-//             slave_symbol->host_position = 1;
+//             slave_symbol.host_position = 1;
 //             break;
 //     }
 //
 //     //calculate the coordinate of ap1
-//     aps[ap1].center.x = host_symbol->pattern_positions[hp1].x + sign * 7 * host_symbol->module_size * cos(alpha1);
-//     aps[ap1].center.y = host_symbol->pattern_positions[hp1].y + sign * 7 * host_symbol->module_size * sin(alpha1);
+//     aps[ap1].center.x = host_symbol.pattern_positions[hp1].x + sign * 7 * host_symbol.module_size * cos(alpha1);
+//     aps[ap1].center.y = host_symbol.pattern_positions[hp1].y + sign * 7 * host_symbol.module_size * sin(alpha1);
 //     //find the alignment pattern around ap1
-//     aps[ap1] = findAlignmentPattern(ch, aps[ap1].center.x, aps[ap1].center.y, host_symbol->module_size, ap1);
+//     aps[ap1] = findAlignmentPattern(ch, aps[ap1].center.x, aps[ap1].center.y, host_symbol.module_size, ap1);
 //     if(aps[ap1].found_count == 0)
 //     {
-//         JAB_REPORT_ERROR(("The first alignment pattern in slave symbol %d not found", slave_symbol->index))
+//         JAB_REPORT_ERROR(("The first alignment pattern in slave symbol %d not found", slave_symbol.index))
 //         return JAB_FAILURE;
 //     }
 //     //calculate the coordinate of ap2
-//     aps[ap2].center.x = host_symbol->pattern_positions[hp2].x + sign * 7 * host_symbol->module_size * cos(alpha2);
-//     aps[ap2].center.y = host_symbol->pattern_positions[hp2].y + sign * 7 * host_symbol->module_size * sin(alpha2);
+//     aps[ap2].center.x = host_symbol.pattern_positions[hp2].x + sign * 7 * host_symbol.module_size * cos(alpha2);
+//     aps[ap2].center.y = host_symbol.pattern_positions[hp2].y + sign * 7 * host_symbol.module_size * sin(alpha2);
 //     //find alignment pattern around ap2
-//     aps[ap2] = findAlignmentPattern(ch, aps[ap2].center.x, aps[ap2].center.y, host_symbol->module_size, ap2);
+//     aps[ap2] = findAlignmentPattern(ch, aps[ap2].center.x, aps[ap2].center.y, host_symbol.module_size, ap2);
 //     if(aps[ap2].found_count == 0)
 //     {
-//         JAB_REPORT_ERROR(("The second alignment pattern in slave symbol %d not found", slave_symbol->index))
+//         JAB_REPORT_ERROR(("The second alignment pattern in slave symbol %d not found", slave_symbol.index))
 //         return JAB_FAILURE;
 //     }
 //
 //     //estimate the module size in the slave symbol
-//     slave_symbol->module_size = DIST(aps[ap1].center.x, aps[ap1].center.y, aps[ap2].center.x, aps[ap2].center.y) / (docked_side_size - 7);
+//     slave_symbol.module_size = DIST(aps[ap1].center.x, aps[ap1].center.y, aps[ap2].center.x, aps[ap2].center.y) / (docked_side_size - 7);
 //
 //     //calculate the coordinate of ap3
-//     aps[ap3].center.x = aps[ap1].center.x + sign * (undocked_side_size - 7) * slave_symbol->module_size * cos(alpha1);
-//     aps[ap3].center.y = aps[ap1].center.y + sign * (undocked_side_size - 7) * slave_symbol->module_size * sin(alpha1);
+//     aps[ap3].center.x = aps[ap1].center.x + sign * (undocked_side_size - 7) * slave_symbol.module_size * cos(alpha1);
+//     aps[ap3].center.y = aps[ap1].center.y + sign * (undocked_side_size - 7) * slave_symbol.module_size * sin(alpha1);
 //     //find alignment pattern around ap3
-//     aps[ap3] = findAlignmentPattern(ch, aps[ap3].center.x, aps[ap3].center.y, slave_symbol->module_size, ap3);
+//     aps[ap3] = findAlignmentPattern(ch, aps[ap3].center.x, aps[ap3].center.y, slave_symbol.module_size, ap3);
 //     //calculate the coordinate of ap4
-//     aps[ap4].center.x = aps[ap2].center.x + sign * (undocked_side_size - 7) * slave_symbol->module_size * cos(alpha2);
-//     aps[ap4].center.y = aps[ap2].center.y + sign * (undocked_side_size - 7) * slave_symbol->module_size * sin(alpha2);
+//     aps[ap4].center.x = aps[ap2].center.x + sign * (undocked_side_size - 7) * slave_symbol.module_size * cos(alpha2);
+//     aps[ap4].center.y = aps[ap2].center.y + sign * (undocked_side_size - 7) * slave_symbol.module_size * sin(alpha2);
 //     //find alignment pattern around ap4
-//     aps[ap4] = findAlignmentPattern(ch, aps[ap4].center.x, aps[ap4].center.y, slave_symbol->module_size, ap4);
+//     aps[ap4] = findAlignmentPattern(ch, aps[ap4].center.x, aps[ap4].center.y, slave_symbol.module_size, ap4);
 //
 //     //if neither ap3 nor ap4 is found, failed
 //     if(aps[ap3].found_count == 0 && aps[ap4].found_count == 0)
@@ -2586,14 +2592,14 @@ import 'dart:math';
 //     //if only 3 aps are found, try anyway by estimating the coordinate of the fourth one
 //     if(aps[ap3].found_count == 0)
 //     {
-//     	jab_float ave_size_ap24 = (aps[ap2].module_size + aps[ap4].module_size) / 2.0f;
-// 		jab_float ave_size_ap14 = (aps[ap1].module_size + aps[ap4].module_size) / 2.0f;
+//     	double ave_size_ap24 = (aps[ap2].module_size + aps[ap4].module_size) / 2.0f;
+// 		double ave_size_ap14 = (aps[ap1].module_size + aps[ap4].module_size) / 2.0f;
 //         aps[ap3].center.x = (aps[ap4].center.x - aps[ap2].center.x) / ave_size_ap24 * ave_size_ap14 + aps[ap1].center.x;
 //         aps[ap3].center.y = (aps[ap4].center.y - aps[ap2].center.y) / ave_size_ap24 * ave_size_ap14 + aps[ap1].center.y;
 //         aps[ap3].type = ap3;
 //         aps[ap3].found_count = 1;
 //         aps[ap3].module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap4].module_size) / 3.0f;
-//         if(aps[ap3].center.x > bitmap->width - 1 || aps[ap3].center.y > bitmap->height - 1)
+//         if(aps[ap3].center.x > bitmap.width - 1 || aps[ap3].center.y > bitmap.height - 1)
 //         {
 // 			JAB_REPORT_ERROR(("Alignment pattern %d out of image", ap3))
 // 			free(aps);
@@ -2602,14 +2608,14 @@ import 'dart:math';
 //     }
 //     if(aps[ap4].found_count == 0)
 //     {
-//     	jab_float ave_size_ap13 = (aps[ap1].module_size + aps[ap3].module_size) / 2.0f;
-// 		jab_float ave_size_ap23 = (aps[ap2].module_size + aps[ap3].module_size) / 2.0f;
+//     	double ave_size_ap13 = (aps[ap1].module_size + aps[ap3].module_size) / 2.0f;
+// 		double ave_size_ap23 = (aps[ap2].module_size + aps[ap3].module_size) / 2.0f;
 //         aps[ap4].center.x = (aps[ap3].center.x - aps[ap1].center.x) / ave_size_ap13 * ave_size_ap23 + aps[ap2].center.x;
 //         aps[ap4].center.y = (aps[ap3].center.y - aps[ap1].center.y) / ave_size_ap13 * ave_size_ap23 + aps[ap2].center.y;
 //         aps[ap4].type = ap4;
 //         aps[ap4].found_count = 1;
 //         aps[ap4].module_size = (aps[ap1].module_size + aps[ap1].module_size + aps[ap3].module_size) / 3.0f;
-//         if(aps[ap4].center.x > bitmap->width - 1 || aps[ap4].center.y > bitmap->height - 1)
+//         if(aps[ap4].center.x > bitmap.width - 1 || aps[ap4].center.y > bitmap.height - 1)
 //         {
 // 			JAB_REPORT_ERROR(("Alignment pattern %d out of image", ap4))
 // 			free(aps);
@@ -2618,14 +2624,14 @@ import 'dart:math';
 //     }
 //
 //     //save the coordinates of aps into the slave symbol
-//     slave_symbol->pattern_positions[ap1] = aps[ap1].center;
-//     slave_symbol->pattern_positions[ap2] = aps[ap2].center;
-//     slave_symbol->pattern_positions[ap3] = aps[ap3].center;
-//     slave_symbol->pattern_positions[ap4] = aps[ap4].center;
-//     slave_symbol->module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap3].module_size + aps[ap4].module_size) / 4.0f;
+//     slave_symbol.pattern_positions[ap1] = aps[ap1].center;
+//     slave_symbol.pattern_positions[ap2] = aps[ap2].center;
+//     slave_symbol.pattern_positions[ap3] = aps[ap3].center;
+//     slave_symbol.pattern_positions[ap4] = aps[ap4].center;
+//     slave_symbol.module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap3].module_size + aps[ap4].module_size) / 4.0f;
 //
 // #if TEST_MODE
-// 	JAB_REPORT_INFO(("Found alignment patterns in slave symbol %d:", slave_symbol->index))
+// 	JAB_REPORT_INFO(("Found alignment patterns in slave symbol %d:", slave_symbol.index))
 //     for(int i=0; i<4; i++)
 //     {
 //         JAB_REPORT_INFO(("x: %6.1f\ty: %6.1f\tcount: %d\ttype: %d\tsize: %.2f", aps[i].center.x, aps[i].center.y, aps[i].found_count, aps[i].type, aps[i].module_size))
@@ -2706,10 +2712,10 @@ import 'dart:math';
 // */
 // int calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2)
 // {
-//     jab_float dist = DIST(fp1.center.x, fp1.center.y, fp2.center.x, fp2.center.y);
+//     double dist = DIST(fp1.center.x, fp1.center.y, fp2.center.x, fp2.center.y);
 //     //the angle between the scanline and the connection between finder/alignment patterns
-// 	jab_float cos_theta = MAX(fabs(fp2.center.x - fp1.center.x), fabs(fp2.center.y - fp1.center.y)) / dist;
-//     jab_float mean = (fp1.module_size + fp2.module_size)*cos_theta / 2.0f;
+// 	double cos_theta = MAX(fabs(fp2.center.x - fp1.center.x), fabs(fp2.center.y - fp1.center.y)) / dist;
+//     double mean = (fp1.module_size + fp2.module_size)*cos_theta / 2.0f;
 //     int number = (int)(dist / mean + 0.5f);
 //     return number;
 // }
@@ -2780,9 +2786,9 @@ import 'dart:math';
 // {
 //     jab_alignment_pattern ap;
 //      //direction: from FP1 to FP2
-//     jab_float distx = fp2.center.x - fp1.center.x;
-//     jab_float disty = fp2.center.y - fp1.center.y;
-//     jab_float alpha = atan2(disty, distx);
+//     double distx = fp2.center.x - fp1.center.x;
+//     double disty = fp2.center.y - fp1.center.y;
+//     double alpha = atan2(disty, distx);
 //
 //     int next_version = side_version;
 //     int dir = 1;
@@ -2790,7 +2796,7 @@ import 'dart:math';
 //     do
 //     {
 //         //distance to FP1
-//         jab_float distance = fp1.module_size * (jab_ap_pos[next_version-1][1] - jab_ap_pos[next_version-1][0]);
+//         double distance = fp1.module_size * (jab_ap_pos[next_version-1][1] - jab_ap_pos[next_version-1][0]);
 //         //estimate the coordinate of the first AP
 //         ap.center.x = fp1.center.x + distance * cos(alpha);
 //         ap.center.y = fp1.center.y + distance * sin(alpha);
@@ -2885,18 +2891,18 @@ import 'dart:math';
 //  	int first_ap_pos;
 //
 // 	//side version x: scan the line between FP0 and FP1
-//     first_ap_pos = detectFirstAP(ch, symbol->metadata.side_version.x, fps[0], fps[1]);
+//     first_ap_pos = detectFirstAP(ch, symbol.metadata.side_version.x, fps[0], fps[1]);
 // #if TEST_MODE
 //     JAB_REPORT_INFO(("The position of the first AP between FP0 and FP1 is %d", first_ap_pos))
 // #endif // TEST_MODE
-//     int side_version_x = confirmSideVersion(symbol->metadata.side_version.x, first_ap_pos);
+//     int side_version_x = confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
 //     if(side_version_x == 0) //if failed, try the line between FP3 and FP2
 //     {
-//         first_ap_pos = detectFirstAP(ch, symbol->metadata.side_version.x, fps[3], fps[2]);
+//         first_ap_pos = detectFirstAP(ch, symbol.metadata.side_version.x, fps[3], fps[2]);
 // #if TEST_MODE
 //         JAB_REPORT_INFO(("The position of the first AP between FP3 and FP2 is %d", first_ap_pos))
 // #endif // TEST_MODE
-//         side_version_x = confirmSideVersion(symbol->metadata.side_version.x, first_ap_pos);
+//         side_version_x = confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
 //         if(side_version_x == 0)
 //         {
 // #if TEST_MODE
@@ -2905,22 +2911,22 @@ import 'dart:math';
 //             return JAB_FAILURE;
 //         }
 //     }
-//     symbol->metadata.side_version.x = side_version_x;
-//     symbol->side_size.x = VERSION2SIZE(side_version_x);
+//     symbol.metadata.side_version.x = side_version_x;
+//     symbol.side_size.x = VERSION2SIZE(side_version_x);
 //
 //     //side version y: scan the line between FP0 and FP3
-//     first_ap_pos = detectFirstAP(ch, symbol->metadata.side_version.y, fps[0], fps[3]);
+//     first_ap_pos = detectFirstAP(ch, symbol.metadata.side_version.y, fps[0], fps[3]);
 // #if TEST_MODE
 //     JAB_REPORT_INFO(("The position of the first AP between FP0 and FP3 is %d", first_ap_pos))
 // #endif // TEST_MODE
-//     int side_version_y = confirmSideVersion(symbol->metadata.side_version.y, first_ap_pos);
+//     int side_version_y = confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
 //     if(side_version_y == 0) //if failed, try the line between FP1 and FP2
 //     {
-//         first_ap_pos = detectFirstAP(ch, symbol->metadata.side_version.y, fps[1], fps[2]);
+//         first_ap_pos = detectFirstAP(ch, symbol.metadata.side_version.y, fps[1], fps[2]);
 // #if TEST_MODE
 //         JAB_REPORT_INFO(("The position of the first AP between FP1 and FP2 is %d", first_ap_pos))
 // #endif // TEST_MODE
-//         side_version_y = confirmSideVersion(symbol->metadata.side_version.y, first_ap_pos);
+//         side_version_y = confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
 //         if(side_version_y == 0)
 //         {
 // #if TEST_MODE
@@ -2929,8 +2935,8 @@ import 'dart:math';
 //             return JAB_FAILURE;
 //         }
 //     }
-//     symbol->metadata.side_version.y = side_version_y;
-//     symbol->side_size.y = VERSION2SIZE(side_version_y);
+//     symbol.metadata.side_version.y = side_version_y;
+//     symbol.side_size.y = VERSION2SIZE(side_version_y);
 //
 //     return JAB_SUCCESS;
 // }
@@ -2946,14 +2952,14 @@ import 'dart:math';
 // jab_bitmap* sampleSymbolByAlignmentPattern(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* symbol, jab_finder_pattern* fps)
 // {
 // 	//if no alignment pattern available, abort
-//     if(symbol->metadata.side_version.x < 6 && symbol->metadata.side_version.y < 6)
+//     if(symbol.metadata.side_version.x < 6 && symbol.metadata.side_version.y < 6)
 // 	{
 // 		reportError("No alignment pattern is available");
 // 		return NULL;
 // 	}
 //
 // 	//For default mode, first confirm the symbol side size
-// 	if(symbol->metadata.default_mode)
+// 	if(symbol.metadata.default_mode)
 //     {
 //         if(!confirmSymbolSize(ch, fps, symbol))
 //         {
@@ -2961,12 +2967,12 @@ import 'dart:math';
 //             return NULL;
 //         }
 // #if TEST_MODE
-//         JAB_REPORT_INFO(("Side sizes confirmed by APs: %d %d", symbol->side_size.x, symbol->side_size.y))
+//         JAB_REPORT_INFO(("Side sizes confirmed by APs: %d %d", symbol.side_size.x, symbol.side_size.y))
 // #endif
 //     }
 //
-//     int side_ver_x_index = symbol->metadata.side_version.x - 1;
-// 	int side_ver_y_index = symbol->metadata.side_version.y - 1;
+//     int side_ver_x_index = symbol.metadata.side_version.x - 1;
+// 	int side_ver_y_index = symbol.metadata.side_version.y - 1;
 // 	int number_of_ap_x = jab_ap_num[side_ver_x_index];
 //     int number_of_ap_y = jab_ap_num[side_ver_y_index];
 //
@@ -2996,11 +3002,11 @@ import 'dart:math';
 // 				if(i == 0)
 // 				{
 // 					//direction: from aps[0][j-1] to fps[1]
-// 					jab_float distx = fps[1].center.x - aps[j-1].center.x;
-// 					jab_float disty = fps[1].center.y - aps[j-1].center.y;
-// 					jab_float alpha = atan2(disty, distx);
+// 					double distx = fps[1].center.x - aps[j-1].center.x;
+// 					double disty = fps[1].center.y - aps[j-1].center.y;
+// 					double alpha = atan2(disty, distx);
 // 					//distance:  aps[0][j-1].module_size * module_number_between_APs
-// 					jab_float distance = aps[j-1].module_size * (jab_ap_pos[side_ver_x_index][j] - jab_ap_pos[side_ver_x_index][j-1]);
+// 					double distance = aps[j-1].module_size * (jab_ap_pos[side_ver_x_index][j] - jab_ap_pos[side_ver_x_index][j-1]);
 // 					//calculate the coordinate of ap[index]
 // 					aps[index].center.x = aps[j-1].center.x + distance * cos(alpha);
 // 					aps[index].center.y = aps[j-1].center.y + distance * sin(alpha);
@@ -3009,11 +3015,11 @@ import 'dart:math';
 // 				else if(j == 0)
 // 				{
 // 					//direction: from aps[i-1][0] to fps[3]
-// 					jab_float distx = fps[3].center.x - aps[(i-1) * number_of_ap_x].center.x;
-// 					jab_float disty = fps[3].center.y - aps[(i-1) * number_of_ap_x].center.y;
-// 					jab_float alpha = atan2(disty, distx);
+// 					double distx = fps[3].center.x - aps[(i-1) * number_of_ap_x].center.x;
+// 					double disty = fps[3].center.y - aps[(i-1) * number_of_ap_x].center.y;
+// 					double alpha = atan2(disty, distx);
 // 					//distance:  aps[i-1][0].module_size * module_number_between_APs
-// 					jab_float distance = aps[(i-1) * number_of_ap_x].module_size * (jab_ap_pos[side_ver_y_index][i] - jab_ap_pos[side_ver_y_index][i-1]);
+// 					double distance = aps[(i-1) * number_of_ap_x].module_size * (jab_ap_pos[side_ver_y_index][i] - jab_ap_pos[side_ver_y_index][i-1]);
 // 					//calculate the coordinate of ap[index]
 // 					aps[index].center.x = aps[(i-1) * number_of_ap_x].center.x + distance * cos(alpha);
 // 					aps[index].center.y = aps[(i-1) * number_of_ap_x].center.y + distance * sin(alpha);
@@ -3025,8 +3031,8 @@ import 'dart:math';
 // 					int index_ap0 = (i-1) * number_of_ap_x + (j-1);	//ap at upper-left
 // 					int index_ap1 = (i-1) * number_of_ap_x + j;		//ap at upper-right
 // 					int index_ap3 = i * number_of_ap_x + (j-1);		//ap at left
-// 					jab_float ave_size_ap01 = (aps[index_ap0].module_size + aps[index_ap1].module_size) / 2.0f;
-// 					jab_float ave_size_ap13 = (aps[index_ap1].module_size + aps[index_ap3].module_size) / 2.0f;
+// 					double ave_size_ap01 = (aps[index_ap0].module_size + aps[index_ap1].module_size) / 2.0f;
+// 					double ave_size_ap13 = (aps[index_ap1].module_size + aps[index_ap3].module_size) / 2.0f;
 // 					aps[index].center.x = (aps[index_ap1].center.x - aps[index_ap0].center.x) / ave_size_ap01 * ave_size_ap13 + aps[index_ap3].center.x;
 // 					aps[index].center.y = (aps[index_ap1].center.y - aps[index_ap0].center.y) / ave_size_ap01 * ave_size_ap13 + aps[index_ap3].center.y;
 // 					aps[index].module_size = ave_size_ap13;
@@ -3130,9 +3136,9 @@ import 'dart:math';
 // 	}
 //
 // 	//allocate the buffer for the sampled matrix of the symbol
-//     int width = symbol->side_size.x;
-// 	int height= symbol->side_size.y;
-// 	int mtx_bytes_per_pixel = bitmap->bits_per_pixel / 8;
+//     int width = symbol.side_size.x;
+// 	int height= symbol.side_size.y;
+// 	int mtx_bytes_per_pixel = bitmap.bits_per_pixel / 8;
 // 	int mtx_bytes_per_row = width * mtx_bytes_per_pixel;
 // 	jab_bitmap* matrix = (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*mtx_bytes_per_pixel*sizeof(jab_byte));
 // 	if(matrix == NULL)
@@ -3140,11 +3146,11 @@ import 'dart:math';
 // 		reportError("Memory allocation for symbol bitmap matrix failed");
 // 		return NULL;
 // 	}
-// 	matrix->channel_count = bitmap->channel_count;
-// 	matrix->bits_per_channel = bitmap->bits_per_channel;
-// 	matrix->bits_per_pixel = matrix->bits_per_channel * matrix->channel_count;
-// 	matrix->width = width;
-// 	matrix->height= height;
+// 	matrix.channel_count = bitmap.channel_count;
+// 	matrix.bits_per_channel = bitmap.bits_per_channel;
+// 	matrix.bits_per_pixel = matrix.bits_per_channel * matrix.channel_count;
+// 	matrix.width = width;
+// 	matrix.height= height;
 //
 // 	for(int i=0; i<rect_index; i+=2)
 // 	{
@@ -3156,43 +3162,43 @@ import 'dart:math';
 // 		blk_size.y = jab_ap_pos[side_ver_y_index][rect[i+1].y] - jab_ap_pos[side_ver_y_index][rect[i].y] + 1;
 // 		p0.x = 0.5f;
 // 		p0.y = 0.5f;
-// 		p1.x = (jab_float)blk_size.x - 0.5f;
+// 		p1.x = (double)blk_size.x - 0.5f;
 // 		p1.y = 0.5f;
-// 		p2.x = (jab_float)blk_size.x - 0.5f;
-// 		p2.y = (jab_float)blk_size.y - 0.5f;
+// 		p2.x = (double)blk_size.x - 0.5f;
+// 		p2.y = (double)blk_size.y - 0.5f;
 // 		p3.x = 0.5f;
-// 		p3.y = (jab_float)blk_size.y - 0.5f;
+// 		p3.y = (double)blk_size.y - 0.5f;
 // 		//blocks on the top border row
 // 		if(rect[i].y == 0)
 // 		{
 // 			blk_size.y += (DISTANCE_TO_BORDER - 1);
 // 			p0.y = 3.5f;
 // 			p1.y = 3.5f;
-// 			p2.y = (jab_float)blk_size.y - 0.5f;
-// 			p3.y = (jab_float)blk_size.y - 0.5f;
+// 			p2.y = (double)blk_size.y - 0.5f;
+// 			p3.y = (double)blk_size.y - 0.5f;
 // 		}
 // 		//blocks on the bottom border row
 // 		if(rect[i+1].y == (number_of_ap_y-1))
 // 		{
 // 			blk_size.y += (DISTANCE_TO_BORDER - 1);
-// 			p2.y = (jab_float)blk_size.y - 3.5f;
-// 			p3.y = (jab_float)blk_size.y - 3.5f;
+// 			p2.y = (double)blk_size.y - 3.5f;
+// 			p3.y = (double)blk_size.y - 3.5f;
 // 		}
 // 		//blocks on the left border column
 // 		if(rect[i].x == 0)
 // 		{
 // 			blk_size.x += (DISTANCE_TO_BORDER - 1);
 // 			p0.x = 3.5f;
-// 			p1.x = (jab_float)blk_size.x - 0.5f;
-// 			p2.x = (jab_float)blk_size.x - 0.5f;
+// 			p1.x = (double)blk_size.x - 0.5f;
+// 			p2.x = (double)blk_size.x - 0.5f;
 // 			p3.x = 3.5f;
 // 		}
 // 		//blocks on the right border column
 // 		if(rect[i+1].x == (number_of_ap_x-1))
 // 		{
 // 			blk_size.x += (DISTANCE_TO_BORDER - 1);
-// 			p1.x = (jab_float)blk_size.x - 3.5f;
-// 			p2.x = (jab_float)blk_size.x - 3.5f;
+// 			p1.x = (double)blk_size.x - 3.5f;
+// 			p2.x = (double)blk_size.x - 3.5f;
 // 		}
 // 		//calculate perspective transform matrix for the current block
 // 		jab_perspective_transform* pt = perspectiveTransform(
@@ -3230,7 +3236,7 @@ import 'dart:math';
 // 			start_x = 0;
 // 		if(rect[i].y == 0)
 // 			start_y = 0;
-// 		int blk_bytes_per_pixel = block->bits_per_pixel / 8;
+// 		int blk_bytes_per_pixel = block.bits_per_pixel / 8;
 // 		int blk_bytes_per_row = blk_size.x * mtx_bytes_per_pixel;
 // 		for(int y=0, mtx_y=start_y; y<blk_size.y && mtx_y<height; y++, mtx_y++)
 // 		{
@@ -3238,10 +3244,10 @@ import 'dart:math';
 // 			{
 // 				int mtx_offset = mtx_y * mtx_bytes_per_row + mtx_x * mtx_bytes_per_pixel;
 // 				int blk_offset = y * blk_bytes_per_row + x * blk_bytes_per_pixel;
-// 				matrix->pixel[mtx_offset] 	  = block->pixel[blk_offset];
-// 				matrix->pixel[mtx_offset + 1] = block->pixel[blk_offset + 1];
-// 				matrix->pixel[mtx_offset + 2] = block->pixel[blk_offset + 2];
-// 				matrix->pixel[mtx_offset + 3] = block->pixel[blk_offset + 3];
+// 				matrix.pixel[mtx_offset] 	  = block.pixel[blk_offset];
+// 				matrix.pixel[mtx_offset + 1] = block.pixel[blk_offset + 1];
+// 				matrix.pixel[mtx_offset + 2] = block.pixel[blk_offset + 2];
+// 				matrix.pixel[mtx_offset + 3] = block.pixel[blk_offset + 3];
 // 			}
 // 		}
 // 		free(block);
@@ -3260,44 +3266,44 @@ import 'dart:math';
 //  * @param fps the finder patterns
 //  * @param rgb_ave the average pixel value
 // */
-// void getAveragePixelValue(jab_bitmap* bitmap, jab_finder_pattern* fps, jab_float* rgb_ave)
+// void getAveragePixelValue(jab_bitmap* bitmap, jab_finder_pattern* fps, double* rgb_ave)
 // {
-//     jab_float r_ave[4] = {0, 0, 0, 0};
-//     jab_float g_ave[4] = {0, 0, 0, 0};
-//     jab_float b_ave[4] = {0, 0, 0, 0};
+//     double r_ave[4] = {0, 0, 0, 0};
+//     double g_ave[4] = {0, 0, 0, 0};
+//     double b_ave[4] = {0, 0, 0, 0};
 //
 //     //calculate average pixel value around each found FP
 //     for(int i=0; i<4; i++)
 //     {
 //         if(fps[i].found_count <= 0) continue;
 //
-//         jab_float radius = fps[i].module_size * 4;
+//         double radius = fps[i].module_size * 4;
 //         int start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius) : 0;
 //         int start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius) : 0;
-//         int end_x	  = (fps[i].center.x + radius) <= (bitmap->width - 1) ? (fps[i].center.x + radius) : (bitmap->width - 1);
-//         int end_y   = (fps[i].center.y + radius) <= (bitmap->height- 1) ? (fps[i].center.y + radius) : (bitmap->height- 1);
+//         int end_x	  = (fps[i].center.x + radius) <= (bitmap.width - 1) ? (fps[i].center.x + radius) : (bitmap.width - 1);
+//         int end_y   = (fps[i].center.y + radius) <= (bitmap.height- 1) ? (fps[i].center.y + radius) : (bitmap.height- 1);
 //         int area_width = end_x - start_x;
 //         int area_height= end_y - start_y;
 //
-//         int bytes_per_pixel = bitmap->bits_per_pixel / 8;
-//         int bytes_per_row = bitmap->width * bytes_per_pixel;
+//         int bytes_per_pixel = bitmap.bits_per_pixel / 8;
+//         int bytes_per_row = bitmap.width * bytes_per_pixel;
 //         for(int y=start_y; y<end_y; y++)
 //         {
 //             for(int x=start_x; x<end_x; x++)
 //             {
 //                 int offset = y * bytes_per_row + x * bytes_per_pixel;
-//                 r_ave[i] += bitmap->pixel[offset + 0];
-//                 g_ave[i] += bitmap->pixel[offset + 1];
-//                 b_ave[i] += bitmap->pixel[offset + 2];
+//                 r_ave[i] += bitmap.pixel[offset + 0];
+//                 g_ave[i] += bitmap.pixel[offset + 1];
+//                 b_ave[i] += bitmap.pixel[offset + 2];
 //             }
 //         }
-//         r_ave[i] /= (jab_float)(area_width * area_height);
-//         g_ave[i] /= (jab_float)(area_width * area_height);
-//         b_ave[i] /= (jab_float)(area_width * area_height);
+//         r_ave[i] /= (double)(area_width * area_height);
+//         g_ave[i] /= (double)(area_width * area_height);
+//         b_ave[i] /= (double)(area_width * area_height);
 //     }
 //
 //     //calculate the average values of the average pixel values
-//     jab_float rgb_sum[3] = {0, 0, 0};
+//     double rgb_sum[3] = {0, 0, 0};
 //     int rgb_count[3] = {0, 0, 0};
 //     for(int i=0; i<4; i++)
 //     {
@@ -3317,12 +3323,14 @@ import 'dart:math';
 //             rgb_count[2]++;
 //         }
 //     }
-//     if(rgb_count[0] > 0) rgb_ave[0] = rgb_sum[0] / (jab_float)rgb_count[0];
-//     if(rgb_count[1] > 0) rgb_ave[1] = rgb_sum[1] / (jab_float)rgb_count[1];
-//     if(rgb_count[2] > 0) rgb_ave[2] = rgb_sum[2] / (jab_float)rgb_count[2];
+//     if(rgb_count[0] > 0) rgb_ave[0] = rgb_sum[0] / (double)rgb_count[0];
+//     if(rgb_count[1] > 0) rgb_ave[1] = rgb_sum[1] / (double)rgb_count[1];
+//     if(rgb_count[2] > 0) rgb_ave[2] = rgb_sum[2] / (double)rgb_count[2];
 // }
 //
 import 'binarizer.dart';
+import 'decoder_h.dart';
+import 'detector_h.dart';
 import 'jabcode_h.dart';
 
 /**
@@ -3332,7 +3340,7 @@ import 'jabcode_h.dart';
  * @param master_symbol the master symbol
  * @return JAB_SUCCESS | JAB_FAILURE
 */
-bool detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol master_symbol)
+int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol master_symbol)
 {
     //find master symbol
     jab_finder_pattern fps;
@@ -3402,14 +3410,14 @@ bool detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 	}
 //
 // 	//save the detection result
-// 	master_symbol->index = 0;
-// 	master_symbol->host_index = 0;
-// 	master_symbol->side_size = side_size;
-// 	master_symbol->module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size + fps[3].module_size) / 4.0f;
-// 	master_symbol->pattern_positions[0] = fps[0].center;
-// 	master_symbol->pattern_positions[1] = fps[1].center;
-// 	master_symbol->pattern_positions[2] = fps[2].center;
-// 	master_symbol->pattern_positions[3] = fps[3].center;
+// 	master_symbol.index = 0;
+// 	master_symbol.host_index = 0;
+// 	master_symbol.side_size = side_size;
+// 	master_symbol.module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size + fps[3].module_size) / 4.0f;
+// 	master_symbol.pattern_positions[0] = fps[0].center;
+// 	master_symbol.pattern_positions[1] = fps[1].center;
+// 	master_symbol.pattern_positions[2] = fps[2].center;
+// 	master_symbol.pattern_positions[3] = fps[3].center;
 //
 // 	//decode master symbol
 // 	int decode_result = decodeMaster(matrix, master_symbol);
@@ -3429,8 +3437,8 @@ bool detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 // #if TEST_MODE
 // 		JAB_REPORT_INFO(("Trying to sample master symbol using alignment pattern..."))
 // #endif // TEST_MODE
-// 		master_symbol->side_size.x = VERSION2SIZE(master_symbol->metadata.side_version.x);
-// 		master_symbol->side_size.y = VERSION2SIZE(master_symbol->metadata.side_version.y);
+// 		master_symbol.side_size.x = VERSION2SIZE(master_symbol.metadata.side_version.x);
+// 		master_symbol.side_size.y = VERSION2SIZE(master_symbol.metadata.side_version.y);
 // 		matrix = sampleSymbolByAlignmentPattern(bitmap, ch, master_symbol, fps);
 // 		free(fps);
 // 		if(matrix == NULL)
@@ -3470,14 +3478,14 @@ bool detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 //     //find slave symbol next to the host symbol
 //     if(!findSlaveSymbol(bitmap, ch, host_symbol, slave_symbol, docked_position))
 //     {
-//         JAB_REPORT_ERROR(("Slave symbol %d not found", slave_symbol->index))
+//         JAB_REPORT_ERROR(("Slave symbol %d not found", slave_symbol.index))
 //         return NULL;
 //     }
 //
 //     //calculate perspective transform matrix
-//     jab_perspective_transform* pt = getPerspectiveTransform(slave_symbol->pattern_positions[0], slave_symbol->pattern_positions[1],
-//                                                             slave_symbol->pattern_positions[2], slave_symbol->pattern_positions[3],
-//                                                             slave_symbol->side_size);
+//     jab_perspective_transform* pt = getPerspectiveTransform(slave_symbol.pattern_positions[0], slave_symbol.pattern_positions[1],
+//                                                             slave_symbol.pattern_positions[2], slave_symbol.pattern_positions[3],
+//                                                             slave_symbol.side_size);
 //     if(pt == NULL)
 //     {
 //         return NULL;
@@ -3487,10 +3495,10 @@ bool detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 // #if TEST_MODE
 // 	test_mode_color = 255;
 // #endif
-//     jab_bitmap* matrix = sampleSymbol(bitmap, pt, slave_symbol->side_size);
+//     jab_bitmap* matrix = sampleSymbol(bitmap, pt, slave_symbol.side_size);
 //     if(matrix == NULL)
 //     {
-//         JAB_REPORT_ERROR(("Sampling slave symbol %d failed", slave_symbol->index))
+//         JAB_REPORT_ERROR(("Sampling slave symbol %d failed", slave_symbol.index))
 //         free(pt);
 //         return JAB_FAILURE;
 //     }
@@ -3544,8 +3552,7 @@ bool detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 //     return JAB_SUCCESS;
 // }
 //
-import 'binarizer.dart';
-import 'jabcode_h.dart';
+
 
 /**
  * @brief Extended function to decode a JAB Code
@@ -3569,7 +3576,7 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
 	//binarize r, g, b channels
 	var ch = List<jab_bitmap>.filled(3, null);
 	balanceRGB(bitmap);
-    if(!binarizerRGB(bitmap, ch, 0))
+    if(!binarizerRGB(bitmap, ch, null))
 	{
 		return null;
 	}
@@ -3578,20 +3585,20 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
 // #endif // TEST_MODE
 //
 // #if TEST_MODE
-//     test_mode_bitmap = (jab_bitmap*)malloc(sizeof(jab_bitmap) + bitmap->width * bitmap->height * bitmap->channel_count * (bitmap->bits_per_channel/8));
-//     test_mode_bitmap->bits_per_channel = bitmap->bits_per_channel;
-//     test_mode_bitmap->bits_per_pixel   = bitmap->bits_per_pixel;
-//     test_mode_bitmap->channel_count	  = bitmap->channel_count;
-//     test_mode_bitmap->height 		  = bitmap->height;
-//     test_mode_bitmap->width			  = bitmap->width;
-//     memcpy(test_mode_bitmap->pixel, bitmap->pixel, bitmap->width * bitmap->height * bitmap->channel_count * (bitmap->bits_per_channel/8));
+//     test_mode_bitmap = (jab_bitmap*)malloc(sizeof(jab_bitmap) + bitmap.width * bitmap.height * bitmap.channel_count * (bitmap.bits_per_channel/8));
+//     test_mode_bitmap.bits_per_channel = bitmap.bits_per_channel;
+//     test_mode_bitmap.bits_per_pixel   = bitmap.bits_per_pixel;
+//     test_mode_bitmap.channel_count	  = bitmap.channel_count;
+//     test_mode_bitmap.height 		  = bitmap.height;
+//     test_mode_bitmap.width			  = bitmap.width;
+//     memcpy(test_mode_bitmap.pixel, bitmap.pixel, bitmap.width * bitmap.height * bitmap.channel_count * (bitmap.bits_per_channel/8));
 //     saveImage(ch[0], "jab_r.png");
 //     saveImage(ch[1], "jab_g.png");
 //     saveImage(ch[2], "jab_b.png");
 // #endif
 
 	//initialize symbols buffer
-    var symbols = List<jab_decoded_symbol>.filledOf(max_symbol_number, null) // memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
+    symbols = List<jab_decoded_symbol>.filledOf(max_symbol_number, null); // memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
     int total = 0;	//total number of decoded symbols
     bool res = true;
 
@@ -3637,7 +3644,7 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
     int total_data_length = 0;
     for(int i=0; i<total; i++)
     {
-        total_data_length += symbols[i].data->length;
+        total_data_length += symbols[i].data.length;
     }
     jab_data* decoded_bits = (jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
     if(decoded_bits == NULL){
@@ -3648,13 +3655,13 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
     int offset = 0;
     for(int i=0; i<total; i++)
     {
-        jab_char* src = symbols[i].data->data;
-        jab_char* dst = decoded_bits->data;
+        jab_char* src = symbols[i].data.data;
+        jab_char* dst = decoded_bits.data;
         dst += offset;
-        memcpy(dst, src, symbols[i].data->length);
-        offset += symbols[i].data->length;
+        memcpy(dst, src, symbols[i].data.length);
+        offset += symbols[i].data.length;
     }
-    decoded_bits->length = total_data_length;
+    decoded_bits.length = total_data_length;
     //decode data
     jab_data* decoded_data = decodeData(decoded_bits);
     if(decoded_data == NULL)

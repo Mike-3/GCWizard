@@ -32,6 +32,7 @@ import 'binarizer.dart';
 import 'decoder_h.dart';
 import 'detector_h.dart';
 import 'encoder_h.dart';
+import 'interleave.dart';
 import 'jabcode_h.dart';
 import 'ldpc.dart';
 
@@ -871,14 +872,14 @@ int decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, Int
 			}
 		}
 		//set data map
-		data_map[y * matrix.width + (*x)] = 1;
+		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		getNextMetadataModuleInMaster(matrix.height, matrix.width, (*module_count), x, y);
+		getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
     }
 
 	//decode ldpc for part2
-	if( !decodeLDPChd(part2, MASTER_METADATA_PART2_LENGTH, MASTER_METADATA_PART2_LENGTH > 36 ? 4 : 3, 0) )
+	if( decodeLDPChd(part2, MASTER_METADATA_PART2_LENGTH, MASTER_METADATA_PART2_LENGTH > 36 ? 4 : 3, 0) == 0)
 	{
 // #if TEST_MODE
 // 		reportError("LDPC decoding for master metadata part 2 failed");

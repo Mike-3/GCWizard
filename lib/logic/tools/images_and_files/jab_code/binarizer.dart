@@ -366,15 +366,16 @@ void filterBinary(jab_bitmap binary)
 	int filter_size = 5;
 	int half_size = ((filter_size - 1)/2).toInt();
 
-	List tmp = List<jab_bitmap>.filled (width*height, null); //jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
-	if(tmp == null)
-	{
-		// reportError("Memory allocation for temporary binary bitmap failed");
-		return;
-	}
+	// var tmp = jab_bitmap(); //(jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
+	// tmp.pixel = Uint32List(width*height);
+	// if(tmp == null)
+	// {
+	// 	// reportError("Memory allocation for temporary binary bitmap failed");
+	// 	return;
+	// }
 
 	//horizontal filtering
-	binary.pixel = binary.pixel memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
+	var tmp = binary.clone(); // memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
 	for(int i=half_size; i<height-half_size; i++)
 	{
 		for(int j=half_size; j<width-half_size; j++)
@@ -390,7 +391,7 @@ void filterBinary(jab_bitmap binary)
 		}
 	}
 	//vertical filtering
-	memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
+	tmp = binary.clone(); //memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
 	for(int i=half_size; i<height-half_size; i++)
 	{
 		for(int j=half_size; j<width-half_size; j++)
@@ -405,7 +406,7 @@ void filterBinary(jab_bitmap binary)
 			binary.pixel[i*width + j] = sum > half_size ? 255 : 0;
 		}
 	}
-	free(tmp);
+	// free(tmp);
 }
 //
 // /**
@@ -692,7 +693,7 @@ bool binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 		pixel_ave.add(List<double>.filled(3, 0));
 	}
 	
-		if(blk_ths == 0)
+		if(blk_ths == null)
     {
 			for(int i=0; i<block_num_y; i++)
 			{
@@ -732,7 +733,7 @@ bool binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 		{
 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 			//check black pixel
-			if(blk_ths == 0)
+			if(blk_ths == null)
             {
                 int block_index = min(i/block_size_y, block_num_y-1) * block_num_x + min(j/block_size_x, block_num_x-1);
                 rgb_ths[0] = pixel_ave[block_index][0];
@@ -754,12 +755,12 @@ bool binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
             }
 
 			double ave, vari;
-			var result = getAveVar32(bitmap.pixel[offset]);
-			double std = sqrt(bitmap.pixel[offset][result1.item2]);	//standard deviation
-			int min, mid, max;
-			int index_min, index_mid, index_max;
-			var result1 = getMinMax32(bitmap.pixel[offset]);
-			std /= bitmap.pixel[offset][result1.item3].toDouble();	//normalize std
+			var result = getAveVar32(bitmap.pixel.sublist(offset, offset + 4));
+			double std = sqrt(result.item2);	//standard deviation
+			// int min, mid, max;
+			// int index_min, index_mid, index_max;
+			var result1 = getMinMax32(bitmap.pixel.sublist(offset, offset + 4));
+			std /= bitmap.pixel[offset + result1.item3].toDouble();	//normalize std
 
 			if(std < ths_std && (bitmap.pixel[offset + 0] > rgb_ths[0] && bitmap.pixel[offset + 1] > rgb_ths[1] && bitmap.pixel[offset + 2] > rgb_ths[2]))
 			{
@@ -769,14 +770,14 @@ bool binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 			}
 			else
 			{
-				rgb[index_max].pixel[i*bitmap.width + j] = 255;
-				rgb[index_min].pixel[i*bitmap.width + j] = 0;
-				double r1 = (double)bitmap.pixel[offset + index_mid] / (double)bitmap.pixel[offset + index_min];
-				double r2 = (double)bitmap.pixel[offset + index_max] / (double)bitmap.pixel[offset + index_mid];
+				rgb[result1.item3].pixel[i*bitmap.width + j] = 255; //index_max
+				rgb[result1.item1].pixel[i*bitmap.width + j] = 0; //index_min
+				double r1 = bitmap.pixel[offset + result1.item2] / bitmap.pixel[offset + result1.item1];
+				double r2 = bitmap.pixel[offset + result1.item3] / bitmap.pixel[offset + result1.item2];
 				if(r1 > r2)
-					rgb[index_mid].pixel[i*bitmap.width + j] = 255;
+					rgb[result1.item2].pixel[i*bitmap.width + j] = 255; //index_mid
 				else
-					rgb[index_mid].pixel[i*bitmap.width + j] = 0;
+					rgb[result1.item2].pixel[i*bitmap.width + j] = 0; //index_mid
 			}
 		}
 	}

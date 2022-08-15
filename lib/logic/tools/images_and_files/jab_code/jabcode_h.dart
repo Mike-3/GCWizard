@@ -44,8 +44,8 @@ const BITMAP_BITS_PER_PIXEL	= 32;
 const BITMAP_BITS_PER_CHANNEL	= 8;
 const BITMAP_CHANNEL_COUNT	= 4;
 
-const	JAB_SUCCESS		= true;
-const	JAB_FAILURE		= false;
+const	JAB_SUCCESS		= 1;
+const	JAB_FAILURE		= 0;
 
 const NORMAL_DECODE		= 0;
 const COMPATIBLE_DECODE	= 1;
@@ -91,7 +91,7 @@ double	y;
 */
 class jab_data {
 	int	length;
-	Int8List	data;
+	Uint8List	data;
 }
 
 /**
@@ -104,6 +104,16 @@ class jab_bitmap {
    int	bits_per_channel;
    int	channel_count;
    Uint32List		pixel;
+
+	 jab_bitmap clone() {
+		 var _clone = jab_bitmap();
+		 _clone.width = width;
+		 _clone.height = height;
+		 _clone.bits_per_pixel = bits_per_pixel;
+		 _clone.bits_per_channel = bits_per_channel;
+		 _clone.channel_count = channel_count;
+		 _clone.pixel = Uint32List.fromList(pixel);
+	 }
 }
 
 /**

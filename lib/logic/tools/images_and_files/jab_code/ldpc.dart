@@ -21,10 +21,12 @@
 // #include "pseudo_random.h"
 
 import 'dart:core';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random_h.dart';
+import 'package:tuple/tuple.dart';
 
 import 'ldpc_h.dart';
 
@@ -179,6 +181,8 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
             int off_index1=pivot_column%32;
             for (int j=0; j<nb_pcb; j++)
             {
+                // ToDo
+                // ((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) -> ungerade 1, gerade 0
                 if ((((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) && j) != i)
                 {
                     //subtract pivot row GF(2)
@@ -245,7 +249,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
     if(encode)
     {
         for(int i=0;i< nb_pcb;i++)
-            matrixA.setRange(i*offset, end, iterable); //memcpy(matrixA+i*offset,matrixH+column_arrangement[i]*offset,offset*sizeof(int));
+            matrixA.setRange(i*offset, end, matrixH.); //memcpy(matrixA+i*offset,matrixH+column_arrangement[i]*offset,offset*sizeof(int));
 
         //swap columns
         int tmp=0;
@@ -263,7 +267,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
     {
     //    memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
         for(int i=0;i< nb_pcb;i++)
-             memcpy(matrixH+i*offset,matrixA+column_arrangement[i]*offset,offset*sizeof(int));
+            matrixH = matrixA.cl //memcpy(matrixH+i*offset,matrixA+column_arrangement[i]*offset,offset*sizeof(int));
 
         //swap columns
         int tmp=0;
@@ -528,127 +532,127 @@ List<int> createMetadataMatrixA(int wc, int capacity)
 //     }
 //     return ecc_encoded_data;
 // }
-//
-// /**
-//  * @brief Iterative hard decision error correction decoder
-//  * @param data the received data
-//  * @param matrix the parity check matrix
-//  * @param length the encoded data length
-//  * @param height the number of check bits
-//  * @param max_iter the maximal number of iterations
-//  * @param is_correct indicating if decodedMessage function could correct all errors
-//  * @param start_pos indicating the position to start reading in data array
-//  * @return 1: error correction succeeded | 0: fatal error (out of memory)
-// */
-// int decodeMessage(jab_byte* data, int* matrix, int length, int height, int max_iter, jab_boolean *is_correct, int start_pos)
-// {
-//     int* max_val=(int *)calloc(length, sizeof(int));
-//     if(max_val == null)
-//     {
-//         reportError("Memory allocation for LDPC decoder failed");
-//
-//         return 0;
-//     }
-//     int* equal_max=(int *)calloc(length, sizeof(int));
-//     if(equal_max == null)
-//     {
-//         reportError("Memory allocation for LDPC decoder failed");
-//         free(max_val);
-//         return 0;
-//     }
-//     int* prev_index=(int *)calloc(length, sizeof(int));
-//     if(prev_index == null)
-//     {
-//         reportError("Memory allocation for LDPC decoder failed");
-//         free(max_val);
-//         free(equal_max);
-//         return 0;
-//     }
-//
-//     *is_correct=(jab_boolean)1;
-//     int check=0;
-//     int counter=0, prev_count=0;
-//     int max=0;
-//     int offset=ceil(length/(jab_float)32);
-//
-//     for (int kl=0;kl<max_iter;kl++)
-//     {
-//         max=0;
-//         for(int j=0;j<height;j++)
-//         {
-//             check=0;
-//             for (int i=0;i<length;i++)
-//             {
-//                 if(((matrix[j*offset+i/32] >> (31-i%32)) & 1) & ((data[start_pos+i] >> 0) & 1))
-//                     check+=1;
-//             }
-//             check=check%2;
-//             if(check)
-//             {
-//                 for(int k=0;k<length;k++)
-//                 {
-//                     if(((matrix[j*offset+k/32] >> (31-k%32)) & 1))
-//                         max_val[k]++;
-//                 }
-//             }
-//         }
-//         //find maximal values in max_val
-//         jab_boolean is_used=0;
-//         for (int j=0;j<length;j++)
-//         {
-//             is_used=(jab_boolean)0;
-//             for(int i=0;i< prev_count;i++)
-//             {
-//                 if(prev_index[i]==j)
-//                     is_used=(jab_boolean)1;
-//             }
-//             if(max_val[j]>=max && !is_used)
-//             {
-//                 if(max_val[j]!=max)
-//                     counter=0;
-//                 max=max_val[j];
-//                 equal_max[counter]=j;
-//                 counter++;
-//             }
-//             max_val[j]=0;
-//         }
-//         //flip bits
-//         if(max>0)
-//         {
-//             *is_correct=(jab_boolean) 0;
-//             if(length < 36)
-//             {
-//                 int rand_tmp=(int)(rand()/(jab_float)UINT32_MAX * counter);
-//                 prev_index[0]=start_pos+equal_max[rand_tmp];
-//                 data[start_pos+equal_max[rand_tmp]]=(data[start_pos+equal_max[rand_tmp]]+1)%2;
-//             }
-//             else
-//             {
-//                 for(int j=0; j< counter;j++)
-//                 {
-//                     prev_index[j]=start_pos+equal_max[j];
-//                     data[start_pos+equal_max[j]]=(data[start_pos+equal_max[j]]+1)%2;
-//                 }
-//             }
-//             prev_count=counter;
-//             counter=0;
-//         }
-//         else
-//             *is_correct=(jab_boolean) 1;
-//
-//         if(*is_correct == 0 && kl+1 < max_iter)
-//             *is_correct=(jab_boolean)1;
-//         else
-//             break;
-//     }
+
+/**
+ * @brief Iterative hard decision error correction decoder
+ * @param data the received data
+ * @param matrix the parity check matrix
+ * @param length the encoded data length
+ * @param height the number of check bits
+ * @param max_iter the maximal number of iterations
+ * @param is_correct indicating if decodedMessage function could correct all errors
+ * @param start_pos indicating the position to start reading in data array
+ * @return  bool is_correct / 1: error correction succeeded | 0: fatal error (out of memory)
+*/
+Tuple2<bool, int> decodeMessage(Uint8List data, List<int> matrix, int length, int height, int max_iter, int start_pos)
+{
+    var max_val=List<int>.filled(length, 0); // ()int *)calloc(length, sizeof(int));
+    if(max_val == null)
+    {
+        // reportError("Memory allocation for LDPC decoder failed");
+
+        return Tuple2<bool, int>(false, 0);
+    }
+    var equal_max=List<int>.filled(length, 0); //(int *)calloc(length, sizeof(int));
+    if(equal_max == null)
+    {
+        // reportError("Memory allocation for LDPC decoder failed");
+        // free(max_val);
+        return Tuple2<bool, int>(false, 0);
+    }
+    var prev_index=List<int>.filled(length, 0); //(int *)calloc(length, sizeof(int));
+    if(prev_index == null)
+    {
+        // reportError("Memory allocation for LDPC decoder failed");
+        // free(max_val);
+        // free(equal_max);
+        return Tuple2<bool, int>(false, 0);
+    }
+
+    bool is_correct=true;
+    int check=0;
+    int counter=0, prev_count=0;
+    int max=0;
+    int offset=(length/32.0).ceil();
+
+    for (int kl=0;kl<max_iter;kl++)
+    {
+        max=0;
+        for(int j=0;j<height;j++)
+        {
+            check=0;
+            for (int i=0;i<length;i++)
+            {
+                if((((matrix[(j*offset+i/32).toInt()] >> (31-i%32)) & 1) & ((data[start_pos+i] >> 0) & 1))!=0)
+                    check+=1;
+            }
+            check=check%2;
+            if(check == 0)
+            {
+                for(int k=0;k<length;k++)
+                {
+                    if(((matrix[(j*offset+k/32).toInt()] >> (31-k%32)) & 1)!= 0)
+                        max_val[k]++;
+                }
+            }
+        }
+        //find maximal values in max_val
+        bool is_used=false;
+        for (int j=0;j<length;j++)
+        {
+            is_used=false;
+            for(int i=0;i< prev_count;i++)
+            {
+                if(prev_index[i]==j)
+                    is_used=true;
+            }
+            if(max_val[j]>=max && !is_used)
+            {
+                if(max_val[j]!=max)
+                    counter=0;
+                max=max_val[j];
+                equal_max[counter]=j;
+                counter++;
+            }
+            max_val[j]=0;
+        }
+        //flip bits
+        if(max>0)
+        {
+            is_correct=false;
+            if(length < 36)
+            {
+                int rand_tmp=(Random().nextInt(0x7fff.toInt())/(UINT32_MAX * counter).toDouble()).toInt(); // rand()
+                prev_index[0]=start_pos+equal_max[rand_tmp];
+                data[start_pos+equal_max[rand_tmp]]=(data[start_pos+equal_max[rand_tmp]]+1)%2;
+            }
+            else
+            {
+                for(int j=0; j< counter;j++)
+                {
+                    prev_index[j]=start_pos+equal_max[j];
+                    data[start_pos+equal_max[j]]=(data[start_pos+equal_max[j]]+1)%2;
+                }
+            }
+            prev_count=counter;
+            counter=0;
+        }
+        else
+            is_correct=true;
+
+        if(is_correct == false && kl+1 < max_iter)
+            is_correct=true;
+        else
+            break;
+    }
 // #if TEST_MODE
 //     JAB_REPORT_INFO(("start position:%d, stop position:%d, correct:%d", start_pos, start_pos+length,(int)*is_correct))
 // #endif
 //     free(prev_index);
 //     free(equal_max);
 //     free(max_val);
-//     return 1;
-// }
+    return Tuple2<bool, int>(is_correct, 1);
+}
 
 /**
  * @brief LDPC decoding to perform hard decision
@@ -766,8 +770,9 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
             if(is_correct==0)
             {
                 int start_pos=iter*old_Pg_sub;
-                int success=decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter, &is_correct,start_pos);
-                if(success == 0)
+                var result=decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter,start_pos);
+                is_correct=result.item1;
+                if(result.item2 == 0)
                 {
                     // reportError("LDPC decoder error.");
                     // free(matrixA1);
@@ -818,14 +823,15 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
             if(is_correct==0)
             {
                 int start_pos=iter*old_Pg_sub;
-                int success=decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, &is_correct, start_pos);
-                if(success == 0)
+                var result =decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, start_pos);
+                is_correct=result.item1;
+                if(result.item2 == 0)
                 {
                     // reportError("LDPC decoder error.");
                     // free(matrixA);
                     return 0;
                 }
-                is_correct=1;
+                is_correct=true;
                 for (int i=0;i< matrix_rank; i++)
                 {
                     int temp=0;
