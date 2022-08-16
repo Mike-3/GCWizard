@@ -515,7 +515,7 @@ int seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, 
  * @return centery the y coordinate of the finder pattern center
  * @return module_size the module size in vertical direction
 */
-Tuple3<int, double, double> crossCheckPatternVertical(jab_bitmap image, int module_size_max, double centerx, double centery)
+Tuple3<int, double, double> crossCheckPatternVertical(jab_bitmap image, double module_size_max, double centerx, double centery)
 {
 	int state_number = 5;
 	int state_middle = ((state_number - 1) / 2).toInt();
@@ -612,7 +612,7 @@ Tuple3<int, double, double> crossCheckPatternHorizontal(jab_bitmap image, double
     int startx = centerx.toInt();
     int offset = centery.toInt() * image.width;
     int i, state_index;
-	 	double module_size;
+	 	double module_size = 0.0;
 
     state_count[state_middle]++;
 		state_index=0;
@@ -790,7 +790,7 @@ int crossCheckColor(jab_bitmap image, int color, int module_size, int module_num
  * @return dir the finder pattern direction
  * @return dcc the diagonal crosscheck result
 */
-Tuple5<int, > crossCheckPatternCh(jab_bitmap ch, int type, int h_v, double module_size_max, double module_size, double centerx, double centery, int dir, int dcc)
+Tuple5<int, double, double, double, int, int> crossCheckPatternCh(jab_bitmap ch, int type, int h_v, double module_size_max, double module_size, double centerx, double centery, int dir, int dcc)
 {
 	double module_size_v = 0.0;
 	double module_size_h = 0.0;
@@ -799,18 +799,22 @@ Tuple5<int, > crossCheckPatternCh(jab_bitmap ch, int type, int h_v, double modul
 	if(h_v == 0)
 	{
 		int vcc = JAB_FAILURE;
-		var result = crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v)
+		var result = crossCheckPatternVertical(ch, module_size_max, centerx, centery);
+		centery = result.item2;
 		var module_size_v = result.item3;
-		if(crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v))
+		if(result.item1 == JAB_SUCCESS)
 		{
 			vcc = JAB_SUCCESS;
-			if(!crossCheckPatternHorizontal(ch, module_size_max, centerx, *centery, &module_size_h))
+			result = crossCheckPatternHorizontal(ch, module_size_max, centerx, centery);
+			centerx = result.item2;
+			module_size_h = result.item3;
+			if(result.item1 == JAB_FAILURE)
 				return JAB_FAILURE;
 		}
 		*dcc = crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, &module_size_d, dir, !vcc);
 		if(vcc && *dcc > 0)
 		{
-			*module_size = (module_size_v + module_size_h + module_size_d) / 3.0f;
+			module_size = (module_size_v + module_size_h + module_size_d) / 3.0;
 			return JAB_SUCCESS;
 		}
 		else if(*dcc == 2)
