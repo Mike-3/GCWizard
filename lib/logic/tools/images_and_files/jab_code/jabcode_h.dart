@@ -83,7 +83,11 @@ class jab_vector2d {
 */
 class jab_point {
 	double	x;
-double	y;
+	double	y;
+	jab_point(double	x, double	y) {
+		this.x = x;
+		this.y = y;
+	}
 }
 
 /**

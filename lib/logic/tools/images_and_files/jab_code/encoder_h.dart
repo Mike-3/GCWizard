@@ -15,7 +15,6 @@
 //#define JABCODE_ENCODER_H
 
 import 'dart:typed_data';
-
 import 'jabcode_h.dart';
 
 /**

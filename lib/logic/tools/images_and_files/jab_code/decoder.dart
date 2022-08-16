@@ -1244,7 +1244,7 @@ int decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map
 	// free(raw_module_data);
 	if(raw_data == null)
 	{
-		JAB_REPORT_ERROR(("Reading raw data in symbol %d failed", symbol.index))
+		// JAB_REPORT_ERROR(("Reading raw data in symbol %d failed", symbol.index))
 		return FATAL_ERROR;
 	}
 
@@ -1486,7 +1486,7 @@ Tuple2<int,int> readData(jab_data data, int start, int length) //int* value
 */
 jab_data decodeData(jab_data bits)
 {
-	var decoded_bytes = Int8List(bits.length); //Int8 *)malloc(bits.length * sizeof(Int8));
+	var decoded_bytes = Uint8List(bits.length); //Int8 *)malloc(bits.length * sizeof(Int8));
 	// if(decoded_bytes == NULL)
 	// {
 	// 	reportError("Memory allocation for decoded bytes failed");

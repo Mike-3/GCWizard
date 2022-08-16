@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'jabcode_h.dart';
+
 /**
  * libjabcode - JABCode Encoding/Decoding Library
  *
@@ -48,7 +50,7 @@ enum jab_detect_mode {
 class jab_finder_pattern {
 	int		type;
 	double		module_size;
-	var		center = Point(0.0,0.0);			//coordinates of the center
+	var		center = jab_point(0.0,0.0);			//coordinates of the center
 	int		found_count;
 	int 		direction;
 }

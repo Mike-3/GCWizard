@@ -23,11 +23,14 @@
 import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:gc_wizard/logic/tools/images_and_files/jab_code/transform.dart';
 import 'package:tuple/tuple.dart';
 
 import 'binarizer.dart';
 import 'encoder_h.dart';
 import 'jabcode_h.dart';
+import 'decoder_h.dart';
+import 'detector_h.dart';
 
 /**
  * @brief Check the proportion of layer sizes in finder pattern
@@ -237,10 +240,13 @@ Tuple6<int, int, int, double, double, int> seekPattern(jab_bitmap ch, int row, i
  * @param module_size the module size
  * @param skip the number of pixels to be skipped in the next scan
  * @return JAB_SUCCESS | JAB_FAILURE
- *
- *
+ * @return startx the start position
+ * @return endx the end position
+ * @return centerx the center of the candidate scanline
+ * @return module_size the module size
+ * @return skip the number of pixels to be skipped in the next scan
 */
-int seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, double module_size, int skip)
+Tuple6<int, int, int, double, double, int> seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, double module_size, int skip)
 {
     int state_number = 5;
     int cur_state = 0;
@@ -316,7 +322,7 @@ int seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, 
 												if(j == (max - 1) && row[j] == row[j-1]) end = j + 1;
 												else end = j;
 												centerx = (end - state_count[4] - state_count[3]) - state_count[2] / 2.0;
-                        return JAB_SUCCESS;
+                        return Tuple6<int, int, int, double, double, int>(JAB_SUCCESS, startx, endx, centerx, module_size, skip);
                     }
                     else //check failed, update state_count
                     {
@@ -333,7 +339,7 @@ int seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, 
         }
     }
     endx = max;
-    return JAB_FAILURE;
+    return Tuple6<int, int, int, double, double, int>(JAB_FAILURE, startx, endx, centerx, module_size, skip);;
 }
 
 /**
@@ -801,7 +807,7 @@ int crossCheckColor(jab_bitmap image, int color, int module_size, int module_num
  * @return dir the finder pattern direction
  * @return dcc the diagonal crosscheck result
 */
-Tuple5<int, double, Point, int, int> crossCheckPatternCh(jab_bitmap ch, int type, int h_v, double module_size_max, double module_size, double centerx, double centery, int dir, int dcc)
+Tuple5<int, double, jab_point, int, int> crossCheckPatternCh(jab_bitmap ch, int type, int h_v, double module_size_max, double module_size, double centerx, double centery, int dir, int dcc)
 {
 	double module_size_v = 0.0;
 	double module_size_h = 0.0;
@@ -820,7 +826,7 @@ Tuple5<int, double, Point, int, int> crossCheckPatternCh(jab_bitmap ch, int type
 			centerx = result.item2;
 			module_size_h = result.item3;
 			if(result.item1 == JAB_FAILURE)
-				return Tuple5<int, double, Point, int, int>(JAB_FAILURE, module_size, Point(centerx, centery), dir, dcc);
+				return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 		}
     result = crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, module_size_d, dir, vcc==JAB_SUCCESS ? false:true);
     dcc = result.item1;
@@ -829,7 +835,7 @@ Tuple5<int, double, Point, int, int> crossCheckPatternCh(jab_bitmap ch, int type
 		if(vcc == JAB_SUCCESS && dcc == JAB_SUCCESS)
 		{
 			module_size = (module_size_v + module_size_h + module_size_d) / 3.0;
-      return Tuple5<int, double, Point, int, int>(JAB_SUCCESS, module_size, Point(centerx, centery), dir, dcc);
+      return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
 		}
 		else if(dcc == 2)
 		{
@@ -837,9 +843,9 @@ Tuple5<int, double, Point, int, int> crossCheckPatternCh(jab_bitmap ch, int type
       centerx = result.item2;
       module_size_h=result.item3;
 			if(result.item1 ==JAB_FAILURE)
-				return Tuple5<int, double, Point, int, int>(JAB_FAILURE, module_size, Point(centerx, centery), dir, dcc);
+				return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 			module_size = (module_size_h + module_size_d * 2.0) / 3.0;
-			return Tuple5<int, double, Point, int, int>(JAB_SUCCESS, module_size, Point(centerx, centery), dir, dcc);
+			return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
 		}
 	}
 	else
@@ -855,7 +861,7 @@ Tuple5<int, double, Point, int, int> crossCheckPatternCh(jab_bitmap ch, int type
       centery = result.item2;
       module_size_v=result.item3;
       if(result.item1 ==JAB_FAILURE)
-        return Tuple5<int, double, Point, int, int>(JAB_FAILURE, module_size, Point(centerx, centery), dir, dcc);
+        return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 		}
     result = crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, module_size_d, dir, hcc==JAB_SUCCESS ? false:true);
     dcc = result.item1;
@@ -864,7 +870,7 @@ Tuple5<int, double, Point, int, int> crossCheckPatternCh(jab_bitmap ch, int type
 		if(hcc == JAB_SUCCESS && dcc == JAB_SUCCESS)
 		{
 			module_size = (module_size_v + module_size_h + module_size_d) / 3.0;
-      return Tuple5<int, double, Point, int, int>(JAB_SUCCESS, module_size, Point(centerx, centery), dir, dcc);
+      return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
 		}
 		else if(dcc == 2)
 		{
@@ -872,12 +878,12 @@ Tuple5<int, double, Point, int, int> crossCheckPatternCh(jab_bitmap ch, int type
       centery = result.item2;
       module_size_v=result.item3;
 			if(result.item1 ==JAB_FAILURE)
-        return Tuple5<int, double, Point, int, int>(JAB_FAILURE, module_size, Point(centerx, centery), dir, dcc);
+        return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 			module_size = (module_size_v + module_size_d * 2.0) / 3.0;
-      return Tuple5<int, double, Point, int, int>(JAB_SUCCESS, module_size, Point(centerx, centery), dir, dcc);
+      return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
 		}
 	}
-	return Tuple5<int, double, Point, int, int>(JAB_FAILURE, module_size, Point(centerx, centery), dir, dcc);
+	return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 }
 
 /**
@@ -929,7 +935,7 @@ int crossCheckPattern(List<jab_bitmap> ch, jab_finder_pattern fp, int h_v)
 		if(!checkModuleSize2(module_size_r, module_size_g))
 			return JAB_FAILURE;
 		fp.module_size = (module_size_r + module_size_g) / 2.0;
-		fp.center = Point((centerx_r + centerx_g) / 2.0,(centery_r + centery_g) / 2.0);
+		fp.center = jab_point((centerx_r + centerx_g) / 2.0,(centery_r + centery_g) / 2.0);
 
 		//check b channel
 		int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
@@ -968,7 +974,7 @@ int crossCheckPattern(List<jab_bitmap> ch, jab_finder_pattern fp, int h_v)
 		if(!checkModuleSize2(module_size_g, module_size_b))
 			return JAB_FAILURE;
 		fp.module_size = (module_size_g + module_size_b) / 2.0;
-		fp.center = Point((centerx_g + centerx_b) / 2.0, (centery_g + centery_b) / 2.0);
+		fp.center = jab_point((centerx_g + centerx_b) / 2.0, (centery_g + centery_b) / 2.0);
 
 		//check r channel
 		int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
@@ -1038,7 +1044,7 @@ void saveFinderPattern(jab_finder_pattern fp, List<jab_finder_pattern> fps, int 
                 ((fp.module_size - fps[i].module_size).abs() <= fps[i].module_size || (fp.module_size - fps[i].module_size).abs() <= 1.0) &&
                 fp.type == fps[i].type)
             {
-                fps[i].center = Point((fps[i].found_count * fps[i].center.x + fp.center.x) / (fps[i].found_count + 1),
+                fps[i].center = jab_point((fps[i].found_count * fps[i].center.x + fp.center.x) / (fps[i].found_count + 1),
                                       (fps[i].found_count * fps[i].center.y + fp.center.y) / (fps[i].found_count + 1));
                 fps[i].module_size = (fps[i].found_count * fps[i].module_size + fp.module_size) / (fps[i].found_count + 1);
                 fps[i].found_count++;
@@ -1049,8 +1055,9 @@ void saveFinderPattern(jab_finder_pattern fp, List<jab_finder_pattern> fps, int 
     }
     //add a new finder pattern
     fps[counter] = fp;
-    counter++;
-    fp_type_count[fp.type]++;
+		// ToDo unklar
+    // counter++;
+    // fp_type_count[fp.type]++;
 }
 
 // #if TEST_MODE
@@ -1141,148 +1148,148 @@ void saveFinderPattern(jab_finder_pattern fp, List<jab_finder_pattern> fps, int 
 //         remove_count--;
 //     }
 // }
-//
-// /**
-//  * @brief Find the finder pattern with most detected times
-//  * @param fps the finder pattern list
-//  * @param fp_count the number of finder patterns in the list
-// */
-// jab_finder_pattern getBestPattern(jab_finder_pattern* fps, int fp_count)
-// {
-//     int counter = 0;
-//     double total_module_size = 0;
-//     for(int i=0; i<fp_count; i++)
-//     {
-//         if(fps[i].found_count > 0)
-//         {
-//             counter++;
-//             total_module_size += fps[i].module_size;
-//         }
-//     }
-//     double mean = total_module_size / (double)counter;
-//
-//     int max_found_count = 0;
-//     double min_diff = 100;
-//     int max_found_count_index = 0;
-//     for(int i=0; i<fp_count; i++)
-//     {
-//         if(fps[i].found_count > 0)
-//         {
-//             if(fps[i].found_count > max_found_count)
-//             {
-//                 max_found_count = fps[i].found_count;
-//                 max_found_count_index = i;
-//                 min_diff = (double)fabs(fps[i].module_size - mean);
-//             }
-//             else if(fps[i].found_count == max_found_count)
-//             {
-//                 if( fabs(fps[i].module_size - mean) < min_diff )
-//                 {
-//                     max_found_count_index = i;
-//                     min_diff = (double)fabs(fps[i].module_size - mean);
-//                 }
-//             }
-//         }
-//     }
-//     jab_finder_pattern fp = fps[max_found_count_index];
-//     fps[max_found_count_index].found_count = 0;
-//     return fp;
-// }
-//
-// /**
-//  * @brief Select the best finder patterns out of the list
-//  * @param fps the finder pattern list
-//  * @param fp_count the number of finder patterns in the list
-//  * @param fp_type_count the number of each finder pattern type
-//  * @return the number of missing finder pattern types
-// */
-// int selectBestPatterns(jab_finder_pattern* fps, int fp_count, int* fp_type_count)
-// {
-//     //classify finder patterns into four types
-//     jab_finder_pattern fps0[fp_type_count[FP0]];
-//     jab_finder_pattern fps1[fp_type_count[FP1]];
-//     jab_finder_pattern fps2[fp_type_count[FP2]];
-//     jab_finder_pattern fps3[fp_type_count[FP3]];
-//     int counter0 = 0, counter1 = 0, counter2 = 0, counter3 = 0;
-//
-//     for(int i=0; i<fp_count; i++)
-//     {
-//         //abandon the finder patterns which are founds less than 3 times,
-//         //which means a module shall not be smaller than 3 pixels.
-//         if(fps[i].found_count < 3) continue;
-//         switch (fps[i].type)
-//         {
-//             case FP0:
-//                 fps0[counter0++] = fps[i];
-//                 break;
-//             case FP1:
-//                 fps1[counter1++] = fps[i];
-//                 break;
-//             case FP2:
-//                 fps2[counter2++] = fps[i];
-//                 break;
-//             case FP3:
-//                 fps3[counter3++] = fps[i];
-//                 break;
-//         }
-//     }
-//
-// 	//set fp0
-//     if(counter0 > 1)
-// 		fps[0] = getBestPattern(fps0, counter0);
-// 	else if(counter0 == 1)
-// 		fps[0] = fps0[0];
-// 	else
-// 		memset(&fps[0], 0, sizeof(jab_finder_pattern));
-// 	//set fp1
-//     if(counter1 > 1)
-// 		fps[1] = getBestPattern(fps1, counter1);
-// 	else if(counter1 == 1)
-// 		fps[1] = fps1[0];
-// 	else
-// 		memset(&fps[1], 0, sizeof(jab_finder_pattern));
-// 	//set fp2
-//     if(counter2 > 1)
-// 		fps[2] = getBestPattern(fps2, counter2);
-// 	else if(counter2 == 1)
-// 		fps[2] = fps2[0];
-// 	else
-// 		memset(&fps[2], 0, sizeof(jab_finder_pattern));
-//     //set fp3
-//     if(counter3 > 1)
-// 		fps[3] = getBestPattern(fps3, counter3);
-// 	else if(counter3 == 1)
-// 		fps[3] = fps3[0];
-// 	else
-// 		memset(&fps[3], 0, sizeof(jab_finder_pattern));
-//
-//     //if the found-count of a FP is smaller than the half of the max-found-count, abandon it
-//     int max_found_count = 0;
-//     for(int i=0; i<4; i++)
-//     {
-//         if(fps[i].found_count > max_found_count)
-//         {
-//             max_found_count = fps[i].found_count;
-//         }
-//     }
-//     for(int i=0; i<4; i++)
-//     {
-//         if(fps[i].found_count > 0)
-//         {
-//             if(fps[i].found_count < (0.5*max_found_count))
-//                 memset(&fps[i], 0, sizeof(jab_finder_pattern));
-//         }
-//     }
-//
-// 	//check how many finder patterns are not found
-// 	int missing_fp_count = 0;
-// 	for(int i=0; i<4; i++)
-// 	{
-// 		if(fps[i].found_count == 0)
-// 			missing_fp_count++;
-// 	}
-// 	return missing_fp_count;
-// }
+
+/**
+ * @brief Find the finder pattern with most detected times
+ * @param fps the finder pattern list
+ * @param fp_count the number of finder patterns in the list
+*/
+jab_finder_pattern getBestPattern(List<jab_finder_pattern> fps, int fp_count)
+{
+    int counter = 0;
+    double total_module_size = 0;
+    for(int i=0; i<fp_count; i++)
+    {
+        if(fps[i].found_count > 0)
+        {
+            counter++;
+            total_module_size += fps[i].module_size;
+        }
+    }
+    double mean = total_module_size / counter;
+
+    int max_found_count = 0;
+    double min_diff = 100;
+    int max_found_count_index = 0;
+    for(int i=0; i<fp_count; i++)
+    {
+        if(fps[i].found_count > 0)
+        {
+            if(fps[i].found_count > max_found_count)
+            {
+                max_found_count = fps[i].found_count;
+                max_found_count_index = i;
+                min_diff = (fps[i].module_size - mean).abs();
+            }
+            else if(fps[i].found_count == max_found_count)
+            {
+                if((fps[i].module_size - mean).abs() < min_diff )
+                {
+                    max_found_count_index = i;
+                    min_diff = (fps[i].module_size - mean).abs();
+                }
+            }
+        }
+    }
+    jab_finder_pattern fp = fps[max_found_count_index];
+    fps[max_found_count_index].found_count = 0;
+    return fp;
+}
+
+/**
+ * @brief Select the best finder patterns out of the list
+ * @param fps the finder pattern list
+ * @param fp_count the number of finder patterns in the list
+ * @param fp_type_count the number of each finder pattern type
+ * @return the number of missing finder pattern types
+*/
+int selectBestPatterns(List<jab_finder_pattern> fps, int fp_count, List<int> fp_type_count)
+{
+    //classify finder patterns into four types
+    var fps0 = List<jab_finder_pattern>.filled(fp_type_count[FP0], null);
+		var fps1 = List<jab_finder_pattern>.filled(fp_type_count[FP1], null);
+		var fps2 = List<jab_finder_pattern>.filled(fp_type_count[FP2], null);
+		var fps3 = List<jab_finder_pattern>.filled(fp_type_count[FP3], null);
+    int counter0 = 0, counter1 = 0, counter2 = 0, counter3 = 0;
+
+    for(int i=0; i<fp_count; i++)
+    {
+        //abandon the finder patterns which are founds less than 3 times,
+        //which means a module shall not be smaller than 3 pixels.
+        if(fps[i].found_count < 3) continue;
+        switch (fps[i].type)
+        {
+            case FP0:
+                fps0[counter0++] = fps[i];
+                break;
+            case FP1:
+                fps1[counter1++] = fps[i];
+                break;
+            case FP2:
+                fps2[counter2++] = fps[i];
+                break;
+            case FP3:
+                fps3[counter3++] = fps[i];
+                break;
+        }
+    }
+
+	//set fp0
+    if(counter0 > 1)
+		fps[0] = getBestPattern(fps0, counter0);
+	else if(counter0 == 1)
+		fps[0] = fps0[0];
+	else
+		fps[0] = jab_finder_pattern();
+	//set fp1
+    if(counter1 > 1)
+		fps[1] = getBestPattern(fps1, counter1);
+	else if(counter1 == 1)
+		fps[1] = fps1[0];
+	else
+		fps[1] = jab_finder_pattern();
+	//set fp2
+    if(counter2 > 1)
+		fps[2] = getBestPattern(fps2, counter2);
+	else if(counter2 == 1)
+		fps[2] = fps2[0];
+	else
+		fps[2] = jab_finder_pattern();
+    //set fp3
+    if(counter3 > 1)
+		fps[3] = getBestPattern(fps3, counter3);
+	else if(counter3 == 1)
+		fps[3] = fps3[0];
+	else
+		fps[3] = jab_finder_pattern();
+
+    //if the found-count of a FP is smaller than the half of the max-found-count, abandon it
+    int max_found_count = 0;
+    for(int i=0; i<4; i++)
+    {
+        if(fps[i].found_count > max_found_count)
+        {
+            max_found_count = fps[i].found_count;
+        }
+    }
+    for(int i=0; i<4; i++)
+    {
+        if(fps[i].found_count > 0)
+        {
+            if(fps[i].found_count < (0.5*max_found_count))
+                fps[i] = jab_finder_pattern();
+        }
+    }
+
+	//check how many finder patterns are not found
+	int missing_fp_count = 0;
+	for(int i=0; i<4; i++)
+	{
+		if(fps[i].found_count == 0)
+			missing_fp_count++;
+	}
+	return missing_fp_count;
+}
 
 /**
  * @brief Scan the image vertically
@@ -1293,7 +1300,7 @@ void saveFinderPattern(jab_finder_pattern fp, List<jab_finder_pattern> fps, int 
  * @param total_finder_patterns the number of totally found finder patterns
  * @return total_finder_patterns the number of totally found finder patterns
 */
-int scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finder_pattern> fps, int fp_type_count, int total_finder_patterns)
+int scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finder_pattern> fps, List<int> fp_type_count, int total_finder_patterns)
 {
     bool done = false;
 
@@ -1314,12 +1321,12 @@ int scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finde
             starty += skip;
             endy = ch[0].height;
             //green channel
-            var result = seekPattern(ch[1], -1, j, &starty, &endy, &centery_g, &module_size_g, &skip)
-          starty= result.item2;
-          endy= result.item3;
-          centery_g= result.item4;
-          module_size_g= result.item5;
-          skip= result.item6;
+            var result = seekPattern(ch[1], -1, j, starty, endy, centery_g, module_size_g, skip);
+						starty= result.item2;
+						endy= result.item3;
+						centery_g= result.item4;
+						module_size_g= result.item5;
+						skip= result.item6;
             if(result.item1 == JAB_SUCCESS)
             {
                 type_g = ch[1].pixel[((centery_g)*ch[0].width + j).toInt()] > 0 ? 255 : 0;
@@ -1333,7 +1340,7 @@ int scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finde
 
                 if(result.item1 == JAB_SUCCESS)
                 {
-                    type_b = ch[2].pixel[((centery_b)*ch[2].width + j).toInt() > 0 ? 255 : 0;
+                    type_b = ch[2].pixel[((centery_b)*ch[2].width + j).toInt()] > 0 ? 255 : 0;
                     //check red channel
                     module_size_r = module_size_g;
                     int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
@@ -1366,12 +1373,12 @@ int scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finde
 				if(finder_pattern1_found==JAB_SUCCESS || finder_pattern2_found==JAB_SUCCESS)
 				{
 					jab_finder_pattern fp;
-					fp.center = Point(j.toDouble(), fp.center.y);
+					fp.center = jab_point(j.toDouble(), fp.center.y);
 					fp.found_count = 1;
 					if(finder_pattern1_found==JAB_SUCCESS)
 					{
 						if(!checkModuleSize2(module_size_g, module_size_b)) continue;
-						fp.center = Point(fp.center.x, (centery_g + centery_b) / 2.0);
+						fp.center = jab_point(fp.center.x, (centery_g + centery_b) / 2.0);
 						fp.module_size = (module_size_g + module_size_b) / 2.0;
 						if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
 							type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
@@ -1393,7 +1400,7 @@ int scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finde
 					else if(finder_pattern2_found==JAB_SUCCESS)
 					{
 						if(!checkModuleSize2(module_size_r, module_size_g)) continue;
-						fp.center = Point(fp.center.x, (centery_r + centery_g) / 2.0);
+						fp.center = jab_point(fp.center.x, (centery_r + centery_g) / 2.0);
 						fp.module_size = (module_size_r + module_size_g) / 2.0;
 						if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
 						   type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
@@ -1428,237 +1435,249 @@ int scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finde
     }
 }
 
-// /**
-//  * @brief Search for the missing finder pattern at the estimated position
-//  * @param bitmap the image bitmap
-//  * @param fps the finder patterns
-//  * @param miss_fp_index the index of the missing finder pattern
-// */
-// void seekMissingFinderPattern(jab_bitmap* bitmap, jab_finder_pattern* fps, int miss_fp_index)
-// {
-// 	//determine the search area
-// 	double radius = fps[miss_fp_index].module_size * 5;	//search radius
-// 	int start_x = (fps[miss_fp_index].center.x - radius) >= 0 ? (fps[miss_fp_index].center.x - radius) : 0;
-// 	int start_y = (fps[miss_fp_index].center.y - radius) >= 0 ? (fps[miss_fp_index].center.y - radius) : 0;
-// 	int end_x	  = (fps[miss_fp_index].center.x + radius) <= (bitmap.width - 1) ? (fps[miss_fp_index].center.x + radius) : (bitmap.width - 1);
-// 	int end_y   = (fps[miss_fp_index].center.y + radius) <= (bitmap.height- 1) ? (fps[miss_fp_index].center.y + radius) : (bitmap.height- 1);
-// 	int area_width = end_x - start_x;
-// 	int area_height= end_y - start_y;
-//
-// 	jab_bitmap* rgb[3];
-// 	for(int i=0; i<3; i++)
-// 	{
-// 		rgb[i] = (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + area_height*area_width*sizeof(jab_byte));
-// 		if(rgb[i] == NULL)
-// 		{
-// 			JAB_REPORT_INFO(("Memory allocation for binary bitmap failed, the missing finder pattern can not be found."))
-// 			return;
-// 		}
-// 		rgb[i].width = area_width;
-// 		rgb[i].height= area_height;
-// 		rgb[i].bits_per_channel = 8;
-// 		rgb[i].bits_per_pixel = 8;
-// 		rgb[i].channel_count = 1;
-// 	}
-//
-// 	//calculate average pixel value
-// 	int bytes_per_pixel = bitmap.bits_per_pixel / 8;
-//     int bytes_per_row = bitmap.width * bytes_per_pixel;
-// 	double pixel_sum[3] = {0, 0, 0};
-// 	double pixel_ave[3];
-// 	for(int i=start_y; i<end_y; i++)
-// 	{
-// 		for(int j=start_x; j<end_x; j++)
-// 		{
-// 			int offset = i * bytes_per_row + j * bytes_per_pixel;
-// 			pixel_sum[0] += bitmap.pixel[offset + 0];
-// 			pixel_sum[1] += bitmap.pixel[offset + 1];
-// 			pixel_sum[2] += bitmap.pixel[offset + 2];
-// 		}
-// 	}
-// 	pixel_ave[0] = pixel_sum[0] / (double)(area_width * area_height);
-// 	pixel_ave[1] = pixel_sum[1] / (double)(area_width * area_height);
-// 	pixel_ave[2] = pixel_sum[2] / (double)(area_width * area_height);
-//
-// 	//quantize the pixels inside the search area to black, cyan and yellow
-// 	for(int i=start_y, y=0; i<end_y; i++, y++)
-// 	{
-// 		for(int j=start_x, x=0; j<end_x; j++, x++)
-// 		{
-// 			int offset = i * bytes_per_row + j * bytes_per_pixel;
-// 			//check black pixel
-// 			if(bitmap.pixel[offset + 0] < pixel_ave[0] && bitmap.pixel[offset + 1] < pixel_ave[1] && bitmap.pixel[offset + 2] < pixel_ave[2])
-// 			{
-// 				rgb[0].pixel[y*area_width + x] = 0;
-// 				rgb[1].pixel[y*area_width + x] = 0;
-// 				rgb[2].pixel[y*area_width + x] = 0;
-// 			}
-// 			else if(bitmap.pixel[offset + 0] < bitmap.pixel[offset + 2])	//R < B
-// 			{
-// 				rgb[0].pixel[y*area_width + x] = 0;
-// 				rgb[1].pixel[y*area_width + x] = 255;
-// 				rgb[2].pixel[y*area_width + x] = 255;
-// 			}
-// 			else															//R > B
-// 			{
-// 				rgb[0].pixel[y*area_width + x] = 255;
-// 				rgb[1].pixel[y*area_width + x] = 255;
-// 				rgb[2].pixel[y*area_width + x] = 0;
-// 			}
-// 		}
-// 	}
-//
-// 	//set the core type of the expected finder pattern
-// 	int exp_type_r=0, exp_type_g=0, exp_type_b=0;
-// 	switch(miss_fp_index)
-// 	{
-// 	case 0:
-// 	case 1:
-// 		exp_type_r = 0;
-// 		exp_type_g = 0;
-// 		exp_type_b = 0;
-// 		break;
-// 	case 2:
-// 		exp_type_r = 255;
-// 		exp_type_g = 255;
-// 		exp_type_b = 0;
-// 		break;
-// 	case 3:
-// 		exp_type_r = 0;
-// 		exp_type_g = 255;
-// 		exp_type_b = 255;
-// 		break;
-// 	}
-// 	//search for the missing finder pattern
-// 	jab_finder_pattern* fps_miss = (jab_finder_pattern*)calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
-//     if(fps_miss == NULL)
-//     {
-//         reportError("Memory allocation for finder patterns failed, the missing finder pattern can not be found.");
-//         return;
-//     }
-//     int total_finder_patterns = 0;
-//     jab_boolean done = 0;
-//     int fp_type_count[4] = {0};
-//
-// 	for(int i=0; i<area_height && done == 0; i++)
-//     {
-//         //get row
-//         jab_byte* row_r = rgb[0].pixel + i*rgb[0].width;
-//         jab_byte* row_g = rgb[1].pixel + i*rgb[1].width;
-//         jab_byte* row_b = rgb[2].pixel + i*rgb[2].width;
-//
-//         int startx = 0;
-//         int endx = rgb[0].width;
-//         int skip = 0;
-//
-//         do
-//         {
-//         	jab_finder_pattern fp;
-//
-//         	int type_r, type_g, type_b;
-// 			double centerx_r, centerx_g, centerx_b;
-// 			double module_size_r, module_size_g, module_size_b;
-// 			jab_boolean finder_pattern_found = JAB_FAILURE;
-//
-//             startx += skip;
-//             endx = rgb[0].width;
-//             //green channel
-//             if(seekPatternHorizontal(row_g, &startx, &endx, &centerx_g, &module_size_g, &skip))
-//             {
-//                 type_g = row_g[(int)(centerx_g)] > 0 ? 255 : 0;
-//                 if(type_g != exp_type_g) continue;
-//
-//                 centerx_r = centerx_g;
-//                 centerx_b = centerx_g;
-//                 switch(miss_fp_index)
-//                 {
-// 				case 0:
-// 				case 3:
-// 					//check blue channel for Finder Pattern UL and LL
-// 					if(crossCheckPatternHorizontal(rgb[2], module_size_g*2, &centerx_b, (double)i, &module_size_b))
-// 					{
-// 						type_b = row_b[(int)(centerx_b)] > 0 ? 255 : 0;
-// 						if(type_b != exp_type_b) continue;
-// 						//check red channel
-// 						module_size_r = module_size_g;
-// 						int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-// 						if(crossCheckColor(rgb[0], core_color_in_red_channel, module_size_r, 5, (int)centerx_r, i, 0))
-// 						{
-// 							type_r = 0;
-// 							finder_pattern_found = JAB_SUCCESS;
-// 						}
-// 					}
-// 					if(finder_pattern_found)
-// 					{
-// 						if(!checkModuleSize2(module_size_g, module_size_b)) continue;
-// 						fp.center.x = (centerx_g + centerx_b) / 2.0f;
-// 						fp.module_size = (module_size_g + module_size_b) / 2.0f;
-// 					}
-// 					break;
-// 				case 1:
-// 				case 2:
-// 					//check red channel for Finder Pattern UR and LR
-// 					if(crossCheckPatternHorizontal(rgb[0], module_size_g*2, &centerx_r, (double)i, &module_size_r))
-// 					{
-// 						type_r = row_r[(int)(centerx_r)] > 0 ? 255 : 0;
-// 						if(type_r != exp_type_r) continue;
-// 						//check blue channel
-// 						module_size_b = module_size_g;
-// 						int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-// 						if(crossCheckColor(rgb[2], core_color_in_blue_channel, module_size_b, 5, (int)centerx_b, i, 0))
-// 						{
-// 							type_b = 0;
-// 							finder_pattern_found = JAB_SUCCESS;
-// 						}
-// 					}
-// 					if(finder_pattern_found)
-// 					{
-// 						if(!checkModuleSize2(module_size_r, module_size_g)) continue;
-// 						fp.center.x = (centerx_r + centerx_g) / 2.0f;
-// 						fp.module_size = (module_size_r + module_size_g) / 2.0f;
-// 					}
-// 					break;
-//                 }
-// 				//finder pattern candidate found
-// 				if(finder_pattern_found)
-// 				{
-// 					fp.center.y = (double)i;
-// 					fp.found_count = 1;
-// 					fp.type = miss_fp_index;
-// 					//cross check
-// 					if( crossCheckPattern(rgb, &fp, 0) )
-// 					{
-// 						//combine the finder patterns at the same position with the same size
-// 						saveFinderPattern(&fp, fps_miss, &total_finder_patterns, fp_type_count);
-// 						if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) )
-// 						{
-// 							done = 1;
-// 							break;
-// 						}
-// 					}
-// 				}
-//             }
-//         }while(startx < rgb[0].width && endx < rgb[0].width);
-//     }
-// 	//if the missing FP is found, get the best found
-// 	if(total_finder_patterns > 0)
-//     {
-//         int max_found = 0;
-//         int max_index = 0;
-//         for(int i=0; i<total_finder_patterns; i++)
-//         {
-//             if(fps_miss[i].found_count > max_found)
-//             {
-//                 max_found = fps_miss[i].found_count;
-//                 max_index = i;
-//             }
-//         }
-//         fps[miss_fp_index] = fps_miss[max_index];
-//         //recover the coordinates in bitmap
-//         fps[miss_fp_index].center.x += start_x;
-//         fps[miss_fp_index].center.y += start_y;
-//     }
-// }
+/**
+ * @brief Search for the missing finder pattern at the estimated position
+ * @param bitmap the image bitmap
+ * @param fps the finder patterns
+ * @param miss_fp_index the index of the missing finder pattern
+*/
+void seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, int miss_fp_index)
+{
+	//determine the search area
+	double radius = fps[miss_fp_index].module_size * 5;	//search radius
+	int start_x = (fps[miss_fp_index].center.x - radius) >= 0 ? (fps[miss_fp_index].center.x - radius) : 0;
+	int start_y = (fps[miss_fp_index].center.y - radius) >= 0 ? (fps[miss_fp_index].center.y - radius) : 0;
+	int end_x	  = (fps[miss_fp_index].center.x + radius) <= (bitmap.width - 1) ? (fps[miss_fp_index].center.x + radius) : (bitmap.width - 1);
+	int end_y   = (fps[miss_fp_index].center.y + radius) <= (bitmap.height- 1) ? (fps[miss_fp_index].center.y + radius) : (bitmap.height- 1);
+	int area_width = end_x - start_x;
+	int area_height= end_y - start_y;
+
+	var rgb = List<jab_bitmap>.filled(3, null);
+	for(int i=0; i<3; i++)
+	{
+		rgb[i] =jab_bitmap(); // (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + area_height*area_width*sizeof(jab_byte));
+		if(rgb[i] == null)
+		{
+			// JAB_REPORT_INFO(("Memory allocation for binary bitmap failed, the missing finder pattern can not be found."))
+			return;
+		}
+		rgb[i].width = area_width;
+		rgb[i].height= area_height;
+		rgb[i].bits_per_channel = 8;
+		rgb[i].bits_per_pixel = 8;
+		rgb[i].channel_count = 1;
+	}
+
+	//calculate average pixel value
+	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+    int bytes_per_row = bitmap.width * bytes_per_pixel;
+	var pixel_sum = List<double>.filled(3, 0);
+	var pixel_ave = List<double>.filled(3, 0);
+	for(int i=start_y; i<end_y; i++)
+	{
+		for(int j=start_x; j<end_x; j++)
+		{
+			int offset = i * bytes_per_row + j * bytes_per_pixel;
+			pixel_sum[0] += bitmap.pixel[offset + 0];
+			pixel_sum[1] += bitmap.pixel[offset + 1];
+			pixel_sum[2] += bitmap.pixel[offset + 2];
+		}
+	}
+	pixel_ave[0] = pixel_sum[0] / (area_width * area_height);
+	pixel_ave[1] = pixel_sum[1] / (area_width * area_height);
+	pixel_ave[2] = pixel_sum[2] / (area_width * area_height);
+
+	//quantize the pixels inside the search area to black, cyan and yellow
+	for(int i=start_y, y=0; i<end_y; i++, y++)
+	{
+		for(int j=start_x, x=0; j<end_x; j++, x++)
+		{
+			int offset = i * bytes_per_row + j * bytes_per_pixel;
+			//check black pixel
+			if(bitmap.pixel[offset + 0] < pixel_ave[0] && bitmap.pixel[offset + 1] < pixel_ave[1] && bitmap.pixel[offset + 2] < pixel_ave[2])
+			{
+				rgb[0].pixel[y*area_width + x] = 0;
+				rgb[1].pixel[y*area_width + x] = 0;
+				rgb[2].pixel[y*area_width + x] = 0;
+			}
+			else if(bitmap.pixel[offset + 0] < bitmap.pixel[offset + 2])	//R < B
+			{
+				rgb[0].pixel[y*area_width + x] = 0;
+				rgb[1].pixel[y*area_width + x] = 255;
+				rgb[2].pixel[y*area_width + x] = 255;
+			}
+			else															//R > B
+			{
+				rgb[0].pixel[y*area_width + x] = 255;
+				rgb[1].pixel[y*area_width + x] = 255;
+				rgb[2].pixel[y*area_width + x] = 0;
+			}
+		}
+	}
+
+	//set the core type of the expected finder pattern
+	int exp_type_r=0, exp_type_g=0, exp_type_b=0;
+	switch(miss_fp_index)
+	{
+	case 0:
+	case 1:
+		exp_type_r = 0;
+		exp_type_g = 0;
+		exp_type_b = 0;
+		break;
+	case 2:
+		exp_type_r = 255;
+		exp_type_g = 255;
+		exp_type_b = 0;
+		break;
+	case 3:
+		exp_type_r = 0;
+		exp_type_g = 255;
+		exp_type_b = 255;
+		break;
+	}
+	//search for the missing finder pattern
+	var fps_miss = List<jab_finder_pattern>.filled (MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
+    if(fps_miss == null)
+    {
+        // reportError("Memory allocation for finder patterns failed, the missing finder pattern can not be found.");
+        return;
+    }
+    int total_finder_patterns = 0;
+    bool done = false;
+    var fp_type_count = List<int>.filled(4, 0);
+
+	for(int i=0; i<area_height && done == 0; i++)
+    {
+        //get row
+        var row_r = rgb[0].pixel.sublist(i*rgb[0].width); //rgb[0].pixel + i*rgb[0].width;
+        var row_g = rgb[1].pixel.sublist(i*rgb[1].width); //rgb[1].pixel + i*rgb[1].width;
+        var row_b = rgb[2].pixel.sublist(i*rgb[2].width); //rgb[2].pixel + i*rgb[2].width;
+
+        int startx = 0;
+        int endx = rgb[0].width;
+        int skip = 0;
+
+        do
+        {
+        	jab_finder_pattern fp;
+
+        	int type_r, type_g, type_b;
+          double centerx_r, centerx_g, centerx_b;
+          double module_size_r, module_size_g, module_size_b;
+          int finder_pattern_found = JAB_FAILURE;
+
+            startx += skip;
+            endx = rgb[0].width;
+            //green channel
+          var result = seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip);
+          startx = result.item2;
+          endx = result.item3;
+          centerx_g = result.item4;
+          module_size_g = result.item5;
+          skip = result.item6;
+            if(result.item1== JAB_SUCCESS)
+            {
+                type_g = row_g[(centerx_g).toInt()] > 0 ? 255 : 0;
+                if(type_g != exp_type_g) continue;
+
+                centerx_r = centerx_g;
+                centerx_b = centerx_g;
+                switch(miss_fp_index)
+                {
+				case 0:
+				case 3:
+					//check blue channel for Finder Pattern UL and LL
+                var result = crossCheckPatternHorizontal(rgb[2], module_size_g*2, centerx_b, i.toDouble());
+        centerx_b = result.item2;
+        module_size_b = result.item3;
+					if(result.item1== JAB_SUCCESS)
+					{
+						type_b = row_b[(centerx_b).toInt()] > 0 ? 255 : 0;
+						if(type_b != exp_type_b) continue;
+						//check red channel
+						module_size_r = module_size_g;
+						int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+						if(crossCheckColor(rgb[0], core_color_in_red_channel, module_size_r.toInt(), 5, centerx_r.toInt(), i, 0) == JAB_SUCCESS)
+						{
+							type_r = 0;
+							finder_pattern_found = JAB_SUCCESS;
+						}
+					}
+					if(finder_pattern_found == JAB_SUCCESS)
+					{
+						if(!checkModuleSize2(module_size_g, module_size_b)) continue;
+						fp.center = jab_point((centerx_g + centerx_b) / 2.0, fp.center.y);
+						fp.module_size = (module_size_g + module_size_b) / 2.0;
+					}
+					break;
+				case 1:
+				case 2:
+					//check red channel for Finder Pattern UR and LR
+                var result = crossCheckPatternHorizontal(rgb[0], module_size_g*2, centerx_r, i.toDouble());
+        centerx_r= result.item2;
+        module_size_r= result.item3;
+					if(result.item1== JAB_SUCCESS)
+					{
+						type_r = row_r[(centerx_r).toInt()] > 0 ? 255 : 0;
+						if(type_r != exp_type_r) continue;
+						//check blue channel
+						module_size_b = module_size_g;
+						int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+						if(crossCheckColor(rgb[2], core_color_in_blue_channel, module_size_b.toInt(), 5, centerx_b.toInt(), i, 0) == JAB_SUCCESS)
+						{
+							type_b = 0;
+							finder_pattern_found = JAB_SUCCESS;
+						}
+					}
+					if(finder_pattern_found == JAB_SUCCESS)
+					{
+						if(!checkModuleSize2(module_size_r, module_size_g)) continue;
+						fp.center =  jab_point((centerx_r + centerx_g) / 2.0, fp.center.y);
+						fp.module_size = (module_size_r + module_size_g) / 2.0;
+					}
+					break;
+                }
+				//finder pattern candidate found
+				if(finder_pattern_found == JAB_SUCCESS)
+				{
+					fp.center = jab_point(fp.center.x,i.toDouble());
+					fp.found_count = 1;
+					fp.type = miss_fp_index;
+					//cross check
+					if( crossCheckPattern(rgb, fp, 0) == JAB_SUCCESS)
+					{
+						//combine the finder patterns at the same position with the same size
+						saveFinderPattern(fp, fps_miss, total_finder_patterns, fp_type_count);
+						if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) )
+						{
+							done = true;
+							break;
+						}
+					}
+				}
+            }
+        }while(startx < rgb[0].width && endx < rgb[0].width);
+    }
+	//if the missing FP is found, get the best found
+	if(total_finder_patterns > 0)
+    {
+        int max_found = 0;
+        int max_index = 0;
+        for(int i=0; i<total_finder_patterns; i++)
+        {
+            if(fps_miss[i].found_count > max_found)
+            {
+                max_found = fps_miss[i].found_count;
+                max_index = i;
+            }
+        }
+        fps[miss_fp_index] = fps_miss[max_index];
+        //recover the coordinates in bitmap
+        fps[miss_fp_index].center = jab_point(fps[miss_fp_index].center.x + start_x,
+                                              fps[miss_fp_index].center.y + start_y);
+    }
+}
 
 /**
  * @brief Find the master symbol in the image
@@ -1668,7 +1687,7 @@ int scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finde
  * @return the finder pattern list | NULL
  * @return status the detection status
 */
-Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode)
+Tuple2<int, List<jab_finder_pattern>> findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode)
 {
 		int status;
     //suppose the code size is minimally 1/4 image size
@@ -1757,12 +1776,12 @@ Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bit
 				if(finder_pattern1_found==JAB_SUCCESS || finder_pattern2_found==JAB_SUCCESS)
 				{
 					var fp= jab_finder_pattern();
-					fp.center = Point(fp.center.x, i.toDouble() );
+					fp.center = jab_point(fp.center.x, i.toDouble() );
 					fp.found_count = 1;
 					if(finder_pattern1_found!=0)
 					{
 						if(!checkModuleSize2(module_size_g, module_size_b)) continue;
-						fp.center = Point((centerx_g + centerx_b) / 2.0, fp.center.y);
+						fp.center = jab_point((centerx_g + centerx_b) / 2.0, fp.center.y);
 						fp.module_size = (module_size_g + module_size_b) / 2.0;
 						if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
 							type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
@@ -1784,7 +1803,7 @@ Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bit
 					else if(finder_pattern2_found==JAB_SUCCESS)
 					{
 						if(!checkModuleSize2(module_size_r, module_size_g)) continue;
-						fp.center = Point((centerx_r + centerx_g) / 2.0, fp.center.y);
+						fp.center = jab_point((centerx_r + centerx_g) / 2.0, fp.center.y);
 						fp.module_size = (module_size_r + module_size_g) / 2.0;
 						if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
 						   type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
@@ -1822,7 +1841,7 @@ Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bit
 	if( (fp_type_count[0] != 0 && fp_type_count[1] !=0 && fp_type_count[2] == 0 && fp_type_count[3] == 0) ||
 	    (fp_type_count[0] == 0 && fp_type_count[1] ==0 && fp_type_count[2] != 0 && fp_type_count[3] != 0) )
 	{
-		scanPatternVertical(ch, min_module_size, fps, fp_type_count, &total_finder_patterns);
+		scanPatternVertical(ch, min_module_size, fps, fp_type_count, total_finder_patterns);
 		//set dir to 2?
 	}
 
@@ -1851,7 +1870,7 @@ Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bit
 	{
 		// reportError("Too few finder pattern found");
 		// *status = JAB_FAILURE;
-		return Tuple2<jab_finder_pattern, int>(fps,status);
+		return Tuple2<int, List<jab_finder_pattern>>(status, fps);
 	}
 
     //if only one finder pattern is missing, try anyway by estimating the missing one
@@ -1862,59 +1881,59 @@ Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bit
         if(fps[0].found_count == 0)
         {
 			miss_fp = 0;
-			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0f;
-			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0f;
-			fps[0].center.x = (fps[3].center.x - fps[2].center.x) / ave_size_fp23 * ave_size_fp13 + fps[1].center.x;
-			fps[0].center.y = (fps[3].center.y - fps[2].center.y) / ave_size_fp23 * ave_size_fp13 + fps[1].center.y;
+			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0;
+			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0;
+			fps[0].center = jab_point((fps[3].center.x - fps[2].center.x) / ave_size_fp23 * ave_size_fp13 + fps[1].center.x,
+														    (fps[3].center.y - fps[2].center.y) / ave_size_fp23 * ave_size_fp13 + fps[1].center.y);
 			fps[0].type = FP0;
 			fps[0].found_count = 1;
 			fps[0].direction = -fps[1].direction;
-			fps[0].module_size = (fps[1].module_size + fps[2].module_size + fps[3].module_size) / 3.0f;
+			fps[0].module_size = (fps[1].module_size + fps[2].module_size + fps[3].module_size) / 3.0;
         }
         else if(fps[1].found_count == 0)
         {
 			miss_fp = 1;
-			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0f;
-			double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0f;
-			fps[1].center.x = (fps[2].center.x - fps[3].center.x) / ave_size_fp23 * ave_size_fp02 + fps[0].center.x;
-			fps[1].center.y = (fps[2].center.y - fps[3].center.y) / ave_size_fp23 * ave_size_fp02 + fps[0].center.y;
+			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0;
+			double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0;
+			fps[1].center = jab_point((fps[2].center.x - fps[3].center.x) / ave_size_fp23 * ave_size_fp02 + fps[0].center.x,
+														    (fps[2].center.y - fps[3].center.y) / ave_size_fp23 * ave_size_fp02 + fps[0].center.y);
 			fps[1].type = FP1;
 			fps[1].found_count = 1;
 			fps[1].direction = -fps[0].direction;
-			fps[1].module_size = (fps[0].module_size + fps[2].module_size + fps[3].module_size) / 3.0f;
+			fps[1].module_size = (fps[0].module_size + fps[2].module_size + fps[3].module_size) / 3.0;
         }
         else if(fps[2].found_count == 0)
         {
 			miss_fp = 2;
-			double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0f;
-			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0f;
-			fps[2].center.x = (fps[1].center.x - fps[0].center.x) / ave_size_fp01 * ave_size_fp13 + fps[3].center.x;
-			fps[2].center.y = (fps[1].center.y - fps[0].center.y) / ave_size_fp01 * ave_size_fp13 + fps[3].center.y;
+			double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0;
+			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0;
+			fps[2].center = jab_point((fps[1].center.x - fps[0].center.x) / ave_size_fp01 * ave_size_fp13 + fps[3].center.x,
+													  	(fps[1].center.y - fps[0].center.y) / ave_size_fp01 * ave_size_fp13 + fps[3].center.y);
 			fps[2].type = FP2;
 			fps[2].found_count = 1;
 			fps[2].direction = fps[3].direction;
-			fps[2].module_size = (fps[0].module_size + fps[1].module_size + fps[3].module_size) / 3.0f;
+			fps[2].module_size = (fps[0].module_size + fps[1].module_size + fps[3].module_size) / 3.0;
         }
         else if(fps[3].found_count == 0)
         {
 			miss_fp = 3;
-			double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0f;
-			double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0f;
-			fps[3].center.x = (fps[0].center.x - fps[1].center.x) / ave_size_fp01 * ave_size_fp02 + fps[2].center.x;
-			fps[3].center.y = (fps[0].center.y - fps[1].center.y) / ave_size_fp01 * ave_size_fp02 + fps[2].center.y;
+			double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0;
+			double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0;
+			fps[3].center = jab_point((fps[0].center.x - fps[1].center.x) / ave_size_fp01 * ave_size_fp02 + fps[2].center.x,
+														  (fps[0].center.y - fps[1].center.y) / ave_size_fp01 * ave_size_fp02 + fps[2].center.y);
 			fps[3].type = FP3;
 			fps[3].found_count = 1;
 			fps[3].direction = fps[2].direction;
-			fps[3].module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size) / 3.0f;
+			fps[3].module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size) / 3.0;
         }
         //check the position of the missed finder pattern
 		if(fps[miss_fp].center.x < 0 || fps[miss_fp].center.x > ch[0].width - 1 ||
 		   fps[miss_fp].center.y < 0 || fps[miss_fp].center.y > ch[0].height - 1)
 		{
-			JAB_REPORT_ERROR(("Finder pattern %d out of image", miss_fp))
+			// JAB_REPORT_ERROR(("Finder pattern %d out of image", miss_fp))
 			fps[miss_fp].found_count = 0;
 			status = JAB_FAILURE;
-			return Tuple2<jab_finder_pattern, int>(fps, status);
+			return Tuple2<int, List<jab_finder_pattern>>(status, fps);
 		}
 
 		//try to find the missing finder pattern by a local search at the estimated position
@@ -1934,7 +1953,7 @@ Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bit
 // 	saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
 // #endif
     status = JAB_SUCCESS;
-    return fps;
+    return Tuple2<int, List<jab_finder_pattern>>(status, fps);
 }
 
 // /**
@@ -2748,116 +2767,126 @@ Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bit
 //     free(aps);
 //     return JAB_SUCCESS;
 // }
-//
-// /**
-//  * @brief Get the nearest valid side size to a given size
-//  * @param size the input size
-//  * @param flag the flag indicating the magnitude of error
-//  * @return the nearest valid side size | -1: invalid side size
-// */
-// int getSideSize(int size, int* flag)
-// {
-// 	*flag = 1;
-//     switch (size & 0x03) //mod 4
-//     {
-//     case 0:
-//         size++;
-//         break;
-//     case 2:
-//         size--;
-//         break;
-//     case 3:
-//         size += 2;	//error is bigger than 1, guess the next version and try anyway
-//         *flag = 0;
-//         break;
-//     }
-//     if(size < 21)
-// 	{
-// 		size = -1;
-// 		*flag = -1;
-// 	}
-// 	else if(size > 145)
-// 	{
-// 		size = -1;
-// 		*flag = -1;
-// 	}
-//     return size;
-// }
-//
-// /**
-//  * @brief Choose the side size according to the detection reliability
-//  * @param size1 the first side size
-//  * @param flag1 the detection flag of the first size
-//  * @param size2 the second side size
-//  * @param flag2 the detection flag of the second size
-//  * @return the chosen side size
-// */
-// int chooseSideSize(int size1, int flag1, int size2, int flag2)
-// {
-// 	if(flag1 == -1 && flag2 == -1)
-// 	{
-// 		return -1;
-// 	}
-//     else if(flag1 == flag2)
-// 		return MAX(size1, size2);
-// 	else
-// 	{
-// 		if(flag1 > flag2)
-// 			return size1;
-// 		else
-// 			return size2;
-// 	}
-// }
-//
-// /**
-//  * @brief Calculate the number of modules between two finder/alignment patterns
-//  * @param fp1 the first finder/alignment pattern
-//  * @param fp2 the second finder/alignment pattern
-//  * @return the number of modules
-// */
-// int calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2)
-// {
-//     double dist = DIST(fp1.center.x, fp1.center.y, fp2.center.x, fp2.center.y);
-//     //the angle between the scanline and the connection between finder/alignment patterns
-// 	double cos_theta = MAX(fabs(fp2.center.x - fp1.center.x), fabs(fp2.center.y - fp1.center.y)) / dist;
-//     double mean = (fp1.module_size + fp2.module_size)*cos_theta / 2.0f;
-//     int number = (int)(dist / mean + 0.5f);
-//     return number;
-// }
-//
-// /**
-//  * @brief Calculate the side sizes of master symbol
-//  * @param fps the finder patterns
-//  * @return the horizontal and vertical side sizes
-// */
-// jab_vector2d calculateSideSize(jab_finder_pattern* fps)
-// {
-//     /* finder pattern type layout
-//         0	1
-//         3	2
-//     */
-// 	jab_vector2d side_size = {-1, -1};
-// 	int flag1, flag2;
-//
-// 	//calculate the horizontal side size
-//     int size_x_top = calculateModuleNumber(fps[0], fps[1]) + 7;
-//     size_x_top = getSideSize(size_x_top, &flag1);
-//     int size_x_bottom = calculateModuleNumber(fps[3], fps[2]) + 7;
-// 	size_x_bottom = getSideSize(size_x_bottom, &flag2);
-//
-// 	side_size.x = chooseSideSize(size_x_top, flag1, size_x_bottom, flag2);
-//
-// 	//calculate the vertical side size
-// 	int size_y_left = calculateModuleNumber(fps[0], fps[3]) + 7;
-//     size_y_left = getSideSize(size_y_left, &flag1);
-//     int size_y_right = calculateModuleNumber(fps[1], fps[2]) + 7;
-//     size_y_right = getSideSize(size_y_right, &flag2);
-//
-//     side_size.y = chooseSideSize(size_y_left, flag1, size_y_right, flag2);
-//
-//     return side_size;
-// }
-//
+
+/**
+ * @brief Get the nearest valid side size to a given size
+ * @param size the input size
+ * @return the nearest valid side size | -1: invalid side size
+ * @return flag the flag indicating the magnitude of error
+*/
+Tuple2<int, int> getSideSize(int size)
+{
+	var flag = 1;
+    switch (size & 0x03) //mod 4
+    {
+    case 0:
+        size++;
+        break;
+    case 2:
+        size--;
+        break;
+    case 3:
+        size += 2;	//error is bigger than 1, guess the next version and try anyway
+        flag = 0;
+        break;
+    }
+    if(size < 21)
+	{
+		size = -1;
+		flag = -1;
+	}
+	else if(size > 145)
+	{
+		size = -1;
+		flag = -1;
+	}
+    return Tuple2<int, int>(size, flag);
+}
+
+/**
+ * @brief Choose the side size according to the detection reliability
+ * @param size1 the first side size
+ * @param flag1 the detection flag of the first size
+ * @param size2 the second side size
+ * @param flag2 the detection flag of the second size
+ * @return the chosen side size
+*/
+int chooseSideSize(int size1, int flag1, int size2, int flag2)
+{
+	if(flag1 == -1 && flag2 == -1)
+	{
+		return -1;
+	}
+    else if(flag1 == flag2)
+		return max(size1, size2);
+	else
+	{
+		if(flag1 > flag2)
+			return size1;
+		else
+			return size2;
+	}
+}
+
+/**
+ * @brief Calculate the number of modules between two finder/alignment patterns
+ * @param fp1 the first finder/alignment pattern
+ * @param fp2 the second finder/alignment pattern
+ * @return the number of modules
+*/
+int calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2)
+{
+  double dist = DIST(fp1.center.x, fp1.center.y, fp2.center.x, fp2.center.y);
+  //the angle between the scanline and the connection between finder/alignment patterns
+  double cos_theta = max((fp2.center.x - fp1.center.x).abs(), (fp2.center.y - fp1.center.y).abs()) / dist;
+  double mean = (fp1.module_size + fp2.module_size)*cos_theta / 2.0;
+  int number = (dist / mean + 0.5).toInt();
+  return number;
+}
+
+/**
+ * @brief Calculate the side sizes of master symbol
+ * @param fps the finder patterns
+ * @return the horizontal and vertical side sizes
+*/
+jab_vector2d calculateSideSize(List<jab_finder_pattern> fps)
+{
+    /* finder pattern type layout
+        0	1
+        3	2
+    */
+	var side_size = jab_vector2d();
+	int flag1, flag2;
+  side_size.x =-1;
+  side_size.y =-1;
+
+	//calculate the horizontal side size
+  int size_x_top = calculateModuleNumber(fps[0], fps[1]) + 7;
+  var result = getSideSize(size_x_top);
+  size_x_top = result.item1;
+  flag1 = result.item2;
+  int size_x_bottom = calculateModuleNumber(fps[3], fps[2]) + 7;
+
+  result = getSideSize(size_x_bottom);
+  size_x_bottom = result.item1;
+  flag2 = result.item2;
+	side_size.x = chooseSideSize(size_x_top, flag1, size_x_bottom, flag2);
+
+	//calculate the vertical side size
+	int size_y_left = calculateModuleNumber(fps[0], fps[3]) + 7;
+  result = getSideSize(size_y_left);
+  size_y_left = result.item1;
+  flag1 = result.item2;
+
+  int size_y_right = calculateModuleNumber(fps[1], fps[2]) + 7;
+  result = getSideSize(size_y_right);
+  size_y_right = result.item1;
+  flag2 = result.item2;
+  side_size.y = chooseSideSize(size_y_left, flag1, size_y_right, flag2);
+
+  return side_size;
+}
+
 // /**
 //  * @brief Get the nearest valid position of the first alignment pattern
 //  * @param pos the input position
@@ -3045,398 +3074,398 @@ Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bit
 //
 //     return JAB_SUCCESS;
 // }
-//
-// /**
-//  * @brief Sample a symbol using alignment patterns
-//  * @param bitmap the image bitmap
-//  * @param ch the binarized color channels of the image
-//  * @param symbol the symbol to be sampled
-//  * @param fps the finder patterns
-//  * @return the sampled symbol matrix | NULL if failed
-// */
-// jab_bitmap* sampleSymbolByAlignmentPattern(jab_bitmap* bitmap, jab_bitmap* ch[], jab_decoded_symbol* symbol, jab_finder_pattern* fps)
-// {
-// 	//if no alignment pattern available, abort
-//     if(symbol.metadata.side_version.x < 6 && symbol.metadata.side_version.y < 6)
-// 	{
-// 		reportError("No alignment pattern is available");
-// 		return NULL;
-// 	}
-//
-// 	//For default mode, first confirm the symbol side size
-// 	if(symbol.metadata.default_mode)
-//     {
-//         if(!confirmSymbolSize(ch, fps, symbol))
-//         {
-//             reportError("The symbol size can not be recognized.");
-//             return NULL;
-//         }
+
+/**
+ * @brief Sample a symbol using alignment patterns
+ * @param bitmap the image bitmap
+ * @param ch the binarized color channels of the image
+ * @param symbol the symbol to be sampled
+ * @param fps the finder patterns
+ * @return the sampled symbol matrix | NULL if failed
+*/
+jab_bitmap sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol symbol, jab_finder_pattern* fps)
+{
+	//if no alignment pattern available, abort
+    if(symbol.metadata.side_version.x < 6 && symbol.metadata.side_version.y < 6)
+	{
+		// reportError("No alignment pattern is available");
+		return null;
+	}
+
+	//For default mode, first confirm the symbol side size
+	if(symbol.metadata.default_mode)
+    {
+        if(!confirmSymbolSize(ch, fps, symbol))
+        {
+            // reportError("The symbol size can not be recognized.");
+            return null;
+        }
 // #if TEST_MODE
 //         JAB_REPORT_INFO(("Side sizes confirmed by APs: %d %d", symbol.side_size.x, symbol.side_size.y))
 // #endif
-//     }
-//
-//     int side_ver_x_index = symbol.metadata.side_version.x - 1;
-// 	int side_ver_y_index = symbol.metadata.side_version.y - 1;
-// 	int number_of_ap_x = jab_ap_num[side_ver_x_index];
-//     int number_of_ap_y = jab_ap_num[side_ver_y_index];
-//
-//     //buffer for all possible alignment patterns
-// 	jab_alignment_pattern* aps = (jab_alignment_pattern *)malloc(number_of_ap_x * number_of_ap_y *sizeof(jab_alignment_pattern));
-// 	if(aps == NULL)
-// 	{
-// 		reportError("Memory allocation for alignment patterns failed");
-// 		return NULL;
-// 	}
-//     //detect all APs
-// 	for(int i=0; i<number_of_ap_y; i++)
-// 	{
-// 		for(int j=0; j<number_of_ap_x; j++)
-// 		{
-// 			int index = i * number_of_ap_x + j;
-// 			if(i == 0 && j == 0)
-// 				aps[index] = fps[0];
-// 			else if(i == 0 && j == number_of_ap_x - 1)
-// 				aps[index] = fps[1];
-// 			else if(i == number_of_ap_y - 1 && j == number_of_ap_x - 1)
-// 				aps[index] = fps[2];
-// 			else if(i == number_of_ap_y - 1 && j == 0)
-// 				aps[index] = fps[3];
-// 			else
-// 			{
-// 				if(i == 0)
-// 				{
-// 					//direction: from aps[0][j-1] to fps[1]
-// 					double distx = fps[1].center.x - aps[j-1].center.x;
-// 					double disty = fps[1].center.y - aps[j-1].center.y;
-// 					double alpha = atan2(disty, distx);
-// 					//distance:  aps[0][j-1].module_size * module_number_between_APs
-// 					double distance = aps[j-1].module_size * (jab_ap_pos[side_ver_x_index][j] - jab_ap_pos[side_ver_x_index][j-1]);
-// 					//calculate the coordinate of ap[index]
-// 					aps[index].center.x = aps[j-1].center.x + distance * cos(alpha);
-// 					aps[index].center.y = aps[j-1].center.y + distance * sin(alpha);
-// 					aps[index].module_size = aps[j-1].module_size;
-// 				}
-// 				else if(j == 0)
-// 				{
-// 					//direction: from aps[i-1][0] to fps[3]
-// 					double distx = fps[3].center.x - aps[(i-1) * number_of_ap_x].center.x;
-// 					double disty = fps[3].center.y - aps[(i-1) * number_of_ap_x].center.y;
-// 					double alpha = atan2(disty, distx);
-// 					//distance:  aps[i-1][0].module_size * module_number_between_APs
-// 					double distance = aps[(i-1) * number_of_ap_x].module_size * (jab_ap_pos[side_ver_y_index][i] - jab_ap_pos[side_ver_y_index][i-1]);
-// 					//calculate the coordinate of ap[index]
-// 					aps[index].center.x = aps[(i-1) * number_of_ap_x].center.x + distance * cos(alpha);
-// 					aps[index].center.y = aps[(i-1) * number_of_ap_x].center.y + distance * sin(alpha);
-// 					aps[index].module_size = aps[(i-1) * number_of_ap_x].module_size;
-// 				}
-// 				else
-// 				{
-// 					//estimate the coordinate of ap[index] from aps[i-1][j-1], aps[i-1][j] and aps[i][j-1]
-// 					int index_ap0 = (i-1) * number_of_ap_x + (j-1);	//ap at upper-left
-// 					int index_ap1 = (i-1) * number_of_ap_x + j;		//ap at upper-right
-// 					int index_ap3 = i * number_of_ap_x + (j-1);		//ap at left
-// 					double ave_size_ap01 = (aps[index_ap0].module_size + aps[index_ap1].module_size) / 2.0f;
-// 					double ave_size_ap13 = (aps[index_ap1].module_size + aps[index_ap3].module_size) / 2.0f;
-// 					aps[index].center.x = (aps[index_ap1].center.x - aps[index_ap0].center.x) / ave_size_ap01 * ave_size_ap13 + aps[index_ap3].center.x;
-// 					aps[index].center.y = (aps[index_ap1].center.y - aps[index_ap0].center.y) / ave_size_ap01 * ave_size_ap13 + aps[index_ap3].center.y;
-// 					aps[index].module_size = ave_size_ap13;
-// 				}
-// 				//find aps[index]
-// 				aps[index].found_count = 0;
-// 				jab_alignment_pattern tmp = aps[index];
-// 				aps[index] = findAlignmentPattern(ch, aps[index].center.x, aps[index].center.y, aps[index].module_size, APX);
-// 				if(aps[index].found_count == 0)
-// 				{
-// 					aps[index] = tmp;	//recover the estimated one
+    }
+
+    int side_ver_x_index = symbol.metadata.side_version.x - 1;
+	int side_ver_y_index = symbol.metadata.side_version.y - 1;
+	int number_of_ap_x = jab_ap_num[side_ver_x_index];
+    int number_of_ap_y = jab_ap_num[side_ver_y_index];
+
+    //buffer for all possible alignment patterns
+	jab_alignment_pattern* aps = (jab_alignment_pattern *)malloc(number_of_ap_x * number_of_ap_y *sizeof(jab_alignment_pattern));
+	if(aps == null)
+	{
+		// reportError("Memory allocation for alignment patterns failed");
+		return null;
+	}
+    //detect all APs
+	for(int i=0; i<number_of_ap_y; i++)
+	{
+		for(int j=0; j<number_of_ap_x; j++)
+		{
+			int index = i * number_of_ap_x + j;
+			if(i == 0 && j == 0)
+				aps[index] = fps[0];
+			else if(i == 0 && j == number_of_ap_x - 1)
+				aps[index] = fps[1];
+			else if(i == number_of_ap_y - 1 && j == number_of_ap_x - 1)
+				aps[index] = fps[2];
+			else if(i == number_of_ap_y - 1 && j == 0)
+				aps[index] = fps[3];
+			else
+			{
+				if(i == 0)
+				{
+					//direction: from aps[0][j-1] to fps[1]
+					double distx = fps[1].center.x - aps[j-1].center.x;
+					double disty = fps[1].center.y - aps[j-1].center.y;
+					double alpha = atan2(disty, distx);
+					//distance:  aps[0][j-1].module_size * module_number_between_APs
+					double distance = aps[j-1].module_size * (jab_ap_pos[side_ver_x_index][j] - jab_ap_pos[side_ver_x_index][j-1]);
+					//calculate the coordinate of ap[index]
+					aps[index].center.x = aps[j-1].center.x + distance * cos(alpha);
+					aps[index].center.y = aps[j-1].center.y + distance * sin(alpha);
+					aps[index].module_size = aps[j-1].module_size;
+				}
+				else if(j == 0)
+				{
+					//direction: from aps[i-1][0] to fps[3]
+					double distx = fps[3].center.x - aps[(i-1) * number_of_ap_x].center.x;
+					double disty = fps[3].center.y - aps[(i-1) * number_of_ap_x].center.y;
+					double alpha = atan2(disty, distx);
+					//distance:  aps[i-1][0].module_size * module_number_between_APs
+					double distance = aps[(i-1) * number_of_ap_x].module_size * (jab_ap_pos[side_ver_y_index][i] - jab_ap_pos[side_ver_y_index][i-1]);
+					//calculate the coordinate of ap[index]
+					aps[index].center.x = aps[(i-1) * number_of_ap_x].center.x + distance * cos(alpha);
+					aps[index].center.y = aps[(i-1) * number_of_ap_x].center.y + distance * sin(alpha);
+					aps[index].module_size = aps[(i-1) * number_of_ap_x].module_size;
+				}
+				else
+				{
+					//estimate the coordinate of ap[index] from aps[i-1][j-1], aps[i-1][j] and aps[i][j-1]
+					int index_ap0 = (i-1) * number_of_ap_x + (j-1);	//ap at upper-left
+					int index_ap1 = (i-1) * number_of_ap_x + j;		//ap at upper-right
+					int index_ap3 = i * number_of_ap_x + (j-1);		//ap at left
+					double ave_size_ap01 = (aps[index_ap0].module_size + aps[index_ap1].module_size) / 2.0f;
+					double ave_size_ap13 = (aps[index_ap1].module_size + aps[index_ap3].module_size) / 2.0f;
+					aps[index].center.x = (aps[index_ap1].center.x - aps[index_ap0].center.x) / ave_size_ap01 * ave_size_ap13 + aps[index_ap3].center.x;
+					aps[index].center.y = (aps[index_ap1].center.y - aps[index_ap0].center.y) / ave_size_ap01 * ave_size_ap13 + aps[index_ap3].center.y;
+					aps[index].module_size = ave_size_ap13;
+				}
+				//find aps[index]
+				aps[index].found_count = 0;
+				jab_alignment_pattern tmp = aps[index];
+				aps[index] = findAlignmentPattern(ch, aps[index].center.x, aps[index].center.y, aps[index].module_size, APX);
+				if(aps[index].found_count == 0)
+				{
+					aps[index] = tmp;	//recover the estimated one
 // #if TEST_MODE
 // 					JAB_REPORT_ERROR(("The alignment pattern (index: %d) at (X: %f, Y: %f) not found", index, aps[index].center.x, aps[index].center.y))
 // #endif
-// 				}
-// 			}
-// 		}
-// 	}
-//
+				}
+			}
+		}
+	}
+
 // #if TEST_MODE
 // 	drawFoundFinderPatterns((jab_finder_pattern*)aps, number_of_ap_x * number_of_ap_y, 0x0000ff);
 // #endif
-//
-// 	//determine the minimal sampling rectangle for each block
-// 	int block_number = (number_of_ap_x-1) * (number_of_ap_y-1);
-// 	jab_vector2d rect[block_number * 2];
-// 	int rect_index = 0;
-// 	for(int i=0; i<number_of_ap_y-1; i++)
-// 	{
-// 		for(int j=0; j<number_of_ap_x-1; j++)
-// 		{
-// 			jab_vector2d tl={0,0};
-// 			jab_vector2d br={0,0};
-// 			jab_boolean flag = 1;
-//
-// 			for(int delta=0; delta<=(number_of_ap_x-2 + number_of_ap_y-2) && flag; delta++)
-// 			{
-// 				for(int dy=0; dy<=MIN(delta, number_of_ap_y-2) && flag; dy++)
-// 				{
-// 					int dx = MIN(delta - dy, number_of_ap_x-2);
-// 					for(int dy1=0; dy1<=dy && flag; dy1++)
-// 					{
-// 						int dy2 = dy - dy1;
-// 						for(int dx1=0; dx1<=dx && flag; dx1++)
-// 						{
-// 							int dx2 = dx - dx1;
-//
-// 							tl.x = MAX(j - dx1, 0);
-// 							tl.y = MAX(i - dy1, 0);
-// 							br.x = MIN(j + 1 + dx2, number_of_ap_x - 1);
-// 							br.y = MIN(i + 1 + dy2, number_of_ap_y - 1);
-// 							if(aps[tl.y*number_of_ap_x + tl.x].found_count > 0 &&
-// 							   aps[tl.y*number_of_ap_x + br.x].found_count > 0 &&
-// 							   aps[br.y*number_of_ap_x + tl.x].found_count > 0 &&
-// 							   aps[br.y*number_of_ap_x + br.x].found_count > 0)
-// 							{
-// 								flag = 0;
-// 							}
-// 						}
-// 					}
-// 				}
-// 			}
-// 			//save the minimal rectangle if there is no duplicate
-// 			jab_boolean dup_flag = 0;
-// 			for(int k=0; k<rect_index; k+=2)
-// 			{
-// 				if(rect[k].x == tl.x && rect[k].y == tl.y && rect[k+1].x == br.x && rect[k+1].y == br.y)
-// 				{
-// 					dup_flag = 1;
-// 					break;
-// 				}
-// 			}
-// 			if(!dup_flag)
-// 			{
-// 				rect[rect_index] = tl;
-// 				rect[rect_index+1] = br;
-// 				rect_index += 2;
-// 			}
-// 		}
-// 	}
-// 	//sort the rectangles in descending order according to the size
-// 	for(int i=0; i<rect_index-2; i+=2)
-// 	{
-// 		for(int j=0; j<rect_index-2-i; j+=2)
-// 		{
-// 			int size0 = (rect[j+1].x - rect[j].x) * (rect[j+1].y - rect[j].y);
-// 			int size1 = (rect[j+2+1].x - rect[j+2].x) * (rect[j+2+1].y - rect[j+2].y);
-// 			if(size1 > size0)
-// 			{
-// 				jab_vector2d tmp;
-// 				//swap top-left
-// 				tmp = rect[j];
-// 				rect[j] = rect[j+2];
-// 				rect[j+2] = tmp;
-// 				//swap bottom-right
-// 				tmp = rect[j+1];
-// 				rect[j+1] = rect[j+2+1];
-// 				rect[j+2+1] = tmp;
-// 			}
-// 		}
-// 	}
-//
-// 	//allocate the buffer for the sampled matrix of the symbol
-//     int width = symbol.side_size.x;
-// 	int height= symbol.side_size.y;
-// 	int mtx_bytes_per_pixel = bitmap.bits_per_pixel / 8;
-// 	int mtx_bytes_per_row = width * mtx_bytes_per_pixel;
-// 	jab_bitmap* matrix = (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*mtx_bytes_per_pixel*sizeof(jab_byte));
-// 	if(matrix == NULL)
-// 	{
-// 		reportError("Memory allocation for symbol bitmap matrix failed");
-// 		return NULL;
-// 	}
-// 	matrix.channel_count = bitmap.channel_count;
-// 	matrix.bits_per_channel = bitmap.bits_per_channel;
-// 	matrix.bits_per_pixel = matrix.bits_per_channel * matrix.channel_count;
-// 	matrix.width = width;
-// 	matrix.height= height;
-//
-// 	for(int i=0; i<rect_index; i+=2)
-// 	{
-// 		jab_vector2d blk_size;
-// 		jab_point p0, p1, p2, p3;
-//
-// 		//middle blocks
-// 		blk_size.x = jab_ap_pos[side_ver_x_index][rect[i+1].x] - jab_ap_pos[side_ver_x_index][rect[i].x] + 1;
-// 		blk_size.y = jab_ap_pos[side_ver_y_index][rect[i+1].y] - jab_ap_pos[side_ver_y_index][rect[i].y] + 1;
-// 		p0.x = 0.5f;
-// 		p0.y = 0.5f;
-// 		p1.x = (double)blk_size.x - 0.5f;
-// 		p1.y = 0.5f;
-// 		p2.x = (double)blk_size.x - 0.5f;
-// 		p2.y = (double)blk_size.y - 0.5f;
-// 		p3.x = 0.5f;
-// 		p3.y = (double)blk_size.y - 0.5f;
-// 		//blocks on the top border row
-// 		if(rect[i].y == 0)
-// 		{
-// 			blk_size.y += (DISTANCE_TO_BORDER - 1);
-// 			p0.y = 3.5f;
-// 			p1.y = 3.5f;
-// 			p2.y = (double)blk_size.y - 0.5f;
-// 			p3.y = (double)blk_size.y - 0.5f;
-// 		}
-// 		//blocks on the bottom border row
-// 		if(rect[i+1].y == (number_of_ap_y-1))
-// 		{
-// 			blk_size.y += (DISTANCE_TO_BORDER - 1);
-// 			p2.y = (double)blk_size.y - 3.5f;
-// 			p3.y = (double)blk_size.y - 3.5f;
-// 		}
-// 		//blocks on the left border column
-// 		if(rect[i].x == 0)
-// 		{
-// 			blk_size.x += (DISTANCE_TO_BORDER - 1);
-// 			p0.x = 3.5f;
-// 			p1.x = (double)blk_size.x - 0.5f;
-// 			p2.x = (double)blk_size.x - 0.5f;
-// 			p3.x = 3.5f;
-// 		}
-// 		//blocks on the right border column
-// 		if(rect[i+1].x == (number_of_ap_x-1))
-// 		{
-// 			blk_size.x += (DISTANCE_TO_BORDER - 1);
-// 			p1.x = (double)blk_size.x - 3.5f;
-// 			p2.x = (double)blk_size.x - 3.5f;
-// 		}
-// 		//calculate perspective transform matrix for the current block
-// 		jab_perspective_transform* pt = perspectiveTransform(
-// 					p0.x, p0.y,
-// 					p1.x, p1.y,
-// 					p2.x, p2.y,
-// 					p3.x, p3.y,
-// 					aps[rect[i+0].y*number_of_ap_x + rect[i+0].x].center.x, aps[rect[i+0].y*number_of_ap_x + rect[i+0].x].center.y,
-// 					aps[rect[i+0].y*number_of_ap_x + rect[i+1].x].center.x, aps[rect[i+0].y*number_of_ap_x + rect[i+1].x].center.y,
-// 					aps[rect[i+1].y*number_of_ap_x + rect[i+1].x].center.x, aps[rect[i+1].y*number_of_ap_x + rect[i+1].x].center.y,
-// 					aps[rect[i+1].y*number_of_ap_x + rect[i+0].x].center.x, aps[rect[i+1].y*number_of_ap_x + rect[i+0].x].center.y);
-// 		if(pt == NULL)
-// 		{
-// 			free(aps);
-// 			free(matrix);
-// 			return NULL;
-// 		}
-// 		//sample the current block
+
+	//determine the minimal sampling rectangle for each block
+	int block_number = (number_of_ap_x-1) * (number_of_ap_y-1);
+	jab_vector2d rect[block_number * 2];
+	int rect_index = 0;
+	for(int i=0; i<number_of_ap_y-1; i++)
+	{
+		for(int j=0; j<number_of_ap_x-1; j++)
+		{
+			jab_vector2d tl={0,0};
+			jab_vector2d br={0,0};
+			bool flag = true;
+
+			for(int delta=0; delta<=(number_of_ap_x-2 + number_of_ap_y-2) && flag; delta++)
+			{
+				for(int dy=0; dy<=min(delta, number_of_ap_y-2) && flag; dy++)
+				{
+					int dx = min(delta - dy, number_of_ap_x-2);
+					for(int dy1=0; dy1<=dy && flag; dy1++)
+					{
+						int dy2 = dy - dy1;
+						for(int dx1=0; dx1<=dx && flag; dx1++)
+						{
+							int dx2 = dx - dx1;
+
+							tl.x = max(j - dx1, 0);
+							tl.y = max(i - dy1, 0);
+							br.x = min(j + 1 + dx2, number_of_ap_x - 1);
+							br.y = min(i + 1 + dy2, number_of_ap_y - 1);
+							if(aps[tl.y*number_of_ap_x + tl.x].found_count > 0 &&
+							   aps[tl.y*number_of_ap_x + br.x].found_count > 0 &&
+							   aps[br.y*number_of_ap_x + tl.x].found_count > 0 &&
+							   aps[br.y*number_of_ap_x + br.x].found_count > 0)
+							{
+								flag = 0;
+							}
+						}
+					}
+				}
+			}
+			//save the minimal rectangle if there is no duplicate
+			bool dup_flag = false;
+			for(int k=0; k<rect_index; k+=2)
+			{
+				if(rect[k].x == tl.x && rect[k].y == tl.y && rect[k+1].x == br.x && rect[k+1].y == br.y)
+				{
+					dup_flag = true;
+					break;
+				}
+			}
+			if(!dup_flag)
+			{
+				rect[rect_index] = tl;
+				rect[rect_index+1] = br;
+				rect_index += 2;
+			}
+		}
+	}
+	//sort the rectangles in descending order according to the size
+	for(int i=0; i<rect_index-2; i+=2)
+	{
+		for(int j=0; j<rect_index-2-i; j+=2)
+		{
+			int size0 = (rect[j+1].x - rect[j].x) * (rect[j+1].y - rect[j].y);
+			int size1 = (rect[j+2+1].x - rect[j+2].x) * (rect[j+2+1].y - rect[j+2].y);
+			if(size1 > size0)
+			{
+				jab_vector2d tmp;
+				//swap top-left
+				tmp = rect[j];
+				rect[j] = rect[j+2];
+				rect[j+2] = tmp;
+				//swap bottom-right
+				tmp = rect[j+1];
+				rect[j+1] = rect[j+2+1];
+				rect[j+2+1] = tmp;
+			}
+		}
+	}
+
+	//allocate the buffer for the sampled matrix of the symbol
+    int width = symbol.side_size.x;
+	int height= symbol.side_size.y;
+	int mtx_bytes_per_pixel = bitmap.bits_per_pixel / 8;
+	int mtx_bytes_per_row = width * mtx_bytes_per_pixel;
+	jab_bitmap* matrix = (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*mtx_bytes_per_pixel*sizeof(jab_byte));
+	if(matrix == null)
+	{
+		// reportError("Memory allocation for symbol bitmap matrix failed");
+		return null;
+	}
+	matrix.channel_count = bitmap.channel_count;
+	matrix.bits_per_channel = bitmap.bits_per_channel;
+	matrix.bits_per_pixel = matrix.bits_per_channel * matrix.channel_count;
+	matrix.width = width;
+	matrix.height= height;
+
+	for(int i=0; i<rect_index; i+=2)
+	{
+		jab_vector2d blk_size;
+		jab_point p0, p1, p2, p3;
+
+		//middle blocks
+		blk_size.x = jab_ap_pos[side_ver_x_index][rect[i+1].x] - jab_ap_pos[side_ver_x_index][rect[i].x] + 1;
+		blk_size.y = jab_ap_pos[side_ver_y_index][rect[i+1].y] - jab_ap_pos[side_ver_y_index][rect[i].y] + 1;
+		p0.x = 0.5;
+		p0.y = 0.5;
+		p1.x = (double)blk_size.x - 0.5;
+		p1.y = 0.5;
+		p2.x = (double)blk_size.x - 0.5;
+		p2.y = (double)blk_size.y - 0.5;
+		p3.x = 0.5;
+		p3.y = (double)blk_size.y - 0.5;
+		//blocks on the top border row
+		if(rect[i].y == 0)
+		{
+			blk_size.y += (DISTANCE_TO_BORDER - 1);
+			p0.y = 3.5f;
+			p1.y = 3.5f;
+			p2.y = (double)blk_size.y - 0.5f;
+			p3.y = (double)blk_size.y - 0.5f;
+		}
+		//blocks on the bottom border row
+		if(rect[i+1].y == (number_of_ap_y-1))
+		{
+			blk_size.y += (DISTANCE_TO_BORDER - 1);
+			p2.y = (double)blk_size.y - 3.5;
+			p3.y = (double)blk_size.y - 3.5;
+		}
+		//blocks on the left border column
+		if(rect[i].x == 0)
+		{
+			blk_size.x += (DISTANCE_TO_BORDER - 1);
+			p0.x = 3.5f;
+			p1.x = (double)blk_size.x - 0.5;
+			p2.x = (double)blk_size.x - 0.5;
+			p3.x = 3.5;
+		}
+		//blocks on the right border column
+		if(rect[i+1].x == (number_of_ap_x-1))
+		{
+			blk_size.x += (DISTANCE_TO_BORDER - 1);
+			p1.x = (double)blk_size.x - 3.5;
+			p2.x = (double)blk_size.x - 3.5;
+		}
+		//calculate perspective transform matrix for the current block
+		jab_perspective_transform* pt = perspectiveTransform(
+					p0.x, p0.y,
+					p1.x, p1.y,
+					p2.x, p2.y,
+					p3.x, p3.y,
+					aps[rect[i+0].y*number_of_ap_x + rect[i+0].x].center.x, aps[rect[i+0].y*number_of_ap_x + rect[i+0].x].center.y,
+					aps[rect[i+0].y*number_of_ap_x + rect[i+1].x].center.x, aps[rect[i+0].y*number_of_ap_x + rect[i+1].x].center.y,
+					aps[rect[i+1].y*number_of_ap_x + rect[i+1].x].center.x, aps[rect[i+1].y*number_of_ap_x + rect[i+1].x].center.y,
+					aps[rect[i+1].y*number_of_ap_x + rect[i+0].x].center.x, aps[rect[i+1].y*number_of_ap_x + rect[i+0].x].center.y);
+		if(pt == null)
+		{
+			// free(aps);
+			// free(matrix);
+			return null;
+		}
+		//sample the current block
 // #if TEST_MODE
 // 		test_mode_color = 0;
 // #endif
-// 		jab_bitmap* block = sampleSymbol(bitmap, pt, blk_size);
-// 		free(pt);
-// 		if(block == NULL)
-// 		{
-// 			reportError("Sampling block failed");
-// 			free(aps);
-// 			free(matrix);
-// 			return NULL;
-// 		}
-// 		//save the sampled block in the matrix
-// 		int start_x = jab_ap_pos[side_ver_x_index][rect[i].x] - 1;
-// 		int start_y = jab_ap_pos[side_ver_y_index][rect[i].y] - 1;
-// 		if(rect[i].x == 0)
-// 			start_x = 0;
-// 		if(rect[i].y == 0)
-// 			start_y = 0;
-// 		int blk_bytes_per_pixel = block.bits_per_pixel / 8;
-// 		int blk_bytes_per_row = blk_size.x * mtx_bytes_per_pixel;
-// 		for(int y=0, mtx_y=start_y; y<blk_size.y && mtx_y<height; y++, mtx_y++)
-// 		{
-// 			for(int x=0, mtx_x=start_x; x<blk_size.x && mtx_x<width; x++, mtx_x++)
-// 			{
-// 				int mtx_offset = mtx_y * mtx_bytes_per_row + mtx_x * mtx_bytes_per_pixel;
-// 				int blk_offset = y * blk_bytes_per_row + x * blk_bytes_per_pixel;
-// 				matrix.pixel[mtx_offset] 	  = block.pixel[blk_offset];
-// 				matrix.pixel[mtx_offset + 1] = block.pixel[blk_offset + 1];
-// 				matrix.pixel[mtx_offset + 2] = block.pixel[blk_offset + 2];
-// 				matrix.pixel[mtx_offset + 3] = block.pixel[blk_offset + 3];
-// 			}
-// 		}
-// 		free(block);
-// 	}
+		jab_bitmap* block = sampleSymbol(bitmap, pt, blk_size);
+		// free(pt);
+		if(block == null)
+		{
+			// reportError("Sampling block failed");
+			// free(aps);
+			// free(matrix);
+			return null;
+		}
+		//save the sampled block in the matrix
+		int start_x = jab_ap_pos[side_ver_x_index][rect[i].x] - 1;
+		int start_y = jab_ap_pos[side_ver_y_index][rect[i].y] - 1;
+		if(rect[i].x == 0)
+			start_x = 0;
+		if(rect[i].y == 0)
+			start_y = 0;
+		int blk_bytes_per_pixel = block.bits_per_pixel / 8;
+		int blk_bytes_per_row = blk_size.x * mtx_bytes_per_pixel;
+		for(int y=0, mtx_y=start_y; y<blk_size.y && mtx_y<height; y++, mtx_y++)
+		{
+			for(int x=0, mtx_x=start_x; x<blk_size.x && mtx_x<width; x++, mtx_x++)
+			{
+				int mtx_offset = mtx_y * mtx_bytes_per_row + mtx_x * mtx_bytes_per_pixel;
+				int blk_offset = y * blk_bytes_per_row + x * blk_bytes_per_pixel;
+				matrix.pixel[mtx_offset] 	  = block.pixel[blk_offset];
+				matrix.pixel[mtx_offset + 1] = block.pixel[blk_offset + 1];
+				matrix.pixel[mtx_offset + 2] = block.pixel[blk_offset + 2];
+				matrix.pixel[mtx_offset + 3] = block.pixel[blk_offset + 3];
+			}
+		}
+		// free(block);
+	}
 // #if TEST_MODE
 //     saveImage(test_mode_bitmap, "jab_sample_pos_ap.png");
 // #endif
-//
-// 	free(aps);
-// 	return matrix;
-// }
-//
-// /**
-//  * @brief Get the average pixel value around the found finder patterns
-//  * @param bitmap the image bitmap
-//  * @param fps the finder patterns
-//  * @param rgb_ave the average pixel value
-// */
-// void getAveragePixelValue(jab_bitmap* bitmap, jab_finder_pattern* fps, double* rgb_ave)
-// {
-//     double r_ave[4] = {0, 0, 0, 0};
-//     double g_ave[4] = {0, 0, 0, 0};
-//     double b_ave[4] = {0, 0, 0, 0};
-//
-//     //calculate average pixel value around each found FP
-//     for(int i=0; i<4; i++)
-//     {
-//         if(fps[i].found_count <= 0) continue;
-//
-//         double radius = fps[i].module_size * 4;
-//         int start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius) : 0;
-//         int start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius) : 0;
-//         int end_x	  = (fps[i].center.x + radius) <= (bitmap.width - 1) ? (fps[i].center.x + radius) : (bitmap.width - 1);
-//         int end_y   = (fps[i].center.y + radius) <= (bitmap.height- 1) ? (fps[i].center.y + radius) : (bitmap.height- 1);
-//         int area_width = end_x - start_x;
-//         int area_height= end_y - start_y;
-//
-//         int bytes_per_pixel = bitmap.bits_per_pixel / 8;
-//         int bytes_per_row = bitmap.width * bytes_per_pixel;
-//         for(int y=start_y; y<end_y; y++)
-//         {
-//             for(int x=start_x; x<end_x; x++)
-//             {
-//                 int offset = y * bytes_per_row + x * bytes_per_pixel;
-//                 r_ave[i] += bitmap.pixel[offset + 0];
-//                 g_ave[i] += bitmap.pixel[offset + 1];
-//                 b_ave[i] += bitmap.pixel[offset + 2];
-//             }
-//         }
-//         r_ave[i] /= (double)(area_width * area_height);
-//         g_ave[i] /= (double)(area_width * area_height);
-//         b_ave[i] /= (double)(area_width * area_height);
-//     }
-//
-//     //calculate the average values of the average pixel values
-//     double rgb_sum[3] = {0, 0, 0};
-//     int rgb_count[3] = {0, 0, 0};
-//     for(int i=0; i<4; i++)
-//     {
-//         if(r_ave[i] > 0)
-//         {
-//             rgb_sum[0] += r_ave[i];
-//             rgb_count[0]++;
-//         }
-//         if(g_ave[i] > 0)
-//         {
-//             rgb_sum[1] += g_ave[i];
-//             rgb_count[1]++;
-//         }
-//         if(b_ave[i] > 0)
-//         {
-//             rgb_sum[2] += b_ave[i];
-//             rgb_count[2]++;
-//         }
-//     }
-//     if(rgb_count[0] > 0) rgb_ave[0] = rgb_sum[0] / (double)rgb_count[0];
-//     if(rgb_count[1] > 0) rgb_ave[1] = rgb_sum[1] / (double)rgb_count[1];
-//     if(rgb_count[2] > 0) rgb_ave[2] = rgb_sum[2] / (double)rgb_count[2];
-// }
-//
-import 'binarizer.dart';
-import 'decoder_h.dart';
-import 'detector_h.dart';
-import 'jabcode_h.dart';
+
+	// free(aps);
+	return matrix;
+}
+
+/**
+ * @brief Get the average pixel value around the found finder patterns
+ * @param bitmap the image bitmap
+ * @param fps the finder patterns
+ * @result rgb_ave the average pixel value
+*/
+List<double> getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> fps )
+{
+    var rgb_ave = List<double>.filled(3, 0);
+    var r_ave = List<double>.filled(4, 0);
+    var g_ave = List<double>.filled(4, 0);
+    var b_ave = List<double>.filled(4, 0);
+
+    //calculate average pixel value around each found FP
+    for(int i=0; i<4; i++)
+    {
+        if(fps[i].found_count <= 0) continue;
+
+        double radius = fps[i].module_size * 4;
+        int start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius) : 0;
+        int start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius) : 0;
+        int end_x	  = (fps[i].center.x + radius) <= (bitmap.width - 1) ? (fps[i].center.x + radius) : (bitmap.width - 1);
+        int end_y   = (fps[i].center.y + radius) <= (bitmap.height- 1) ? (fps[i].center.y + radius) : (bitmap.height- 1);
+        int area_width = end_x - start_x;
+        int area_height= end_y - start_y;
+
+        int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+        int bytes_per_row = bitmap.width * bytes_per_pixel;
+        for(int y=start_y; y<end_y; y++)
+        {
+            for(int x=start_x; x<end_x; x++)
+            {
+                int offset = y * bytes_per_row + x * bytes_per_pixel;
+                r_ave[i] += bitmap.pixel[offset + 0];
+                g_ave[i] += bitmap.pixel[offset + 1];
+                b_ave[i] += bitmap.pixel[offset + 2];
+            }
+        }
+        r_ave[i] /= (area_width * area_height);
+        g_ave[i] /= (area_width * area_height);
+        b_ave[i] /= (area_width * area_height);
+    }
+
+    //calculate the average values of the average pixel values
+    var rgb_sum = List<double>.filled(3, 0);
+    var rgb_count = List<int>.filled(3, 0);
+    for(int i=0; i<4; i++)
+    {
+        if(r_ave[i] > 0)
+        {
+            rgb_sum[0] += r_ave[i];
+            rgb_count[0]++;
+        }
+        if(g_ave[i] > 0)
+        {
+            rgb_sum[1] += g_ave[i];
+            rgb_count[1]++;
+        }
+        if(b_ave[i] > 0)
+        {
+            rgb_sum[2] += b_ave[i];
+            rgb_count[2]++;
+        }
+    }
+    if(rgb_count[0] > 0) rgb_ave[0] = rgb_sum[0] / rgb_count[0];
+    if(rgb_count[1] > 0) rgb_ave[1] = rgb_sum[1] / rgb_count[1];
+    if(rgb_count[2] > 0) rgb_ave[2] = rgb_sum[2] / rgb_count[2];
+
+    return rgb_ave;
+}
+
+
 
 /**
  * @brief Detect and decode a master symbol
@@ -3448,9 +3477,10 @@ import 'jabcode_h.dart';
 int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol master_symbol)
 {
     //find master symbol
-    jab_finder_pattern fps;
     int status;
-    fps = findMasterSymbol(bitmap, ch, INTENSIVE_DETECT, &status);
+    var result =  findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
+    status = result.item1;
+    var fps = result.item2;
     if(status == FATAL_ERROR) return JAB_FAILURE;
     else if(status == JAB_FAILURE)
     {
@@ -3458,17 +3488,18 @@ int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mast
 //         JAB_REPORT_INFO(("Trying to detect more finder patterns based on the found ones"))
 // #endif
         //calculate the average pixel value around the found FPs
-        var rgb_ave = List<double>.filled(3, 0);
-        getAveragePixelValue(bitmap, fps, rgb_ave);
+        var rgb_ave = getAveragePixelValue(bitmap, fps);
         // free(fps);
         //binarize the bitmap using the average pixel values as thresholds
-        for(int i=0; i<3; free(ch[i++]));
+        for(int i=0; i<3; ch[i++]= null;
         if(binarizerRGB(bitmap, ch, rgb_ave)==0)
         {
             return JAB_FAILURE;
         }
         //find master symbol
-        fps = findMasterSymbol(bitmap, ch, INTENSIVE_DETECT, &status);
+        result = findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
+        status = result.item1;
+        fps = result.item2;
         if(status == JAB_FAILURE || status == FATAL_ERROR)
         {
             // free(fps);
@@ -3489,12 +3520,12 @@ int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mast
 // #endif
     //try decoding using only finder patterns
 	//calculate perspective transform matrix
-	jab_perspective_transform* pt = getPerspectiveTransform(fps[0].center, fps[1].center,
+	var pt = getPerspectiveTransform(fps[0].center, fps[1].center,
 															fps[2].center, fps[3].center,
 															side_size);
 	if(pt == null)
 	{
-		free(fps);
+		// free(fps);
 		return JAB_FAILURE;
 	}
 
@@ -3513,55 +3544,55 @@ int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mast
 		// free(fps);
 		return JAB_FAILURE;
 	}
-//
-// 	//save the detection result
-// 	master_symbol.index = 0;
-// 	master_symbol.host_index = 0;
-// 	master_symbol.side_size = side_size;
-// 	master_symbol.module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size + fps[3].module_size) / 4.0f;
-// 	master_symbol.pattern_positions[0] = fps[0].center;
-// 	master_symbol.pattern_positions[1] = fps[1].center;
-// 	master_symbol.pattern_positions[2] = fps[2].center;
-// 	master_symbol.pattern_positions[3] = fps[3].center;
-//
-// 	//decode master symbol
-// 	int decode_result = decodeMaster(matrix, master_symbol);
-// 	free(matrix);
-// 	if(decode_result == JAB_SUCCESS)
-// 	{
-// 		free(fps);
-// 		return JAB_SUCCESS;
-// 	}
-// 	else if(decode_result < 0)	//fatal error occurred
-// 	{
-// 		free(fps);
-// 		return JAB_FAILURE;
-// 	}
-// 	else	//if decoding using only finder patterns failed, try decoding using alignment patterns
-// 	{
-// #if TEST_MODE
-// 		JAB_REPORT_INFO(("Trying to sample master symbol using alignment pattern..."))
-// #endif // TEST_MODE
-// 		master_symbol.side_size.x = VERSION2SIZE(master_symbol.metadata.side_version.x);
-// 		master_symbol.side_size.y = VERSION2SIZE(master_symbol.metadata.side_version.y);
-// 		matrix = sampleSymbolByAlignmentPattern(bitmap, ch, master_symbol, fps);
-// 		free(fps);
-// 		if(matrix == NULL)
-// 		{
-// #if TEST_MODE
-// 			reportError("Sampling master symbol using alignment pattern failed");
-// #endif // TEST_MODE
-// 			return JAB_FAILURE;
-// 		}
-// 		decode_result = decodeMaster(matrix, master_symbol);
-// 		free(matrix);
-// 		if(decode_result == JAB_SUCCESS)
-// 			return JAB_SUCCESS;
-// 		else
-// 			return JAB_FAILURE;
-// 	}
-// }
-//
+
+	//save the detection result
+	master_symbol.index = 0;
+	master_symbol.host_index = 0;
+	master_symbol.side_size = side_size;
+	master_symbol.module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size + fps[3].module_size) / 4.0f;
+	master_symbol.pattern_positions[0] = fps[0].center;
+	master_symbol.pattern_positions[1] = fps[1].center;
+	master_symbol.pattern_positions[2] = fps[2].center;
+	master_symbol.pattern_positions[3] = fps[3].center;
+
+	//decode master symbol
+	int decode_result = decodeMaster(matrix, master_symbol);
+	// free(matrix);
+	if(decode_result == JAB_SUCCESS)
+	{
+		// free(fps);
+		return JAB_SUCCESS;
+	}
+	else if(decode_result < 0)	//fatal error occurred
+	{
+		// free(fps);
+		return JAB_FAILURE;
+	}
+	else	//if decoding using only finder patterns failed, try decoding using alignment patterns
+	{
+#if TEST_MODE
+		JAB_REPORT_INFO(("Trying to sample master symbol using alignment pattern..."))
+#endif // TEST_MODE
+		master_symbol.side_size.x = VERSION2SIZE(master_symbol.metadata.side_version.x);
+		master_symbol.side_size.y = VERSION2SIZE(master_symbol.metadata.side_version.y);
+		matrix = sampleSymbolByAlignmentPattern(bitmap, ch, master_symbol, fps);
+		free(fps);
+		if(matrix == NULL)
+		{
+#if TEST_MODE
+			reportError("Sampling master symbol using alignment pattern failed");
+#endif // TEST_MODE
+			return JAB_FAILURE;
+		}
+		decode_result = decodeMaster(matrix, master_symbol);
+		free(matrix);
+		if(decode_result == JAB_SUCCESS)
+			return JAB_SUCCESS;
+		else
+			return JAB_FAILURE;
+	}
+}
+
 // /**
 //  * @brief Detect a slave symbol
 //  * @param bitmap the image bitmap
