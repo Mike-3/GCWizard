@@ -16,30 +16,34 @@
 // #include <string.h>
 // #include <math.h>
 // #include "jabcode.h"
-// #include "detector.h"
+// #incor.h"
 // #include "decoder.h"
 // #include "encoder.h"
 
 import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:tuple/tuple.dart';
+
 import 'binarizer.dart';
+import 'encoder_h.dart';
 import 'jabcode_h.dart';
 
 /**
  * @brief Check the proportion of layer sizes in finder pattern
  * @param state_count the layer sizes in pixel
- * @param module_size the module size
  * @return JAB_SUCCESS | JAB_FAILURE
-*/
-int checkPatternCross(List<int> state_count, double module_size)
+ * @return module_size the module size
+ */
+Tuple2<int, double> checkPatternCross(List<int> state_count)
 {
     int layer_number = 3;
     int inside_layer_size = 0;
+	 double module_size;
     for(int i=1; i<layer_number+1; i++)
     {
         if(state_count[i] == 0)
-            return JAB_FAILURE;
+            return Tuple2<int, double>(JAB_FAILURE, module_size);
         inside_layer_size += state_count[i];
     }
 
@@ -56,7 +60,7 @@ int checkPatternCross(List<int> state_count, double module_size)
 					 state_count[4] > 0.5 * layer_tolerance &&
 					 (state_count[1] - state_count[3]).abs() < layer_tolerance; //layer 1 and layer 3 shall be of the same size
 
-    return size_condition ? JAB_SUCCESS : JAB_FAILURE;
+    return Tuple2<int, double>(size_condition ? JAB_SUCCESS : JAB_FAILURE, module_size);;
 }
 
 // /**
@@ -76,25 +80,25 @@ int checkPatternCross(List<int> state_count, double module_size)
 // 							fabs(mean - size_b) < tolerance;
 // 	return condition;
 // }
-//
-// /**
-//  * @brief Check if the input module sizes are the same
-//  * @param size1 the first module size
-//  * @param size2 the second module size
-//
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean checkModuleSize2(double size1, double size2)
-// {
-// 	double mean= (size1 + size2) / 2.0f;
-// 	double tolerance = mean / 2.5f;
-//
-// 	jab_boolean condition = fabs(mean - size1) < tolerance &&
-// 							fabs(mean - size2) < tolerance;
-//
-// 	return condition;
-// }
-//
+
+/**
+ * @brief Check if the input module sizes are the same
+ * @param size1 the first module size
+ * @param size2 the second module size
+
+ * @return JAB_SUCCESS | JAB_FAILURE
+*/
+bool checkModuleSize2(double size1, double size2)
+{
+	double mean= (size1 + size2) / 2.0;
+	double tolerance = mean / 2.5;
+
+	bool condition = (mean - size1).abs() < tolerance &&
+							(mean - size2).abs() < tolerance;
+
+	return condition;
+}
+
 // /**
 //  * @brief Find a candidate scanline of finder pattern
 //  * @param ch the image channel
@@ -294,8 +298,10 @@ int seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, 
                         continue;
                     }
                     //check if it is a valid finder pattern
-                    if(checkPatternCross(state_count, module_size) != 0)
+										var result = checkPatternCross(state_count);
+                    if(result.item1 == JAB_SUCCESS)
                     {
+												module_size = result.item2;
                         endx = j+1;
                         if(skip != 0)  skip = state_count[0];
 												int end;
@@ -497,172 +503,183 @@ int seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, 
 //
 //     return confirmed;
 // }
-//
-// /**
-//  * @brief Crosscheck the finder pattern candidate in vertical direction
-//  * @param image the image bitmap
-//  * @param module_size_max the maximal allowed module size
-//  * @param centerx the x coordinate of the finder pattern center
-//  * @param centery the y coordinate of the finder pattern center
-//  * @param module_size the module size in vertical direction
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean crossCheckPatternVertical(jab_bitmap* image, int module_size_max, double centerx, double* centery, double* module_size)
-// {
-// 	int state_number = 5;
-// 	int state_middle = (state_number - 1) / 2;
-//     int state_count[5] = {0};
-//
-//     int centerx_int = (int)centerx;
-// 	int centery_int = (int)(*centery);
-//     int i, state_index;
-//
-//     state_count[1]++;
-//     for(i=1, state_index=0; i<=centery_int && state_index<=state_middle; i++)
-//     {
-//         if( image.pixel[(centery_int-i)*image.width + centerx_int] == image.pixel[(centery_int-(i-1))*image.width + centerx_int] )
-//         {
-//             state_count[state_middle - state_index]++;
-//         }
-//         else
-//         {
-//             if(state_index > 0 && state_count[state_middle - state_index] < 3)
-//             {
-//                 state_count[state_middle - (state_index-1)] += state_count[state_middle - state_index];
-//                 state_count[state_middle - state_index] = 0;
-//                 state_index--;
-//                 state_count[state_middle - state_index]++;
-//             }
-//             else
-//             {
-//                 state_index++;
-//                 if(state_index > state_middle) break;
-//                 else state_count[state_middle - state_index]++;
-//             }
-//         }
-//     }
-//     if(state_index < state_middle)
-//         return JAB_FAILURE;
-//
-//     for(i=1, state_index=0; (centery_int+i)<image.height && state_index<=state_middle; i++)
-//     {
-//         if( image.pixel[(centery_int+i)*image.width + centerx_int] == image.pixel[(centery_int+(i-1))*image.width + centerx_int] )
-//         {
-//             state_count[state_middle + state_index]++;
-//         }
-//         else
-//         {
-//             if(state_index > 0 && state_count[state_middle + state_index] < 3)
-//             {
-//                 state_count[state_middle + (state_index-1)] += state_count[state_middle + state_index];
-//                 state_count[state_middle + state_index] = 0;
-//                 state_index--;
-//                 state_count[state_middle + state_index]++;
-//             }
-//             else
-//             {
-//                 state_index++;
-//                 if(state_index > state_middle) break;
-//                 else state_count[state_middle + state_index]++;
-//             }
-//         }
-//     }
-//     if(state_index < state_middle)
-//         return JAB_FAILURE;
-//
-//     //check module size, if it is too big, assume it is a false positive
-//     jab_boolean ret = checkPatternCross(state_count, module_size);
-//     if(ret && ((*module_size) <= module_size_max))
-//     {
-//         //calculate the center y
-//         *centery = (double)(centery_int + i - state_count[4] - state_count[3]) - (double)state_count[2] / 2.0f;
-//         return JAB_SUCCESS;
-//     }
-//     return JAB_FAILURE;
-// }
-//
-// /**
-//  * @brief Crosscheck the finder pattern candidate in horizontal direction
-//  * @param image the image bitmap
-//  * @param module_size_max the maximal allowed module size
-//  * @param centerx the x coordinate of the finder pattern center
-//  * @param centery the y coordinate of the finder pattern center
-//  * @param module_size the module size in horizontal direction
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean crossCheckPatternHorizontal(jab_bitmap* image, double module_size_max, double* centerx, double centery, double* module_size)
-// {
-//     int state_number = 5;
-//     int state_middle = (state_number - 1) / 2;
-//     int state_count[5] = {0};
-//
-//     int startx = (int)(*centerx);
-//     int offset = (int)centery * image.width;
-//     int i, state_index;
-//
-//     state_count[state_middle]++;
-//     for(i=1, state_index=0; i<=startx && state_index<=state_middle; i++)
-//     {
-//         if( image.pixel[offset + (startx - i)] == image.pixel[offset + (startx - (i-1))] )
-//         {
-//             state_count[state_middle - state_index]++;
-//         }
-//         else
-//         {
-//             if(state_index > 0 && state_count[state_middle - state_index] < 3)
-//             {
-//                 state_count[state_middle - (state_index-1)] += state_count[state_middle - state_index];
-//                 state_count[state_middle - state_index] = 0;
-//                 state_index--;
-//                 state_count[state_middle - state_index]++;
-//             }
-//             else
-//             {
-//                 state_index++;
-//                 if(state_index > state_middle) break;
-//                 else state_count[state_middle - state_index]++;
-//             }
-//         }
-//     }
-//     if(state_index < state_middle)
-//         return JAB_FAILURE;
-//
-//     for(i=1, state_index=0; (startx+i)<image.width && state_index<=state_middle; i++)
-//     {
-//         if( image.pixel[offset + (startx + i)] == image.pixel[offset + (startx + (i-1))] )
-//         {
-//             state_count[state_middle + state_index]++;
-//         }
-//         else
-//         {
-//             if(state_index > 0 && state_count[state_middle + state_index] < 3)
-//             {
-//                 state_count[state_middle + (state_index-1)] += state_count[state_middle + state_index];
-//                 state_count[state_middle + state_index] = 0;
-//                 state_index--;
-//                 state_count[state_middle + state_index]++;
-//             }
-//             else
-//             {
-//                 state_index++;
-//                 if(state_index > state_middle) break;
-//                 else state_count[state_middle + state_index]++;
-//             }
-//         }
-//     }
-//     if(state_index < state_middle)
-//         return JAB_FAILURE;
-//
-//     //check module size, if it is too big, assume it is a false positive
-//     jab_boolean ret = checkPatternCross(state_count, module_size);
-//     if(ret && ((*module_size) <= module_size_max))
-//     {
-//         //calculate the center x
-//         *centerx = (double)(startx+i - state_count[4] - state_count[3]) - (double)state_count[2] / 2.0f;
-//         return JAB_SUCCESS;
-//     }
-//     return JAB_FAILURE;
-// }
+
+/**
+ * @brief Crosscheck the finder pattern candidate in vertical direction
+ * @param image the image bitmap
+ * @param module_size_max the maximal allowed module size
+ * @param centerx the x coordinate of the finder pattern center
+ * @param centery the y coordinate of the finder pattern center
+ * @param module_size the module size in vertical direction
+ * @return JAB_SUCCESS | JAB_FAILURE
+ * @return centery the y coordinate of the finder pattern center
+ * @return module_size the module size in vertical direction
+*/
+Tuple3<int, double, double> crossCheckPatternVertical(jab_bitmap image, int module_size_max, double centerx, double centery)
+{
+	int state_number = 5;
+	int state_middle = ((state_number - 1) / 2).toInt();
+    var state_count = List<int>.filled(5, 0);;
+
+    int centerx_int = centerx.toInt();
+		int centery_int = centery.toInt();
+    int i, state_index;
+		double module_size;
+
+    state_count[1]++;
+		state_index=0;
+    for(i=1; i<=centery_int && state_index<=state_middle; i++)
+    {
+        if( image.pixel[(centery_int-i)*image.width + centerx_int] == image.pixel[(centery_int-(i-1))*image.width + centerx_int] )
+        {
+            state_count[state_middle - state_index]++;
+        }
+        else
+        {
+            if(state_index > 0 && state_count[state_middle - state_index] < 3)
+            {
+                state_count[state_middle - (state_index-1)] += state_count[state_middle - state_index];
+                state_count[state_middle - state_index] = 0;
+                state_index--;
+                state_count[state_middle - state_index]++;
+            }
+            else
+            {
+                state_index++;
+                if(state_index > state_middle) break;
+                else state_count[state_middle - state_index]++;
+            }
+        }
+    }
+    if(state_index < state_middle)
+        return Tuple3<int, double, double>(JAB_FAILURE, centery, module_size);
+
+		state_index=0;
+    for(i=1; (centery_int+i)<image.height && state_index<=state_middle; i++)
+    {
+        if( image.pixel[(centery_int+i)*image.width + centerx_int] == image.pixel[(centery_int+(i-1))*image.width + centerx_int] )
+        {
+            state_count[state_middle + state_index]++;
+        }
+        else
+        {
+            if(state_index > 0 && state_count[state_middle + state_index] < 3)
+            {
+                state_count[state_middle + (state_index-1)] += state_count[state_middle + state_index];
+                state_count[state_middle + state_index] = 0;
+                state_index--;
+                state_count[state_middle + state_index]++;
+            }
+            else
+            {
+                state_index++;
+                if(state_index > state_middle) break;
+                else state_count[state_middle + state_index]++;
+            }
+        }
+    }
+    if(state_index < state_middle)
+        return Tuple3<int, double, double>(JAB_FAILURE, centery, module_size);
+
+    //check module size, if it is too big, assume it is a false positive
+		var ret = checkPatternCross(state_count);
+    if((ret.item1==JAB_SUCCESS) && (ret.item2  <= module_size_max)) //module_size
+    {
+			module_size = ret.item2;
+        //calculate the center y
+        centery = (centery_int + i - state_count[4] - state_count[3]) - state_count[2] / 2.0;
+        return Tuple3<int, double, double>(JAB_SUCCESS, centery, module_size);
+    }
+    return Tuple3<int, double, double>(JAB_FAILURE, centery, module_size);
+}
+
+/**
+ * @brief Crosscheck the finder pattern candidate in horizontal direction
+ * @param image the image bitmap
+ * @param module_size_max the maximal allowed module size
+ * @param centerx the x coordinate of the finder pattern center
+ * @param centery the y coordinate of the finder pattern center
+ * @return JAB_SUCCESS | JAB_FAILURE
+ * @return centerx the x coordinate of the finder pattern center
+ * @return module_size the module size in horizontal direction
+*/
+Tuple3<int, double, double> crossCheckPatternHorizontal(jab_bitmap image, double module_size_max, double centerx, double centery)
+{
+    int state_number = 5;
+    int state_middle = ((state_number - 1) / 2).toInt();
+    var state_count = List<int>.filled(5, 0);
+
+    int startx = centerx.toInt();
+    int offset = centery.toInt() * image.width;
+    int i, state_index;
+	 	double module_size;
+
+    state_count[state_middle]++;
+		state_index=0;
+    for(i=1; i<=startx && state_index<=state_middle; i++)
+    {
+        if( image.pixel[offset + (startx - i)] == image.pixel[offset + (startx - (i-1))] )
+        {
+            state_count[state_middle - state_index]++;
+        }
+        else
+        {
+            if(state_index > 0 && state_count[state_middle - state_index] < 3)
+            {
+                state_count[state_middle - (state_index-1)] += state_count[state_middle - state_index];
+                state_count[state_middle - state_index] = 0;
+                state_index--;
+                state_count[state_middle - state_index]++;
+            }
+            else
+            {
+                state_index++;
+                if(state_index > state_middle) break;
+                else state_count[state_middle - state_index]++;
+            }
+        }
+    }
+    if(state_index < state_middle)
+        return Tuple3<int, double, double>(JAB_FAILURE, centerx, module_size);
+
+		state_index=0;
+    for(i=1; (startx+i)<image.width && state_index<=state_middle; i++)
+    {
+        if( image.pixel[offset + (startx + i)] == image.pixel[offset + (startx + (i-1))] )
+        {
+            state_count[state_middle + state_index]++;
+        }
+        else
+        {
+            if(state_index > 0 && state_count[state_middle + state_index] < 3)
+            {
+                state_count[state_middle + (state_index-1)] += state_count[state_middle + state_index];
+                state_count[state_middle + state_index] = 0;
+                state_index--;
+                state_count[state_middle + state_index]++;
+            }
+            else
+            {
+                state_index++;
+                if(state_index > state_middle) break;
+                else state_count[state_middle + state_index]++;
+            }
+        }
+    }
+    if(state_index < state_middle)
+        return Tuple3<int, double, double>(JAB_FAILURE, centerx, module_size);
+
+    //check module size, if it is too big, assume it is a false positive
+    var ret = checkPatternCross(state_count);
+    if((ret.item1==JAB_SUCCESS) && (ret.item2 <= module_size_max)) //module_size
+    {
+				module_size = ret.item2;
+        //calculate the center x
+        centerx = (startx+i - state_count[4] - state_count[3]) - state_count[2] / 2.0;
+        return Tuple3<int, double, double>(JAB_SUCCESS, centerx, module_size);
+    }
+		return Tuple3<int, double, double>(JAB_FAILURE, centerx, module_size);
+}
 
 /**
  * @brief Crosscheck the finder pattern color
@@ -755,165 +772,171 @@ int crossCheckColor(jab_bitmap image, int color, int module_size, int module_num
 	}
 }
 
-// /**
-//  * @brief Crosscheck the finder pattern candidate in one channel
-//  * @param ch the binarized color channel
-//  * @param type the finder pattern type
-//  * @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
-//  * @param module_size_max the maximal allowed module size
-//  * @param module_size the module size in all directions
-//  * @param centerx the x coordinate of the finder pattern center
-//  * @param centery the y coordinate of the finder pattern center
-//  * @param dir the finder pattern direction
-//  * @param dcc the diagonal crosscheck result
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean crossCheckPatternCh(jab_bitmap* ch, int type, int h_v, double module_size_max, double* module_size, double* centerx, double* centery, int* dir, int* dcc)
-// {
-// 	double module_size_v = 0.0f;
-// 	double module_size_h = 0.0f;
-// 	double module_size_d = 0.0f;
-//
-// 	if(h_v == 0)
-// 	{
-// 		jab_boolean vcc = JAB_FAILURE;
-// 		if(crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v))
-// 		{
-// 			vcc = JAB_SUCCESS;
-// 			if(!crossCheckPatternHorizontal(ch, module_size_max, centerx, *centery, &module_size_h))
-// 				return JAB_FAILURE;
-// 		}
-// 		*dcc = crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, &module_size_d, dir, !vcc);
-// 		if(vcc && *dcc > 0)
-// 		{
-// 			*module_size = (module_size_v + module_size_h + module_size_d) / 3.0f;
-// 			return JAB_SUCCESS;
-// 		}
-// 		else if(*dcc == 2)
-// 		{
-// 			if(!crossCheckPatternHorizontal(ch, module_size_max, centerx, *centery, &module_size_h))
-// 				return JAB_FAILURE;
-// 			*module_size = (module_size_h + module_size_d * 2.0f) / 3.0f;
-// 			return JAB_SUCCESS;
-// 		}
-// 	}
-// 	else
-// 	{
-// 		jab_boolean hcc = JAB_FAILURE;
-// 		if(crossCheckPatternHorizontal(ch, module_size_max, centerx, *centery, &module_size_h))
-// 		{
-// 			hcc = JAB_SUCCESS;
-// 			if(!crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v))
-// 				return JAB_FAILURE;
-// 		}
-// 		*dcc = crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, &module_size_d, dir, !hcc);
-// 		if(hcc && *dcc > 0)
-// 		{
-// 			*module_size = (module_size_v + module_size_h + module_size_d) / 3.0f;
-// 			return JAB_SUCCESS;
-// 		}
-// 		else if(*dcc == 2)
-// 		{
-// 			if(!crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v))
-// 				return JAB_FAILURE;
-// 			*module_size = (module_size_v + module_size_d * 2.0f) / 3.0f;
-// 			return JAB_SUCCESS;
-// 		}
-// 	}
-// 	return JAB_FAILURE;
-// }
-//
-// /**
-//  * @brief Crosscheck the finder pattern candidate
-//  * @param ch the binarized color channels of the image
-//  * @param fp the finder pattern
-//  * @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean crossCheckPattern(jab_bitmap* ch[], jab_finder_pattern* fp, int h_v)
-// {
-//     double module_size_max = fp.module_size * 2.0f;
-//
-//     //check g channel
-// 	double module_size_g;
-//     double centerx_g = fp.center.x;
-//     double centery_g = fp.center.y;
-//     int dir_g = 0;
-//     int dcc_g = 0;
-//     if(!crossCheckPatternCh(ch[1], fp.type, h_v, module_size_max, &module_size_g, &centerx_g, &centery_g, &dir_g, &dcc_g))
-// 		return JAB_FAILURE;
-//
-// 	//Finder Pattern FP1 and FP2
-//     if(fp.type == FP1 || fp.type == FP2)
-// 	{
-// 		//check r channel
-// 		double module_size_r;
-// 		double centerx_r = fp.center.x;
-// 		double centery_r = fp.center.y;
-// 		int dir_r = 0;
-// 		int dcc_r = 0;
-// 		if(!crossCheckPatternCh(ch[0], fp.type, h_v, module_size_max, &module_size_r, &centerx_r, &centery_r, &dir_r, &dcc_r))
-// 			return JAB_FAILURE;
-//
-// 		//module size must be consistent
-// 		if(!checkModuleSize2(module_size_r, module_size_g))
-// 			return JAB_FAILURE;
-// 		fp.module_size = (module_size_r + module_size_g) / 2.0f;
-// 		fp.center.x = (centerx_r + centerx_g) / 2.0f;
-// 		fp.center.y = (centery_r + centery_g) / 2.0f;
-//
-// 		//check b channel
-// 		int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 0))
-// 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 1))
-// 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 2))
-// 			return JAB_FAILURE;
-//
-// 		if(dcc_r == 2 || dcc_g == 2)
-// 			fp.direction = 2;
-// 		else
-// 			fp.direction = (dir_r + dir_g) > 0 ? 1 : -1;
-// 	}
-//
-// 	//Finder Pattern FP0 and FP3
-// 	if(fp.type == FP0 || fp.type == FP3)
-// 	{
-// 		//check b channel
-// 		double module_size_b;
-// 		double centerx_b = fp.center.x;
-// 		double centery_b = fp.center.y;
-// 		int dir_b = 0;
-// 		int dcc_b = 0;
-// 		if(!crossCheckPatternCh(ch[2], fp.type, h_v, module_size_max, &module_size_b, &centerx_b, &centery_b, &dir_b, &dcc_b))
-// 			return JAB_FAILURE;
-//
-// 		//module size must be consistent
-// 		if(!checkModuleSize2(module_size_g, module_size_b))
-// 			return JAB_FAILURE;
-// 		fp.module_size = (module_size_g + module_size_b) / 2.0f;
-// 		fp.center.x = (centerx_g + centerx_b) / 2.0f;
-// 		fp.center.y = (centery_g + centery_b) / 2.0f;
-//
-// 		//check r channel
-// 		int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 0))
-// 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 1))
-// 			return JAB_FAILURE;
-// 		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 2))
-// 			return JAB_FAILURE;
-//
-// 		if(dcc_g == 2 || dcc_b == 2)
-// 			fp.direction = 2;
-// 		else
-// 			fp.direction = (dir_g + dir_b) > 0 ? 1 : -1;
-// 	}
-//
-// 	return JAB_SUCCESS;
-// }
-//
+/**
+ * @brief Crosscheck the finder pattern candidate in one channel
+ * @param ch the binarized color channel
+ * @param type the finder pattern type
+ * @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
+ * @param module_size_max the maximal allowed module size
+ * @param module_size the module size in all directions
+ * @param centerx the x coordinate of the finder pattern center
+ * @param centery the y coordinate of the finder pattern center
+ * @param dir the finder pattern direction
+ * @param dcc the diagonal crosscheck result
+ * @return JAB_SUCCESS | JAB_FAILURE
+ * @return module_size the module size in all directions
+ * @return centerx the x coordinate of the finder pattern center
+ * @return centery the y coordinate of the finder pattern center
+ * @return dir the finder pattern direction
+ * @return dcc the diagonal crosscheck result
+*/
+Tuple5<int, > crossCheckPatternCh(jab_bitmap ch, int type, int h_v, double module_size_max, double module_size, double centerx, double centery, int dir, int dcc)
+{
+	double module_size_v = 0.0;
+	double module_size_h = 0.0;
+	double module_size_d = 0.0;
+
+	if(h_v == 0)
+	{
+		int vcc = JAB_FAILURE;
+		var result = crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v)
+		var module_size_v = result.item3;
+		if(crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v))
+		{
+			vcc = JAB_SUCCESS;
+			if(!crossCheckPatternHorizontal(ch, module_size_max, centerx, *centery, &module_size_h))
+				return JAB_FAILURE;
+		}
+		*dcc = crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, &module_size_d, dir, !vcc);
+		if(vcc && *dcc > 0)
+		{
+			*module_size = (module_size_v + module_size_h + module_size_d) / 3.0f;
+			return JAB_SUCCESS;
+		}
+		else if(*dcc == 2)
+		{
+			if(!crossCheckPatternHorizontal(ch, module_size_max, centerx, *centery, &module_size_h))
+				return JAB_FAILURE;
+			*module_size = (module_size_h + module_size_d * 2.0f) / 3.0f;
+			return JAB_SUCCESS;
+		}
+	}
+	else
+	{
+		jab_boolean hcc = JAB_FAILURE;
+		if(crossCheckPatternHorizontal(ch, module_size_max, centerx, *centery, &module_size_h))
+		{
+			hcc = JAB_SUCCESS;
+			if(!crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v))
+				return JAB_FAILURE;
+		}
+		*dcc = crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, &module_size_d, dir, !hcc);
+		if(hcc && *dcc > 0)
+		{
+			*module_size = (module_size_v + module_size_h + module_size_d) / 3.0f;
+			return JAB_SUCCESS;
+		}
+		else if(*dcc == 2)
+		{
+			if(!crossCheckPatternVertical(ch, module_size_max, *centerx, centery, &module_size_v))
+				return JAB_FAILURE;
+			*module_size = (module_size_v + module_size_d * 2.0f) / 3.0f;
+			return JAB_SUCCESS;
+		}
+	}
+	return JAB_FAILURE;
+}
+
+/**
+ * @brief Crosscheck the finder pattern candidate
+ * @param ch the binarized color channels of the image
+ * @param fp the finder pattern
+ * @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
+ * @return JAB_SUCCESS | JAB_FAILURE
+*/
+int crossCheckPattern(List<jab_bitmap> ch, jab_finder_pattern fp, int h_v)
+{
+    double module_size_max = fp.module_size * 2.0;
+
+    //check g channel
+		double module_size_g;
+    double centerx_g = fp.center.x;
+    double centery_g = fp.center.y;
+    int dir_g = 0;
+    int dcc_g = 0;
+    if(!crossCheckPatternCh(ch[1], fp.type, h_v, module_size_max, &module_size_g, &centerx_g, &centery_g, &dir_g, &dcc_g))
+		return JAB_FAILURE;
+
+	//Finder Pattern FP1 and FP2
+    if(fp.type == FP1 || fp.type == FP2)
+	{
+		//check r channel
+		double module_size_r;
+		double centerx_r = fp.center.x;
+		double centery_r = fp.center.y;
+		int dir_r = 0;
+		int dcc_r = 0;
+		if(!crossCheckPatternCh(ch[0], fp.type, h_v, module_size_max, &module_size_r, &centerx_r, &centery_r, &dir_r, &dcc_r))
+			return JAB_FAILURE;
+
+		//module size must be consistent
+		if(!checkModuleSize2(module_size_r, module_size_g))
+			return JAB_FAILURE;
+		fp.module_size = (module_size_r + module_size_g) / 2.0;
+		fp.center = Point((centerx_r + centerx_g) / 2.0,(centery_r + centery_g) / 2.0);
+
+		//check b channel
+		int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 0))
+			return JAB_FAILURE;
+		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 1))
+			return JAB_FAILURE;
+		if(!crossCheckColor(ch[2], core_color_in_blue_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 2))
+			return JAB_FAILURE;
+
+		if(dcc_r == 2 || dcc_g == 2)
+			fp.direction = 2;
+		else
+			fp.direction = (dir_r + dir_g) > 0 ? 1 : -1;
+	}
+
+	//Finder Pattern FP0 and FP3
+	if(fp.type == FP0 || fp.type == FP3)
+	{
+		//check b channel
+		double module_size_b;
+		double centerx_b = fp.center.x;
+		double centery_b = fp.center.y;
+		int dir_b = 0;
+		int dcc_b = 0;
+		if(!crossCheckPatternCh(ch[2], fp.type, h_v, module_size_max, &module_size_b, &centerx_b, &centery_b, &dir_b, &dcc_b))
+			return JAB_FAILURE;
+
+		//module size must be consistent
+		if(!checkModuleSize2(module_size_g, module_size_b))
+			return JAB_FAILURE;
+		fp.module_size = (module_size_g + module_size_b) / 2.0f;
+		fp.center.x = (centerx_g + centerx_b) / 2.0f;
+		fp.center.y = (centery_g + centery_b) / 2.0f;
+
+		//check r channel
+		int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 0))
+			return JAB_FAILURE;
+		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 1))
+			return JAB_FAILURE;
+		if(!crossCheckColor(ch[0], core_color_in_red_channel, (int)fp.module_size, 5, (int)fp.center.x, (int)fp.center.y, 2))
+			return JAB_FAILURE;
+
+		if(dcc_g == 2 || dcc_b == 2)
+			fp.direction = 2;
+		else
+			fp.direction = (dir_g + dir_b) > 0 ? 1 : -1;
+	}
+
+	return JAB_SUCCESS;
+}
+
 // /**
 //  * @brief Save a found alignment pattern into the alignment pattern list
 //  * @param ap the alignment pattern
@@ -1574,11 +1597,12 @@ int crossCheckColor(jab_bitmap image, int color, int module_size, int module_num
  * @param bitmap the image bitmap
  * @param ch the binarized color channels of the image
  * @param mode the detection mode
- * @param status the detection status
  * @return the finder pattern list | NULL
+ * @return status the detection status
 */
-jab_finder_pattern findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode, int status)
+Tuple2<jab_finder_pattern, int> findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode)
 {
+		int status;
     //suppose the code size is minimally 1/4 image size
     int min_module_size = (ch[0].height / (2 * MAX_SYMBOL_ROWS * MAX_MODULES)).toInt();
     if(min_module_size < 1 || mode == jab_detect_mode.INTENSIVE_DETECT) min_module_size = 1;
@@ -1613,52 +1637,65 @@ jab_finder_pattern findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_
 					var finder_pattern1_found = JAB_FAILURE;
 					var finder_pattern2_found = JAB_FAILURE;
 
-            startx += skip;
-            endx = ch[0].width;
-            //green channel
-            if(seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip) == 1)
-            {
-                type_g = row_g[centerx_g] > 0 ? 255 : 0;
+					startx += skip;
+					endx = ch[0].width;
+					//green channel
+					if(seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip) == 1)
+					{
+							type_g = row_g[centerx_g.toInt()] > 0 ? 255 : 0;
 
-                centerx_r = centerx_g;
-                centerx_b = centerx_g;
-                //check blue channel for Finder Pattern UL and LL
-                if(crossCheckPatternHorizontal(ch[2], module_size_g*2, &centerx_b, (double)i, &module_size_b))
-                {
-                    type_b = row_b[centerx_b] > 0 ? 255 : 0;
-                    //check red channel
-                    module_size_r = module_size_g;
-                    int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-                    if(crossCheckColor(ch[0], core_color_in_red_channel, module_size_r, 5, (int)centerx_r, i, 0))
-                    {
-                    	type_r = 0;
-                    	finder_pattern1_found = JAB_SUCCESS;
-                    }
-                }
-                //check red channel for Finder Pattern UR and LR
-                else if(crossCheckPatternHorizontal(ch[0], module_size_g*2, &centerx_r, (double)i, &module_size_r))
-                {
-                	type_r = row_r[(int)(centerx_r)] > 0 ? 255 : 0;
-                	//check blue channel
-                    module_size_b = module_size_g;
-                    int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-                    if(crossCheckColor(ch[2], core_color_in_blue_channel, module_size_b, 5, (int)centerx_b, i, 0))
-                    {
-                    	type_b = 0;
-                    	finder_pattern2_found = JAB_SUCCESS;
-                    }
-                }
+							centerx_r = centerx_g;
+							centerx_b = centerx_g;
+							//check blue channel for Finder Pattern UL and LL
+							var result = crossCheckPatternHorizontal(ch[2], module_size_g*2, centerx_b, i.toDouble());
+							centerx_b=result.item2;
+							module_size_b=result.item3;
+							if(result.item1==JAB_SUCCESS)
+							{
+									type_b = row_b[centerx_b.toInt()] > 0 ? 255 : 0;
+									//check red channel
+									module_size_r = module_size_g;
+									int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+									if(crossCheckColor(ch[0], core_color_in_red_channel, module_size_r.toInt(), 5, centerx_r.toInt(), i, 0)== JAB_SUCCESS)
+									{
+										type_r = 0;
+										finder_pattern1_found = JAB_SUCCESS;
+									}
+							}
+							//check red channel for Finder Pattern UR and LR
+							else {
+								result = crossCheckPatternHorizontal(ch[2], module_size_g * 2, centerx_r, i.toDouble());
+								centerx_r = result.item2;
+								module_size_r = result.item3;
+								if (result.item1 == JAB_SUCCESS) {
+									type_r = row_r[centerx_r.toInt()] > 0 ? 255 : 0;
+									//check blue channel
+									module_size_b = module_size_g;
+									int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+									if (crossCheckColor(
+											ch[2],
+											core_color_in_blue_channel,
+											module_size_b.toInt(),
+											5,
+											centerx_b.toInt(),
+											i,
+											0) == JAB_SUCCESS) {
+										type_b = 0;
+										finder_pattern2_found = JAB_SUCCESS;
+									}
+								}
+							}
 				//finder pattern candidate found
-				if(finder_pattern1_found || finder_pattern2_found)
+				if(finder_pattern1_found==JAB_SUCCESS || finder_pattern2_found==JAB_SUCCESS)
 				{
-					jab_finder_pattern fp;
-					fp.center.y = (double)i;
+					var fp= jab_finder_pattern();
+					fp.center = Point(fp.center.x, i.toDouble() );
 					fp.found_count = 1;
-					if(finder_pattern1_found)
+					if(finder_pattern1_found!=0)
 					{
 						if(!checkModuleSize2(module_size_g, module_size_b)) continue;
-						fp.center.x = (centerx_g + centerx_b) / 2.0f;
-						fp.module_size = (module_size_g + module_size_b) / 2.0f;
+						fp.center = Point((centerx_g + centerx_b) / 2.0, fp.center.y);
+						fp.module_size = (module_size_g + module_size_b) / 2.0;
 						if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
 							type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
 							type_b == jab_default_palette[FP0_CORE_COLOR * 3 + 2])
@@ -1676,11 +1713,11 @@ jab_finder_pattern findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_
 							continue;		//invalid type
 						}
 					}
-					else if(finder_pattern2_found)
+					else if(finder_pattern2_found==JAB_SUCCESS)
 					{
 						if(!checkModuleSize2(module_size_r, module_size_g)) continue;
-						fp.center.x = (centerx_r + centerx_g) / 2.0f;
-						fp.module_size = (module_size_r + module_size_g) / 2.0f;
+						fp.center = Point((centerx_r + centerx_g) / 2.0, fp.center.y);
+						fp.module_size = (module_size_r + module_size_g) / 2.0;
 						if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
 						   type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
 						   type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
@@ -1704,7 +1741,7 @@ jab_finder_pattern findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_
 						saveFinderPattern(&fp, fps, &total_finder_patterns, fp_type_count);
 						if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) )
 						{
-							done = 1;
+							done = true;
 							break;
 						}
 					}
@@ -1722,16 +1759,16 @@ jab_finder_pattern findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_
 	}
 
 
-#if TEST_MODE
-    //output all found finder patterns
-    JAB_REPORT_INFO(("Total found: %d", total_finder_patterns))
-    for(int i=0; i<total_finder_patterns; i++)
-    {
-        JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
-    }
-    drawFoundFinderPatterns(fps, total_finder_patterns, 0x00ff00);
-    saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
-#endif
+// #if TEST_MODE
+//     //output all found finder patterns
+//     JAB_REPORT_INFO(("Total found: %d", total_finder_patterns))
+//     for(int i=0; i<total_finder_patterns; i++)
+//     {
+//         JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
+//     }
+//     drawFoundFinderPatterns(fps, total_finder_patterns, 0x00ff00);
+//     saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
+// #endif
 
     //set finder patterns' direction
 	for(int i=0; i<total_finder_patterns; i++)
@@ -1744,9 +1781,9 @@ jab_finder_pattern findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_
 	//if more than one finder patterns are missing, detection fails
 	if(missing_fp_count > 1)
 	{
-		reportError("Too few finder pattern found");
-		*status = JAB_FAILURE;
-		return fps;
+		// reportError("Too few finder pattern found");
+		// *status = JAB_FAILURE;
+		return Tuple2<jab_finder_pattern, int>(fps,status);
 	}
 
     //if only one finder pattern is missing, try anyway by estimating the missing one
@@ -1808,27 +1845,27 @@ jab_finder_pattern findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_
 		{
 			JAB_REPORT_ERROR(("Finder pattern %d out of image", miss_fp))
 			fps[miss_fp].found_count = 0;
-			*status = JAB_FAILURE;
-			return fps;
+			status = JAB_FAILURE;
+			return Tuple2<jab_finder_pattern, int>(fps, status);
 		}
 
 		//try to find the missing finder pattern by a local search at the estimated position
-#if TEST_MODE
-		JAB_REPORT_INFO(("Trying to confirm the missing finder pattern by a local search"))
-#endif
+// #if TEST_MODE
+// 		JAB_REPORT_INFO(("Trying to confirm the missing finder pattern by a local search"))
+// #endif
 		seekMissingFinderPattern(bitmap, fps, miss_fp);
     }
-#if TEST_MODE
-    //output the final selected 4 patterns
-    JAB_REPORT_INFO(("Final patterns:"))
-    for(int i=0; i<4; i++)
-    {
-        JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
-    }
-	drawFoundFinderPatterns(fps, 4, 0xff0000);
-	saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
-#endif
-    *status = JAB_SUCCESS;
+// #if TEST_MODE
+//     //output the final selected 4 patterns
+//     JAB_REPORT_INFO(("Final patterns:"))
+//     for(int i=0; i<4; i++)
+//     {
+//         JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
+//     }
+// 	drawFoundFinderPatterns(fps, 4, 0xff0000);
+// 	saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
+// #endif
+    status = JAB_SUCCESS;
     return fps;
 }
 
@@ -3358,7 +3395,7 @@ int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mast
         // free(fps);
         //binarize the bitmap using the average pixel values as thresholds
         for(int i=0; i<3; free(ch[i++]));
-        if(!binarizerRGB(bitmap, ch, rgb_ave))
+        if(binarizerRGB(bitmap, ch, rgb_ave)==0)
         {
             return JAB_FAILURE;
         }
@@ -3366,7 +3403,7 @@ int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mast
         fps = findMasterSymbol(bitmap, ch, INTENSIVE_DETECT, &status);
         if(status == JAB_FAILURE || status == FATAL_ERROR)
         {
-            free(fps);
+            // free(fps);
             return JAB_FAILURE;
         }
     }
@@ -3375,8 +3412,8 @@ int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mast
     jab_vector2d side_size = calculateSideSize(fps);
     if(side_size.x == -1 || side_size.y == -1)
     {
-		reportError("Calculating side size failed");
-        free(fps);
+		// reportError("Calculating side size failed");
+    //     free(fps);
 		return JAB_FAILURE;
     }
 // #if TEST_MODE
@@ -3387,25 +3424,25 @@ int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mast
 	jab_perspective_transform* pt = getPerspectiveTransform(fps[0].center, fps[1].center,
 															fps[2].center, fps[3].center,
 															side_size);
-	if(pt == NULL)
+	if(pt == null)
 	{
 		free(fps);
 		return JAB_FAILURE;
 	}
 
 	//sample master symbol
-#if TEST_MODE
-	test_mode_color = 255;
-#endif
-	jab_bitmap* matrix = sampleSymbol(bitmap, pt, side_size);
-	free(pt);
-#if TEST_MODE
-	saveImage(test_mode_bitmap, "jab_sample_pos_fp.png");
-#endif
-	if(matrix == NULL)
+// #if TEST_MODE
+// 	test_mode_color = 255;
+// #endif
+	var matrix = sampleSymbol(bitmap, pt, side_size);
+	// free(pt);
+// #if TEST_MODE
+// 	saveImage(test_mode_bitmap, "jab_sample_pos_fp.png");
+// #endif
+	if(matrix == null)
 	{
-		reportError("Sampling master symbol failed");
-		free(fps);
+		// reportError("Sampling master symbol failed");
+		// free(fps);
 		return JAB_FAILURE;
 	}
 //
@@ -3559,13 +3596,14 @@ int detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mast
  * @param bitmap the image bitmap
  * @param mode the decoding mode(NORMAL_DECODE: only output completely decoded data when all symbols are correctly decoded
  *								 COMPATIBLE_DECODE: also output partly decoded data even if some symbols are not correctly decoded
- * @param status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
  * @param symbols the decoded symbols
  * @param max_symbol_number the maximal possible number of symbols to be decoded
  * @return the decoded data | NULL if failed
+ * @return status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
 */
-jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decoded_symbol> symbols, int max_symbol_number)
+Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol> symbols, int max_symbol_number)
 {
+	int status;
 	if(status != 0) status = 0;
 	if(symbols = null)
 	{
@@ -3576,7 +3614,7 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
 	//binarize r, g, b channels
 	var ch = List<jab_bitmap>.filled(3, null);
 	balanceRGB(bitmap);
-    if(!binarizerRGB(bitmap, ch, null))
+    if(binarizerRGB(bitmap, ch, null) == 0)
 	{
 		return null;
 	}
@@ -3598,12 +3636,12 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
 // #endif
 
 	//initialize symbols buffer
-    symbols = List<jab_decoded_symbol>.filledOf(max_symbol_number, null); // memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
+    symbols = List<jab_decoded_symbol>.filled(max_symbol_number, null); // memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
     int total = 0;	//total number of decoded symbols
     bool res = true;
 
     //detect and decode master symbol
-    if(detectMaster(bitmap, ch, &symbols[0]))
+    if(detectMaster(bitmap, ch, &symbols[0])!=0)
 	{
 		total++;
 	}
@@ -3614,7 +3652,7 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
         {
             if(!decodeDockedSlaves(bitmap, ch, symbols, i, &total))
             {
-                res = 0;
+                res = false;
                 break;
             }
         }
@@ -3623,21 +3661,21 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
     //check result
 	if(total == 0 || (mode == NORMAL_DECODE && res == 0 ))
 	{
-		if(symbols[0].module_size > 0 && status)
-			*status = 1;
+		if(symbols[0].module_size > 0 && status as bool)
+			status = 1;
 		//clean memory
-		for(int i=0; i<3; free(ch[i++]));
-		for(int i=0; i<=MIN(total, max_symbol_number-1); i++)
+		for(int i=0; i<3; ch[i++]= null); //free(ch[i++]
+		for(int i=0; i<=min(total, max_symbol_number-1); i++)
 		{
-			free(symbols[i].palette);
-			free(symbols[i].data);
+			symbols[i].palette= null;
+			symbols[i].data= null;
 		}
-        return NULL;
+        return null;
 	}
 	if(mode == COMPATIBLE_DECODE && res == 0)
 	{
-		if(status) *status = 2;
-		res = 1;
+		if(status!=0) status = 2;
+		res = true;
 	}
 
 	//concatenate the decoded data
@@ -3646,49 +3684,50 @@ jab_data decodeJABCodeEx(jab_bitmap bitmap, int mode, int status, List<jab_decod
     {
         total_data_length += symbols[i].data.length;
     }
-    jab_data* decoded_bits = (jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
-    if(decoded_bits == NULL){
-        reportError("Memory allocation for decoded bits failed");
-        if(status) *status = 1;
-        return NULL;
+    var decoded_bits = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
+	decoded_bits.data=Uint8List(total_data_length);
+    if(decoded_bits == null){
+        // reportError("Memory allocation for decoded bits failed");
+        if(status!=0) status = 1;
+        return null;
     }
     int offset = 0;
     for(int i=0; i<total; i++)
     {
-        jab_char* src = symbols[i].data.data;
-        jab_char* dst = decoded_bits.data;
+        var src = symbols[i].data.data;
+        var dst = decoded_bits.data;
         dst += offset;
-        memcpy(dst, src, symbols[i].data.length);
+				dst.setRange(0, symbols[i].data.length, src); // memcpy(dst, src, symbols[i].data.length);
         offset += symbols[i].data.length;
     }
     decoded_bits.length = total_data_length;
     //decode data
-    jab_data* decoded_data = decodeData(decoded_bits);
-    if(decoded_data == NULL)
+    var decoded_data = decodeData(decoded_bits);
+    if(decoded_data == null)
 	{
-		reportError("Decoding data failed");
-		if(status) *status = 1;
-		res = 0;
+		// reportError("Decoding data failed");
+		if(status!=0) status = 1;
+		res = false;
 	}
 
     //clean memory
-    for(int i=0; i<3; free(ch[i++]));
-    for(int i=0; i<=MIN(total, max_symbol_number-1); i++)
+    for(int i=0; i<3; ch[i++]=null);
+    for(int i=0; i<=min(total, max_symbol_number-1); i++)
     {
-		free(symbols[i].palette);
-		free(symbols[i].data);
+			symbols[i].palette= null;
+			symbols[i].data= null;
     }
-    free(decoded_bits);
-#if TEST_MODE
-	free(test_mode_bitmap);
-#endif // TEST_MODE
-	if(res == 0) return NULL;
-	if(status)
+    // free(decoded_bits);
+// #if TEST_MODE
+// 	free(test_mode_bitmap);
+// #endif // TEST_MODE
+	if(res == 0) return null;
+	if(status!=0)
 	{
-		if(*status != 2)
-			*status = 3;
+		if(status != 2)
+			status = 3;
 	}
-    return decoded_data;
+    return Tuple2<jab_data, int>(decoded_data, status>;
 }
 //
 // /**

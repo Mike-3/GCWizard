@@ -559,27 +559,8 @@ void balanceRGB(jab_bitmap bitmap)
  * @param rgb the pixel with RGB values
  * @result item1 the average value
  * @result item2 the variance value
-*/
-Tuple2<double, double> getAveVar(Uint8List rgb)
-{
-	//calculate mean
-	var ave = (rgb[0] + rgb[1] + rgb[2]) / 3;
-	//calculate variance
-	var sum = 0.0;
-	for(var i=0; i<3; i++)
-	{
-		sum += (rgb[i] - ave) * (rgb[i] - ave);
-	}
-	return Tuple2<double, double>(ave, sum / 3);
-}
-
-/**
- * @brief Get the average and variance of RGB values
- * @param rgb the pixel with RGB values
- * @result item1 the average value
- * @result item2 the variance value
  */
-Tuple2<double, double> getAveVar32(Uint32List rgb)
+Tuple2<double, double> getAveVar(Uint32List rgb)
 {
 	//calculate mean
 	var ave = (rgb[0] + rgb[1] + rgb[2]) / 3;
@@ -609,33 +590,8 @@ void swap(int a, int b, List<int> list)
  * @result item1 index min value
  * @result item2 index middle value
  * @result item3 index max value
-*/
-Tuple3<int, int, int> getMinMax(Uint8List rgb)
-{
-	const index_min = 0;
-	const index_mid = 1;
-	const index_max = 2;
-	var index = [index_min, index_mid, index_max];
-	if(rgb[index_min] > rgb[index_max])
-		swap(index_min, index_max, index);
-	if(rgb[index_min] > rgb[index_mid])
-		swap(index_min, index_mid, index);
-	if(rgb[index_mid] > rgb[index_max])
-		swap(index_mid, index_max, index);
-	// *min = rgb[*index_min];
-	// *mid = rgb[*index_mid];
-	// *max = rgb[*index_max];
-	return Tuple3<int, int, int>(index[index_min], index[index_mid], index[index_max]);
-}
-
-/**
- * @brief Get the min, middle and max value of three values and the corresponding indexes
- * @param rgb the pixel with RGB values
- * @result item1 index min value
- * @result item2 index middle value
- * @result item3 index max value
  */
-Tuple3<int, int, int> getMinMax32(Uint32List rgb)
+Tuple3<int, int, int> getMinMax(Uint32List rgb)
 {
 	const index_min = 0;
 	const index_mid = 1;
@@ -660,7 +616,7 @@ Tuple3<int, int, int> getMinMax32(Uint32List rgb)
  * @param blk_ths the black color thresholds for RGB channels
  * @return JAB_SUCCESS | JAB_FAILURE
 */
-bool binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
+int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 {
 	for(int i=0; i<3; i++)
 	{
@@ -668,7 +624,7 @@ bool binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 		if(rgb[i] == null)
 		{
 			// JAB_REPORT_ERROR(("Memory allocation for binary bitmap %d failed", i))
-			return false; //JAB_FAILURE;
+			return JAB_FAILURE;
 		}
 		rgb[i].width = bitmap.width;
 		rgb[i].height= bitmap.height;
@@ -754,12 +710,12 @@ bool binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
                 continue;
             }
 
-			double ave, vari;
-			var result = getAveVar32(bitmap.pixel.sublist(offset, offset + 4));
+			// double ave, vari;
+			var result = getAveVar(bitmap.pixel.sublist(offset, offset + 4));
 			double std = sqrt(result.item2);	//standard deviation
 			// int min, mid, max;
 			// int index_min, index_mid, index_max;
-			var result1 = getMinMax32(bitmap.pixel.sublist(offset, offset + 4));
+			var result1 = getMinMax(bitmap.pixel.sublist(offset, offset + 4));
 			std /= bitmap.pixel[offset + result1.item3].toDouble();	//normalize std
 
 			if(std < ths_std && (bitmap.pixel[offset + 0] > rgb_ths[0] && bitmap.pixel[offset + 1] > rgb_ths[1] && bitmap.pixel[offset + 2] > rgb_ths[2]))

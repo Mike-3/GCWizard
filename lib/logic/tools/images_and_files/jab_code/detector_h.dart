@@ -47,8 +47,8 @@ enum jab_detect_mode {
 */
 class jab_finder_pattern {
 	int		type;
-	int		module_size;
-	int		center;			//coordinates of the center
+	double		module_size;
+	var		center = Point(0.0,0.0);			//coordinates of the center
 	int		found_count;
 	int 		direction;
 }
@@ -59,7 +59,7 @@ class jab_finder_pattern {
 class jab_alignment_pattern {
 	int		type;
 	int		module_size;
-	int		center;			//coordinates of the center
+	var		center = Point(0.0,0.0);			//coordinates of the center
 	int		found_count;
 	int 	direction;
 }

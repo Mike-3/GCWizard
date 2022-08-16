@@ -177,11 +177,14 @@ void writeColorPalette(jab_bitmap matrix, jab_decoded_symbol symbol, int p_index
  * @param p_index the color palette index
  * @param matrix_width the matrix width
  * @param matrix_height the matrix height
- * @param p1 the coordinate of the first module
- * @param p2 the coordinate of the second module
+ * @result p1 the coordinate of the first module
+ * @result p2 the coordinate of the second module
 */
-void getColorPalettePosInFP(int p_index, int matrix_width, int matrix_height, jab_vector2d p1, jab_vector2d p2)
+Tuple2<jab_vector2d, jab_vector2d> getColorPalettePosInFP(int p_index, int matrix_width, int matrix_height)
 {
+	jab_vector2d p1;
+	jab_vector2d p2;
+
 	switch(p_index)
 	{
 	case 0:
@@ -209,6 +212,8 @@ void getColorPalettePosInFP(int p_index, int matrix_width, int matrix_height, ja
 		p2.y = p1.y;
 		break;
 	}
+
+	return Tuple2<jab_vector2d, jab_vector2d>(p1, p2);
 }
 
 /**
@@ -238,8 +243,10 @@ int readColorPaletteInMaster(jab_bitmap matrix, jab_decoded_symbol symbol, Int8L
 	int color_index;			//the color index number in color palette
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++)
 	{
-		jab_vector2d p1, p2;
-		getColorPalettePosInFP(i, matrix.width, matrix.height, p1, p2);
+
+		var result = getColorPalettePosInFP(i, matrix.width, matrix.height);
+		jab_vector2d p1 = result.item1;
+		jab_vector2d p2 = result.item2;
 		//color 0
 		color_index = master_palette_placement_index[i][0] % color_number; //for 4-color and 8-color symbols
 		writeColorPalette(matrix, symbol, i, color_index, p1.x, p1.y);
@@ -268,7 +275,7 @@ int readColorPaletteInMaster(jab_bitmap matrix, jab_decoded_symbol symbol, Int8L
 		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		getNextMetadataModuleInMaster(matrix.height, matrix.width, (*module_count), x, y);
+		getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
 
 		//color palette 2
 		color_index = master_palette_placement_index[2][color_counter] % color_number; //for 4-color and 8-color symbols
@@ -286,7 +293,7 @@ int readColorPaletteInMaster(jab_bitmap matrix, jab_decoded_symbol symbol, Int8L
 		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		getNextMetadataModuleInMaster(matrix.height, matrix.width, (*module_count), x, y);
+		getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
 
 		//next color
 		color_counter++;
@@ -323,8 +330,9 @@ int readColorPaletteInSlave(jab_bitmap matrix, jab_decoded_symbol symbol, Int8Li
     int color_index;			//the color index number in color palette
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++)
 	{
-		jab_vector2d p1, p2;
-		getColorPalettePosInFP(i, matrix.width, matrix.height, &p1, &p2);
+		var result = getColorPalettePosInFP(i, matrix.width, matrix.height);
+		jab_vector2d p1 = result.item1;
+		jab_vector2d p2 = result.item2;
 		//color 0
 		color_index = slave_palette_placement_index[0] % color_number;
 		writeColorPalette(matrix, symbol, i, color_index, p1.x, p1.y);
@@ -542,7 +550,7 @@ int decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<d
  * @param rgb the pixel value in RGB format
  * @return the decoded value
 */
-int decodeModuleNc(Uint8List rgb)
+int decodeModuleNc(Uint32List rgb)
 {
 	int ths_black = 80;
 	double ths_std = 0.08;
