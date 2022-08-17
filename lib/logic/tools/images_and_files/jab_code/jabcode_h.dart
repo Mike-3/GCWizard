@@ -55,8 +55,8 @@ int SIZE2VERSION(int x) { return ((x - 17) / 4).toInt();}
 // const MAX(a,b) 			({__typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b;})
 // const MIN(a,b) 			({__typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b;})
 
-JAB_REPORT_ERROR(String x)	{ print("JABCode Error: "); print (x); print("\n"); }
-JAB_REPORT_INFO(String x)	{ print("JABCode Info: "); print (x); print("\n"); }
+//JAB_REPORT_ERROR(String x)	{ print("JABCode Error: "); print (x); print("\n"); }
+//JAB_REPORT_INFO(String x)	{ print("JABCode Info: "); print (x); print("\n"); }
 
 //typedef byte 		jab_byte;
 //typedef char 				jab_char;

@@ -18,6 +18,10 @@
 // 	printf("\n");
 // }
 
+import 'dart:typed_data';
+
+import 'package:tuple/tuple.dart';
+
 import 'detector.dart';
 import 'image.dart';
 import 'jabcode_h.dart';
@@ -26,7 +30,7 @@ import 'jabcode_h.dart';
  * @brief JABCode reader main function
  * @return 0: success | 255: not detectable | other non-zero: decoding failed
 */
-int main(int argc, String argv[])
+Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 {
 	// if(argc < 2 || (0 == strcmp(argv[1],"--help")))
 	// {
@@ -47,10 +51,10 @@ int main(int argc, String argv[])
 	// }
 
 	//load image
-	var bitmap = readImage(@"C:\"); //argv[1]
+	var bitmap = readImage(bytes); //argv[1]
 
 	if(bitmap == null)
-		return 255;
+		return null;
 
 	//find and decode JABCode in the image
 	int decode_status;
@@ -63,35 +67,38 @@ int main(int argc, String argv[])
 		// free(bitmap);
 		// reportError("Decoding JABCode failed");
 		if(decode_status > 0)
-			return (symbols[0].module_size + 0.5).toInt();
+			return Future.value(Tuple2<String, String> (null, (symbols[0].module_size + 0.5).toInt().toString())); //(symbols[0].module_size + 0.5).toInt();
 		else
-			return 255;
+			return Future.value(Tuple2<String, String> (null, 255.toString()));;
 	}
 
 	//output warning if the code is only partly decoded with COMPATIBLE_DECODE mode
 	if(decode_status == 2)
 	{
-		JAB_REPORT_INFO(("The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
+		return Future.value(Tuple2<String, String> (null,
+				"The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
+		// JAB_REPORT_INFO(("The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
 	}
 
 	//output result
-	if(output_as_file)
-	{
-		// FILE* output_file = fopen(argv[3], "wb");
-		// if(output_file == null)
-		// {
-		// 	// reportError("Can not open the output file");
-		// 	return 255;
-		// }
-		// fwrite(decoded_data.data, decoded_data.length, 1, output_file);
-		// fclose(output_file);
-	}
-	else
-	{
-		for(int i=0; i<decoded_data.length; i++)
-			print(decoded_data.data[i]);
-		print("\n");
-	}
+	// if(output_as_file)
+	// {
+	// 	// FILE* output_file = fopen(argv[3], "wb");
+	// 	// if(output_file == null)
+	// 	// {
+	// 	// 	// reportError("Can not open the output file");
+	// 	// 	return 255;
+	// 	// }
+	// 	// fwrite(decoded_data.data, decoded_data.length, 1, output_file);
+	// 	// fclose(output_file);
+	// }
+	// else
+	// {
+		// for(int i=0; i<decoded_data.length; i++)
+		// 	print(decoded_data.data[i]);
+
+		return Future.value(Tuple2<String, String> (null, String.fromCharCodes(decoded_data.data)));
+	// }
 
 	// free(bitmap);
 	// free(decoded_data);

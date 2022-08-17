@@ -169,7 +169,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
         }
         if(pivot_column < capacity)
         {
-            processed_column[pivot_column]=1;
+            processed_column[pivot_column]=true;
             column_arrangement[pivot_column]=i;
             if (pivot_column>=nb_pcb)
             {
