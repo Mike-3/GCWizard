@@ -3755,7 +3755,7 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
 {
 	int status;
 	if(status != 0) status = 0;
-	if(symbols = null)
+	if(symbols == null)
 	{
 		// reportError("Invalid symbol buffer");
 		return null;

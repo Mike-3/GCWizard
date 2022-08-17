@@ -774,7 +774,7 @@ int _decodeNcModuleColor(Int8 module1_color, Int8 module2_color)
  * @param y the y coordinate of the current and the next module
  * @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED
 */
-int _decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, int module_count, int x, int y) //ToDo module_count, x und y als Referenz/ Rückgabewert
+Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, int module_count, int x, int y) //ToDo module_count, x und y als Referenz/ Rückgabewert
 {
 	//decode Nc module color
 	var module_color = Int8List(MASTER_METADATA_PART1_MODULE_NUMBER);
@@ -791,7 +791,7 @@ int _decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int
 // #if TEST_MODE
 // 		reportError("Invalid module color in primary metadata part 1 found");
 // #endif
-			return DECODE_METADATA_FAILED;
+			return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 		}
 		module_color[module_count] = rgb;
 		//set data map
@@ -810,7 +810,7 @@ int _decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int
 // #if TEST_MODE
 // 		reportError("Invalid color combination in primary metadata part 1 found");
 // #endif
-		return DECODE_METADATA_FAILED;
+		return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 	}
 	//set bits in part1
 	var part1 = Uint8List(MASTER_METADATA_PART1_LENGTH);			//6 encoded bits
@@ -831,12 +831,12 @@ int _decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int
 // #if TEST_MODE
 // 		reportError("LDPC decoding for master metadata part 1 failed");
 // #endif
-		return JAB_FAILURE;
+		return Tuple4<int, int, int, int>(JAB_FAILURE, module_count, x, y);
 	}
 	//parse part1
 	symbol.metadata.Nc = (part1[0] << 2) + (part1[1] << 1) + part1[2];
 
-	return JAB_SUCCESS;
+	return Tuple4<int, int, int, int>(JAB_SUCCESS, module_count, x, y);
 }
 
 /**
@@ -850,8 +850,11 @@ int _decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int
  * @param x the x coordinate of the current and the next module
  * @param y the y coordinate of the current and the next module
  * @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED | FATAL_ERROR
+ * @return module_count the index number of the next module
+ * @return x the x coordinate of the current and the next module
+ * @return y the y coordinate of the current and the next module
 */
-int _decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths, int module_count, int x, int y)
+Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths, int module_count, int x, int y)
 {
 	var part2 = List<int>.filled(MASTER_METADATA_PART2_LENGTH, 0);			//38 encoded bits
 	int part2_bit_count = 0;
@@ -893,7 +896,7 @@ int _decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, In
 // #if TEST_MODE
 // 		reportError("LDPC decoding for master metadata part 2 failed");
 // #endif
-		return DECODE_METADATA_FAILED;
+		return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 	}
 
     //parse part2
@@ -952,7 +955,7 @@ int _decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, In
 	// 	reportError("Incorrect error correction parameter in primary symbol metadata");
 	// 	return DECODE_METADATA_FAILED;
 	// }
-	return JAB_SUCCESS;
+	return Tuple4<int, int, int, int>(JAB_SUCCESS, module_count, x, y);;
 }
 
 /**
@@ -1365,7 +1368,11 @@ int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol)
 	int module_count = 0;
 
 	//decode metadata PartI (Nc)
-	int decode_partI_ret = _decodeMasterMetadataPartI(matrix, symbol, data_map, module_count, x, y);
+	var result = _decodeMasterMetadataPartI(matrix, symbol, data_map, module_count, x, y);
+	int decode_partI_ret = result.item1;
+	module_count = result.item2;
+	x = result.item3;
+	y = result.item4;
 	if(decode_partI_ret == JAB_FAILURE)
 	{
 		return JAB_FAILURE;
@@ -1398,13 +1405,17 @@ int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol)
 	var pal_ths = List<double>.filled(3 * COLOR_PALETTE_NUMBER, 0);
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++)
 	{
-		_getPaletteThreshold(symbol.palette + (color_number*3)*i, color_number, pal_ths[i*3]);
+		_getPaletteThreshold(symbol.palette.sublist((color_number*3)*i), color_number, pal_ths.sublist(i*3)); //symbol.palette + (color_number*3)*i, color_number, pal_ths[i*3])
 	}
 
 	//decode metadata PartII
 	if(decode_partI_ret == JAB_SUCCESS)
 	{
-		if(_decodeMasterMetadataPartII(matrix, symbol, data_map, norm_palette, pal_ths, module_count, x, y) <= 0) //ToDo &module_count, &x, &y
+		var result = _decodeMasterMetadataPartII(matrix, symbol, data_map, norm_palette, pal_ths, module_count, x, y);
+		module_count = result.item2;
+		x = result.item3;
+		y = result.item4;
+		if(result.item1 <= 0) //ToDo &module_count, &x, &y
 		{
 			return JAB_FAILURE;
 		}
@@ -1453,7 +1464,7 @@ int decodeSlave(jab_bitmap matrix, jab_decoded_symbol symbol)
 	var pal_ths = List<double>.filled(3 * COLOR_PALETTE_NUMBER, 0);
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++)
 	{
-		_getPaletteThreshold(symbol.palette + i*3, color_number, pal_ths[(i*3)]); //&pal_ths[i*3]
+		_getPaletteThreshold(symbol.palette.sublist(i*3), color_number, pal_ths.sublist(i*3)); //symbol.palette + i*3; &pal_ths[i*3]
 	}
 
 	//decode slave symbol
