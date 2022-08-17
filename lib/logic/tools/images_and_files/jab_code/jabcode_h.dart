@@ -111,7 +111,7 @@ class jab_bitmap {
    int	bits_per_pixel;
    int	bits_per_channel;
    int	channel_count;
-   Uint32List		pixel;
+   Uint8List		pixel;
 
 	 jab_bitmap clone() {
 		 var _clone = jab_bitmap();
@@ -120,7 +120,9 @@ class jab_bitmap {
 		 _clone.bits_per_pixel = bits_per_pixel;
 		 _clone.bits_per_channel = bits_per_channel;
 		 _clone.channel_count = channel_count;
-		 _clone.pixel = Uint32List.fromList(pixel);
+		 _clone.pixel = Uint8List.fromList(pixel);
+
+		 return _clone;
 	 }
 }
 

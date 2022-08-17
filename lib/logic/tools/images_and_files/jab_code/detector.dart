@@ -249,7 +249,7 @@ Tuple6<int, int, int, double, double, int> _seekPattern(jab_bitmap ch, int row, 
  * @return module_size the module size
  * @return skip the number of pixels to be skipped in the next scan
 */
-Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint32List row, int startx, int endx, double centerx, double module_size, int skip)
+Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row, int startx, int endx, double centerx, double module_size, int skip)
 {
     int state_number = 5;
     int cur_state = 0;
@@ -1580,7 +1580,7 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
           centerx_g = result.item4;
           module_size_g = result.item5;
           skip = result.item6;
-            if(result.item1== JAB_SUCCESS)
+            if(result.item1 == JAB_SUCCESS)
             {
                 type_g = row_g[(centerx_g).toInt()] > 0 ? 255 : 0;
                 if(type_g != exp_type_g) continue;
@@ -1709,7 +1709,7 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
     bool done = false;
     var fp_type_count = List<int>.filled(4, 0);;
 
-    for(int i=0; i<ch[0].height && done == 0; i+=min_module_size)
+    for(int i=0; i<ch[0].height && !done; i+=min_module_size)
     {
         //get row
         var row_r = ch[0].pixel.sublist(i*ch[0].width); //ch[0].pixel + i*ch[0].width;
@@ -1731,7 +1731,13 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
 					startx += skip;
 					endx = ch[0].width;
 					//green channel
-					if(_seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip) == 1)
+          var result = _seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip);
+          startx = result.item2;
+          endx = result.item3;
+          centerx_g = result.item4;
+          module_size_g = result.item5;
+          skip = result.item6;
+					if(result.item1 == JAB_SUCCESS)
 					{
 							type_g = row_g[centerx_g.toInt()] > 0 ? 255 : 0;
 
@@ -1755,7 +1761,7 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
 							}
 							//check red channel for Finder Pattern UR and LR
 							else {
-								result = _crossCheckPatternHorizontal(ch[2], module_size_g * 2, centerx_r, i.toDouble());
+								result = _crossCheckPatternHorizontal(ch[0], module_size_g * 2, centerx_r, i.toDouble());
 								centerx_r = result.item2;
 								module_size_r = result.item3;
 								if (result.item1 == JAB_SUCCESS) {
@@ -3319,7 +3325,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 	int mtx_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
 	int mtx_bytes_per_row = width * mtx_bytes_per_pixel;
 	var matrix = jab_bitmap(); //  (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*mtx_bytes_per_pixel*sizeof(jab_byte));
-  matrix.pixel = Uint32List(width*height);
+  matrix.pixel = Uint8List(width*height);
   if(matrix == null)
 	{
 		// reportError("Memory allocation for symbol bitmap matrix failed");

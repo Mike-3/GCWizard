@@ -560,7 +560,7 @@ void balanceRGB(jab_bitmap bitmap)
  * @result item1 the average value
  * @result item2 the variance value
  */
-Tuple2<double, double> getAveVar(Uint32List rgb)
+Tuple2<double, double> getAveVar(Uint8List rgb)
 {
 	//calculate mean
 	var ave = (rgb[0] + rgb[1] + rgb[2]) / 3;
@@ -591,7 +591,7 @@ void _swap(int a, int b, List<int> list)
  * @result item2 index middle value
  * @result item3 index max value
  */
-Tuple3<int, int, int> getMinMax(Uint32List rgb)
+Tuple3<int, int, int> getMinMax(Uint8List rgb)
 {
 	const index_min = 0;
 	const index_mid = 1;
@@ -621,6 +621,7 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 	for(int i=0; i<3; i++)
 	{
 		rgb[i] = jab_bitmap(); //(jab_bitmap*)calloc(1, sizeof(jab_bitmap) + bitmap.width*bitmap.height*sizeof(jab_byte));
+		rgb[i].pixel= Uint8List(bitmap.width*bitmap.height);
 		if(rgb[i] == null)
 		{
 			// JAB_REPORT_ERROR(("Memory allocation for binary bitmap %d failed", i))
@@ -691,7 +692,7 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 			//check black pixel
 			if(blk_ths == null)
             {
-                int block_index = min(i/block_size_y, block_num_y-1) * block_num_x + min(j/block_size_x, block_num_x-1);
+                int block_index = (min(i/block_size_y, block_num_y-1) * block_num_x + min(j/block_size_x, block_num_x-1)).toInt();
                 rgb_ths[0] = pixel_ave[block_index][0];
                 rgb_ths[1] = pixel_ave[block_index][1];
                 rgb_ths[2] = pixel_ave[block_index][2];

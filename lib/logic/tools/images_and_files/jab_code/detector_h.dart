@@ -48,11 +48,11 @@ enum jab_detect_mode {
  * @brief Finder pattern
 */
 class jab_finder_pattern {
-	int		type;
-	double		module_size;
+	int		type = 0;
+	double		module_size = 0.0;
 	var		center = jab_point(0.0,0.0);			//coordinates of the center
-	int		found_count;
-	int 	direction;
+	int		found_count = 0;
+	int 	direction = 0;
 
 	import(jab_alignment_pattern alignment_pattern) {
 		type= alignment_pattern.type;
@@ -67,11 +67,11 @@ class jab_finder_pattern {
  * @brief Alignment pattern
  */
 class jab_alignment_pattern {
-	int		type;
-	double		module_size;
+	int		type = 0;
+	double		module_size = 0.0;
 	var		center = jab_point(0.0,0.0);			//coordinates of the center
-	int		found_count;
-	int 	direction;
+	int		found_count = 0;
+	int 	direction = 0;
 
 	import(jab_finder_pattern finder_pattern) {
 		type= finder_pattern.type;

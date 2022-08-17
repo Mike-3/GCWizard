@@ -551,7 +551,7 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<
  * @param rgb the pixel value in RGB format
  * @return the decoded value
 */
-int _decodeModuleNc(Uint32List rgb)
+int _decodeModuleNc(Uint8List rgb)
 {
 	int ths_black = 80;
 	double ths_std = 0.08;
