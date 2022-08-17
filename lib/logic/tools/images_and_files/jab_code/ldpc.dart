@@ -183,7 +183,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
             {
                 // ToDo
                 // ((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) -> ungerade 1, gerade 0
-                if ((((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) && j) != i)
+                if ((((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) && j ) != i)
                 {
                     //subtract pivot row GF(2)
                     for (int k=0;k<offset;k++)
@@ -249,7 +249,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
     if(encode)
     {
         for(int i=0;i< nb_pcb;i++)
-            matrixA.setRange(i*offset, end, matrixH.); //memcpy(matrixA+i*offset,matrixH+column_arrangement[i]*offset,offset*sizeof(int));
+            matrixA.setRange(i*offset, i*offset+offset, matrixH.sublist(column_arrangement[i]*offset)); //memcpy(matrixA+i*offset,matrixH+column_arrangement[i]*offset,offset*sizeof(int));
 
         //swap columns
         int tmp=0;
@@ -267,7 +267,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
     {
     //    memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
         for(int i=0;i< nb_pcb;i++)
-            matrixH = matrixA.cl //memcpy(matrixH+i*offset,matrixA+column_arrangement[i]*offset,offset*sizeof(int));
+            matrixH.setRange(i*offset, i*offset+offset, matrixA.sublist(column_arrangement[i]*offset));  //memcpy(matrixH+i*offset,matrixA+column_arrangement[i]*offset,offset*sizeof(int));
 
         //swap columns
         int tmp=0;

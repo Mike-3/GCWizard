@@ -52,7 +52,15 @@ class jab_finder_pattern {
 	double		module_size;
 	var		center = jab_point(0.0,0.0);			//coordinates of the center
 	int		found_count;
-	int 		direction;
+	int 	direction;
+
+	import(jab_alignment_pattern alignment_pattern) {
+		type= alignment_pattern.type;
+		module_size= alignment_pattern.module_size;
+		center= alignment_pattern.center;
+		found_count= alignment_pattern.found_count;
+		direction= alignment_pattern.direction;
+	}
 }
 
 /**
@@ -60,10 +68,18 @@ class jab_finder_pattern {
  */
 class jab_alignment_pattern {
 	int		type;
-	int		module_size;
-	var		center = Point(0.0,0.0);			//coordinates of the center
+	double		module_size;
+	var		center = jab_point(0.0,0.0);			//coordinates of the center
 	int		found_count;
 	int 	direction;
+
+	import(jab_finder_pattern finder_pattern) {
+		type= finder_pattern.type;
+		module_size= finder_pattern.module_size;
+		center= finder_pattern.center;
+		found_count= finder_pattern.found_count;
+		direction= finder_pattern.direction;
+	}
 }
 
 /**

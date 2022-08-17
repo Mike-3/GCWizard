@@ -76,6 +76,10 @@ JAB_REPORT_INFO(String x)	{ print("JABCode Info: "); print (x); print("\n"); }
 class jab_vector2d {
 	int	x;
 	int	y;
+	jab_vector2d(intx, inty) {
+		this.x = x;
+		this.y = y;
+	}
 }
 
 /**
@@ -84,7 +88,7 @@ class jab_vector2d {
 class jab_point {
 	double	x;
 	double	y;
-	jab_point(double	x, double	y) {
+	jab_point(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}

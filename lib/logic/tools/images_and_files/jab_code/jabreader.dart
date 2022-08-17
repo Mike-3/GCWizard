@@ -18,6 +18,7 @@
 // 	printf("\n");
 // }
 
+import 'detector.dart';
 import 'image.dart';
 import 'jabcode_h.dart';
 
@@ -46,7 +47,7 @@ int main(int argc, String argv[])
 	// }
 
 	//load image
-	var bitmap = readImage(argv[1]);
+	var bitmap = readImage(@"C:\"); //argv[1]
 
 	if(bitmap == null)
 		return 255;
@@ -54,7 +55,9 @@ int main(int argc, String argv[])
 	//find and decode JABCode in the image
 	int decode_status;
 	var symbols = List<jab_decoded_symbol>.filled(MAX_SYMBOL_NUMBER, null);
-	var decoded_data = decodeJABCodeEx(bitmap, NORMAL_DECODE, &decode_status, symbols, MAX_SYMBOL_NUMBER);
+	var result = decodeJABCodeEx(bitmap, NORMAL_DECODE, symbols, MAX_SYMBOL_NUMBER);
+	var decoded_data = result.item1;
+	decode_status = result.item2;
 	if(decoded_data == null)
 	{
 		// free(bitmap);
@@ -74,23 +77,23 @@ int main(int argc, String argv[])
 	//output result
 	if(output_as_file)
 	{
-		FILE* output_file = fopen(argv[3], "wb");
-		if(output_file == NULL)
-		{
-			reportError("Can not open the output file");
-			return 255;
-		}
-		fwrite(decoded_data->data, decoded_data->length, 1, output_file);
-		fclose(output_file);
+		// FILE* output_file = fopen(argv[3], "wb");
+		// if(output_file == null)
+		// {
+		// 	// reportError("Can not open the output file");
+		// 	return 255;
+		// }
+		// fwrite(decoded_data.data, decoded_data.length, 1, output_file);
+		// fclose(output_file);
 	}
 	else
 	{
-		for(jab_int32 i=0; i<decoded_data->length; i++)
-			printf("%c", decoded_data->data[i]);
-		printf("\n");
+		for(int i=0; i<decoded_data.length; i++)
+			print(decoded_data.data[i]);
+		print("\n");
 	}
 
-	free(bitmap);
-	free(decoded_data);
+	// free(bitmap);
+	// free(decoded_data);
     return 0;
 }

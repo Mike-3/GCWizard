@@ -35,6 +35,7 @@ import 'encoder_h.dart';
 import 'interleave.dart';
 import 'jabcode_h.dart';
 import 'ldpc.dart';
+import 'mask.dart';
 
 
 
@@ -784,7 +785,7 @@ int decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int8
 	{
 		//decode bit out of the module at (x,y)
 		mtx_offset = y * mtx_bytes_per_row + y * mtx_bytes_per_pixel;
-		int rgb =  decodeModuleNc(matrix.pixel[mtx_offset]);
+		int rgb =  decodeModuleNc(matrix.pixel.sublist(mtx_offset, mtx_offset+3)); //&matrix.pixel[mtx_offset]
 		if(rgb != 0 && rgb != 3 && rgb != 6)
 		{
 // #if TEST_MODE
@@ -1452,7 +1453,7 @@ int decodeSlave(jab_bitmap matrix, jab_decoded_symbol symbol)
 	var pal_ths = List<double>.filled(3 * COLOR_PALETTE_NUMBER, 0);
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++)
 	{
-		getPaletteThreshold(symbol.palette + i*3, color_number, pal_ths[i*3]); //&pal_ths[i*3]
+		getPaletteThreshold(symbol.palette + i*3, color_number, pal_ths[(i*3)]); //&pal_ths[i*3]
 	}
 
 	//decode slave symbol
@@ -1487,11 +1488,11 @@ Tuple2<int,int> readData(jab_data data, int start, int length) //int* value
 jab_data decodeData(jab_data bits)
 {
 	var decoded_bytes = Uint8List(bits.length); //Int8 *)malloc(bits.length * sizeof(Int8));
-	// if(decoded_bytes == NULL)
-	// {
-	// 	reportError("Memory allocation for decoded bytes failed");
-	// 	return NULL;
-	// }
+	if(decoded_bytes == null)
+	{
+		// reportError("Memory allocation for decoded bytes failed");
+		return null;
+	}
 
 	var mode = jab_encode_mode.Upper;
 	var pre_mode = jab_encode_mode.None;
