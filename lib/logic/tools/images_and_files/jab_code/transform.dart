@@ -33,7 +33,7 @@ import 'jabcode_h.dart';
  * @param y3 the y coordinate of the 4th destination point
  * @return the transformation matrix
 */
-jab_perspective_transform square2Quad( double x0, double y0,
+jab_perspective_transform _square2Quad( double x0, double y0,
 										double x1, double y1,
 										double x2, double y2,
 										double x3, double y3)
@@ -92,7 +92,7 @@ jab_perspective_transform square2Quad( double x0, double y0,
  * @param y3 the y coordinate of the 4th source point
  * @return the transformation matrix
 */
-jab_perspective_transform quad2Square( double x0, double y0,
+jab_perspective_transform _quad2Square( double x0, double y0,
 										double x1, double y1,
 										double x2, double y2,
 										double x3, double y3)
@@ -103,7 +103,7 @@ jab_perspective_transform quad2Square( double x0, double y0,
 		// reportError("Memory allocation for perspective transform failed");
 		return null;
 	}
-	var s2q = square2Quad(x0, y0, x1, y1, x2, y2, x3, y3);
+	var s2q = _square2Quad(x0, y0, x1, y1, x2, y2, x3, y3);
 	//calculate the adjugate matrix of s2q
 	pt.a11 = s2q.a22 * s2q.a33 - s2q.a23 * s2q.a32;
 	pt.a21 = s2q.a23 * s2q.a31 - s2q.a21 * s2q.a33;
@@ -124,7 +124,7 @@ jab_perspective_transform quad2Square( double x0, double y0,
  * @param m2 the multiplier
  * @return m1 x m2
 */
-jab_perspective_transform multiply(jab_perspective_transform m1, jab_perspective_transform m2)
+jab_perspective_transform _multiply(jab_perspective_transform m1, jab_perspective_transform m2)
 {
 	var product = jab_perspective_transform(); // (jab_perspective_transform*)malloc(sizeof(jab_perspective_transform));
 	if(product == null)
@@ -173,17 +173,17 @@ jab_perspective_transform perspectiveTransform(double x0, double y0,
 												double x2p, double y2p,
 												double x3p, double y3p)
 {
-	var q2s = quad2Square(x0, y0, x1, y1, x2, y2, x3, y3);
+	var q2s = _quad2Square(x0, y0, x1, y1, x2, y2, x3, y3);
 	if(q2s == null)
 	{
 		return null;
 	}
-	var s2q = square2Quad(x0p, y0p, x1p, y1p, x2p, y2p, x3p, y3p);
+	var s2q = _square2Quad(x0p, y0p, x1p, y1p, x2p, y2p, x3p, y3p);
 	if(s2q == null)
 	{
 		return null;
 	}
-	var pt = multiply(q2s, s2q);
+	var pt = _multiply(q2s, s2q);
 	if(pt == null)
 	{
 		return null;

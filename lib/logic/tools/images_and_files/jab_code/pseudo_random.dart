@@ -2,8 +2,6 @@
 
 // include "pseudo_random.h"
 
-import 'dart:ffi';
-
 int lcg64_seed = 42 ;
 
 int temper(int x)

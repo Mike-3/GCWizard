@@ -358,7 +358,7 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
  * @brief Filter out noises in binary bitmap
  * @param binary the binarized bitmap
 */
-void filterBinary(jab_bitmap binary)
+void _filterBinary(jab_bitmap binary)
 {
 	int width = binary.width;
 	int height= binary.height;
@@ -456,14 +456,14 @@ void filterBinary(jab_bitmap binary)
 // 		return binarizerHist(bitmap, channel);
 // 	}
 // }
-//
+
 /**
  * @brief Get the histogram of a color channel
  * @param bitmap the image
  * @param channel the channel
  * @param hist the histogram
 */
-void getHistogram(jab_bitmap bitmap, int channel, List<int> hist)
+void _getHistogram(jab_bitmap bitmap, int channel, List<int> hist)
 {
 	//get histogram
 	// memset(hist, 0, 256*sizeof(int));
@@ -481,7 +481,7 @@ void getHistogram(jab_bitmap bitmap, int channel, List<int> hist)
  * @result item1 the min index
  * @result item2 the max index
 */
-Tuple2<int, int> getHistMaxMin(List<int> hist, int ths)
+Tuple2<int, int> _getHistMaxMin(List<int> hist, int ths)
 {
 	//get min
 	var min = 0;
@@ -521,16 +521,16 @@ void balanceRGB(jab_bitmap bitmap)
 	var hist_g = List<int>.filled(256, 0);
 	var hist_b = List<int>.filled(256, 0);
 
-    getHistogram(bitmap, 0, hist_r);
-    getHistogram(bitmap, 1, hist_g);
-    getHistogram(bitmap, 2, hist_b);
+    _getHistogram(bitmap, 0, hist_r);
+    _getHistogram(bitmap, 1, hist_g);
+    _getHistogram(bitmap, 2, hist_b);
 
 	//calculate max and min for each channel
     //threshold for the number of pixels having the max or min values
 	int count_ths = 20;
-  var r = getHistMaxMin(hist_r, count_ths);
-	var g = getHistMaxMin(hist_g, count_ths);
-	var b = getHistMaxMin(hist_b, count_ths);
+  var r = _getHistMaxMin(hist_r, count_ths);
+	var g = _getHistMaxMin(hist_g, count_ths);
+	var b = _getHistMaxMin(hist_b, count_ths);
 
 	//normalize each channel
 	for(int i=0; i<bitmap.height; i++)
@@ -576,7 +576,7 @@ Tuple2<double, double> getAveVar(Uint32List rgb)
 /**
  * @brief Swap two variables
 */
-void swap(int a, int b, List<int> list)
+void _swap(int a, int b, List<int> list)
 {
 	int tmp;
 	tmp = list[a];
@@ -598,11 +598,11 @@ Tuple3<int, int, int> getMinMax(Uint32List rgb)
 	const index_max = 2;
 	var index = [index_min, index_mid, index_max];
 	if(rgb[index_min] > rgb[index_max])
-		swap(index_min, index_max, index);
+		_swap(index_min, index_max, index);
 	if(rgb[index_min] > rgb[index_mid])
-		swap(index_min, index_mid, index);
+		_swap(index_min, index_mid, index);
 	if(rgb[index_mid] > rgb[index_max])
-		swap(index_mid, index_max, index);
+		_swap(index_mid, index_max, index);
 	// *min = rgb[*index_min];
 	// *mid = rgb[*index_mid];
 	// *max = rgb[*index_max];
@@ -737,8 +737,8 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 			}
 		}
 	}
-	filterBinary(rgb[0]);
-	filterBinary(rgb[1]);
-	filterBinary(rgb[2]);
+	_filterBinary(rgb[0]);
+	_filterBinary(rgb[1]);
+	_filterBinary(rgb[2]);
 	return JAB_SUCCESS;
 }

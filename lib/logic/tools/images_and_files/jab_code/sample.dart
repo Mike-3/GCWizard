@@ -109,79 +109,79 @@ jab_bitmap sampleSymbol(jab_bitmap bitmap, jab_perspective_transform pt, jab_vec
 	return matrix;
 }
 
-/**
- * @brief Sample a cross area between the host and slave symbols
- * @param bitmap the image bitmap
- * @param pt the transformation matrix
- * @return the sampled area matrix
-*/
-jab_bitmap sampleCrossArea(jab_bitmap bitmap, jab_perspective_transform pt)
-{
-	int mtx_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
-	int mtx_bytes_per_row = (SAMPLE_AREA_WIDTH * mtx_bytes_per_pixel).toInt();
-	var matrix = jab_bitmap(); //(jab_bitmap*)malloc(sizeof(jab_bitmap) + SAMPLE_AREA_WIDTH*SAMPLE_AREA_HEIGHT*mtx_bytes_per_pixel*sizeof(jab_byte));
-	matrix.pixel= Uint32List(SAMPLE_AREA_WIDTH*SAMPLE_AREA_HEIGHT);
-	if(matrix == null)
-	{
-		// reportError("Memory allocation for cross area bitmap matrix failed");
-		return null;
-	}
-	matrix.channel_count = bitmap.channel_count;
-	matrix.bits_per_channel = bitmap.bits_per_channel;
-	matrix.bits_per_pixel = matrix.bits_per_channel * matrix.channel_count;
-	matrix.width = SAMPLE_AREA_WIDTH;
-	matrix.height= SAMPLE_AREA_HEIGHT;
-
-	int bmp_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
-	int bmp_bytes_per_row = bitmap.width * bmp_bytes_per_pixel;
-
-	//only sample the area where the metadata and palette are located
-		var points = List <jab_point>.filled(SAMPLE_AREA_WIDTH, null);
-    for(int i=0; i<SAMPLE_AREA_HEIGHT; i++)
-    {
-		for(int j=0; j<SAMPLE_AREA_WIDTH; j++)
-		{
-			points[j].x = j + CROSS_AREA_WIDTH / 2 + 0.5;
-			points[j].y = i + 0.5;
-		}
-		warpPoints(pt, points, SAMPLE_AREA_WIDTH);
-		for(int j=0; j<SAMPLE_AREA_WIDTH; j++)
-		{
-			int mapped_x = points[j].x.toInt();
-			int mapped_y = points[j].y.toInt();
-			if(mapped_x < 0 || mapped_x > bitmap.width-1)
-			{
-				if(mapped_x == -1) mapped_x = 0;
-				else if(mapped_x ==  bitmap.width) mapped_x = bitmap.width - 1;
-				else return null;
-			}
-			if(mapped_y < 0 || mapped_y > bitmap.height-1)
-			{
-				if(mapped_y == -1) mapped_y = 0;
-				else if(mapped_y ==  bitmap.height) mapped_y = bitmap.height - 1;
-				else return null;
-			}
-			for(int c=0; c<matrix.channel_count; c++)
-			{
-				//get the average of pixel values in 3x3 neighborhood as the sampled value
-				double sum = 0;
-				for(int dx=-1; dx<=1; dx++)
-				{
-					for(int dy=-1; dy<=1; dy++)
-					{
-						int px = mapped_x + dx;
-						int py = mapped_y + dy;
-						if(px < 0 || px > bitmap.width - 1)  px = mapped_x;
-						if(py < 0 || py > bitmap.height - 1) py = mapped_y;
-						sum += bitmap.pixel[py*bmp_bytes_per_row + px*bmp_bytes_per_pixel + c];
-					}
-				}
-				int ave = (sum / 9.0 + 0.5).toInt();
-				matrix.pixel[i*mtx_bytes_per_row + j*mtx_bytes_per_pixel + c] = ave;
-				//matrix.pixel[i*mtx_bytes_per_row + j*mtx_bytes_per_pixel + c] = bitmap.pixel[mapped_y*bmp_bytes_per_row + mapped_x*bmp_bytes_per_pixel + c];
-			}
-		}
-    }
-	return matrix;
-}
+// /**
+//  * @brief Sample a cross area between the host and slave symbols
+//  * @param bitmap the image bitmap
+//  * @param pt the transformation matrix
+//  * @return the sampled area matrix
+// */
+// jab_bitmap sampleCrossArea(jab_bitmap bitmap, jab_perspective_transform pt)
+// {
+// 	int mtx_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+// 	int mtx_bytes_per_row = (SAMPLE_AREA_WIDTH * mtx_bytes_per_pixel).toInt();
+// 	var matrix = jab_bitmap(); //(jab_bitmap*)malloc(sizeof(jab_bitmap) + SAMPLE_AREA_WIDTH*SAMPLE_AREA_HEIGHT*mtx_bytes_per_pixel*sizeof(jab_byte));
+// 	matrix.pixel= Uint32List(SAMPLE_AREA_WIDTH*SAMPLE_AREA_HEIGHT);
+// 	if(matrix == null)
+// 	{
+// 		// reportError("Memory allocation for cross area bitmap matrix failed");
+// 		return null;
+// 	}
+// 	matrix.channel_count = bitmap.channel_count;
+// 	matrix.bits_per_channel = bitmap.bits_per_channel;
+// 	matrix.bits_per_pixel = matrix.bits_per_channel * matrix.channel_count;
+// 	matrix.width = SAMPLE_AREA_WIDTH;
+// 	matrix.height= SAMPLE_AREA_HEIGHT;
+//
+// 	int bmp_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+// 	int bmp_bytes_per_row = bitmap.width * bmp_bytes_per_pixel;
+//
+// 	//only sample the area where the metadata and palette are located
+// 		var points = List <jab_point>.filled(SAMPLE_AREA_WIDTH, null);
+//     for(int i=0; i<SAMPLE_AREA_HEIGHT; i++)
+//     {
+// 		for(int j=0; j<SAMPLE_AREA_WIDTH; j++)
+// 		{
+// 			points[j].x = j + CROSS_AREA_WIDTH / 2 + 0.5;
+// 			points[j].y = i + 0.5;
+// 		}
+// 		warpPoints(pt, points, SAMPLE_AREA_WIDTH);
+// 		for(int j=0; j<SAMPLE_AREA_WIDTH; j++)
+// 		{
+// 			int mapped_x = points[j].x.toInt();
+// 			int mapped_y = points[j].y.toInt();
+// 			if(mapped_x < 0 || mapped_x > bitmap.width-1)
+// 			{
+// 				if(mapped_x == -1) mapped_x = 0;
+// 				else if(mapped_x ==  bitmap.width) mapped_x = bitmap.width - 1;
+// 				else return null;
+// 			}
+// 			if(mapped_y < 0 || mapped_y > bitmap.height-1)
+// 			{
+// 				if(mapped_y == -1) mapped_y = 0;
+// 				else if(mapped_y ==  bitmap.height) mapped_y = bitmap.height - 1;
+// 				else return null;
+// 			}
+// 			for(int c=0; c<matrix.channel_count; c++)
+// 			{
+// 				//get the average of pixel values in 3x3 neighborhood as the sampled value
+// 				double sum = 0;
+// 				for(int dx=-1; dx<=1; dx++)
+// 				{
+// 					for(int dy=-1; dy<=1; dy++)
+// 					{
+// 						int px = mapped_x + dx;
+// 						int py = mapped_y + dy;
+// 						if(px < 0 || px > bitmap.width - 1)  px = mapped_x;
+// 						if(py < 0 || py > bitmap.height - 1) py = mapped_y;
+// 						sum += bitmap.pixel[py*bmp_bytes_per_row + px*bmp_bytes_per_pixel + c];
+// 					}
+// 				}
+// 				int ave = (sum / 9.0 + 0.5).toInt();
+// 				matrix.pixel[i*mtx_bytes_per_row + j*mtx_bytes_per_pixel + c] = ave;
+// 				//matrix.pixel[i*mtx_bytes_per_row + j*mtx_bytes_per_pixel + c] = bitmap.pixel[mapped_y*bmp_bytes_per_row + mapped_x*bmp_bytes_per_pixel + c];
+// 			}
+// 		}
+//     }
+// 	return matrix;
+// }
 

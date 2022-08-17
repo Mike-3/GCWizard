@@ -19,7 +19,6 @@
 // }
 
 import 'dart:typed_data';
-
 import 'package:tuple/tuple.dart';
 
 import 'detector.dart';
@@ -31,7 +30,6 @@ import 'jabcode_h.dart';
  * @return 0: success | 255: not detectable | other non-zero: decoding failed
 */
 Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
-{
 	// if(argc < 2 || (0 == strcmp(argv[1],"--help")))
 	// {
 	// 	printUsage();
@@ -102,5 +100,5 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 
 	// free(bitmap);
 	// free(decoded_data);
-    return 0;
+  //   return 0;
 }

@@ -37,7 +37,7 @@ import 'ldpc_h.dart';
  * @param capacity the number of columns of the matrix
  * @return the matrix A | null if failed (out of memory)
 */
-List<int> createMatrixA(int wc, int wr, int capacity)
+List<int> _createMatrixA(int wc, int wr, int capacity)
 {
     int nb_pcb;
     if(wr<4)
@@ -100,7 +100,7 @@ List<int> createMatrixA(int wc, int wr, int capacity)
  * @param encode specifies if function is called by the encoder or decoder
  * @return 0: success | 1: fatal error (out of memory)
 */
-int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
+int _GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
 {
     int loop=0;
     int nb_pcb;
@@ -181,9 +181,9 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
             int off_index1=pivot_column%32;
             for (int j=0; j<nb_pcb; j++)
             {
-                // ToDo
+                // ToDo stimmt meine Umsetzung ?
                 // ((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) -> ungerade 1, gerade 0
-                if ((((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) && j ) != i)
+                if (((((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1)!=0) && (j!=0) ) != i)
                 {
                     //subtract pivot row GF(2)
                     for (int k=0;k<offset;k++)
@@ -297,7 +297,7 @@ int GaussJordan(List<int> matrixA, int wc, int wr, int capacity, bool encode)
  * @param capacity the number of columns of the matrix
  * @return the error correction matrix | null if failed
 */
-List<int> createMetadataMatrixA(int wc, int capacity)
+List<int> _createMetadataMatrixA(int wc, int capacity)
 {
     int nb_pcb=(capacity/2).toInt();
     int offset=(capacity/32.0).ceil();
@@ -544,7 +544,7 @@ List<int> createMetadataMatrixA(int wc, int capacity)
  * @param start_pos indicating the position to start reading in data array
  * @return  bool is_correct / 1: error correction succeeded | 0: fatal error (out of memory)
 */
-Tuple2<bool, int> decodeMessage(Uint8List data, List<int> matrix, int length, int height, int max_iter, int start_pos)
+Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, int height, int max_iter, int start_pos)
 {
     var max_val=List<int>.filled(length, 0); // ()int *)calloc(length, sizeof(int));
     if(max_val == null)
@@ -713,16 +713,16 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
     //parity check matrix
     List<int> matrixA;
     if(wr > 0)
-        matrixA = createMatrixA(wc, wr,Pg_sub_block);
+        matrixA = _createMatrixA(wc, wr,Pg_sub_block);
     else
-        matrixA = createMetadataMatrixA(wc, Pg_sub_block);
+        matrixA = _createMetadataMatrixA(wc, Pg_sub_block);
     if(matrixA == null)
     {
         // reportError("LDPC matrix could not be created in decoder.");
         return 0;
     }
     bool encode=false;
-    if(GaussJordan(matrixA, wc, wr, Pg_sub_block,encode) != 0) // &matrix_rank,encode
+    if(_GaussJordan(matrixA, wc, wr, Pg_sub_block,encode) != 0) // &matrix_rank,encode
     {
         // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
         // free(matrixA);
@@ -738,14 +738,14 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
             matrix_rank=0;
             Pg_sub_block=Pg - decoding_iterations * Pg_sub_block;
             Pn_sub_block=(Pg_sub_block * (wr-wc) / wr).toInt();
-            var matrixA1 = createMatrixA(wc, wr, Pg_sub_block);
+            var matrixA1 = _createMatrixA(wc, wr, Pg_sub_block);
             if(matrixA1 == null)
             {
                 // reportError("LDPC matrix could not be created in decoder.");
                 return 0;
             }
             bool encode=false;
-            if(GaussJordan(matrixA1, wc, wr, Pg_sub_block, encode)!= 0) //, &matrix_rank,encode
+            if(_GaussJordan(matrixA1, wc, wr, Pg_sub_block, encode)!= 0) //, &matrix_rank,encode
             {
                 // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
                 // free(matrixA1);
@@ -770,7 +770,7 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
             if(is_correct==0)
             {
                 int start_pos=iter*old_Pg_sub;
-                var result=decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter,start_pos);
+                var result=_decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter,start_pos);
                 is_correct=result.item1;
                 if(result.item2 == 0)
                 {
@@ -823,7 +823,7 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr)
             if(is_correct==0)
             {
                 int start_pos=iter*old_Pg_sub;
-                var result =decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, start_pos);
+                var result =_decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, start_pos);
                 is_correct=result.item1;
                 if(result.item2 == 0)
                 {

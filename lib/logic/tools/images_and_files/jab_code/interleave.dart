@@ -26,21 +26,21 @@ import 'jabcode_h.dart';
 
 const INTERLEAVE_SEED = 226759;
 
-/**
- * @brief In-place interleaving
- * @param data the input data to be interleaved
-*/
-void interleaveData(jab_data data)
-{
-    setSeed(INTERLEAVE_SEED);
-    for (int i=0; i<data.length; i++)
-    {
-        int pos = (lcg64_temper() / UINT32_MAX * (data.length - i) ).toInt();
-        int  tmp = data.data[data.length - 1 -i];
-        data.data[data.length - 1 - i] = data.data[pos];
-        data.data[pos] = tmp;
-    }
-}
+// /**
+//  * @brief In-place interleaving
+//  * @param data the input data to be interleaved
+// */
+// void interleaveData(jab_data data)
+// {
+//     setSeed(INTERLEAVE_SEED);
+//     for (int i=0; i<data.length; i++)
+//     {
+//         int pos = (lcg64_temper() / UINT32_MAX * (data.length - i) ).toInt();
+//         int  tmp = data.data[data.length - 1 -i];
+//         data.data[data.length - 1 - i] = data.data[pos];
+//         data.data[pos] = tmp;
+//     }
+// }
 
 /**
  * @brief In-place deinterleaving
