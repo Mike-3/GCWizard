@@ -1808,71 +1808,65 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
 
     //if only one finder pattern is missing, try anyway by estimating the missing one
     if(missing_fp_count == 1) {
-        //estimate the missing finder pattern
-        int miss_fp = 0;
-        if(fps[0].found_count == 0) {
-			miss_fp = 0;
-			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0;
-			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0;
-			fps[0].center = jab_point((fps[3].center.x - fps[2].center.x) / ave_size_fp23 * ave_size_fp13 + fps[1].center.x,
-														    (fps[3].center.y - fps[2].center.y) / ave_size_fp23 * ave_size_fp13 + fps[1].center.y);
-			fps[0].type = FP0;
-			fps[0].found_count = 1;
-			fps[0].direction = -fps[1].direction;
-			fps[0].module_size = (fps[1].module_size + fps[2].module_size + fps[3].module_size) / 3.0;
-        }
-        else if(fps[1].found_count == 0)
-        {
-			miss_fp = 1;
-			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0;
-			double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0;
-			fps[1].center = jab_point((fps[2].center.x - fps[3].center.x) / ave_size_fp23 * ave_size_fp02 + fps[0].center.x,
-														    (fps[2].center.y - fps[3].center.y) / ave_size_fp23 * ave_size_fp02 + fps[0].center.y);
-			fps[1].type = FP1;
-			fps[1].found_count = 1;
-			fps[1].direction = -fps[0].direction;
-			fps[1].module_size = (fps[0].module_size + fps[2].module_size + fps[3].module_size) / 3.0;
-        }
-        else if(fps[2].found_count == 0)
-        {
-			miss_fp = 2;
-			double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0;
-			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0;
-			fps[2].center = jab_point((fps[1].center.x - fps[0].center.x) / ave_size_fp01 * ave_size_fp13 + fps[3].center.x,
-													  	(fps[1].center.y - fps[0].center.y) / ave_size_fp01 * ave_size_fp13 + fps[3].center.y);
-			fps[2].type = FP2;
-			fps[2].found_count = 1;
-			fps[2].direction = fps[3].direction;
-			fps[2].module_size = (fps[0].module_size + fps[1].module_size + fps[3].module_size) / 3.0;
-        }
-        else if(fps[3].found_count == 0)
-        {
-			miss_fp = 3;
-			double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0;
-			double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0;
-			fps[3].center = jab_point((fps[0].center.x - fps[1].center.x) / ave_size_fp01 * ave_size_fp02 + fps[2].center.x,
-														  (fps[0].center.y - fps[1].center.y) / ave_size_fp01 * ave_size_fp02 + fps[2].center.y);
-			fps[3].type = FP3;
-			fps[3].found_count = 1;
-			fps[3].direction = fps[2].direction;
-			fps[3].module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size) / 3.0;
-        }
-        //check the position of the missed finder pattern
-		if(fps[miss_fp].center.x < 0 || fps[miss_fp].center.x > ch[0].width - 1 ||
+      //estimate the missing finder pattern
+      int miss_fp = 0;
+      if(fps[0].found_count == 0) {
+        miss_fp = 0;
+        double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0;
+        double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0;
+        fps[0].center = jab_point((fps[3].center.x - fps[2].center.x) / ave_size_fp23 * ave_size_fp13 + fps[1].center.x,
+                                  (fps[3].center.y - fps[2].center.y) / ave_size_fp23 * ave_size_fp13 + fps[1].center.y);
+        fps[0].type = FP0;
+        fps[0].found_count = 1;
+        fps[0].direction = -fps[1].direction;
+        fps[0].module_size = (fps[1].module_size + fps[2].module_size + fps[3].module_size) / 3.0;
+      } else if(fps[1].found_count == 0) {
+        miss_fp = 1;
+        double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0;
+        double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0;
+        fps[1].center = jab_point((fps[2].center.x - fps[3].center.x) / ave_size_fp23 * ave_size_fp02 + fps[0].center.x,
+                                  (fps[2].center.y - fps[3].center.y) / ave_size_fp23 * ave_size_fp02 + fps[0].center.y);
+        fps[1].type = FP1;
+        fps[1].found_count = 1;
+        fps[1].direction = -fps[0].direction;
+        fps[1].module_size = (fps[0].module_size + fps[2].module_size + fps[3].module_size) / 3.0;
+      } else if(fps[2].found_count == 0) {
+        miss_fp = 2;
+        double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0;
+        double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0;
+        fps[2].center = jab_point((fps[1].center.x - fps[0].center.x) / ave_size_fp01 * ave_size_fp13 + fps[3].center.x,
+                                (fps[1].center.y - fps[0].center.y) / ave_size_fp01 * ave_size_fp13 + fps[3].center.y);
+        fps[2].type = FP2;
+        fps[2].found_count = 1;
+        fps[2].direction = fps[3].direction;
+        fps[2].module_size = (fps[0].module_size + fps[1].module_size + fps[3].module_size) / 3.0;
+      } else if(fps[3].found_count == 0) {
+        miss_fp = 3;
+        double ave_size_fp01 = (fps[0].module_size + fps[1].module_size) / 2.0;
+        double ave_size_fp02 = (fps[0].module_size + fps[2].module_size) / 2.0;
+        fps[3].center = jab_point((fps[0].center.x - fps[1].center.x) / ave_size_fp01 * ave_size_fp02 + fps[2].center.x,
+                                (fps[0].center.y - fps[1].center.y) / ave_size_fp01 * ave_size_fp02 + fps[2].center.y);
+        fps[3].type = FP3;
+        fps[3].found_count = 1;
+        fps[3].direction = fps[2].direction;
+        fps[3].module_size = (fps[0].module_size + fps[1].module_size + fps[2].module_size) / 3.0;
+      }
+      //check the position of the missed finder pattern
+		  if(fps[miss_fp].center.x < 0 || fps[miss_fp].center.x > ch[0].width - 1 ||
 		   fps[miss_fp].center.y < 0 || fps[miss_fp].center.y > ch[0].height - 1)
-		{
-			// JAB_REPORT_ERROR(("Finder pattern %d out of image", miss_fp))
-			fps[miss_fp].found_count = 0;
-			status = JAB_FAILURE;
-			return Tuple2<int, List<jab_finder_pattern>>(status, fps);
-		}
+		  {
+        // JAB_REPORT_ERROR(("Finder pattern %d out of image", miss_fp))
+        fps[miss_fp].found_count = 0;
+        status = JAB_FAILURE;
+        return Tuple2<int, List<jab_finder_pattern>>(status, fps);
+      }
 
 		//try to find the missing finder pattern by a local search at the estimated position
 // #if TEST_MODE
 // 		JAB_REPORT_INFO(("Trying to confirm the missing finder pattern by a local search"))
 // #endif
 		_seekMissingFinderPattern(bitmap, fps, miss_fp);
-    }
+  }
 // #if TEST_MODE
 //     //output the final selected 4 patterns
 //     JAB_REPORT_INFO(("Final patterns:"))
@@ -1883,8 +1877,8 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
 // 	drawFoundFinderPatterns(fps, 4, 0xff0000);
 // 	saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
 // #endif
-    status = JAB_SUCCESS;
-    return Tuple2<int, List<jab_finder_pattern>>(status, fps);
+  status = JAB_SUCCESS;
+  return Tuple2<int, List<jab_finder_pattern>>(status, fps);
 }
 
 /**
@@ -1898,152 +1892,115 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
  * @return dir the alignment pattern direction
 
  */
-Tuple2<double, int> _crossCheckPatternDiagonalAP(jab_bitmap image, int ap_type, int module_size_max, jab_point center, int dir)
-{
-    int offset_x, offset_y;
-    bool fix_dir = false;
-    //if the direction is given, ONLY check the given direction
-	if(dir != 0)
-    {
-		if(dir > 0)
-		{
+Tuple2<double, int> _crossCheckPatternDiagonalAP(jab_bitmap image, int ap_type, int module_size_max, jab_point center, int dir) {
+  int offset_x, offset_y;
+  bool fix_dir = false;
+  //if the direction is given, ONLY check the given direction
+	if(dir != 0) {
+		if(dir > 0) {
 			offset_x = -1;
 			offset_y = -1;
-			dir = 1;
-		}
-		else
-		{
+			dir = 1;} else {
 			offset_x = 1;
 			offset_y = -1;
 			dir = -1;
 		}
 		fix_dir = true;
-    }
-    else
-	{
+  } else {
 		//for ap0 and ap1, first check the diagonal at +45 degree
-	    if(ap_type == AP0 || ap_type == AP1)
-		{
+    if(ap_type == AP0 || ap_type == AP1) {
 			offset_x = -1;
 			offset_y = -1;
 			dir = 1;
-		}
+
 		//for ap2 and ap3, first check the diagonal at -45 degree
-		else
-		{
+    } else {
 			offset_x = 1;
 			offset_y = -1;
 			dir = -1;
 		}
 	}
 
-    bool flag = false;
-    int try_count = 0;
-    do
-    {
-    	flag = false;
-        try_count++;
+  bool flag = false;
+  int try_count = 0;
+  do {
+    flag = false;
+    try_count++;
 
-        int i, state_index;
-        var state_count = List<int>.filled(3, 0);
-        int startx = center.x.toInt();
-        int starty = center.y.toInt();
+    int i, state_index;
+    var state_count = List<int>.filled(3, 0);
+    int startx = center.x.toInt();
+    int starty = center.y.toInt();
 
-        state_count[1]++;
-        state_index=0;
-        for(i=1; i<=starty && i<=startx && state_index<=1; i++)
-        {
-            if( image.pixel[(starty + i*offset_y)*image.width + (startx + i*offset_x)] == image.pixel[(starty + (i-1)*offset_y)*image.width + (startx + (i-1)*offset_x)] )
-            {
-                state_count[1 - state_index]++;
-            }
-            else
-            {
-                if(state_index >0 && state_count[1 - state_index] < 3)
-                {
-                    state_count[1 - (state_index-1)] += state_count[1 - state_index];
-                    state_count[1 - state_index] = 0;
-                    state_index--;
-                    state_count[1 - state_index]++;
-                }
-                else
-                {
-                    state_index++;
-                    if(state_index > 1) break;
-                    else state_count[1 - state_index]++;
-                }
-            }
+    state_count[1]++;
+    state_index=0;
+    for(i=1; i<=starty && i<=startx && state_index<=1; i++) {
+      if( image.pixel[(starty + i*offset_y)*image.width + (startx + i*offset_x)] == image.pixel[(starty + (i-1)*offset_y)*image.width + (startx + (i-1)*offset_x)] ) {
+          state_count[1 - state_index]++;
+      } else {
+        if (state_index >0 && state_count[1 - state_index] < 3) {
+          state_count[1 - (state_index-1)] += state_count[1 - state_index];
+          state_count[1 - state_index] = 0;
+          state_index--;
+          state_count[1 - state_index]++;
+        } else {
+          state_index++;
+          if(state_index > 1) break;
+          else state_count[1 - state_index]++;
         }
-        if(state_index < 1)
-		{
-			if(try_count == 1)
-			{
-				flag = true;
-				offset_x = -offset_x;
-				dir = -dir;
-			}
-			else
-				return Tuple2<double, int>(-1, dir);
-		}
+      }
+    }
+    if(state_index < 1) {
+      if(try_count == 1) {
+        flag = true;
+        offset_x = -offset_x;
+        dir = -dir;
+      } else
+        return Tuple2<double, int>(-1, dir);
+    }
 
-		if(!flag)
-		{
-            state_index=0;
-			for(i=1; (starty+i)<image.height && (startx+i)<image.width && state_index<=1; i++)
-			{
-				if( image.pixel[(starty - i*offset_y)*image.width + (startx - i*offset_x)] == image.pixel[(starty - (i-1)*offset_y)*image.width + (startx - (i-1)*offset_x)] )
-				{
+		if(!flag) {
+      state_index=0;
+			for(i=1; (starty+i)<image.height && (startx+i)<image.width && state_index<=1; i++) {
+				if( image.pixel[(starty - i*offset_y)*image.width + (startx - i*offset_x)] == image.pixel[(starty - (i-1)*offset_y)*image.width + (startx - (i-1)*offset_x)] ) {
 					state_count[1 + state_index]++;
-				}
-				else
-				{
-					if(state_index >0 && state_count[1 + state_index] < 3)
-					{
+        } else {
+					if(state_index >0 && state_count[1 + state_index] < 3) {
 						state_count[1 + (state_index-1)] += state_count[1 + state_index];
 						state_count[1 + state_index] = 0;
 						state_index--;
 						state_count[1 + state_index]++;
-					}
-					else
-					{
+					} else {
 						state_index++;
 						if(state_index > 1) break;
 						else state_count[1 + state_index]++;
 					}
 				}
 			}
-			if(state_index < 1)
-			{
-				if(try_count == 1)
-				{
+			if(state_index < 1) {
+				if(try_count == 1) {
 					flag = true;
 					offset_x = -offset_x;
 					dir = -dir;
-				}
-				else
+				} else
 					return Tuple2<double, int>(-1, dir);
 			}
 		}
 
-		if(!flag)
-		{
+		if(!flag) {
 			//check module size, if it is too big, assume it is a false positive
-			if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1])
-			{
+			if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1]) {
 				double new_centery = (starty + i - state_count[2]) - state_count[1] / 2.0;
 				return Tuple2<double, int>(new_centery, dir);
-			}
-			else
-			{
+			} else {
 				flag = true;
 				offset_x = - offset_x;
 				dir = -dir;
 			}
 		}
-    }
-    while(flag && try_count < 2 && !fix_dir);
+  } while(flag && try_count < 2 && !fix_dir);
 
-    return Tuple2<double, int>(-1, dir);
+  return Tuple2<double, int>(-1, dir);
 }
 
 /**
@@ -2055,75 +2012,59 @@ Tuple2<double, int> _crossCheckPatternDiagonalAP(jab_bitmap image, int ap_type, 
  * @return the y coordinate of the vertical scanline center | -1 if failed
  * @return module_size the module size in vertical direction
 */
-Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point center, int module_size_max, double module_size)
-{
+Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point center, int module_size_max, double module_size) {
     var state_count = List<int>.filled(3, 0);
     int centerx = center.x.toInt();
-	int centery = center.y.toInt();
+	  int centery = center.y.toInt();
     int i, state_index;
 
     state_count[1]++;
     state_index=0;
-    for(i=1; i<=centery && state_index<=1; i++)
-    {
-        if( image.pixel[(centery-i)*image.width + centerx] == image.pixel[(centery-(i-1))*image.width + centerx] )
-        {
-            state_count[1 - state_index]++;
+    for(i=1; i<=centery && state_index<=1; i++) {
+      if( image.pixel[(centery-i)*image.width + centerx] == image.pixel[(centery-(i-1))*image.width + centerx] ) {
+          state_count[1 - state_index]++;
+      } else {
+        if(state_index > 0 && state_count[1 - state_index] < 3) {
+          state_count[1 - (state_index-1)] += state_count[1 - state_index];
+          state_count[1 - state_index] = 0;
+          state_index--;
+          state_count[1 - state_index]++;
+        } else {
+          state_index++;
+          if(state_index > 1) break;
+          else state_count[1 - state_index]++;
         }
-        else
-        {
-            if(state_index > 0 && state_count[1 - state_index] < 3)
-            {
-                state_count[1 - (state_index-1)] += state_count[1 - state_index];
-                state_count[1 - state_index] = 0;
-                state_index--;
-                state_count[1 - state_index]++;
-            }
-            else
-            {
-                state_index++;
-                if(state_index > 1) break;
-                else state_count[1 - state_index]++;
-            }
-        }
+      }
     }
     if(state_index < 1)
         return Tuple2<double, double>(-1, module_size);
     state_index=0;
-    for(i=1; (centery+i)<image.height && state_index<=1; i++)
-    {
-        if( image.pixel[(centery+i)*image.width + centerx] == image.pixel[(centery+(i-1))*image.width + centerx] )
-        {
-            state_count[1 + state_index]++;
+    for(i=1; (centery+i)<image.height && state_index<=1; i++) {
+      if( image.pixel[(centery+i)*image.width + centerx] == image.pixel[(centery+(i-1))*image.width + centerx] ) {
+          state_count[1 + state_index]++;
+      } else {
+        if(state_index > 0 && state_count[1 + state_index] < 3) {
+          state_count[1 + (state_index-1)] += state_count[1 + state_index];
+          state_count[1 + state_index] = 0;
+          state_index--;
+          state_count[1 + state_index]++;
+        } else {
+          state_index++;
+          if(state_index > 1) break;
+          else state_count[1 + state_index]++;
         }
-        else
-        {
-            if(state_index > 0 && state_count[1 + state_index] < 3)
-            {
-                state_count[1 + (state_index-1)] += state_count[1 + state_index];
-                state_count[1 + state_index] = 0;
-                state_index--;
-                state_count[1 + state_index]++;
-            }
-            else
-            {
-                state_index++;
-                if(state_index > 1) break;
-                else state_count[1 + state_index]++;
-            }
-        }
+      }
     }
     if(state_index < 1)
-        return Tuple2<double, double>(-1, module_size);
+      return Tuple2<double, double>(-1, module_size);
 
     //check module size, if it is too big, assume it is a false positive
-    if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1])
-    {
-        module_size = state_count[1].toDouble();
-        double new_centery = (centery + i - state_count[2]) - state_count[1] / 2.0;
-        return Tuple2<double, double>(new_centery, module_size);;
-    }
-    return Tuple2<double, double>(-1, module_size);
+    if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1]) {
+      module_size = state_count[1].toDouble();
+      double new_centery = (centery + i - state_count[2]) - state_count[1] / 2.0;
+      return Tuple2<double, double>(new_centery, module_size);;
+  }
+  return Tuple2<double, double>(-1, module_size);
 }
 
 /**
@@ -2139,95 +2080,78 @@ Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point 
  * @return the x coordinate of the horizontal scanline center | -1 if failed
  * @return module_size the module size in horizontal direction
 */
-Tuple2<double, double> _crossCheckPatternHorizontalAP(List<int> row, int channel, int startx, int endx, int centerx, int ap_type, double module_size_max, double module_size)
-{
-    int core_color = -1;
-    switch(ap_type)
-    {
-        case AP0:
-			core_color = jab_default_palette[AP0_CORE_COLOR * 3 + channel];
-			break;
-        case AP1:
-			core_color = jab_default_palette[AP1_CORE_COLOR * 3 + channel];
-			break;
-        case AP2:
-			core_color = jab_default_palette[AP2_CORE_COLOR * 3 + channel];
-            break;
-        case AP3:
-			core_color = jab_default_palette[AP3_CORE_COLOR * 3 + channel];
-			break;
-		case APX:
-			core_color = jab_default_palette[APX_CORE_COLOR * 3 + channel];
-			break;
-    }
-    if(row[centerx] != core_color)
-        return Tuple2<double, double>(-1, module_size);
-
-    var state_count = List<int>.filled(3, 0);
-    int i, state_index;
-
-    state_count[1]++;
-    state_index=0;
-    for(i=1; (centerx-i)>=startx && state_index<=1; i++)
-    {
-        if( row[centerx - i] == row[centerx - (i-1)] )
-        {
-            state_count[1 - state_index]++;
-        }
-        else
-        {
-            if(state_index > 0 && state_count[1 - state_index] < 3)
-            {
-                state_count[1 - (state_index-1)] += state_count[1 - state_index];
-                state_count[1 - state_index] = 0;
-                state_index--;
-                state_count[1 - state_index]++;
-            }
-            else
-            {
-                state_index++;
-                if(state_index > 1) break;
-                else state_count[1 - state_index]++;
-            }
-        }
-    }
-    if(state_index < 1)
-        return Tuple2<double, double>(-1, module_size);
-    state_index=0;
-    for(i=1; (centerx+i)<=endx && state_index<=1; i++)
-    {
-        if( row[centerx + i] == row[centerx + (i-1)] )
-        {
-            state_count[1 + state_index]++;
-        }
-        else
-        {
-            if(state_index > 0 && state_count[1 + state_index] < 3)
-            {
-                state_count[1 + (state_index-1)] += state_count[1 + state_index];
-                state_count[1 + state_index] = 0;
-                state_index--;
-                state_count[1 + state_index]++;
-            }
-            else
-            {
-                state_index++;
-                if(state_index > 1) break;
-                else state_count[1 + state_index]++;
-            }
-        }
-    }
-    if(state_index < 1)
-        return Tuple2<double, double>(-1, module_size);
-
-    //check module size, if it is too big, assume it is a false positive
-    if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1])
-    {
-        module_size = state_count[1].toDouble();
-        double new_centerx = (centerx + i - state_count[2]) - state_count[1] / 2.0;
-        return Tuple2<double, double>(new_centerx, module_size);
-    }
+Tuple2<double, double> _crossCheckPatternHorizontalAP(List<int> row, int channel, int startx, int endx, int centerx, int ap_type, double module_size_max, double module_size) {
+  int core_color = -1;
+  switch(ap_type) {
+    case AP0:
+      core_color = jab_default_palette[AP0_CORE_COLOR * 3 + channel];
+      break;
+    case AP1:
+      core_color = jab_default_palette[AP1_CORE_COLOR * 3 + channel];
+      break;
+    case AP2:
+      core_color = jab_default_palette[AP2_CORE_COLOR * 3 + channel];
+      break;
+    case AP3:
+      core_color = jab_default_palette[AP3_CORE_COLOR * 3 + channel];
+     break;
+    case APX:
+      core_color = jab_default_palette[APX_CORE_COLOR * 3 + channel];
+      break;
+  }
+  if(row[centerx] != core_color)
     return Tuple2<double, double>(-1, module_size);
+
+  var state_count = List<int>.filled(3, 0);
+  int i, state_index;
+
+  state_count[1]++;
+  state_index=0;
+  for(i=1; (centerx-i)>=startx && state_index<=1; i++) {
+    if( row[centerx - i] == row[centerx - (i-1)] ) {
+        state_count[1 - state_index]++;
+    } else {
+      if(state_index > 0 && state_count[1 - state_index] < 3) {
+          state_count[1 - (state_index-1)] += state_count[1 - state_index];
+          state_count[1 - state_index] = 0;
+          state_index--;
+          state_count[1 - state_index]++;
+      } else {
+        state_index++;
+        if(state_index > 1) break;
+        else state_count[1 - state_index]++;
+      }
+    }
+  }
+  if(state_index < 1)
+    return Tuple2<double, double>(-1, module_size);
+  state_index=0;
+  for(i=1; (centerx+i)<=endx && state_index<=1; i++) {
+    if( row[centerx + i] == row[centerx + (i-1)] ) {
+        state_count[1 + state_index]++;
+    } else {
+      if(state_index > 0 && state_count[1 + state_index] < 3) {
+        state_count[1 + (state_index-1)] += state_count[1 + state_index];
+        state_count[1 + state_index] = 0;
+        state_index--;
+        state_count[1 + state_index]++;
+      } else {
+        state_index++;
+        if(state_index > 1) break;
+        else state_count[1 + state_index]++;
+      }
+    }
+  }
+  if(state_index < 1)
+    return Tuple2<double, double>(-1, module_size);
+
+  //check module size, if it is too big, assume it is a false positive
+  if(state_count[1] < module_size_max && state_count[0] > 0.5 * state_count[1] && state_count[2] > 0.5 * state_count[1]) {
+    module_size = state_count[1].toDouble();
+    double new_centerx = (centerx + i - state_count[2]) - state_count[1] / 2.0;
+    return Tuple2<double, double>(new_centerx, module_size);
+  }
+  return Tuple2<double, double>(-1, module_size);
 }
 
 /**
@@ -2248,26 +2172,25 @@ Tuple2<double, double> _crossCheckPatternHorizontalAP(List<int> row, int channel
  * @return module_size the module size
  * @return dir the alignment pattern direction
 */
-Tuple4<int, jab_point, double, int> _crossCheckPatternAP(List<jab_bitmap> ch, int y, int minx, int maxx, int cur_x, int ap_type, double max_module_size, double centerx, double centery, double module_size, int dir)
-{
+Tuple4<int, jab_point, double, int> _crossCheckPatternAP(List<jab_bitmap> ch, int y, int minx, int maxx, int cur_x, int ap_type, double max_module_size, double centerx, double centery, double module_size, int dir) {
 	//get row
 	var row_r = ch[0].pixel.sublist(y*ch[0].width, (y+1)*ch[0].width);
-    var row_b = ch[2].pixel.sublist(y*ch[2].width, (y+1)*ch[2].width);
+  var row_b = ch[2].pixel.sublist(y*ch[2].width, (y+1)*ch[2].width);
 
-    var l_centerx = List<double>.filled(3, 0);
-    var l_centery= List<double>.filled(3, 0);
-    var l_module_size_h= List<double>.filled(3, 0);
-    var l_module_size_v= List<double>.filled(3, 0);
+  var l_centerx = List<double>.filled(3, 0);
+  var l_centery = List<double>.filled(3, 0);
+  var l_module_size_h = List<double>.filled(3, 0);
+  var l_module_size_v = List<double>.filled(3, 0);
 
 	//check r channel horizontally
 	var result = _crossCheckPatternHorizontalAP(row_r, 0, minx, maxx, cur_x, ap_type, max_module_size, l_module_size_h[0]);
-    l_centerx[0] = result.item1;
-    l_module_size_h[0] = result.item2;
+  l_centerx[0] = result.item1;
+  l_module_size_h[0] = result.item2;
 	if(l_centerx[0] < 0) return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
 	//check b channel horizontally
-    result = _crossCheckPatternHorizontalAP(row_b, 2, minx, maxx, l_centerx[0].toInt(), ap_type, max_module_size, l_module_size_h[2]);
-    l_centerx[2] = result.item1;
-    l_module_size_h[2] = result.item2;
+  result = _crossCheckPatternHorizontalAP(row_b, 2, minx, maxx, l_centerx[0].toInt(), ap_type, max_module_size, l_module_size_h[2]);
+  l_centerx[2] = result.item1;
+  l_module_size_h[2] = result.item2;
 	if(l_centerx[2] < 0) return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
 	//calculate the center and the module size
 	jab_point center;
@@ -2276,32 +2199,31 @@ Tuple4<int, jab_point, double, int> _crossCheckPatternAP(List<jab_bitmap> ch, in
 	module_size = (l_module_size_h[0] + l_module_size_h[2]) / 2.0;
 	//check g channel horizontally
 	int core_color_in_green_channel = -1;
-    switch(ap_type)
-    {
-        case AP0:
-			core_color_in_green_channel = jab_default_palette[AP0_CORE_COLOR * 3 + 1];
-			break;
-        case AP1:
-			core_color_in_green_channel = jab_default_palette[AP1_CORE_COLOR * 3 + 1];
-			break;
-        case AP2:
-			core_color_in_green_channel = jab_default_palette[AP2_CORE_COLOR * 3 + 1];
-            break;
-        case AP3:
-			core_color_in_green_channel = jab_default_palette[AP3_CORE_COLOR * 3 + 1];
-			break;
-		case APX:
-			core_color_in_green_channel = jab_default_palette[APX_CORE_COLOR * 3 + 1];
-			break;
-    }
+  switch(ap_type) {
+    case AP0:
+      core_color_in_green_channel = jab_default_palette[AP0_CORE_COLOR * 3 + 1];
+      break;
+    case AP1:
+      core_color_in_green_channel = jab_default_palette[AP1_CORE_COLOR * 3 + 1];
+      break;
+    case AP2:
+      core_color_in_green_channel = jab_default_palette[AP2_CORE_COLOR * 3 + 1];
+      break;
+    case AP3:
+      core_color_in_green_channel = jab_default_palette[AP3_CORE_COLOR * 3 + 1];
+      break;
+    case APX:
+      core_color_in_green_channel = jab_default_palette[APX_CORE_COLOR * 3 + 1];
+      break;
+  }
 	if(_crossCheckColor(ch[1], core_color_in_green_channel, module_size.toInt(), 3, center.x.toInt(), center.y.toInt(), 0) == JAB_FAILURE)
 		return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
 
 	//check r channel vertically
 	result = _crossCheckPatternVerticalAP(ch[0], center, max_module_size.toInt(), l_module_size_v[0]);
-    l_centery[0] = result.item1;
-    l_module_size_v[0] = result.item2;
-    if(l_centery[0] < 0) return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
+  l_centery[0] = result.item1;
+  l_module_size_v[0] = result.item2;
+  if(l_centery[0] < 0) return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
 	//again horizontally
 	row_r = ch[0].pixel.sublist((l_centery[0]*ch[0].width).toInt(), ((l_centery[0]+1)*ch[0].width).toInt());
   result= _crossCheckPatternHorizontalAP(row_r, 0, minx, maxx, center.x.toInt(), ap_type, max_module_size, l_module_size_h[0]);
@@ -2356,16 +2278,14 @@ Tuple4<int, jab_point, double, int> _crossCheckPatternAP(List<jab_bitmap> ch, in
  * @param ap_type the alignment pattern type
  * @return the found alignment pattern
 */
-jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, double y, double module_size, int ap_type)
-{
-    jab_alignment_pattern ap;
-    ap.type = -1;
-    ap.found_count = 0;
+jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, double y, double module_size, int ap_type) {
+  jab_alignment_pattern ap;
+  ap.type = -1;
+  ap.found_count = 0;
 
     //determine the core color of r channel
 	int core_color_r = -1;
-	switch(ap_type)
-	{
+	switch(ap_type) {
 		case AP0:
 			core_color_r = jab_default_palette[AP0_CORE_COLOR * 3];
 			break;
@@ -2383,59 +2303,52 @@ jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, doubl
 			break;
 	}
 
-    //define search range
-    int radius = (4 * module_size).toInt();
-    int radius_max = 4 * radius;
+  //define search range
+  int radius = (4 * module_size).toInt();
+  int radius_max = 4 * radius;
 
-    for(; radius<radius_max; radius<<=1)
-    {
-        var aps = List<jab_alignment_pattern>.filled(MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_alignment_pattern));
-        if(aps == null)
-        {
-            // reportError("Memory allocation for alignment patterns failed");
-            return ap;
-        }
+  for(; radius<radius_max; radius<<=1) {
+    var aps = List<jab_alignment_pattern>.filled(MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_alignment_pattern));
+    if(aps == null) {
+      // reportError("Memory allocation for alignment patterns failed");
+      return ap;
+    }
 
-        int startx = max(0, x - radius).toInt();
-        int starty = max(0, y - radius).toInt();
-        int endx = min(ch[0].width - 1, x + radius).toInt();
-        int endy = min(ch[0].height - 1, y + radius).toInt();
-        if(endx - startx < 3 * module_size || endy - starty < 3 * module_size) continue;
+    int startx = max(0, x - radius).toInt();
+    int starty = max(0, y - radius).toInt();
+    int endx = min(ch[0].width - 1, x + radius).toInt();
+    int endy = min(ch[0].height - 1, y + radius).toInt();
+    if(endx - startx < 3 * module_size || endy - starty < 3 * module_size) continue;
 
-        int counter = 0;
-        for(int k=starty; k<endy; k++)
-        {
-            //search from middle outwards
-            int kk = k - starty;
-            int i = (y + ((kk & 0x01) == 0 ? (kk + 1) / 2 : -((kk + 1) / 2))).toInt();
-            if(i < starty)
-				continue;
-			else if(i > endy)
-				continue;
+    int counter = 0;
+    for(int k=starty; k<endy; k++) {
+      //search from middle outwards
+      int kk = k - starty;
+      int i = (y + ((kk & 0x01) == 0 ? (kk + 1) / 2 : -((kk + 1) / 2))).toInt();
+      if(i < starty)
+        continue;
+      else if(i > endy)
+        continue;
 
-            //get r channel row
-            var row_r = ch[0].pixel.sublist(i*ch[0].width, (i+1)*ch[0].width);
+      //get r channel row
+      var row_r = ch[0].pixel.sublist(i*ch[0].width, (i+1)*ch[0].width);
 
-            double ap_module_size, centerx, centery;
-            int ap_dir;
+      double ap_module_size, centerx, centery;
+      int ap_dir;
 
-            int ap_found = 0;
-			int dir = -1;
-			int left_tmpx = x.toInt();
-			int right_tmpx = x.toInt();
-			while((left_tmpx > startx || right_tmpx < endx) && ap_found==0)
-			{
-				if(dir < 0)	//go to left
-				{
-					while(row_r[left_tmpx] != core_color_r && left_tmpx > startx)
-					{
-						left_tmpx--;
-					}
-					if(left_tmpx <= startx)
-					{
-						dir = -dir;
-						continue;
-					}
+      int ap_found = 0;
+      int dir = -1;
+      int left_tmpx = x.toInt();
+      int right_tmpx = x.toInt();
+      while((left_tmpx > startx || right_tmpx < endx) && ap_found==0) {
+        if(dir < 0)	{ //go to left
+          while(row_r[left_tmpx] != core_color_r && left_tmpx > startx) {
+            left_tmpx--;
+          }
+          if(left_tmpx <= startx) {
+            dir = -dir;
+            continue;
+          }
           var result = _crossCheckPatternAP(ch, i, startx, endx, left_tmpx, ap_type, module_size*2, centerx, centery, ap_module_size, ap_dir);
           ap_found = result.item1;
           centerx = result.item2.x;
@@ -2443,27 +2356,21 @@ jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, doubl
           ap_module_size = result.item3;
           ap_dir = result.item4;
 
-					while(row_r[left_tmpx] == core_color_r && left_tmpx > startx)
-					{
-						left_tmpx--;
-					}
-					dir = -dir;
-				}
-				else //go to right
-				{
-					while(row_r[right_tmpx] == core_color_r && right_tmpx < endx)
-					{
-						right_tmpx++;
-					}
-					while(row_r[right_tmpx] != core_color_r && right_tmpx < endx)
-					{
-						right_tmpx++;
-					}
-					if(right_tmpx >= endx)
-					{
-						dir = -dir;
-						continue;
-					}
+          while(row_r[left_tmpx] == core_color_r && left_tmpx > startx) {
+            left_tmpx--;
+          }
+          dir = -dir;
+        } else { //go to right
+          while(row_r[right_tmpx] == core_color_r && right_tmpx < endx) {
+            right_tmpx++;
+          }
+          while(row_r[right_tmpx] != core_color_r && right_tmpx < endx) {
+            right_tmpx++;
+          }
+          if(right_tmpx >= endx) {
+            dir = -dir;
+            continue;
+          }
 
           var result = _crossCheckPatternAP(ch, i, startx, endx, right_tmpx, ap_type, module_size*2, centerx, centery, ap_module_size, ap_dir);
           ap_found = result.item1;
@@ -2472,38 +2379,36 @@ jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, doubl
           ap_module_size = result.item3;
           ap_dir = result.item4;
 
-          while(row_r[right_tmpx] == core_color_r && right_tmpx < endx)
-					{
-						right_tmpx++;
-					}
-					dir = -dir;
-				}
-			}
-
-            if(ap_found==0) continue;
-
-            ap.center.x = centerx;
-            ap.center.y = centery;
-            ap.module_size = ap_module_size;
-            ap.direction = ap_dir;
-            ap.type = ap_type;
-            ap.found_count = 1;
-
-            var result = _saveAlignmentPattern(ap, aps, counter);
-            int index = result.item1;
-            counter = result.item2;
-            if(index >= 0) //if found twice, done!
-            {
-                ap = aps[index];
-                // free(aps);
-                return ap;
-            }
+          while(row_r[right_tmpx] == core_color_r && right_tmpx < endx) {
+            right_tmpx++;
+          }
+          dir = -dir;
         }
+      }
+
+      if(ap_found==0) continue;
+
+      ap.center.x = centerx;
+      ap.center.y = centery;
+      ap.module_size = ap_module_size;
+      ap.direction = ap_dir;
+      ap.type = ap_type;
+      ap.found_count = 1;
+
+      var result = _saveAlignmentPattern(ap, aps, counter);
+      int index = result.item1;
+      counter = result.item2;
+      if(index >= 0) { //if found twice, done!
+        ap = aps[index];
         // free(aps);
+        return ap;
+      }
     }
-    ap.type = -1;
-    ap.found_count = 0;
-    return ap;
+    // free(aps);
+  }
+  ap.type = -1;
+  ap.found_count = 0;
+  return ap;
 }
 
 /**
@@ -2515,217 +2420,207 @@ jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, doubl
  * @param docked_position the docked position
  * @return JAB_SUCCESS | JAB_FAILURE
 */
-int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol host_symbol, jab_decoded_symbol slave_symbol, int docked_position)
-{
-    var aps = List<jab_alignment_pattern>.filled (4, null); //calloc(4, sizeof(jab_alignment_pattern));
-    if(aps == null)
-    {
-        // reportError("Memory allocation for alignment patterns failed");
-        return JAB_FAILURE;
+int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol host_symbol, jab_decoded_symbol slave_symbol, int docked_position) {
+  var aps = List<jab_alignment_pattern>.filled (4, null); //calloc(4, sizeof(jab_alignment_pattern));
+  if(aps == null) {
+      // reportError("Memory allocation for alignment patterns failed");
+      return JAB_FAILURE;
+  }
+
+  //get slave symbol side size from its metadata
+  slave_symbol.side_size.x = VERSION2SIZE(slave_symbol.metadata.side_version.x);
+  slave_symbol.side_size.y = VERSION2SIZE(slave_symbol.metadata.side_version.y);
+
+  //docked horizontally
+  double distx01 = host_symbol.pattern_positions[1].x - host_symbol.pattern_positions[0].x;
+  double disty01 = host_symbol.pattern_positions[1].y - host_symbol.pattern_positions[0].y;
+  double distx32 = host_symbol.pattern_positions[2].x - host_symbol.pattern_positions[3].x;
+  double disty32 = host_symbol.pattern_positions[2].y - host_symbol.pattern_positions[3].y;
+  //docked vertically
+  double distx03 = host_symbol.pattern_positions[3].x - host_symbol.pattern_positions[0].x;
+  double disty03 = host_symbol.pattern_positions[3].y - host_symbol.pattern_positions[0].y;
+  double distx12 = host_symbol.pattern_positions[2].x - host_symbol.pattern_positions[1].x;
+  double disty12 = host_symbol.pattern_positions[2].y - host_symbol.pattern_positions[1].y;
+
+  double alpha1 = 0.0, alpha2 = 0.0;
+  int sign = 1;
+  int docked_side_size = 0, undocked_side_size;
+  int ap1 = 0, ap2 = 0, ap3 = 0, ap4 = 0, hp1 = 0, hp2 = 0;
+  switch(docked_position) {
+    case 3:
+      /*
+          fp[0] ... fp[1] .. ap[0] ... ap[1]
+            .         .         .         .
+            .  master .         .  slave  .
+            .         .         .         .
+          fp[3] ... fp[2] .. ap[3] ... ap[2]
+      */
+      alpha1 = atan2(disty01, distx01);
+      alpha2 = atan2(disty32, distx32);
+      sign = 1;
+      docked_side_size   = slave_symbol.side_size.y;
+      undocked_side_size = slave_symbol.side_size.x;
+      ap1 = AP0;	//ap[0]
+      ap2 = AP3;	//ap[3]
+      ap3 = AP1;	//ap[1]
+      ap4 = AP2;	//ap[2]
+      hp1 = FP1;	//fp[1] or ap[1] of the host
+      hp2 = FP2;	//fp[2] or ap[2] of the host
+      slave_symbol.host_position = 2;
+      break;
+    case 2:
+      /*
+          ap[0] ... ap[1] .. fp[0] ... fp[1]
+            .         .        .         .
+            .  slave  .        .  master .
+            .         .        .         .
+          ap[3] ... ap[2] .. fp[3] ... fp[2]
+      */
+      alpha1 = atan2(disty32, distx32);
+      alpha2 = atan2(disty01, distx01);
+      sign = -1;
+      docked_side_size   = slave_symbol.side_size.y;
+      undocked_side_size = slave_symbol.side_size.x;
+      ap1 = AP2;	//ap[2]
+      ap2 = AP1;	//ap[1]
+      ap3 = AP3;	//ap[3]
+      ap4 = AP0;	//ap[0]
+      hp1 = FP3;	//fp[3] or ap[3] of the host
+      hp2 = FP0;	//fp[0] or ap[0] of the host
+      slave_symbol.host_position = 3;
+      break;
+    case 1:
+      /*
+          fp[0] ... fp[1]
+            .         .
+            .  master .
+            .         .
+          fp[3] ... fp[2]
+            .			.
+            . 		.
+          ap[0] ... ap[1]
+            .         .
+            .  slave  .
+            .         .
+          ap[3] ... ap[2]
+      */
+      alpha1 = atan2(disty12, distx12);
+      alpha2 = atan2(disty03, distx03);
+      sign = 1;
+      docked_side_size   = slave_symbol.side_size.x;
+      undocked_side_size = slave_symbol.side_size.y;
+      ap1 = AP1;	//ap[1]
+      ap2 = AP0;	//ap[0]
+      ap3 = AP2;	//ap[2]
+      ap4 = AP3;	//ap[3]
+      hp1 = FP2;	//fp[2] or ap[2] of the host
+      hp2 = FP3;	//fp[3] or ap[3] of the host
+      slave_symbol.host_position = 0;
+      break;
+    case 0:
+      /*
+          ap[0] ... ap[1]
+            .         .
+            .  slave  .
+            .         .
+          ap[3] ... ap[2]
+            .			.
+            . 		.
+          fp[0] ... fp[1]
+            .         .
+            .  master .
+            .         .
+          fp[3] ... fp[2]
+      */
+      alpha1 = atan2(disty03, distx03);
+      alpha2 = atan2(disty12, distx12);
+      sign = -1;
+      docked_side_size   = slave_symbol.side_size.x;
+      undocked_side_size = slave_symbol.side_size.y;
+      ap1 = AP3;	//ap[3]
+      ap2 = AP2;	//ap[2]
+      ap3 = AP0;	//ap[0]
+      ap4 = AP1;	//ap[1]
+      hp1 = FP0;	//fp[0] or ap[0] of the host
+      hp2 = FP1;	//fp[1] or ap[1] of the host
+      slave_symbol.host_position = 1;
+      break;
+  }
+
+  //calculate the coordinate of ap1
+  aps[ap1].center.x = host_symbol.pattern_positions[hp1].x + sign * 7 * host_symbol.module_size * cos(alpha1);
+  aps[ap1].center.y = host_symbol.pattern_positions[hp1].y + sign * 7 * host_symbol.module_size * sin(alpha1);
+  //find the alignment pattern around ap1
+  aps[ap1] = _findAlignmentPattern(ch, aps[ap1].center.x, aps[ap1].center.y, host_symbol.module_size, ap1);
+  if(aps[ap1].found_count == 0) {
+      // JAB_REPORT_ERROR(("The first alignment pattern in slave symbol %d not found", slave_symbol.index))
+      return JAB_FAILURE;
+  }
+  //calculate the coordinate of ap2
+  aps[ap2].center.x = host_symbol.pattern_positions[hp2].x + sign * 7 * host_symbol.module_size * cos(alpha2);
+  aps[ap2].center.y = host_symbol.pattern_positions[hp2].y + sign * 7 * host_symbol.module_size * sin(alpha2);
+  //find alignment pattern around ap2
+  aps[ap2] = _findAlignmentPattern(ch, aps[ap2].center.x, aps[ap2].center.y, host_symbol.module_size, ap2);
+  if(aps[ap2].found_count == 0) {
+      // JAB_REPORT_ERROR(("The second alignment pattern in slave symbol %d not found", slave_symbol.index))
+      return JAB_FAILURE;
+  }
+
+  //estimate the module size in the slave symbol
+  slave_symbol.module_size = DIST(aps[ap1].center.x, aps[ap1].center.y, aps[ap2].center.x, aps[ap2].center.y) / (docked_side_size - 7);
+
+  //calculate the coordinate of ap3
+  aps[ap3].center.x = aps[ap1].center.x + sign * (undocked_side_size - 7) * slave_symbol.module_size * cos(alpha1);
+  aps[ap3].center.y = aps[ap1].center.y + sign * (undocked_side_size - 7) * slave_symbol.module_size * sin(alpha1);
+  //find alignment pattern around ap3
+  aps[ap3] = _findAlignmentPattern(ch, aps[ap3].center.x, aps[ap3].center.y, slave_symbol.module_size, ap3);
+  //calculate the coordinate of ap4
+  aps[ap4].center.x = aps[ap2].center.x + sign * (undocked_side_size - 7) * slave_symbol.module_size * cos(alpha2);
+  aps[ap4].center.y = aps[ap2].center.y + sign * (undocked_side_size - 7) * slave_symbol.module_size * sin(alpha2);
+  //find alignment pattern around ap4
+  aps[ap4] = _findAlignmentPattern(ch, aps[ap4].center.x, aps[ap4].center.y, slave_symbol.module_size, ap4);
+
+  //if neither ap3 nor ap4 is found, failed
+  if(aps[ap3].found_count == 0 && aps[ap4].found_count == 0) {
+      // free(aps);
+      return JAB_FAILURE;
+  }
+  //if only 3 aps are found, try anyway by estimating the coordinate of the fourth one
+  if(aps[ap3].found_count == 0) {
+    double ave_size_ap24 = (aps[ap2].module_size + aps[ap4].module_size) / 2.0;
+    double ave_size_ap14 = (aps[ap1].module_size + aps[ap4].module_size) / 2.0;
+    aps[ap3].center.x = (aps[ap4].center.x - aps[ap2].center.x) / ave_size_ap24 * ave_size_ap14 + aps[ap1].center.x;
+    aps[ap3].center.y = (aps[ap4].center.y - aps[ap2].center.y) / ave_size_ap24 * ave_size_ap14 + aps[ap1].center.y;
+    aps[ap3].type = ap3;
+    aps[ap3].found_count = 1;
+    aps[ap3].module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap4].module_size) / 3.0;
+    if(aps[ap3].center.x > bitmap.width - 1 || aps[ap3].center.y > bitmap.height - 1) {
+      // JAB_REPORT_ERROR(("Alignment pattern %d out of image", ap3))
+      // free(aps);
+      return JAB_FAILURE;
     }
-
-    //get slave symbol side size from its metadata
-    slave_symbol.side_size.x = VERSION2SIZE(slave_symbol.metadata.side_version.x);
-    slave_symbol.side_size.y = VERSION2SIZE(slave_symbol.metadata.side_version.y);
-
-    //docked horizontally
-    double distx01 = host_symbol.pattern_positions[1].x - host_symbol.pattern_positions[0].x;
-    double disty01 = host_symbol.pattern_positions[1].y - host_symbol.pattern_positions[0].y;
-    double distx32 = host_symbol.pattern_positions[2].x - host_symbol.pattern_positions[3].x;
-    double disty32 = host_symbol.pattern_positions[2].y - host_symbol.pattern_positions[3].y;
-    //docked vertically
-    double distx03 = host_symbol.pattern_positions[3].x - host_symbol.pattern_positions[0].x;
-    double disty03 = host_symbol.pattern_positions[3].y - host_symbol.pattern_positions[0].y;
-    double distx12 = host_symbol.pattern_positions[2].x - host_symbol.pattern_positions[1].x;
-    double disty12 = host_symbol.pattern_positions[2].y - host_symbol.pattern_positions[1].y;
-
-    double alpha1 = 0.0, alpha2 = 0.0;
-    int sign = 1;
-    int docked_side_size = 0, undocked_side_size;
-    int ap1 = 0, ap2 = 0, ap3 = 0, ap4 = 0, hp1 = 0, hp2 = 0;
-    switch(docked_position)
-    {
-        case 3:
-            /*
-                fp[0] ... fp[1] .. ap[0] ... ap[1]
-                  .         .         .         .
-                  .  master .         .  slave  .
-                  .         .         .         .
-                fp[3] ... fp[2] .. ap[3] ... ap[2]
-            */
-            alpha1 = atan2(disty01, distx01);
-            alpha2 = atan2(disty32, distx32);
-            sign = 1;
-            docked_side_size   = slave_symbol.side_size.y;
-            undocked_side_size = slave_symbol.side_size.x;
-            ap1 = AP0;	//ap[0]
-            ap2 = AP3;	//ap[3]
-            ap3 = AP1;	//ap[1]
-            ap4 = AP2;	//ap[2]
-            hp1 = FP1;	//fp[1] or ap[1] of the host
-            hp2 = FP2;	//fp[2] or ap[2] of the host
-            slave_symbol.host_position = 2;
-            break;
-        case 2:
-            /*
-                ap[0] ... ap[1] .. fp[0] ... fp[1]
-                  .         .        .         .
-                  .  slave  .        .  master .
-                  .         .        .         .
-                ap[3] ... ap[2] .. fp[3] ... fp[2]
-            */
-            alpha1 = atan2(disty32, distx32);
-            alpha2 = atan2(disty01, distx01);
-            sign = -1;
-            docked_side_size   = slave_symbol.side_size.y;
-            undocked_side_size = slave_symbol.side_size.x;
-            ap1 = AP2;	//ap[2]
-            ap2 = AP1;	//ap[1]
-            ap3 = AP3;	//ap[3]
-            ap4 = AP0;	//ap[0]
-            hp1 = FP3;	//fp[3] or ap[3] of the host
-            hp2 = FP0;	//fp[0] or ap[0] of the host
-            slave_symbol.host_position = 3;
-            break;
-        case 1:
-            /*
-                fp[0] ... fp[1]
-                  .         .
-                  .  master .
-                  .         .
-                fp[3] ... fp[2]
-                  .			.
-                  . 		.
-                ap[0] ... ap[1]
-                  .         .
-                  .  slave  .
-                  .         .
-                ap[3] ... ap[2]
-            */
-            alpha1 = atan2(disty12, distx12);
-            alpha2 = atan2(disty03, distx03);
-            sign = 1;
-            docked_side_size   = slave_symbol.side_size.x;
-            undocked_side_size = slave_symbol.side_size.y;
-            ap1 = AP1;	//ap[1]
-            ap2 = AP0;	//ap[0]
-            ap3 = AP2;	//ap[2]
-            ap4 = AP3;	//ap[3]
-            hp1 = FP2;	//fp[2] or ap[2] of the host
-            hp2 = FP3;	//fp[3] or ap[3] of the host
-            slave_symbol.host_position = 0;
-            break;
-        case 0:
-            /*
-                ap[0] ... ap[1]
-                  .         .
-                  .  slave  .
-                  .         .
-                ap[3] ... ap[2]
-                  .			.
-                  . 		.
-                fp[0] ... fp[1]
-                  .         .
-                  .  master .
-                  .         .
-                fp[3] ... fp[2]
-            */
-            alpha1 = atan2(disty03, distx03);
-            alpha2 = atan2(disty12, distx12);
-            sign = -1;
-            docked_side_size   = slave_symbol.side_size.x;
-            undocked_side_size = slave_symbol.side_size.y;
-            ap1 = AP3;	//ap[3]
-            ap2 = AP2;	//ap[2]
-            ap3 = AP0;	//ap[0]
-            ap4 = AP1;	//ap[1]
-            hp1 = FP0;	//fp[0] or ap[0] of the host
-            hp2 = FP1;	//fp[1] or ap[1] of the host
-            slave_symbol.host_position = 1;
-            break;
+  }
+  if(aps[ap4].found_count == 0) {
+    double ave_size_ap13 = (aps[ap1].module_size + aps[ap3].module_size) / 2.0;
+    double ave_size_ap23 = (aps[ap2].module_size + aps[ap3].module_size) / 2.0;
+    aps[ap4].center.x = (aps[ap3].center.x - aps[ap1].center.x) / ave_size_ap13 * ave_size_ap23 + aps[ap2].center.x;
+    aps[ap4].center.y = (aps[ap3].center.y - aps[ap1].center.y) / ave_size_ap13 * ave_size_ap23 + aps[ap2].center.y;
+    aps[ap4].type = ap4;
+    aps[ap4].found_count = 1;
+    aps[ap4].module_size = (aps[ap1].module_size + aps[ap1].module_size + aps[ap3].module_size) / 3.0;
+    if(aps[ap4].center.x > bitmap.width - 1 || aps[ap4].center.y > bitmap.height - 1) {
+      // JAB_REPORT_ERROR(("Alignment pattern %d out of image", ap4))
+      // free(aps);
+      return JAB_FAILURE;
     }
+  }
 
-    //calculate the coordinate of ap1
-    aps[ap1].center.x = host_symbol.pattern_positions[hp1].x + sign * 7 * host_symbol.module_size * cos(alpha1);
-    aps[ap1].center.y = host_symbol.pattern_positions[hp1].y + sign * 7 * host_symbol.module_size * sin(alpha1);
-    //find the alignment pattern around ap1
-    aps[ap1] = _findAlignmentPattern(ch, aps[ap1].center.x, aps[ap1].center.y, host_symbol.module_size, ap1);
-    if(aps[ap1].found_count == 0)
-    {
-        // JAB_REPORT_ERROR(("The first alignment pattern in slave symbol %d not found", slave_symbol.index))
-        return JAB_FAILURE;
-    }
-    //calculate the coordinate of ap2
-    aps[ap2].center.x = host_symbol.pattern_positions[hp2].x + sign * 7 * host_symbol.module_size * cos(alpha2);
-    aps[ap2].center.y = host_symbol.pattern_positions[hp2].y + sign * 7 * host_symbol.module_size * sin(alpha2);
-    //find alignment pattern around ap2
-    aps[ap2] = _findAlignmentPattern(ch, aps[ap2].center.x, aps[ap2].center.y, host_symbol.module_size, ap2);
-    if(aps[ap2].found_count == 0)
-    {
-        // JAB_REPORT_ERROR(("The second alignment pattern in slave symbol %d not found", slave_symbol.index))
-        return JAB_FAILURE;
-    }
-
-    //estimate the module size in the slave symbol
-    slave_symbol.module_size = DIST(aps[ap1].center.x, aps[ap1].center.y, aps[ap2].center.x, aps[ap2].center.y) / (docked_side_size - 7);
-
-    //calculate the coordinate of ap3
-    aps[ap3].center.x = aps[ap1].center.x + sign * (undocked_side_size - 7) * slave_symbol.module_size * cos(alpha1);
-    aps[ap3].center.y = aps[ap1].center.y + sign * (undocked_side_size - 7) * slave_symbol.module_size * sin(alpha1);
-    //find alignment pattern around ap3
-    aps[ap3] = _findAlignmentPattern(ch, aps[ap3].center.x, aps[ap3].center.y, slave_symbol.module_size, ap3);
-    //calculate the coordinate of ap4
-    aps[ap4].center.x = aps[ap2].center.x + sign * (undocked_side_size - 7) * slave_symbol.module_size * cos(alpha2);
-    aps[ap4].center.y = aps[ap2].center.y + sign * (undocked_side_size - 7) * slave_symbol.module_size * sin(alpha2);
-    //find alignment pattern around ap4
-    aps[ap4] = _findAlignmentPattern(ch, aps[ap4].center.x, aps[ap4].center.y, slave_symbol.module_size, ap4);
-
-    //if neither ap3 nor ap4 is found, failed
-    if(aps[ap3].found_count == 0 && aps[ap4].found_count == 0)
-    {
-        // free(aps);
-        return JAB_FAILURE;
-    }
-    //if only 3 aps are found, try anyway by estimating the coordinate of the fourth one
-    if(aps[ap3].found_count == 0)
-    {
-    	double ave_size_ap24 = (aps[ap2].module_size + aps[ap4].module_size) / 2.0;
-		double ave_size_ap14 = (aps[ap1].module_size + aps[ap4].module_size) / 2.0;
-        aps[ap3].center.x = (aps[ap4].center.x - aps[ap2].center.x) / ave_size_ap24 * ave_size_ap14 + aps[ap1].center.x;
-        aps[ap3].center.y = (aps[ap4].center.y - aps[ap2].center.y) / ave_size_ap24 * ave_size_ap14 + aps[ap1].center.y;
-        aps[ap3].type = ap3;
-        aps[ap3].found_count = 1;
-        aps[ap3].module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap4].module_size) / 3.0;
-        if(aps[ap3].center.x > bitmap.width - 1 || aps[ap3].center.y > bitmap.height - 1)
-        {
-			// JAB_REPORT_ERROR(("Alignment pattern %d out of image", ap3))
-			// free(aps);
-			return JAB_FAILURE;
-        }
-    }
-    if(aps[ap4].found_count == 0)
-    {
-    	double ave_size_ap13 = (aps[ap1].module_size + aps[ap3].module_size) / 2.0;
-		double ave_size_ap23 = (aps[ap2].module_size + aps[ap3].module_size) / 2.0;
-        aps[ap4].center.x = (aps[ap3].center.x - aps[ap1].center.x) / ave_size_ap13 * ave_size_ap23 + aps[ap2].center.x;
-        aps[ap4].center.y = (aps[ap3].center.y - aps[ap1].center.y) / ave_size_ap13 * ave_size_ap23 + aps[ap2].center.y;
-        aps[ap4].type = ap4;
-        aps[ap4].found_count = 1;
-        aps[ap4].module_size = (aps[ap1].module_size + aps[ap1].module_size + aps[ap3].module_size) / 3.0;
-        if(aps[ap4].center.x > bitmap.width - 1 || aps[ap4].center.y > bitmap.height - 1)
-        {
-			// JAB_REPORT_ERROR(("Alignment pattern %d out of image", ap4))
-			// free(aps);
-			return JAB_FAILURE;
-        }
-    }
-
-    //save the coordinates of aps into the slave symbol
-    slave_symbol.pattern_positions[ap1] = aps[ap1].center;
-    slave_symbol.pattern_positions[ap2] = aps[ap2].center;
-    slave_symbol.pattern_positions[ap3] = aps[ap3].center;
-    slave_symbol.pattern_positions[ap4] = aps[ap4].center;
-    slave_symbol.module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap3].module_size + aps[ap4].module_size) / 4.0;
+  //save the coordinates of aps into the slave symbol
+  slave_symbol.pattern_positions[ap1] = aps[ap1].center;
+  slave_symbol.pattern_positions[ap2] = aps[ap2].center;
+  slave_symbol.pattern_positions[ap3] = aps[ap3].center;
+  slave_symbol.pattern_positions[ap4] = aps[ap4].center;
+  slave_symbol.module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap3].module_size + aps[ap4].module_size) / 4.0;
 
 // #if TEST_MODE
 // 	JAB_REPORT_INFO(("Found alignment patterns in slave symbol %d:", slave_symbol.index))
@@ -2737,8 +2632,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
 // 	saveImage(test_mode_bitmap, "jab_detector_result_slave.png");
 // #endif
 
-    // free(aps);
-    return JAB_SUCCESS;
+  // free(aps);
+  return JAB_SUCCESS;
 }
 
 /**
@@ -2747,33 +2642,28 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
  * @return the nearest valid side size | -1: invalid side size
  * @return flag the flag indicating the magnitude of error
 */
-Tuple2<int, int> _getSideSize(int size)
-{
+Tuple2<int, int> _getSideSize(int size) {
 	var flag = 1;
-    switch (size & 0x03) //mod 4
-    {
-    case 0:
-        size++;
-        break;
-    case 2:
-        size--;
-        break;
-    case 3:
-        size += 2;	//error is bigger than 1, guess the next version and try anyway
-        flag = 0;
-        break;
-    }
-    if(size < 21)
-	{
+  switch (size & 0x03) { //mod 4
+  case 0:
+      size++;
+      break;
+  case 2:
+      size--;
+      break;
+  case 3:
+      size += 2;	//error is bigger than 1, guess the next version and try anyway
+      flag = 0;
+      break;
+  }
+  if(size < 21) {
+		size = -1;
+		flag = -1;
+	} else if(size > 145) {
 		size = -1;
 		flag = -1;
 	}
-	else if(size > 145)
-	{
-		size = -1;
-		flag = -1;
-	}
-    return Tuple2<int, int>(size, flag);
+  return Tuple2<int, int>(size, flag);
 }
 
 /**
@@ -2784,16 +2674,12 @@ Tuple2<int, int> _getSideSize(int size)
  * @param flag2 the detection flag of the second size
  * @return the chosen side size
 */
-int _chooseSideSize(int size1, int flag1, int size2, int flag2)
-{
-	if(flag1 == -1 && flag2 == -1)
-	{
+int _chooseSideSize(int size1, int flag1, int size2, int flag2) {
+	if(flag1 == -1 && flag2 == -1) {
 		return -1;
-	}
-    else if(flag1 == flag2)
+	} else if(flag1 == flag2)
 		return max(size1, size2);
-	else
-	{
+	else {
 		if(flag1 > flag2)
 			return size1;
 		else
@@ -2807,8 +2693,7 @@ int _chooseSideSize(int size1, int flag1, int size2, int flag2)
  * @param fp2 the second finder/alignment pattern
  * @return the number of modules
 */
-int _calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2)
-{
+int _calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2) {
   double dist = DIST(fp1.center.x, fp1.center.y, fp2.center.x, fp2.center.y);
   //the angle between the scanline and the connection between finder/alignment patterns
   double cos_theta = max((fp2.center.x - fp1.center.x).abs(), (fp2.center.y - fp1.center.y).abs()) / dist;
@@ -2822,12 +2707,11 @@ int _calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2)
  * @param fps the finder patterns
  * @return the horizontal and vertical side sizes
 */
-jab_vector2d _calculateSideSize(List<jab_finder_pattern> fps)
-{
-    /* finder pattern type layout
-        0	1
-        3	2
-    */
+jab_vector2d _calculateSideSize(List<jab_finder_pattern> fps) {
+  /* finder pattern type layout
+      0	1
+      3	2
+  */
 	var side_size = jab_vector2d(-1, -1);
 	int flag1, flag2;
 
@@ -2863,20 +2747,18 @@ jab_vector2d _calculateSideSize(List<jab_finder_pattern> fps)
  * @param pos the input position
  * @return the nearest valid position | -1: invalid position
 */
-int _getFirstAPPos(int pos)
-{
-    switch (pos % 3)
-    {
-    case 0:
-        pos--;
-        break;
-    case 1:
-        pos++;
-        break;
-    }
-    if(pos < 14 || pos > 26)
-        pos = -1;
-    return pos;
+int _getFirstAPPos(int pos) {
+  switch (pos % 3) {
+  case 0:
+    pos--;
+    break;
+  case 1:
+    pos++;
+    break;
+  }
+  if(pos < 14 || pos > 26)
+    pos = -1;
+  return pos;
 }
 
 /**
@@ -2887,8 +2769,7 @@ int _getFirstAPPos(int pos)
  * @param fp2 the second finder pattern
  * @return the position of the found alignment pattern | JAB_FAILURE: if not found
 */
-int _detectFirstAP(List<jab_bitmap> ch, int side_version, jab_finder_pattern fp1, jab_finder_pattern fp2)
-{
+int _detectFirstAP(List<jab_bitmap> ch, int side_version, jab_finder_pattern fp1, jab_finder_pattern fp2) {
     jab_alignment_pattern ap;
      //direction: from FP1 to FP2
     double distx = fp2.center.x - fp1.center.x;
@@ -2898,54 +2779,46 @@ int _detectFirstAP(List<jab_bitmap> ch, int side_version, jab_finder_pattern fp1
     int next_version = side_version;
     int dir = 1;
     int up = 0, down = 0;
-    do
-    {
-        //distance to FP1
-        double distance = fp1.module_size * (jab_ap_pos[next_version-1][1] - jab_ap_pos[next_version-1][0]);
-        //estimate the coordinate of the first AP
-        ap.center.x = fp1.center.x + distance * cos(alpha);
-        ap.center.y = fp1.center.y + distance * sin(alpha);
-        ap.module_size = fp1.module_size;
-        //detect AP
-        ap.found_count = 0;
-        ap = _findAlignmentPattern(ch, ap.center.x, ap.center.y, ap.module_size, APX);
-        if(ap.found_count > 0)
-        {
-            int pos = _getFirstAPPos(4 + _calculateModuleNumber(fp1, jab_finder_pattern().import(ap)));
-            if(pos > 0)
-                return pos;
-        }
+    do {
+      //distance to FP1
+      double distance = fp1.module_size * (jab_ap_pos[next_version-1][1] - jab_ap_pos[next_version-1][0]);
+      //estimate the coordinate of the first AP
+      ap.center.x = fp1.center.x + distance * cos(alpha);
+      ap.center.y = fp1.center.y + distance * sin(alpha);
+      ap.module_size = fp1.module_size;
+      //detect AP
+      ap.found_count = 0;
+      ap = _findAlignmentPattern(ch, ap.center.x, ap.center.y, ap.module_size, APX);
+      if(ap.found_count > 0) {
+        int pos = _getFirstAPPos(4 + _calculateModuleNumber(fp1, jab_finder_pattern().import(ap)));
+        if(pos > 0)
+          return pos;
+      }
 
-        //try next version
-        dir = -dir;
-        if(dir == -1)
-        {
-            up++;
-            next_version = up * dir + side_version;
-            if(next_version < 6 || next_version > 32)
-            {
-                dir = -dir;
-                up--;
-                down++;
-                next_version = down * dir + side_version;
-            }
+      //try next version
+      dir = -dir;
+      if(dir == -1) {
+        up++;
+        next_version = up * dir + side_version;
+        if(next_version < 6 || next_version > 32) {
+          dir = -dir;
+          up--;
+          down++;
+          next_version = down * dir + side_version;
         }
-        else
-        {
-            down++;
-            next_version = down * dir + side_version;
-            if(next_version < 6 || next_version > 32)
-            {
-                dir = -dir;
-                down--;
-                up++;
-                next_version = up * dir + side_version;
-            }
+      } else {
+        down++;
+        next_version = down * dir + side_version;
+        if(next_version < 6 || next_version > 32) {
+          dir = -dir;
+          down--;
+          up++;
+          next_version = up * dir + side_version;
         }
+      }
     }while((up+down) < 5);
 
     return JAB_FAILURE;
-
 }
 
 /**
@@ -2955,33 +2828,30 @@ int _detectFirstAP(List<jab_bitmap> ch, int side_version, jab_finder_pattern fp1
  * @param ap_positions the positions of the found alignment patterns
  * @return the confirmed side version | JAB_FAILURE: if can not be confirmed
 */
-int _confirmSideVersion(int side_version, int first_ap_pos)
-{
-    if(first_ap_pos <= 0)
-    {
+int _confirmSideVersion(int side_version, int first_ap_pos) {
+  if(first_ap_pos <= 0) {
 // #if TEST_MODE
 //         JAB_REPORT_ERROR(("Invalid position of the first AP."))
 // #endif
-        return JAB_FAILURE;
+    return JAB_FAILURE;
+  }
+
+  int v = side_version;
+  int k = 1, sign = -1;
+  bool flag = false;
+  do
+  {
+    if(first_ap_pos == jab_ap_pos[v-1][1]) {
+        flag = true;
+        break;
     }
+    v = side_version + sign*k;
+    if(sign > 0) k++;
+    sign = -sign;
+  } while(v>=6 && v<=32);
 
-    int v = side_version;
-    int k = 1, sign = -1;
-    bool flag = false;
-    do
-    {
-        if(first_ap_pos == jab_ap_pos[v-1][1])
-        {
-            flag = true;
-            break;
-        }
-        v = side_version + sign*k;
-        if(sign > 0) k++;
-        sign = -sign;
-    }while(v>=6 && v<=32);
-
-    if(flag) return v;
-    else     return JAB_FAILURE;
+  if(flag) return v;
+  else return JAB_FAILURE;
 }
 
 /**
@@ -2991,59 +2861,54 @@ int _confirmSideVersion(int side_version, int first_ap_pos)
  * @param symbol the symbol
  * @return JAB_SUCCESS | JAB_FAILURE
 */
-int _confirmSymbolSize(List<jab_bitmap> ch, List<jab_finder_pattern> fps, jab_decoded_symbol symbol)
-{
+int _confirmSymbolSize(List<jab_bitmap> ch, List<jab_finder_pattern> fps, jab_decoded_symbol symbol) {
  	int first_ap_pos;
 
 	//side version x: scan the line between FP0 and FP1
-    first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.x, fps[0], fps[1]);
+  first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.x, fps[0], fps[1]);
 // #if TEST_MODE
 //     JAB_REPORT_INFO(("The position of the first AP between FP0 and FP1 is %d", first_ap_pos))
 // #endif // TEST_MODE
-    int side_version_x = _confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
-    if(side_version_x == 0) //if failed, try the line between FP3 and FP2
-    {
-        first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.x, fps[3], fps[2]);
+  int side_version_x = _confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
+  if(side_version_x == 0) { //if failed, try the line between FP3 and FP2
+    first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.x, fps[3], fps[2]);
 // #if TEST_MODE
 //         JAB_REPORT_INFO(("The position of the first AP between FP3 and FP2 is %d", first_ap_pos))
 // #endif // TEST_MODE
-        side_version_x = _confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
-        if(side_version_x == 0)
-        {
+    side_version_x = _confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
+    if(side_version_x == 0) {
 // #if TEST_MODE
 //             JAB_REPORT_ERROR(("Confirming side version x failed."))
 // #endif
-            return JAB_FAILURE;
-        }
+      return JAB_FAILURE;
     }
-    symbol.metadata.side_version.x = side_version_x;
-    symbol.side_size.x = VERSION2SIZE(side_version_x);
+  }
+  symbol.metadata.side_version.x = side_version_x;
+  symbol.side_size.x = VERSION2SIZE(side_version_x);
 
-    //side version y: scan the line between FP0 and FP3
-    first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.y, fps[0], fps[3]);
+  //side version y: scan the line between FP0 and FP3
+  first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.y, fps[0], fps[3]);
 // #if TEST_MODE
 //     JAB_REPORT_INFO(("The position of the first AP between FP0 and FP3 is %d", first_ap_pos))
 // #endif // TEST_MODE
-    int side_version_y = _confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
-    if(side_version_y == 0) //if failed, try the line between FP1 and FP2
-    {
-        first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.y, fps[1], fps[2]);
+  int side_version_y = _confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
+  if(side_version_y == 0) { //if failed, try the line between FP1 and FP2
+    first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.y, fps[1], fps[2]);
 // #if TEST_MODE
 //         JAB_REPORT_INFO(("The position of the first AP between FP1 and FP2 is %d", first_ap_pos))
 // #endif // TEST_MODE
-        side_version_y = _confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
-        if(side_version_y == 0)
-        {
+    side_version_y = _confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
+    if(side_version_y == 0) {
 // #if TEST_MODE
 //             JAB_REPORT_ERROR(("Confirming side version y failed."))
 // #endif
-            return JAB_FAILURE;
-        }
+      return JAB_FAILURE;
     }
-    symbol.metadata.side_version.y = side_version_y;
-    symbol.side_size.y = VERSION2SIZE(side_version_y);
+  }
+  symbol.metadata.side_version.y = side_version_y;
+  symbol.side_size.y = VERSION2SIZE(side_version_y);
 
-    return JAB_SUCCESS;
+  return JAB_SUCCESS;
 }
 
 /**
