@@ -211,26 +211,26 @@ jab_bitmap readImage(Uint8List image) {
 	// 	return NULL;
 	// }
 
-	// bitmap.pixel= _image.data;
+	bitmap.pixel = _image.getBytes();
 	bitmap.width = _image.width;
-	bitmap.height= _image.height;
+	bitmap.height = _image.height;
 	bitmap.bits_per_channel = BITMAP_BITS_PER_CHANNEL;
 	bitmap.bits_per_pixel = BITMAP_BITS_PER_PIXEL;
-	bitmap.channel_count = BITMAP_CHANNEL_COUNT;
+	bitmap.channel_count = _image.numberOfChannels; //BITMAP_CHANNEL_COUNT;
 
-	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
-	int bytes_per_row = bitmap.width * bytes_per_pixel;
+	// int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+	// int bytes_per_row = bitmap.width * bytes_per_pixel;
 
-	bitmap.pixel = Uint8List(bitmap.width * bitmap.height * bitmap.channel_count);
-	for (int y=0; y<bitmap.height;y++) {
-		for (int x=0; x<bitmap.width;x++) {
-			var pixel = _image.getPixel(x, y);
-			var offset = y*bytes_per_row + x*bytes_per_pixel;
-			bitmap.pixel[offset+0]=Image.getRed(pixel);
-			bitmap.pixel[offset+1]=Image.getGreen(pixel);
-			bitmap.pixel[offset+2]=Image.getBlue(pixel);
-		}
-	}
+	// bitmap.pixel = Uint8List(bitmap.width * bitmap.height * bitmap.channel_count);
+	// for (int y=0; y<bitmap.height;y++) {
+	// 	for (int x=0; x<bitmap.width;x++) {
+	// 		var pixel = _image.getPixel(x, y);
+	// 		var offset = y*bytes_per_row + x*bytes_per_pixel;
+	// 		bitmap.pixel[offset+0]=Image.getRed(pixel);
+	// 		bitmap.pixel[offset+1]=Image.getGreen(pixel);
+	// 		bitmap.pixel[offset+2]=Image.getBlue(pixel);
+	// 	}
+	// }
 
 	//     if(png_image_finish_read(&image,
 		// 						 NULL/*background*/,
