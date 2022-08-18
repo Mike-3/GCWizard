@@ -60,8 +60,7 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 	var result = decodeJABCodeEx(bitmap, NORMAL_DECODE, symbols, MAX_SYMBOL_NUMBER);
 	var decoded_data = result.item1;
 	decode_status = result.item2;
-	if(decoded_data == null)
-	{
+	if(decoded_data == null) {
 		// free(bitmap);
 		// reportError("Decoding JABCode failed");
 		if(decode_status > 0)

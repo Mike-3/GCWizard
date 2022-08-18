@@ -516,7 +516,7 @@ void balanceRGB(jab_bitmap bitmap)
     int bytes_per_row = bitmap.width * bytes_per_pixel;
 
 	// int max_r, max_g, max_b;
-  //   int min_r, min_g, min_b;
+	//   int min_r, min_g, min_b;
     var hist_r = List<int>.filled(256, 0);
 	var hist_g = List<int>.filled(256, 0);
 	var hist_b = List<int>.filled(256, 0);
@@ -528,7 +528,7 @@ void balanceRGB(jab_bitmap bitmap)
 	//calculate max and min for each channel
     //threshold for the number of pixels having the max or min values
 	int count_ths = 20;
-  var r = _getHistMaxMin(hist_r, count_ths);
+	var r = _getHistMaxMin(hist_r, count_ths);
 	var g = _getHistMaxMin(hist_g, count_ths);
 	var b = _getHistMaxMin(hist_b, count_ths);
 
@@ -652,33 +652,33 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 	
 		if(blk_ths == null)
     {
-			for(int i=0; i<block_num_y; i++)
+		for(int i=0; i<block_num_y; i++)
+		{
+			for(int j=0; j<block_num_x; j++)
 			{
-				for(int j=0; j<block_num_x; j++)
-				{
-					int block_index = i*block_num_x + j;
+				int block_index = i*block_num_x + j;
 
-					int sx = j * block_size_x;
-					int ex = (j == block_num_x-1) ? bitmap.width : (sx + block_size_x);
-					int sy = i * block_size_y;
-					int ey = (i == block_num_y-1) ? bitmap.height: (sy + block_size_y);
-					double counter = 0;
-					for(int y=sy; y<ey; y++)
-					{
-							for(int x=sx; x<ex; x++)
-							{
-									int offset = y * bytes_per_row + x * bytes_per_pixel;
-									pixel_ave[block_index][0] += bitmap.pixel[offset + 0];
-									pixel_ave[block_index][1] += bitmap.pixel[offset + 1];
-									pixel_ave[block_index][2] += bitmap.pixel[offset + 2];
-									counter++;
-							}
-					}
-					pixel_ave[block_index][0] /= counter;
-					pixel_ave[block_index][1] /= counter;
-					pixel_ave[block_index][2] /= counter;
+				int sx = j * block_size_x;
+				int ex = (j == block_num_x-1) ? bitmap.width : (sx + block_size_x);
+				int sy = i * block_size_y;
+				int ey = (i == block_num_y-1) ? bitmap.height: (sy + block_size_y);
+				double counter = 0;
+				for(int y=sy; y<ey; y++)
+				{
+						for(int x=sx; x<ex; x++)
+						{
+								int offset = y * bytes_per_row + x * bytes_per_pixel;
+								pixel_ave[block_index][0] += bitmap.pixel[offset + 0];
+								pixel_ave[block_index][1] += bitmap.pixel[offset + 1];
+								pixel_ave[block_index][2] += bitmap.pixel[offset + 2];
+								counter++;
+						}
 				}
+				pixel_ave[block_index][0] /= counter;
+				pixel_ave[block_index][1] /= counter;
+				pixel_ave[block_index][2] /= counter;
 			}
+		}
     }
 
 	//binarize each pixel in each channel

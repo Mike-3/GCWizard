@@ -142,7 +142,7 @@ Tuple6<int, int, int, double, double, int> _seekPattern(jab_bitmap ch, int row, 
         {
            	//previous pixel and current pixel
 			int prev;
-      int curr;
+            int curr;
 			if(row >= 0)		//horizontal scan
 			{
 				prev = ch.pixel[row*ch.width + (p-1)];
@@ -315,16 +315,16 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
                         continue;
                     }
                     //check if it is a valid finder pattern
-										var result = _checkPatternCross(state_count);
+					var result = _checkPatternCross(state_count);
                     if(result.item1 == JAB_SUCCESS)
                     {
 												module_size = result.item2;
                         endx = j+1;
                         if(skip != 0)  skip = state_count[0];
-												int end;
-												if(j == (max - 1) && row[j] == row[j-1]) end = j + 1;
-												else end = j;
-												centerx = (end - state_count[4] - state_count[3]) - state_count[2] / 2.0;
+						int end;
+						if(j == (max - 1) && row[j] == row[j-1]) end = j + 1;
+						else end = j;
+						centerx = (end - state_count[4] - state_count[3]) - state_count[2] / 2.0;
                         return Tuple6<int, int, int, double, double, int>(JAB_SUCCESS, startx, endx, centerx, module_size, skip);
                     }
                     else //check failed, update state_count
@@ -410,7 +410,7 @@ Tuple3<int, double, double> _crossCheckPatternDiagonal(jab_bitmap image, int typ
 		try_count++;
 
 		int i, j, state_index;
-    var state_count = List<int>.filled(5, 0);
+        var state_count = List<int>.filled(5, 0);
         int startx = centerx.toInt();
         int starty = centery.toInt();
 
@@ -453,7 +453,7 @@ Tuple3<int, double, double> _crossCheckPatternDiagonal(jab_bitmap image, int typ
 
 		if(!flag)
 		{
-      state_index=0;
+            state_index=0;
 			for(i=1; (starty-i*offset_y)>=0 && (starty-i*offset_y)<image.height && (startx-i*offset_x)>=0 && (startx-i*offset_x)<image.width && state_index<=state_middle; i++)
 			{
 				if( image.pixel[(starty - i*offset_y)*image.width + (startx - i*offset_x)] == image.pixel[(starty - (i-1)*offset_y)*image.width + (startx - (i-1)*offset_x)] )
@@ -486,17 +486,17 @@ Tuple3<int, double, double> _crossCheckPatternDiagonal(jab_bitmap image, int typ
 					dir = -dir;
 				}
 				else
-          return Tuple3<int, double, double>(confirmed, centerx, centery);
+                    return Tuple3<int, double, double>(confirmed, centerx, centery);
 			}
 		}
 
 		if(!flag)
 		{
 			//check module size, if it is too big, assume it is a false positive
-      var ret = _checkPatternCross(state_count);
+            var ret = _checkPatternCross(state_count);
 			if((ret.item1==JAB_SUCCESS) && (ret.item2 <= module_size_max))
 			{
-        module_size = ret.item2;
+                module_size = ret.item2;
 				if(tmp_module_size > 0)
 					module_size = (module_size + tmp_module_size) / 2.0;
 				else
@@ -511,7 +511,7 @@ Tuple3<int, double, double> _crossCheckPatternDiagonal(jab_bitmap image, int typ
 				{
 					if(confirmed == 2)
 						dir = 2;
-          return Tuple3<int, double, double>(confirmed, centerx, centery);
+                    return Tuple3<int, double, double>(confirmed, centerx, centery);
 				}
 			}
 			else
@@ -603,10 +603,10 @@ Tuple3<int, double, double> _crossCheckPatternVertical(jab_bitmap image, double 
         return Tuple3<int, double, double>(JAB_FAILURE, centery, module_size);
 
     //check module size, if it is too big, assume it is a false positive
-		var ret = _checkPatternCross(state_count);
+	var ret = _checkPatternCross(state_count);
     if((ret.item1==JAB_SUCCESS) && (ret.item2  <= module_size_max)) //module_size
     {
-			module_size = ret.item2;
+		module_size = ret.item2;
         //calculate the center y
         centery = (centery_int + i - state_count[4] - state_count[3]) - state_count[2] / 2.0;
         return Tuple3<int, double, double>(JAB_SUCCESS, centery, module_size);
@@ -633,10 +633,10 @@ Tuple3<int, double, double> _crossCheckPatternHorizontal(jab_bitmap image, doubl
     int startx = centerx.toInt();
     int offset = centery.toInt() * image.width;
     int i, state_index;
-	 	double module_size = 0.0;
+	double module_size = 0.0;
 
     state_count[state_middle]++;
-		state_index=0;
+	state_index=0;
     for(i=1; i<=startx && state_index<=state_middle; i++)
     {
         if( image.pixel[offset + (startx - i)] == image.pixel[offset + (startx - (i-1))] )
@@ -663,7 +663,7 @@ Tuple3<int, double, double> _crossCheckPatternHorizontal(jab_bitmap image, doubl
     if(state_index < state_middle)
         return Tuple3<int, double, double>(JAB_FAILURE, centerx, module_size);
 
-		state_index=0;
+	state_index=0;
     for(i=1; (startx+i)<image.width && state_index<=state_middle; i++)
     {
         if( image.pixel[offset + (startx + i)] == image.pixel[offset + (startx + (i-1))] )
@@ -694,7 +694,7 @@ Tuple3<int, double, double> _crossCheckPatternHorizontal(jab_bitmap image, doubl
     var ret = _checkPatternCross(state_count);
     if((ret.item1==JAB_SUCCESS) && (ret.item2 <= module_size_max)) //module_size
     {
-				module_size = ret.item2;
+		module_size = ret.item2;
         //calculate the center x
         centerx = (startx+i - state_count[4] - state_count[3]) - state_count[2] / 2.0;
         return Tuple3<int, double, double>(JAB_SUCCESS, centerx, module_size);
@@ -838,13 +838,13 @@ Tuple5<int, double, jab_point, int, int> _crossCheckPatternCh(jab_bitmap ch, int
 		if(vcc == JAB_SUCCESS && dcc == JAB_SUCCESS)
 		{
 			module_size = (module_size_v + module_size_h + module_size_d) / 3.0;
-      return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
+            return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
 		}
 		else if(dcc == 2)
 		{
-      var result = _crossCheckPatternHorizontal(ch, module_size_max, centerx, centery);
-      centerx = result.item2;
-      module_size_h=result.item3;
+            var result = _crossCheckPatternHorizontal(ch, module_size_max, centerx, centery);
+            centerx = result.item2;
+            module_size_h=result.item3;
 			if(result.item1 ==JAB_FAILURE)
 				return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 			module_size = (module_size_h + module_size_d * 2.0) / 3.0;
@@ -854,36 +854,36 @@ Tuple5<int, double, jab_point, int, int> _crossCheckPatternCh(jab_bitmap ch, int
 	else
 	{
 		int hcc = JAB_FAILURE;
-    var result = _crossCheckPatternHorizontal(ch, module_size_max, centerx, centery);
-    centerx = result.item2;
-    module_size_h=result.item3;
+        var result = _crossCheckPatternHorizontal(ch, module_size_max, centerx, centery);
+        centerx = result.item2;
+        module_size_h=result.item3;
 		if(result.item1==JAB_SUCCESS)
 		{
 			hcc = JAB_SUCCESS;
-      var result = _crossCheckPatternVertical(ch, module_size_max, centerx, centery);
-      centery = result.item2;
-      module_size_v=result.item3;
-      if(result.item1 ==JAB_FAILURE)
-        return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
+            var result = _crossCheckPatternVertical(ch, module_size_max, centerx, centery);
+            centery = result.item2;
+            module_size_v=result.item3;
+            if(result.item1 ==JAB_FAILURE)
+                return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 		}
-    result = _crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, module_size_d, dir, hcc==JAB_SUCCESS ? false:true);
-    dcc = result.item1;
-    centerx = result.item2;
-    centery = result.item3;
+        result = _crossCheckPatternDiagonal(ch, type, module_size_max, centerx, centery, module_size_d, dir, hcc==JAB_SUCCESS ? false:true);
+        dcc = result.item1;
+        centerx = result.item2;
+        centery = result.item3;
 		if(hcc == JAB_SUCCESS && dcc == JAB_SUCCESS)
 		{
 			module_size = (module_size_v + module_size_h + module_size_d) / 3.0;
-      return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
+            return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
 		}
 		else if(dcc == 2)
 		{
-      var result = _crossCheckPatternVertical(ch, module_size_max, centerx, centery);
-      centery = result.item2;
-      module_size_v=result.item3;
+          var result = _crossCheckPatternVertical(ch, module_size_max, centerx, centery);
+          centery = result.item2;
+          module_size_v=result.item3;
 			if(result.item1 ==JAB_FAILURE)
-        return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
+                return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 			module_size = (module_size_v + module_size_d * 2.0) / 3.0;
-      return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
+            return Tuple5<int, double, jab_point, int, int>(JAB_SUCCESS, module_size, jab_point(centerx, centery), dir, dcc);
 		}
 	}
 	return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
@@ -901,7 +901,7 @@ int _crossCheckPattern(List<jab_bitmap> ch, jab_finder_pattern fp, int h_v)
     double module_size_max = fp.module_size * 2.0;
 
     //check g channel
-		double module_size_g;
+	double module_size_g;
     double centerx_g = fp.center.x;
     double centery_g = fp.center.y;
     int dir_g = 0;
@@ -964,12 +964,12 @@ int _crossCheckPattern(List<jab_bitmap> ch, jab_finder_pattern fp, int h_v)
 		double centery_b = fp.center.y;
 		int dir_b = 0;
 		int dcc_b = 0;
-    var result = _crossCheckPatternCh(ch[2], fp.type, h_v, module_size_max, module_size_b, centerx_b, centery_b, dir_b, dcc_b);
-    module_size_b = result.item2;
-    centerx_b = result.item3.x;
-    centery_b = result.item3.y;
-    dir_b = result.item4;
-    dcc_b = result.item5;
+        var result = _crossCheckPatternCh(ch[2], fp.type, h_v, module_size_max, module_size_b, centerx_b, centery_b, dir_b, dcc_b);
+        module_size_b = result.item2;
+        centerx_b = result.item3.x;
+        centery_b = result.item3.y;
+        dir_b = result.item4;
+        dcc_b = result.item5;
 		if(result.item1 == JAB_FAILURE)
 			return JAB_FAILURE;
 
@@ -1040,7 +1040,7 @@ Tuple2<int, int> _saveAlignmentPattern(jab_alignment_pattern ap, List<jab_alignm
 void _saveFinderPattern(jab_finder_pattern fp, List<jab_finder_pattern> fps, int counter, List<int> fp_type_count)
 {
     //combine the finder patterns at the same position with the same size
-    for(int i=0; i<(counter); i++)
+    for(int i=0; i<counter; i++)
     {
         if(fps[i].found_count > 0)
         {
@@ -1049,7 +1049,7 @@ void _saveFinderPattern(jab_finder_pattern fp, List<jab_finder_pattern> fps, int
                 fp.type == fps[i].type)
             {
                 fps[i].center = jab_point((fps[i].found_count * fps[i].center.x + fp.center.x) / (fps[i].found_count + 1),
-                                      (fps[i].found_count * fps[i].center.y + fp.center.y) / (fps[i].found_count + 1));
+                                          (fps[i].found_count * fps[i].center.y + fp.center.y) / (fps[i].found_count + 1));
                 fps[i].module_size = (fps[i].found_count * fps[i].module_size + fp.module_size) / (fps[i].found_count + 1);
                 fps[i].found_count++;
                 fps[i].direction += fp.direction;
@@ -1304,65 +1304,57 @@ int _selectBestPatterns(List<jab_finder_pattern> fps, int fp_count, List<int> fp
  * @param total_finder_patterns the number of totally found finder patterns
  * @return total_finder_patterns the number of totally found finder patterns
 */
-int _scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finder_pattern> fps, List<int> fp_type_count, int total_finder_patterns)
-{
-    bool done = false;
+int _scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finder_pattern> fps, List<int> fp_type_count, int total_finder_patterns) {
+  bool done = false;
 
-    for(int j=0; j<ch[0].width && done == 0; j+=min_module_size)
-    {
-        int starty = 0;
-        int endy = ch[0].height;
-        int skip = 0;
+  for(int j=0; j<ch[0].width && done == 0; j+=min_module_size) {
+    int starty = 0;
+    int endy = ch[0].height;
+    int skip = 0;
 
-        do
-        {
-        	int type_r, type_g, type_b;
-          double centery_r, centery_g, centery_b;
-          double module_size_r, module_size_g, module_size_b;
-          int finder_pattern1_found = JAB_FAILURE;
-          int finder_pattern2_found = JAB_FAILURE;
+    do {
+      int type_r, type_g, type_b;
+      double centery_r, centery_g, centery_b;
+      double module_size_r, module_size_g, module_size_b;
+      int finder_pattern1_found = JAB_FAILURE;
+      int finder_pattern2_found = JAB_FAILURE;
 
-            starty += skip;
-            endy = ch[0].height;
-            //green channel
-            var result = _seekPattern(ch[1], -1, j, starty, endy, centery_g, module_size_g, skip);
-						starty= result.item2;
-						endy= result.item3;
-						centery_g= result.item4;
-						module_size_g= result.item5;
-						skip= result.item6;
-            if(result.item1 == JAB_SUCCESS)
-            {
-                type_g = ch[1].pixel[((centery_g)*ch[0].width + j).toInt()] > 0 ? 255 : 0;
+      starty += skip;
+      endy = ch[0].height;
+      //green channel
+      var result = _seekPattern(ch[1], -1, j, starty, endy, centery_g, module_size_g, skip);
+      starty= result.item2;
+      endy= result.item3;
+      centery_g= result.item4;
+      module_size_g= result.item5;
+      skip= result.item6;
+      if(result.item1 == JAB_SUCCESS) {
+        type_g = ch[1].pixel[((centery_g)*ch[0].width + j).toInt()] > 0 ? 255 : 0;
 
-                centery_r = centery_g;
-                centery_b = centery_g;
-                //check blue channel for Finder Pattern UL and LL
-                var result= _crossCheckPatternVertical(ch[2], module_size_g*2, j.toDouble(), centery_b);
-                centery_b = result.item2;
-                module_size_b = result.item3;
+        centery_r = centery_g;
+        centery_b = centery_g;
+        //check blue channel for Finder Pattern UL and LL
+        var result= _crossCheckPatternVertical(ch[2], module_size_g*2, j.toDouble(), centery_b);
+        centery_b = result.item2;
+        module_size_b = result.item3;
 
-                if(result.item1 == JAB_SUCCESS)
-                {
-                    type_b = ch[2].pixel[((centery_b)*ch[2].width + j).toInt()] > 0 ? 255 : 0;
-                    //check red channel
-                    module_size_r = module_size_g;
-                    int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-                    if(_crossCheckColor(ch[0], core_color_in_red_channel, module_size_r.toInt(), 5, j, centery_r.toInt(), 1)== JAB_SUCCESS)
-                    {
-                    	type_r = 0;
-                    	finder_pattern1_found = JAB_SUCCESS;
-                    }
-                }
-                //check red channel for Finder Pattern UR and LR
-                else
-				{
+        if(result.item1 == JAB_SUCCESS) {
+          type_b = ch[2].pixel[((centery_b)*ch[2].width + j).toInt()] > 0 ? 255 : 0;
+          //check red channel
+          module_size_r = module_size_g;
+          int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+          if(_crossCheckColor(ch[0], core_color_in_red_channel, module_size_r.toInt(), 5, j, centery_r.toInt(), 1)== JAB_SUCCESS) {
+            type_r = 0;
+            finder_pattern1_found = JAB_SUCCESS;
+          }
+
+        //check red channel for Finder Pattern UR and LR
+        } else {
           var result = _crossCheckPatternVertical(ch[0], module_size_g*2, j.toDouble(), centery_r);
           centery_r = result.item2;
           module_size_r =result.item3;
 
-          if(result.item1 == JAB_SUCCESS)
-          {
+          if(result.item1 == JAB_SUCCESS) {
             type_r = ch[0].pixel[((centery_r) * ch[0].width + j).toInt()] > 0 ? 255 : 0;
             //check blue channel
             module_size_b = module_size_g;
@@ -1372,71 +1364,59 @@ int _scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_find
               finder_pattern2_found = JAB_SUCCESS;
             }
           }
-				}
-                //finder pattern candidate found
-				if(finder_pattern1_found==JAB_SUCCESS || finder_pattern2_found==JAB_SUCCESS)
-				{
-					jab_finder_pattern fp;
-					fp.center = jab_point(j.toDouble(), fp.center.y);
-					fp.found_count = 1;
-					if(finder_pattern1_found==JAB_SUCCESS)
-					{
-						if(!_checkModuleSize2(module_size_g, module_size_b)) continue;
-						fp.center = jab_point(fp.center.x, (centery_g + centery_b) / 2.0);
-						fp.module_size = (module_size_g + module_size_b) / 2.0;
-						if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
-							type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
-							type_b == jab_default_palette[FP0_CORE_COLOR * 3 + 2])
-						{
-							fp.type = FP0;	//candidate for fp0
-						}
-						else if(type_r == jab_default_palette[FP3_CORE_COLOR * 3] &&
-								type_g == jab_default_palette[FP3_CORE_COLOR * 3 + 1] &&
-								type_b == jab_default_palette[FP3_CORE_COLOR * 3 + 2])
-						{
-							fp.type = FP3;	//candidate for fp3
-						}
-						else
-						{
-							continue;		//invalid type
-						}
-					}
-					else if(finder_pattern2_found==JAB_SUCCESS)
-					{
-						if(!_checkModuleSize2(module_size_r, module_size_g)) continue;
-						fp.center = jab_point(fp.center.x, (centery_r + centery_g) / 2.0);
-						fp.module_size = (module_size_r + module_size_g) / 2.0;
-						if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
-						   type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
-						   type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
-						{
-							fp.type = FP1;	//candidate for fp1
-						}
-						else if(type_r == jab_default_palette[FP2_CORE_COLOR * 3] &&
-								type_g == jab_default_palette[FP2_CORE_COLOR * 3 + 1] &&
-								type_b == jab_default_palette[FP2_CORE_COLOR * 3 + 2])
-						{
-							fp.type = FP2;	//candidate for fp2
-						}
-						else
-						{
-							continue;		//invalid type
-						}
-					}
-					//cross check
-					if( _crossCheckPattern(ch, fp, 1) ==JAB_SUCCESS)
-					{
-						_saveFinderPattern(fp, fps, total_finder_patterns, fp_type_count);
-						if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) )
-						{
-							done = true;
-							break;
-						}
-					}
-				}
-            }
-        }while(starty < ch[0].height && endy < ch[0].height);
+        }
+        //finder pattern candidate found
+        if(finder_pattern1_found==JAB_SUCCESS || finder_pattern2_found==JAB_SUCCESS) {
+    jab_finder_pattern fp;
+    fp.center = jab_point(j.toDouble(), fp.center.y);
+    fp.found_count = 1;
+    if(finder_pattern1_found==JAB_SUCCESS) {
+      if(!_checkModuleSize2(module_size_g, module_size_b)) continue;
+      fp.center = jab_point(fp.center.x, (centery_g + centery_b) / 2.0);
+      fp.module_size = (module_size_g + module_size_b) / 2.0;
+      if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
+        type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
+        type_b == jab_default_palette[FP0_CORE_COLOR * 3 + 2])
+      {
+        fp.type = FP0;	//candidate for fp0
+      } else if(type_r == jab_default_palette[FP3_CORE_COLOR * 3] &&
+          type_g == jab_default_palette[FP3_CORE_COLOR * 3 + 1] &&
+          type_b == jab_default_palette[FP3_CORE_COLOR * 3 + 2])
+      {
+        fp.type = FP3;	//candidate for fp3
+      } else {
+        continue;		//invalid type
+      }
+    } else if(finder_pattern2_found==JAB_SUCCESS) {
+      if(!_checkModuleSize2(module_size_r, module_size_g)) continue;
+      fp.center = jab_point(fp.center.x, (centery_r + centery_g) / 2.0);
+      fp.module_size = (module_size_r + module_size_g) / 2.0;
+      if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
+         type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
+         type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
+      {
+        fp.type = FP1;	//candidate for fp1
+      } else if(type_r == jab_default_palette[FP2_CORE_COLOR * 3] &&
+          type_g == jab_default_palette[FP2_CORE_COLOR * 3 + 1] &&
+          type_b == jab_default_palette[FP2_CORE_COLOR * 3 + 2])
+      {
+        fp.type = FP2;	//candidate for fp2
+      } else {
+        continue;		//invalid type
+      }
     }
+    //cross check
+    if( _crossCheckPattern(ch, fp, 1) ==JAB_SUCCESS) {
+      _saveFinderPattern(fp, fps, total_finder_patterns, fp_type_count);
+      if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) ) {
+        done = true;
+        break;
+      }
+    }
+  }
+      }
+    } while(starty < ch[0].height && endy < ch[0].height);
+  }
 }
 
 /**
@@ -1445,8 +1425,7 @@ int _scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_find
  * @param fps the finder patterns
  * @param miss_fp_index the index of the missing finder pattern
 */
-void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, int miss_fp_index)
-{
+void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, int miss_fp_index) {
 	//determine the search area
 	double radius = fps[miss_fp_index].module_size * 5;	//search radius
 	int start_x = (fps[miss_fp_index].center.x - radius) >= 0 ? (fps[miss_fp_index].center.x - radius) : 0;
@@ -1457,11 +1436,9 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
 	int area_height= end_y - start_y;
 
 	var rgb = List<jab_bitmap>.filled(3, null);
-	for(int i=0; i<3; i++)
-	{
+	for(int i=0; i<3; i++) {
 		rgb[i] =jab_bitmap(); // (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + area_height*area_width*sizeof(jab_byte));
-		if(rgb[i] == null)
-		{
+		if(rgb[i] == null) {
 			// JAB_REPORT_INFO(("Memory allocation for binary bitmap failed, the missing finder pattern can not be found."))
 			return;
 		}
@@ -1474,13 +1451,11 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
 
 	//calculate average pixel value
 	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
-    int bytes_per_row = bitmap.width * bytes_per_pixel;
+  int bytes_per_row = bitmap.width * bytes_per_pixel;
 	var pixel_sum = List<double>.filled(3, 0);
 	var pixel_ave = List<double>.filled(3, 0);
-	for(int i=start_y; i<end_y; i++)
-	{
-		for(int j=start_x; j<end_x; j++)
-		{
+	for(int i=start_y; i<end_y; i++) {
+		for(int j=start_x; j<end_x; j++) {
 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 			pixel_sum[0] += bitmap.pixel[offset + 0];
 			pixel_sum[1] += bitmap.pixel[offset + 1];
@@ -1492,26 +1467,19 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
 	pixel_ave[2] = pixel_sum[2] / (area_width * area_height);
 
 	//quantize the pixels inside the search area to black, cyan and yellow
-	for(int i=start_y, y=0; i<end_y; i++, y++)
-	{
-		for(int j=start_x, x=0; j<end_x; j++, x++)
-		{
+	for(int i=start_y, y=0; i<end_y; i++, y++) {
+		for(int j=start_x, x=0; j<end_x; j++, x++) {
 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 			//check black pixel
-			if(bitmap.pixel[offset + 0] < pixel_ave[0] && bitmap.pixel[offset + 1] < pixel_ave[1] && bitmap.pixel[offset + 2] < pixel_ave[2])
-			{
+			if(bitmap.pixel[offset + 0] < pixel_ave[0] && bitmap.pixel[offset + 1] < pixel_ave[1] && bitmap.pixel[offset + 2] < pixel_ave[2]) {
 				rgb[0].pixel[y*area_width + x] = 0;
 				rgb[1].pixel[y*area_width + x] = 0;
 				rgb[2].pixel[y*area_width + x] = 0;
-			}
-			else if(bitmap.pixel[offset + 0] < bitmap.pixel[offset + 2])	//R < B
-			{
+			} else if(bitmap.pixel[offset + 0] < bitmap.pixel[offset + 2]) {	//R < B
 				rgb[0].pixel[y*area_width + x] = 0;
 				rgb[1].pixel[y*area_width + x] = 255;
 				rgb[2].pixel[y*area_width + x] = 255;
-			}
-			else															//R > B
-			{
+			} else {	 														//R > B
 				rgb[0].pixel[y*area_width + x] = 255;
 				rgb[1].pixel[y*area_width + x] = 255;
 				rgb[2].pixel[y*area_width + x] = 0;
@@ -1521,8 +1489,7 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
 
 	//set the core type of the expected finder pattern
 	int exp_type_r=0, exp_type_g=0, exp_type_b=0;
-	switch(miss_fp_index)
-	{
+	switch(miss_fp_index) {
 	case 0:
 	case 1:
 		exp_type_r = 0;
@@ -1542,145 +1509,129 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
 	}
 	//search for the missing finder pattern
 	var fps_miss = List<jab_finder_pattern>.filled (MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
-    if(fps_miss == null)
-    {
-        // reportError("Memory allocation for finder patterns failed, the missing finder pattern can not be found.");
-        return;
-    }
-    int total_finder_patterns = 0;
-    bool done = false;
-    var fp_type_count = List<int>.filled(4, 0);
+  if(fps_miss == null) {
+      // reportError("Memory allocation for finder patterns failed, the missing finder pattern can not be found.");
+      return;
+  }
+  int total_finder_patterns = 0;
+  bool done = false;
+  var fp_type_count = List<int>.filled(4, 0);
 
-	for(int i=0; i<area_height && done == 0; i++)
-    {
-        //get row
-        var row_r = rgb[0].pixel.sublist(i*rgb[0].width); //rgb[0].pixel + i*rgb[0].width;
-        var row_g = rgb[1].pixel.sublist(i*rgb[1].width); //rgb[1].pixel + i*rgb[1].width;
-        var row_b = rgb[2].pixel.sublist(i*rgb[2].width); //rgb[2].pixel + i*rgb[2].width;
+	for(int i=0; i<area_height && done == 0; i++) {
+    //get row
+    var row_r = rgb[0].pixel.sublist(i*rgb[0].width); //rgb[0].pixel + i*rgb[0].width;
+    var row_g = rgb[1].pixel.sublist(i*rgb[1].width); //rgb[1].pixel + i*rgb[1].width;
+    var row_b = rgb[2].pixel.sublist(i*rgb[2].width); //rgb[2].pixel + i*rgb[2].width;
 
-        int startx = 0;
-        int endx = rgb[0].width;
-        int skip = 0;
+    int startx = 0;
+    int endx = rgb[0].width;
+    int skip = 0;
 
-        do
-        {
-        	jab_finder_pattern fp;
+    do {
+      jab_finder_pattern fp;
 
-        	int type_r, type_g, type_b;
-          double centerx_r, centerx_g, centerx_b;
-          double module_size_r, module_size_g, module_size_b;
-          int finder_pattern_found = JAB_FAILURE;
+      int type_r, type_g, type_b;
+      double centerx_r, centerx_g, centerx_b;
+      double module_size_r, module_size_g, module_size_b;
+      int finder_pattern_found = JAB_FAILURE;
 
-            startx += skip;
-            endx = rgb[0].width;
-            //green channel
-          var result = _seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip);
-          startx = result.item2;
-          endx = result.item3;
-          centerx_g = result.item4;
-          module_size_g = result.item5;
-          skip = result.item6;
-            if(result.item1 == JAB_SUCCESS)
-            {
-                type_g = row_g[(centerx_g).toInt()] > 0 ? 255 : 0;
-                if(type_g != exp_type_g) continue;
+      startx += skip;
+      endx = rgb[0].width;
+      //green channel
+      var result = _seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip);
+      startx = result.item2;
+      endx = result.item3;
+      centerx_g = result.item4;
+      module_size_g = result.item5;
+      skip = result.item6;
+      if(result.item1 == JAB_SUCCESS) {
+        type_g = row_g[(centerx_g).toInt()] > 0 ? 255 : 0;
+        if(type_g != exp_type_g) continue;
 
-                centerx_r = centerx_g;
-                centerx_b = centerx_g;
-                switch(miss_fp_index)
-                {
-				case 0:
-				case 3:
-					//check blue channel for Finder Pattern UL and LL
-                var result = _crossCheckPatternHorizontal(rgb[2], module_size_g*2, centerx_b, i.toDouble());
-        centerx_b = result.item2;
-        module_size_b = result.item3;
-					if(result.item1== JAB_SUCCESS)
-					{
-						type_b = row_b[(centerx_b).toInt()] > 0 ? 255 : 0;
-						if(type_b != exp_type_b) continue;
-						//check red channel
-						module_size_r = module_size_g;
-						int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-						if(_crossCheckColor(rgb[0], core_color_in_red_channel, module_size_r.toInt(), 5, centerx_r.toInt(), i, 0) == JAB_SUCCESS)
-						{
-							type_r = 0;
-							finder_pattern_found = JAB_SUCCESS;
-						}
-					}
-					if(finder_pattern_found == JAB_SUCCESS)
-					{
-						if(!_checkModuleSize2(module_size_g, module_size_b)) continue;
-						fp.center = jab_point((centerx_g + centerx_b) / 2.0, fp.center.y);
-						fp.module_size = (module_size_g + module_size_b) / 2.0;
-					}
-					break;
-				case 1:
-				case 2:
-					//check red channel for Finder Pattern UR and LR
-                var result = _crossCheckPatternHorizontal(rgb[0], module_size_g*2, centerx_r, i.toDouble());
-        centerx_r= result.item2;
-        module_size_r= result.item3;
-					if(result.item1== JAB_SUCCESS)
-					{
-						type_r = row_r[(centerx_r).toInt()] > 0 ? 255 : 0;
-						if(type_r != exp_type_r) continue;
-						//check blue channel
-						module_size_b = module_size_g;
-						int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-						if(_crossCheckColor(rgb[2], core_color_in_blue_channel, module_size_b.toInt(), 5, centerx_b.toInt(), i, 0) == JAB_SUCCESS)
-						{
-							type_b = 0;
-							finder_pattern_found = JAB_SUCCESS;
-						}
-					}
-					if(finder_pattern_found == JAB_SUCCESS)
-					{
-						if(!_checkModuleSize2(module_size_r, module_size_g)) continue;
-						fp.center =  jab_point((centerx_r + centerx_g) / 2.0, fp.center.y);
-						fp.module_size = (module_size_r + module_size_g) / 2.0;
-					}
-					break;
-                }
-				//finder pattern candidate found
-				if(finder_pattern_found == JAB_SUCCESS)
-				{
-					fp.center = jab_point(fp.center.x,i.toDouble());
-					fp.found_count = 1;
-					fp.type = miss_fp_index;
-					//cross check
-					if( _crossCheckPattern(rgb, fp, 0) == JAB_SUCCESS)
-					{
-						//combine the finder patterns at the same position with the same size
-						_saveFinderPattern(fp, fps_miss, total_finder_patterns, fp_type_count);
-						if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) )
-						{
-							done = true;
-							break;
-						}
-					}
-				}
+        centerx_r = centerx_g;
+        centerx_b = centerx_g;
+      switch(miss_fp_index) {
+          case 0:
+          case 3:
+            //check blue channel for Finder Pattern UL and LL
+            var result = _crossCheckPatternHorizontal(rgb[2], module_size_g*2, centerx_b, i.toDouble());
+            centerx_b = result.item2;
+            module_size_b = result.item3;
+
+            if(result.item1== JAB_SUCCESS) {
+              type_b = row_b[(centerx_b).toInt()] > 0 ? 255 : 0;
+              if(type_b != exp_type_b) continue;
+              //check red channel
+              module_size_r = module_size_g;
+              int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+              if(_crossCheckColor(rgb[0], core_color_in_red_channel, module_size_r.toInt(), 5, centerx_r.toInt(), i, 0) == JAB_SUCCESS) {
+                type_r = 0;
+                finder_pattern_found = JAB_SUCCESS;
+              }
             }
-        }while(startx < rgb[0].width && endx < rgb[0].width);
-    }
-	//if the missing FP is found, get the best found
-	if(total_finder_patterns > 0)
-    {
-        int max_found = 0;
-        int max_index = 0;
-        for(int i=0; i<total_finder_patterns; i++)
-        {
-            if(fps_miss[i].found_count > max_found)
-            {
-                max_found = fps_miss[i].found_count;
-                max_index = i;
+            if(finder_pattern_found == JAB_SUCCESS) {
+              if(!_checkModuleSize2(module_size_g, module_size_b)) continue;
+              fp.center = jab_point((centerx_g + centerx_b) / 2.0, fp.center.y);
+              fp.module_size = (module_size_g + module_size_b) / 2.0;
             }
+            break;
+          case 1:
+          case 2:
+            //check red channel for Finder Pattern UR and LR
+            var result = _crossCheckPatternHorizontal(rgb[0], module_size_g*2, centerx_r, i.toDouble());
+            centerx_r= result.item2;
+            module_size_r= result.item3;
+            if(result.item1== JAB_SUCCESS) {
+              type_r = row_r[(centerx_r).toInt()] > 0 ? 255 : 0;
+              if(type_r != exp_type_r) continue;
+              //check blue channel
+              module_size_b = module_size_g;
+              int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+              if(_crossCheckColor(rgb[2], core_color_in_blue_channel, module_size_b.toInt(), 5, centerx_b.toInt(), i, 0) == JAB_SUCCESS) {
+                type_b = 0;
+                finder_pattern_found = JAB_SUCCESS;
+              }
+            }
+            if(finder_pattern_found == JAB_SUCCESS) {
+              if(!_checkModuleSize2(module_size_r, module_size_g)) continue;
+              fp.center =  jab_point((centerx_r + centerx_g) / 2.0, fp.center.y);
+              fp.module_size = (module_size_r + module_size_g) / 2.0;
+            }
+          break;
         }
-        fps[miss_fp_index] = fps_miss[max_index];
-        //recover the coordinates in bitmap
-        fps[miss_fp_index].center = jab_point(fps[miss_fp_index].center.x + start_x,
-                                              fps[miss_fp_index].center.y + start_y);
+        //finder pattern candidate found
+        if(finder_pattern_found == JAB_SUCCESS) {
+          fp.center = jab_point(fp.center.x,i.toDouble());
+          fp.found_count = 1;
+          fp.type = miss_fp_index;
+          //cross check
+          if( _crossCheckPattern(rgb, fp, 0) == JAB_SUCCESS) {
+            //combine the finder patterns at the same position with the same size
+            _saveFinderPattern(fp, fps_miss, total_finder_patterns, fp_type_count);
+            if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1)) {
+              done = true;
+              break;
+            }
+          }
+        }
+      }
+    } while(startx < rgb[0].width && endx < rgb[0].width);
+  }
+	//if the missing FP is found, get the best found
+	if(total_finder_patterns > 0) {
+    int max_found = 0;
+    int max_index = 0;
+    for(int i=0; i<total_finder_patterns; i++) {
+      if(fps_miss[i].found_count > max_found) {
+          max_found = fps_miss[i].found_count;
+          max_index = i;
+      }
     }
+    fps[miss_fp_index] = fps_miss[max_index];
+    //recover the coordinates in bitmap
+    fps[miss_fp_index].center = jab_point(fps[miss_fp_index].center.x + start_x,
+                                          fps[miss_fp_index].center.y + start_y);
+  }
 }
 
 /**
@@ -1691,163 +1642,137 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
  * @return the finder pattern list | NULL
  * @return status the detection status
 */
-Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode)
-{
-		int status;
-    //suppose the code size is minimally 1/4 image size
-    int min_module_size = (ch[0].height / (2 * MAX_SYMBOL_ROWS * MAX_MODULES)).toInt();
-    if(min_module_size < 1 || mode == jab_detect_mode.INTENSIVE_DETECT) min_module_size = 1;
+Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode) {
+	int status;
+  //suppose the code size is minimally 1/4 image size
+  int min_module_size = (ch[0].height / (2 * MAX_SYMBOL_ROWS * MAX_MODULES)).toInt();
+  if(min_module_size < 1 || mode == jab_detect_mode.INTENSIVE_DETECT) min_module_size = 1;
 
-    var fps = List<jab_finder_pattern>.filled (MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
-    if(fps == null)
-    {
-        // reportError("Memory allocation for finder patterns failed");
-        status = FATAL_ERROR;
-        return null;
-    }
-    int total_finder_patterns = 0;
-    bool done = false;
-    var fp_type_count = List<int>.filled(4, 0);;
+  var fps = List<jab_finder_pattern>.filled (MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
+  if(fps == null) {
+    // reportError("Memory allocation for finder patterns failed");
+    status = FATAL_ERROR;
+    return null;
+  }
+  int total_finder_patterns = 0;
+  bool done = false;
+  var fp_type_count = List<int>.filled(4, 0);;
 
-    for(int i=0; i<ch[0].height && !done; i+=min_module_size)
-    {
-        //get row
-        var row_r = ch[0].pixel.sublist(i*ch[0].width); //ch[0].pixel + i*ch[0].width;
-				var row_g = ch[1].pixel.sublist(i*ch[1].width); //ch[1].pixel + i*ch[1].width
-				var row_b = ch[2].pixel.sublist(i*ch[2].width); //ch[2].pixel + i*ch[2].width
+  for(int i=0; i<ch[0].height && !done; i+=min_module_size) {
+    //get row
+    var row_r = ch[0].pixel.sublist(i*ch[0].width); //ch[0].pixel + i*ch[0].width;
+    var row_g = ch[1].pixel.sublist(i*ch[1].width); //ch[1].pixel + i*ch[1].width
+    var row_b = ch[2].pixel.sublist(i*ch[2].width); //ch[2].pixel + i*ch[2].width
 
-        int startx = 0;
-        int endx = ch[0].width;
-        int skip = 0;
+    int startx = 0;
+    int endx = ch[0].width;
+    int skip = 0;
 
-        do
-        {
-        	int type_r, type_g, type_b;
-					double centerx_r, centerx_g, centerx_b;
-					double module_size_r, module_size_g, module_size_b;
-					var finder_pattern1_found = JAB_FAILURE;
-					var finder_pattern2_found = JAB_FAILURE;
+    do {
+      int type_r, type_g, type_b;
+      double centerx_r, centerx_g, centerx_b;
+      double module_size_r, module_size_g, module_size_b;
+      var finder_pattern1_found = JAB_FAILURE;
+      var finder_pattern2_found = JAB_FAILURE;
 
-					startx += skip;
-					endx = ch[0].width;
-					//green channel
-          var result = _seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip);
-          startx = result.item2;
-          endx = result.item3;
-          centerx_g = result.item4;
-          module_size_g = result.item5;
-          skip = result.item6;
-					if(result.item1 == JAB_SUCCESS)
-					{
-							type_g = row_g[centerx_g.toInt()] > 0 ? 255 : 0;
+      startx += skip;
+      endx = ch[0].width;
+      //green channel
+      var result = _seekPatternHorizontal(row_g, startx, endx, centerx_g, module_size_g, skip);
+      startx = result.item2;
+      endx = result.item3;
+      centerx_g = result.item4;
+      module_size_g = result.item5;
+      skip = result.item6;
+      if(result.item1 == JAB_SUCCESS) {
+        type_g = row_g[centerx_g.toInt()] > 0 ? 255 : 0;
 
-							centerx_r = centerx_g;
-							centerx_b = centerx_g;
-							//check blue channel for Finder Pattern UL and LL
-							var result = _crossCheckPatternHorizontal(ch[2], module_size_g*2, centerx_b, i.toDouble());
-							centerx_b=result.item2;
-							module_size_b=result.item3;
-							if(result.item1==JAB_SUCCESS)
-							{
-									type_b = row_b[centerx_b.toInt()] > 0 ? 255 : 0;
-									//check red channel
-									module_size_r = module_size_g;
-									int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-									if(_crossCheckColor(ch[0], core_color_in_red_channel, module_size_r.toInt(), 5, centerx_r.toInt(), i, 0)== JAB_SUCCESS)
-									{
-										type_r = 0;
-										finder_pattern1_found = JAB_SUCCESS;
-									}
-							}
-							//check red channel for Finder Pattern UR and LR
-							else {
-								result = _crossCheckPatternHorizontal(ch[0], module_size_g * 2, centerx_r, i.toDouble());
-								centerx_r = result.item2;
-								module_size_r = result.item3;
-								if (result.item1 == JAB_SUCCESS) {
-									type_r = row_r[centerx_r.toInt()] > 0 ? 255 : 0;
-									//check blue channel
-									module_size_b = module_size_g;
-									int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
-									if (_crossCheckColor(
-											ch[2],
-											core_color_in_blue_channel,
-											module_size_b.toInt(),
-											5,
-											centerx_b.toInt(),
-											i,
-											0) == JAB_SUCCESS) {
-										type_b = 0;
-										finder_pattern2_found = JAB_SUCCESS;
-									}
-								}
-							}
-				//finder pattern candidate found
-				if(finder_pattern1_found==JAB_SUCCESS || finder_pattern2_found==JAB_SUCCESS)
-				{
-					var fp= jab_finder_pattern();
-					fp.center = jab_point(fp.center.x, i.toDouble() );
-					fp.found_count = 1;
-					if(finder_pattern1_found!=0)
-					{
-						if(!_checkModuleSize2(module_size_g, module_size_b)) continue;
-						fp.center = jab_point((centerx_g + centerx_b) / 2.0, fp.center.y);
-						fp.module_size = (module_size_g + module_size_b) / 2.0;
-						if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
-							type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
-							type_b == jab_default_palette[FP0_CORE_COLOR * 3 + 2])
-						{
-							fp.type = FP0;	//candidate for fp0
-						}
-						else if(type_r == jab_default_palette[FP3_CORE_COLOR * 3] &&
-								type_g == jab_default_palette[FP3_CORE_COLOR * 3 + 1] &&
-								type_b == jab_default_palette[FP3_CORE_COLOR * 3 + 2])
-						{
-							fp.type = FP3;	//candidate for fp3
-						}
-						else
-						{
-							continue;		//invalid type
-						}
-					}
-					else if(finder_pattern2_found==JAB_SUCCESS)
-					{
-						if(!_checkModuleSize2(module_size_r, module_size_g)) continue;
-						fp.center = jab_point((centerx_r + centerx_g) / 2.0, fp.center.y);
-						fp.module_size = (module_size_r + module_size_g) / 2.0;
-						if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
-						   type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
-						   type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
-						{
-							fp.type = FP1;	//candidate for fp1
-						}
-						else if(type_r == jab_default_palette[FP2_CORE_COLOR * 3] &&
-								type_g == jab_default_palette[FP2_CORE_COLOR * 3 + 1] &&
-								type_b == jab_default_palette[FP2_CORE_COLOR * 3 + 2])
-						{
-							fp.type = FP2;	//candidate for fp2
-						}
-						else
-						{
-							continue;		//invalid type
-						}
-					}
-					//cross check
-					if( _crossCheckPattern(ch, fp, 0) == JAB_SUCCESS)
-					{
-						_saveFinderPattern(fp, fps, total_finder_patterns, fp_type_count);
-						if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1) )
-						{
-							done = true;
-							break;
-						}
-					}
-				}
+        centerx_r = centerx_g;
+        centerx_b = centerx_g;
+        //check blue channel for Finder Pattern UL and LL
+        var result = _crossCheckPatternHorizontal(ch[2], module_size_g*2, centerx_b, i.toDouble());
+        centerx_b=result.item2;
+        module_size_b=result.item3;
+        if(result.item1==JAB_SUCCESS) {
+          type_b = row_b[centerx_b.toInt()] > 0 ? 255 : 0;
+          //check red channel
+          module_size_r = module_size_g;
+          int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
+          if(_crossCheckColor(ch[0], core_color_in_red_channel, module_size_r.toInt(), 5, centerx_r.toInt(), i, 0)== JAB_SUCCESS) {
+            type_r = 0;
+            finder_pattern1_found = JAB_SUCCESS;
+          }
+
+        //check red channel for Finder Pattern UR and LR
+        } else {
+          result = _crossCheckPatternHorizontal(ch[0], module_size_g * 2, centerx_r, i.toDouble());
+          centerx_r = result.item2;
+          module_size_r = result.item3;
+          if (result.item1 == JAB_SUCCESS) {
+            type_r = row_r[centerx_r.toInt()] > 0 ? 255 : 0;
+            //check blue channel
+            module_size_b = module_size_g;
+            int core_color_in_blue_channel = jab_default_palette[FP2_CORE_COLOR * 3 + 2];
+            if (_crossCheckColor(ch[2], core_color_in_blue_channel, module_size_b.toInt(), 5, centerx_b.toInt(), i, 0) == JAB_SUCCESS) {
+              type_b = 0;
+              finder_pattern2_found = JAB_SUCCESS;
             }
-        }while(startx < ch[0].width && endx < ch[0].width);
-    }
+          }
+        }
+        //finder pattern candidate found
+        if(finder_pattern1_found==JAB_SUCCESS || finder_pattern2_found==JAB_SUCCESS) {
+          var fp= jab_finder_pattern();
+          fp.center = jab_point(fp.center.x, i.toDouble() );
+          fp.found_count = 1;
+          if(finder_pattern1_found!=0) {
+            if(!_checkModuleSize2(module_size_g, module_size_b)) continue;
+            fp.center = jab_point((centerx_g + centerx_b) / 2.0, fp.center.y);
+            fp.module_size = (module_size_g + module_size_b) / 2.0;
+            if( type_r == jab_default_palette[FP0_CORE_COLOR * 3] &&
+              type_g == jab_default_palette[FP0_CORE_COLOR * 3 + 1] &&
+              type_b == jab_default_palette[FP0_CORE_COLOR * 3 + 2])
+            {
+              fp.type = FP0;	//candidate for fp0
+            } else if(type_r == jab_default_palette[FP3_CORE_COLOR * 3] &&
+                type_g == jab_default_palette[FP3_CORE_COLOR * 3 + 1] &&
+                type_b == jab_default_palette[FP3_CORE_COLOR * 3 + 2])
+            {
+              fp.type = FP3;	//candidate for fp3
+            } else {
+              continue;		//invalid type
+            }
+          } else if(finder_pattern2_found==JAB_SUCCESS) {
+            if(!_checkModuleSize2(module_size_r, module_size_g)) continue;
+            fp.center = jab_point((centerx_r + centerx_g) / 2.0, fp.center.y);
+            fp.module_size = (module_size_r + module_size_g) / 2.0;
+            if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
+               type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
+               type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
+            {
+              fp.type = FP1;	//candidate for fp1
+            } else if(type_r == jab_default_palette[FP2_CORE_COLOR * 3] &&
+                type_g == jab_default_palette[FP2_CORE_COLOR * 3 + 1] &&
+                type_b == jab_default_palette[FP2_CORE_COLOR * 3 + 2])
+            {
+              fp.type = FP2;	//candidate for fp2
+            } else {
+              continue;		//invalid type
+            }
+          }
+          //cross check
+          if( _crossCheckPattern(ch, fp, 0) == JAB_SUCCESS) {
+            _saveFinderPattern(fp, fps, total_finder_patterns, fp_type_count);
+            if(total_finder_patterns >= (MAX_FINDER_PATTERNS - 1)) {
+              done = true;
+              break;
+            }
+          }
+        }
+      }
+    } while(startx < ch[0].width && endx < ch[0].width);
+  }
 
-    //if only FP0 and FP1 are found or only FP2 and FP3 are found, do vertical-scan
+  //if only FP0 and FP1 are found or only FP2 and FP3 are found, do vertical-scan
 	if( (fp_type_count[0] != 0 && fp_type_count[1] !=0 && fp_type_count[2] == 0 && fp_type_count[3] == 0) ||
 	    (fp_type_count[0] == 0 && fp_type_count[1] ==0 && fp_type_count[2] != 0 && fp_type_count[3] != 0) )
 	{
@@ -1868,28 +1793,24 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
 // #endif
 
     //set finder patterns' direction
-	for(int i=0; i<total_finder_patterns; i++)
-	{
+	for(int i=0; i<total_finder_patterns; i++) {
 		fps[i].direction = fps[i].direction >=0 ? 1 : -1;
 	}
 	//select best patterns
 	int missing_fp_count = _selectBestPatterns(fps, total_finder_patterns, fp_type_count);
 
 	//if more than one finder patterns are missing, detection fails
-	if(missing_fp_count > 1)
-	{
+	if(missing_fp_count > 1) {
 		// reportError("Too few finder pattern found");
 		// *status = JAB_FAILURE;
 		return Tuple2<int, List<jab_finder_pattern>>(status, fps);
 	}
 
     //if only one finder pattern is missing, try anyway by estimating the missing one
-    if(missing_fp_count == 1)
-    {
+    if(missing_fp_count == 1) {
         //estimate the missing finder pattern
         int miss_fp = 0;
-        if(fps[0].found_count == 0)
-        {
+        if(fps[0].found_count == 0) {
 			miss_fp = 0;
 			double ave_size_fp23 = (fps[2].module_size + fps[3].module_size) / 2.0;
 			double ave_size_fp13 = (fps[1].module_size + fps[3].module_size) / 2.0;
@@ -2067,7 +1988,7 @@ Tuple2<double, int> _crossCheckPatternDiagonalAP(jab_bitmap image, int ap_type, 
 
 		if(!flag)
 		{
-    state_index=0;
+            state_index=0;
 			for(i=1; (starty+i)<image.height && (startx+i)<image.width && state_index<=1; i++)
 			{
 				if( image.pixel[(starty - i*offset_y)*image.width + (startx - i*offset_x)] == image.pixel[(starty - (i-1)*offset_y)*image.width + (startx - (i-1)*offset_x)] )
@@ -2143,7 +2064,7 @@ Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point 
 
     state_count[1]++;
     state_index=0;
-    for(i=1;  i<=centery && state_index<=1; i++)
+    for(i=1; i<=centery && state_index<=1; i++)
     {
         if( image.pixel[(centery-i)*image.width + centerx] == image.pixel[(centery-(i-1))*image.width + centerx] )
         {
@@ -2169,7 +2090,7 @@ Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point 
     if(state_index < 1)
         return Tuple2<double, double>(-1, module_size);
     state_index=0;
-    for(i=1;  (centery+i)<image.height && state_index<=1; i++)
+    for(i=1; (centery+i)<image.height && state_index<=1; i++)
     {
         if( image.pixel[(centery+i)*image.width + centerx] == image.pixel[(centery+(i-1))*image.width + centerx] )
         {
@@ -2331,22 +2252,22 @@ Tuple4<int, jab_point, double, int> _crossCheckPatternAP(List<jab_bitmap> ch, in
 {
 	//get row
 	var row_r = ch[0].pixel.sublist(y*ch[0].width, (y+1)*ch[0].width);
-  var row_b = ch[2].pixel.sublist(y*ch[2].width, (y+1)*ch[2].width);
+    var row_b = ch[2].pixel.sublist(y*ch[2].width, (y+1)*ch[2].width);
 
-	var l_centerx = List<double>.filled(3, 0);
-  var l_centery= List<double>.filled(3, 0);
-  var l_module_size_h= List<double>.filled(3, 0);
-  var l_module_size_v= List<double>.filled(3, 0);
+    var l_centerx = List<double>.filled(3, 0);
+    var l_centery= List<double>.filled(3, 0);
+    var l_module_size_h= List<double>.filled(3, 0);
+    var l_module_size_v= List<double>.filled(3, 0);
 
 	//check r channel horizontally
 	var result = _crossCheckPatternHorizontalAP(row_r, 0, minx, maxx, cur_x, ap_type, max_module_size, l_module_size_h[0]);
-  l_centerx[0] = result.item1;
-  l_module_size_h[0] = result.item2;
+    l_centerx[0] = result.item1;
+    l_module_size_h[0] = result.item2;
 	if(l_centerx[0] < 0) return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
 	//check b channel horizontally
-  result = _crossCheckPatternHorizontalAP(row_b, 2, minx, maxx, l_centerx[0].toInt(), ap_type, max_module_size, l_module_size_h[2]);
-  l_centerx[2] = result.item1;
-  l_module_size_h[2] = result.item2;
+    result = _crossCheckPatternHorizontalAP(row_b, 2, minx, maxx, l_centerx[0].toInt(), ap_type, max_module_size, l_module_size_h[2]);
+    l_centerx[2] = result.item1;
+    l_module_size_h[2] = result.item2;
 	if(l_centerx[2] < 0) return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
 	//calculate the center and the module size
 	jab_point center;
@@ -2378,9 +2299,9 @@ Tuple4<int, jab_point, double, int> _crossCheckPatternAP(List<jab_bitmap> ch, in
 
 	//check r channel vertically
 	result = _crossCheckPatternVerticalAP(ch[0], center, max_module_size.toInt(), l_module_size_v[0]);
-  l_centery[0] = result.item1;
-  l_module_size_v[0] = result.item2;
-  if(l_centery[0] < 0) return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
+    l_centery[0] = result.item1;
+    l_module_size_v[0] = result.item2;
+    if(l_centery[0] < 0) return Tuple4<int, jab_point, double, int>(JAB_FAILURE, jab_point(centerx, centery), module_size, dir);
 	//again horizontally
 	row_r = ch[0].pixel.sublist((l_centery[0]*ch[0].width).toInt(), ((l_centery[0]+1)*ch[0].width).toInt());
   result= _crossCheckPatternHorizontalAP(row_r, 0, minx, maxx, center.x.toInt(), ap_type, max_module_size, l_module_size_h[0]);
