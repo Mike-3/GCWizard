@@ -36,11 +36,9 @@ import 'jabcode_h.dart';
 jab_perspective_transform _square2Quad( double x0, double y0,
 										double x1, double y1,
 										double x2, double y2,
-										double x3, double y3)
-{
+										double x3, double y3) {
 	var pt = jab_perspective_transform(); //(jab_perspective_transform*)malloc(sizeof(jab_perspective_transform));
-	if(pt == null)
-	{
+	if(pt == null) {
 		// reportError("Memory allocation for perspective transform failed");
 		return null;
 	}
@@ -57,9 +55,7 @@ jab_perspective_transform _square2Quad( double x0, double y0,
         pt.a23 = 0;
         pt.a33 = 1;
 		return pt;
-	}
-	else
-	{
+	} else {
 		double dx1 = x1 - x2;
 		double dx2 = x3 - x2;
 		double dy1 = y1 - y2;
@@ -98,8 +94,7 @@ jab_perspective_transform _quad2Square( double x0, double y0,
 										double x3, double y3)
 {
 	var pt = jab_perspective_transform(); //(jab_perspective_transform*)malloc(sizeof(jab_perspective_transform));
-	if(pt == null)
-	{
+	if(pt == null) {
 		// reportError("Memory allocation for perspective transform failed");
 		return null;
 	}
@@ -124,24 +119,22 @@ jab_perspective_transform _quad2Square( double x0, double y0,
  * @param m2 the multiplier
  * @return m1 x m2
 */
-jab_perspective_transform _multiply(jab_perspective_transform m1, jab_perspective_transform m2)
-{
+jab_perspective_transform _multiply(jab_perspective_transform m1, jab_perspective_transform m2) {
 	var product = jab_perspective_transform(); // (jab_perspective_transform*)malloc(sizeof(jab_perspective_transform));
-	if(product == null)
-	{
+	if(product == null) {
 		// reportError("Memory allocation for perpective transform failed");
 		return null;
 	}
 	product.a11 = m1.a11 * m2.a11 + m1.a12 * m2.a21 + m1.a13 * m2.a31;
-    product.a21 = m1.a21 * m2.a11 + m1.a22 * m2.a21 + m1.a23 * m2.a31;
-    product.a31 = m1.a31 * m2.a11 + m1.a32 * m2.a21 + m1.a33 * m2.a31;
-    product.a12 = m1.a11 * m2.a12 + m1.a12 * m2.a22 + m1.a13 * m2.a32;
-    product.a22 = m1.a21 * m2.a12 + m1.a22 * m2.a22 + m1.a23 * m2.a32;
-    product.a32 = m1.a31 * m2.a12 + m1.a32 * m2.a22 + m1.a33 * m2.a32;
-    product.a13 = m1.a11 * m2.a13 + m1.a12 * m2.a23 + m1.a13 * m2.a33;
-    product.a23 = m1.a21 * m2.a13 + m1.a22 * m2.a23 + m1.a23 * m2.a33;
-    product.a33 = m1.a31 * m2.a13 + m1.a32 * m2.a23 + m1.a33 * m2.a33;
-    return product;
+	product.a21 = m1.a21 * m2.a11 + m1.a22 * m2.a21 + m1.a23 * m2.a31;
+	product.a31 = m1.a31 * m2.a11 + m1.a32 * m2.a21 + m1.a33 * m2.a31;
+	product.a12 = m1.a11 * m2.a12 + m1.a12 * m2.a22 + m1.a13 * m2.a32;
+	product.a22 = m1.a21 * m2.a12 + m1.a22 * m2.a22 + m1.a23 * m2.a32;
+	product.a32 = m1.a31 * m2.a12 + m1.a32 * m2.a22 + m1.a33 * m2.a32;
+	product.a13 = m1.a11 * m2.a13 + m1.a12 * m2.a23 + m1.a13 * m2.a33;
+	product.a23 = m1.a21 * m2.a13 + m1.a22 * m2.a23 + m1.a23 * m2.a33;
+	product.a33 = m1.a31 * m2.a13 + m1.a32 * m2.a23 + m1.a33 * m2.a33;
+	return product;
 }
 
 /**
@@ -171,21 +164,17 @@ jab_perspective_transform perspectiveTransform(double x0, double y0,
 												double x0p, double y0p,
 												double x1p, double y1p,
 												double x2p, double y2p,
-												double x3p, double y3p)
-{
+												double x3p, double y3p) {
 	var q2s = _quad2Square(x0, y0, x1, y1, x2, y2, x3, y3);
-	if(q2s == null)
-	{
+	if(q2s == null) {
 		return null;
 	}
 	var s2q = _square2Quad(x0p, y0p, x1p, y1p, x2p, y2p, x3p, y3p);
-	if(s2q == null)
-	{
+	if(s2q == null) {
 		return null;
 	}
 	var pt = _multiply(q2s, s2q);
-	if(pt == null)
-	{
+	if(pt == null) {
 		return null;
 	}
 	// free(q2s);
@@ -206,8 +195,7 @@ jab_perspective_transform getPerspectiveTransform(jab_point p0,
 												   jab_point p1,
 												   jab_point p2,
 												   jab_point p3,
-												   jab_vector2d side_size)
-{
+												   jab_vector2d side_size) {
 	return perspectiveTransform(3.5, 3.5,
 								side_size.x - 3.5, 3.5,
 								side_size.x - 3.5, side_size.y - 3.5,
@@ -225,13 +213,12 @@ jab_perspective_transform getPerspectiveTransform(jab_point p0,
  * @param points the source points
  * @param length the number of source points
 */
-void warpPoints(jab_perspective_transform pt, List<jab_point> points, int length)
-{
-    for (int i=0; i<length; i++) {
-      double x = points[i].x;
-      double y = points[i].y;
-      double denominator = pt.a13 * x + pt.a23 * y + pt.a33;
-      points[i].x = (pt.a11 * x + pt.a21 * y + pt.a31) / denominator;
-      points[i].y = (pt.a12 * x + pt.a22 * y + pt.a32) / denominator;
-    }
+void warpPoints(jab_perspective_transform pt, List<jab_point> points, int length) {
+	for (int i=0; i<length; i++) {
+		double x = points[i].x;
+		double y = points[i].y;
+		double denominator = pt.a13 * x + pt.a23 * y + pt.a33;
+		points[i].x = (pt.a11 * x + pt.a21 * y + pt.a31) / denominator;
+		points[i].y = (pt.a12 * x + pt.a22 * y + pt.a32) / denominator;
+	}
 }

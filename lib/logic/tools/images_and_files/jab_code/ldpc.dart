@@ -691,84 +691,69 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
         }
       }
 
-      if(is_correct==0)
-      {
+      if(is_correct==0) {
         int start_pos=iter*old_Pg_sub;
         var result=_decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter,start_pos);
         is_correct=result.item1;
-        if(result.item2 == 0)
-        {
+        if(result.item2 == 0) {
           // reportError("LDPC decoder error.");
           // free(matrixA1);
           return 0;
         }
       }
-      if(is_correct==0)
-      {
+      if(is_correct==0) {
         bool is_correct=true;
-        for (int i=0;i< matrix_rank; i++)
-        {
+        for (int i=0;i< matrix_rank; i++) {
           int temp=0;
           for (int j=0;j<Pg_sub_block;j++)
             temp ^= (((matrixA1[(i*offset+j/32).toInt()] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-          if (temp != 0)
-          {
+          if (temp != 0) {
             is_correct=false;//message not correct
             break;
           }
         }
-        if(is_correct==0)
-        {
+        if(is_correct==0) {
           // reportError("Too many errors in message. LDPC decoding failed.");
           // free(matrixA1);
           return 0;
         }
       }
       // free(matrixA1);
-    }
-    else
-    {
+    } else {
       //ldpc decoding
       //first check syndrom
       bool is_correct=true;
       int offset=(Pg_sub_block/32.0).ceil();
-      for (int i=0;i< matrix_rank; i++)
-      {
+      for (int i=0;i< matrix_rank; i++) {
         int temp=0;
         for (int j=0;j<Pg_sub_block;j++)
           temp ^= (((matrixA[(i*offset+j/32).toInt()] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-        if (temp != 0)
-        {
+        if (temp != 0) {
           is_correct=false;//message not correct
           break;
         }
       }
 
-      if(is_correct==0)
-      {
+      if(is_correct==0) {
         int start_pos=iter*old_Pg_sub;
         var result =_decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, start_pos);
         is_correct=result.item1;
-        if(result.item2 == 0)
-        {
+        if(result.item2 == 0) {
           // reportError("LDPC decoder error.");
           // free(matrixA);
           return 0;
         }
         is_correct=true;
-        for (int i=0;i< matrix_rank; i++)
-        {
+        for (int i=0;i< matrix_rank; i++) {
           int temp=0;
           for (int j=0;j<Pg_sub_block;j++)
             temp ^= (((matrixA[(i*offset+j/32).toInt()] >> (31-j%32)) & 1) & ((data[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-          if (temp != 0)
-          {
+          if (temp != 0) {
             is_correct=false;//message not correct
             break;
           }
         }
-        if(is_correct==0)
-        {
+        if(is_correct==0) {
           // reportError("Too many errors in message. LDPC decoding failed.");
           // free(matrixA);
           return 0;
@@ -776,8 +761,7 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
       }
     }
     int loop=0;
-    for (int i=iter*old_Pg_sub;i < iter * old_Pg_sub + Pn_sub_block; i++)
-    {
+    for (int i=iter*old_Pg_sub;i < iter * old_Pg_sub + Pn_sub_block; i++) {
       data[iter*old_Pn_sub+loop]=data[i+ matrix_rank];
       loop++;
     }

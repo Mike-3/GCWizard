@@ -2919,45 +2919,38 @@ int _confirmSymbolSize(List<jab_bitmap> ch, List<jab_finder_pattern> fps, jab_de
  * @param fps the finder patterns
  * @return the sampled symbol matrix | NULL if failed
 */
-jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol symbol, List<jab_finder_pattern> fps)
-{
+jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol symbol, List<jab_finder_pattern> fps) {
 	//if no alignment pattern available, abort
-    if(symbol.metadata.side_version.x < 6 && symbol.metadata.side_version.y < 6)
-	{
+  if(symbol.metadata.side_version.x < 6 && symbol.metadata.side_version.y < 6) {
 		// reportError("No alignment pattern is available");
 		return null;
 	}
 
 	//For default mode, first confirm the symbol side size
-	if(symbol.metadata.default_mode)
-    {
-        if(_confirmSymbolSize(ch, fps, symbol) == JAB_FAILURE)
-        {
-            // reportError("The symbol size can not be recognized.");
-            return null;
-        }
+	if(symbol.metadata.default_mode)   {
+    if(_confirmSymbolSize(ch, fps, symbol) == JAB_FAILURE) {
+      // reportError("The symbol size can not be recognized.");
+      return null;
+    }
 // #if TEST_MODE
 //         JAB_REPORT_INFO(("Side sizes confirmed by APs: %d %d", symbol.side_size.x, symbol.side_size.y))
 // #endif
-    }
+  }
 
-    int side_ver_x_index = symbol.metadata.side_version.x - 1;
+  int side_ver_x_index = symbol.metadata.side_version.x - 1;
 	int side_ver_y_index = symbol.metadata.side_version.y - 1;
 	int number_of_ap_x = jab_ap_num[side_ver_x_index];
-    int number_of_ap_y = jab_ap_num[side_ver_y_index];
+  int number_of_ap_y = jab_ap_num[side_ver_y_index];
 
     //buffer for all possible alignment patterns
 	var aps = List<jab_alignment_pattern>.filled (number_of_ap_x * number_of_ap_y, null); //jab_alignment_pattern *)malloc(number_of_ap_x * number_of_ap_y *sizeof(jab_alignment_pattern));
-	if(aps == null)
-	{
+	if(aps == null) {
 		// reportError("Memory allocation for alignment patterns failed");
 		return null;
 	}
     //detect all APs
-	for(int i=0; i<number_of_ap_y; i++)
-	{
-		for(int j=0; j<number_of_ap_x; j++)
-		{
+	for(int i=0; i<number_of_ap_y; i++) {
+		for(int j=0; j<number_of_ap_x; j++) {
 			int index = i * number_of_ap_x + j;
 			if(i == 0 && j == 0)
 				aps[index] = jab_alignment_pattern().import(fps[0]);
@@ -2967,10 +2960,8 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 				aps[index] = jab_alignment_pattern().import(fps[2]);
 			else if(i == number_of_ap_y - 1 && j == 0)
 				aps[index] = jab_alignment_pattern().import(fps[3]);
-			else
-			{
-				if(i == 0)
-				{
+			else {
+				if(i == 0) {
 					//direction: from aps[0][j-1] to fps[1]
 					double distx = fps[1].center.x - aps[j-1].center.x;
 					double disty = fps[1].center.y - aps[j-1].center.y;
@@ -2981,9 +2972,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 					aps[index].center.x = aps[j-1].center.x + distance * cos(alpha);
 					aps[index].center.y = aps[j-1].center.y + distance * sin(alpha);
 					aps[index].module_size = aps[j-1].module_size;
-				}
-				else if(j == 0)
-				{
+				} else if(j == 0) {
 					//direction: from aps[i-1][0] to fps[3]
 					double distx = fps[3].center.x - aps[(i-1) * number_of_ap_x].center.x;
 					double disty = fps[3].center.y - aps[(i-1) * number_of_ap_x].center.y;
@@ -2994,9 +2983,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 					aps[index].center.x = aps[(i-1) * number_of_ap_x].center.x + distance * cos(alpha);
 					aps[index].center.y = aps[(i-1) * number_of_ap_x].center.y + distance * sin(alpha);
 					aps[index].module_size = aps[(i-1) * number_of_ap_x].module_size;
-				}
-				else
-				{
+				} else {
 					//estimate the coordinate of ap[index] from aps[i-1][j-1], aps[i-1][j] and aps[i][j-1]
 					int index_ap0 = (i-1) * number_of_ap_x + (j-1);	//ap at upper-left
 					int index_ap1 = (i-1) * number_of_ap_x + j;		//ap at upper-right
@@ -3011,8 +2998,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 				aps[index].found_count = 0;
 				jab_alignment_pattern tmp = aps[index];
 				aps[index] = _findAlignmentPattern(ch, aps[index].center.x, aps[index].center.y, aps[index].module_size, APX);
-				if(aps[index].found_count == 0)
-				{
+				if(aps[index].found_count == 0) {
 					aps[index] = tmp;	//recover the estimated one
 // #if TEST_MODE
 // 					JAB_REPORT_ERROR(("The alignment pattern (index: %d) at (X: %f, Y: %f) not found", index, aps[index].center.x, aps[index].center.y))
@@ -3030,68 +3016,56 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 	int block_number = (number_of_ap_x-1) * (number_of_ap_y-1);
 	var rect = List<jab_vector2d>.filled(block_number * 2, null);
 	int rect_index = 0;
-	for(int i=0; i<number_of_ap_y-1; i++)
-	{
-		for(int j=0; j<number_of_ap_x-1; j++)
-		{
-			var tl=jab_vector2d(0,0);
+	for(int i=0; i<number_of_ap_y-1; i++) {
+    for(int j=0; j<number_of_ap_x-1; j++) {
+      var tl=jab_vector2d(0,0);
       var br=jab_vector2d(0,0);
-			bool flag = true;
+      bool flag = true;
 
-			for(int delta=0; delta<=(number_of_ap_x-2 + number_of_ap_y-2) && flag; delta++)
-			{
-				for(int dy=0; dy<=min(delta, number_of_ap_y-2) && flag; dy++)
-				{
-					int dx = min(delta - dy, number_of_ap_x-2);
-					for(int dy1=0; dy1<=dy && flag; dy1++)
-					{
-						int dy2 = dy - dy1;
-						for(int dx1=0; dx1<=dx && flag; dx1++)
-						{
-							int dx2 = dx - dx1;
+      for(int delta=0; delta<=(number_of_ap_x-2 + number_of_ap_y-2) && flag; delta++) {
+        for(int dy=0; dy<=min(delta, number_of_ap_y-2) && flag; dy++) {
+          int dx = min(delta - dy, number_of_ap_x-2);
+          for(int dy1=0; dy1<=dy && flag; dy1++) {
+            int dy2 = dy - dy1;
+            for(int dx1=0; dx1<=dx && flag; dx1++) {
+              int dx2 = dx - dx1;
 
-							tl.x = max(j - dx1, 0);
-							tl.y = max(i - dy1, 0);
-							br.x = min(j + 1 + dx2, number_of_ap_x - 1);
-							br.y = min(i + 1 + dy2, number_of_ap_y - 1);
-							if(aps[tl.y*number_of_ap_x + tl.x].found_count > 0 &&
-							   aps[tl.y*number_of_ap_x + br.x].found_count > 0 &&
-							   aps[br.y*number_of_ap_x + tl.x].found_count > 0 &&
-							   aps[br.y*number_of_ap_x + br.x].found_count > 0)
-							{
-								flag = false;
-							}
-						}
-					}
-				}
-			}
-			//save the minimal rectangle if there is no duplicate
-			bool dup_flag = false;
-			for(int k=0; k<rect_index; k+=2)
-			{
-				if(rect[k].x == tl.x && rect[k].y == tl.y && rect[k+1].x == br.x && rect[k+1].y == br.y)
-				{
-					dup_flag = true;
-					break;
-				}
-			}
-			if(!dup_flag)
-			{
-				rect[rect_index] = tl;
-				rect[rect_index+1] = br;
-				rect_index += 2;
-			}
-		}
+              tl.x = max(j - dx1, 0);
+              tl.y = max(i - dy1, 0);
+              br.x = min(j + 1 + dx2, number_of_ap_x - 1);
+              br.y = min(i + 1 + dy2, number_of_ap_y - 1);
+              if(aps[tl.y*number_of_ap_x + tl.x].found_count > 0 &&
+                 aps[tl.y*number_of_ap_x + br.x].found_count > 0 &&
+                 aps[br.y*number_of_ap_x + tl.x].found_count > 0 &&
+                 aps[br.y*number_of_ap_x + br.x].found_count > 0)
+              {
+                flag = false;
+              }
+            }
+          }
+        }
+      }
+      //save the minimal rectangle if there is no duplicate
+      bool dup_flag = false;
+      for(int k=0; k<rect_index; k+=2) {
+        if(rect[k].x == tl.x && rect[k].y == tl.y && rect[k+1].x == br.x && rect[k+1].y == br.y) {
+          dup_flag = true;
+          break;
+        }
+      }
+      if(!dup_flag) {
+        rect[rect_index] = tl;
+        rect[rect_index+1] = br;
+        rect_index += 2;
+      }
+    }
 	}
 	//sort the rectangles in descending order according to the size
-	for(int i=0; i<rect_index-2; i+=2)
-	{
-		for(int j=0; j<rect_index-2-i; j+=2)
-		{
+	for(int i=0; i<rect_index-2; i+=2) {
+		for(int j=0; j<rect_index-2-i; j+=2) {
 			int size0 = (rect[j+1].x - rect[j].x) * (rect[j+1].y - rect[j].y);
 			int size1 = (rect[j+2+1].x - rect[j+2].x) * (rect[j+2+1].y - rect[j+2].y);
-			if(size1 > size0)
-			{
+			if(size1 > size0) {
 				jab_vector2d tmp;
 				//swap top-left
 				tmp = rect[j];
@@ -3112,8 +3086,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 	int mtx_bytes_per_row = width * mtx_bytes_per_pixel;
 	var matrix = jab_bitmap(); //  (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*mtx_bytes_per_pixel*sizeof(jab_byte));
   matrix.pixel = Uint8List(width*height);
-  if(matrix == null)
-	{
+  if(matrix == null) {
 		// reportError("Memory allocation for symbol bitmap matrix failed");
 		return null;
 	}
@@ -3123,8 +3096,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 	matrix.width = width;
 	matrix.height= height;
 
-	for(int i=0; i<rect_index; i+=2)
-	{
+	for(int i=0; i<rect_index; i+=2) {
 		jab_vector2d blk_size;
 		jab_point p0, p1, p2, p3;
 
@@ -3140,8 +3112,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 		p3.x = 0.5;
 		p3.y = blk_size.y - 0.5;
 		//blocks on the top border row
-		if(rect[i].y == 0)
-		{
+		if(rect[i].y == 0) {
 			blk_size.y += (DISTANCE_TO_BORDER - 1);
 			p0.y = 3.5;
 			p1.y = 3.5;
@@ -3149,15 +3120,13 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 			p3.y = blk_size.y - 0.5;
 		}
 		//blocks on the bottom border row
-		if(rect[i+1].y == (number_of_ap_y-1))
-		{
+		if(rect[i+1].y == (number_of_ap_y-1)) {
 			blk_size.y += (DISTANCE_TO_BORDER - 1);
 			p2.y = blk_size.y - 3.5;
 			p3.y = blk_size.y - 3.5;
 		}
 		//blocks on the left border column
-		if(rect[i].x == 0)
-		{
+		if(rect[i].x == 0) {
 			blk_size.x += (DISTANCE_TO_BORDER - 1);
 			p0.x = 3.5;
 			p1.x = blk_size.x - 0.5;
@@ -3165,8 +3134,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 			p3.x = 3.5;
 		}
 		//blocks on the right border column
-		if(rect[i+1].x == (number_of_ap_x-1))
-		{
+		if(rect[i+1].x == (number_of_ap_x-1)) {
 			blk_size.x += (DISTANCE_TO_BORDER - 1);
 			p1.x = blk_size.x - 3.5;
 			p2.x = blk_size.x - 3.5;
@@ -3181,8 +3149,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 					aps[rect[i+0].y*number_of_ap_x + rect[i+1].x].center.x, aps[rect[i+0].y*number_of_ap_x + rect[i+1].x].center.y,
 					aps[rect[i+1].y*number_of_ap_x + rect[i+1].x].center.x, aps[rect[i+1].y*number_of_ap_x + rect[i+1].x].center.y,
 					aps[rect[i+1].y*number_of_ap_x + rect[i+0].x].center.x, aps[rect[i+1].y*number_of_ap_x + rect[i+0].x].center.y);
-		if(pt == null)
-		{
+		if(pt == null) {
 			// free(aps);
 			// free(matrix);
 			return null;
@@ -3193,8 +3160,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 // #endif
 		var block = sampleSymbol(bitmap, pt, blk_size);
 		// free(pt);
-		if(block == null)
-		{
+		if(block == null) {
 			// reportError("Sampling block failed");
 			// free(aps);
 			// free(matrix);
@@ -3209,10 +3175,8 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 			start_y = 0;
 		int blk_bytes_per_pixel = (block.bits_per_pixel / 8).toInt();
 		int blk_bytes_per_row = blk_size.x * mtx_bytes_per_pixel;
-		for(int y=0, mtx_y=start_y; y<blk_size.y && mtx_y<height; y++, mtx_y++)
-		{
-			for(int x=0, mtx_x=start_x; x<blk_size.x && mtx_x<width; x++, mtx_x++)
-			{
+		for(int y=0, mtx_y=start_y; y<blk_size.y && mtx_y<height; y++, mtx_y++) {
+			for(int x=0, mtx_x=start_x; x<blk_size.x && mtx_x<width; x++, mtx_x++) {
 				int mtx_offset = mtx_y * mtx_bytes_per_row + mtx_x * mtx_bytes_per_pixel;
 				int blk_offset = y * blk_bytes_per_row + x * blk_bytes_per_pixel;
 				matrix.pixel[mtx_offset] 	  = block.pixel[blk_offset];
@@ -3237,69 +3201,61 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
  * @param fps the finder patterns
  * @result rgb_ave the average pixel value
 */
-List<double> _getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> fps )
-{
-    var rgb_ave = List<double>.filled(3, 0);
-    var r_ave = List<double>.filled(4, 0);
-    var g_ave = List<double>.filled(4, 0);
-    var b_ave = List<double>.filled(4, 0);
+List<double> _getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> fps ) {
+  var rgb_ave = List<double>.filled(3, 0);
+  var r_ave = List<double>.filled(4, 0);
+  var g_ave = List<double>.filled(4, 0);
+  var b_ave = List<double>.filled(4, 0);
 
-    //calculate average pixel value around each found FP
-    for(int i=0; i<4; i++)
-    {
-        if(fps[i].found_count <= 0) continue;
+  //calculate average pixel value around each found FP
+  for(int i=0; i<4; i++) {
+    if(fps[i].found_count <= 0) continue;
 
-        double radius = fps[i].module_size * 4;
-        int start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius) : 0;
-        int start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius) : 0;
-        int end_x	  = (fps[i].center.x + radius) <= (bitmap.width - 1) ? (fps[i].center.x + radius) : (bitmap.width - 1);
-        int end_y   = (fps[i].center.y + radius) <= (bitmap.height- 1) ? (fps[i].center.y + radius) : (bitmap.height- 1);
-        int area_width = end_x - start_x;
-        int area_height= end_y - start_y;
+    double radius = fps[i].module_size * 4;
+    int start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius) : 0;
+    int start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius) : 0;
+    int end_x	  = (fps[i].center.x + radius) <= (bitmap.width - 1) ? (fps[i].center.x + radius) : (bitmap.width - 1);
+    int end_y   = (fps[i].center.y + radius) <= (bitmap.height- 1) ? (fps[i].center.y + radius) : (bitmap.height- 1);
+    int area_width = end_x - start_x;
+    int area_height= end_y - start_y;
 
-        int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
-        int bytes_per_row = bitmap.width * bytes_per_pixel;
-        for(int y=start_y; y<end_y; y++)
-        {
-            for(int x=start_x; x<end_x; x++)
-            {
-                int offset = y * bytes_per_row + x * bytes_per_pixel;
-                r_ave[i] += bitmap.pixel[offset + 0];
-                g_ave[i] += bitmap.pixel[offset + 1];
-                b_ave[i] += bitmap.pixel[offset + 2];
-            }
-        }
-        r_ave[i] /= (area_width * area_height);
-        g_ave[i] /= (area_width * area_height);
-        b_ave[i] /= (area_width * area_height);
+    int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+    int bytes_per_row = bitmap.width * bytes_per_pixel;
+    for(int y=start_y; y<end_y; y++) {
+      for(int x=start_x; x<end_x; x++) {
+        int offset = y * bytes_per_row + x * bytes_per_pixel;
+        r_ave[i] += bitmap.pixel[offset + 0];
+        g_ave[i] += bitmap.pixel[offset + 1];
+        b_ave[i] += bitmap.pixel[offset + 2];
+      }
     }
+    r_ave[i] /= (area_width * area_height);
+    g_ave[i] /= (area_width * area_height);
+    b_ave[i] /= (area_width * area_height);
+  }
 
-    //calculate the average values of the average pixel values
-    var rgb_sum = List<double>.filled(3, 0);
-    var rgb_count = List<int>.filled(3, 0);
-    for(int i=0; i<4; i++)
-    {
-        if(r_ave[i] > 0)
-        {
-            rgb_sum[0] += r_ave[i];
-            rgb_count[0]++;
-        }
-        if(g_ave[i] > 0)
-        {
-            rgb_sum[1] += g_ave[i];
-            rgb_count[1]++;
-        }
-        if(b_ave[i] > 0)
-        {
-            rgb_sum[2] += b_ave[i];
-            rgb_count[2]++;
-        }
+  //calculate the average values of the average pixel values
+  var rgb_sum = List<double>.filled(3, 0);
+  var rgb_count = List<int>.filled(3, 0);
+  for(int i=0; i<4; i++) {
+    if(r_ave[i] > 0) {
+        rgb_sum[0] += r_ave[i];
+        rgb_count[0]++;
     }
-    if(rgb_count[0] > 0) rgb_ave[0] = rgb_sum[0] / rgb_count[0];
-    if(rgb_count[1] > 0) rgb_ave[1] = rgb_sum[1] / rgb_count[1];
-    if(rgb_count[2] > 0) rgb_ave[2] = rgb_sum[2] / rgb_count[2];
+    if(g_ave[i] > 0) {
+        rgb_sum[1] += g_ave[i];
+        rgb_count[1]++;
+    }
+    if(b_ave[i] > 0) {
+        rgb_sum[2] += b_ave[i];
+        rgb_count[2]++;
+    }
+  }
+  if(rgb_count[0] > 0) rgb_ave[0] = rgb_sum[0] / rgb_count[0];
+  if(rgb_count[1] > 0) rgb_ave[1] = rgb_sum[1] / rgb_count[1];
+  if(rgb_count[2] > 0) rgb_ave[2] = rgb_sum[2] / rgb_count[2];
 
-    return rgb_ave;
+  return rgb_ave;
 }
 
 
@@ -3311,57 +3267,49 @@ List<double> _getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> f
  * @param master_symbol the master symbol
  * @return JAB_SUCCESS | JAB_FAILURE
 */
-int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol master_symbol)
-{
+int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol master_symbol) {
     //find master symbol
     int status;
     var result =  _findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
     status = result.item1;
     var fps = result.item2;
     if(status == FATAL_ERROR) return JAB_FAILURE;
-    else if(status == JAB_FAILURE)
-    {
+    else if(status == JAB_FAILURE) {
 // #if TEST_MODE
 //         JAB_REPORT_INFO(("Trying to detect more finder patterns based on the found ones"))
 // #endif
-        //calculate the average pixel value around the found FPs
-        var rgb_ave = _getAveragePixelValue(bitmap, fps);
-        // free(fps);
-        //binarize the bitmap using the average pixel values as thresholds
-        for(int i=0; i<3;i++) ch[i]= null;
-        if(binarizerRGB(bitmap, ch, rgb_ave)==0)
-        {
-            return JAB_FAILURE;
-        }
-        //find master symbol
-        result = _findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
-        status = result.item1;
-        fps = result.item2;
-        if(status == JAB_FAILURE || status == FATAL_ERROR)
-        {
-            // free(fps);
-            return JAB_FAILURE;
-        }
-    }
+      //calculate the average pixel value around the found FPs
+      var rgb_ave = _getAveragePixelValue(bitmap, fps);
+      // free(fps);
+      //binarize the bitmap using the average pixel values as thresholds
+      for(int i=0; i<3;i++) ch[i]= null;
+      if(binarizerRGB(bitmap, ch, rgb_ave)==0) {
+          return JAB_FAILURE;
+      }
+      //find master symbol
+      result = _findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
+      status = result.item1;
+      fps = result.item2;
+      if(status == JAB_FAILURE || status == FATAL_ERROR) {
+          // free(fps);
+          return JAB_FAILURE;
+      }
+  }
 
-    //calculate the master symbol side size
-    jab_vector2d side_size = _calculateSideSize(fps);
-    if(side_size.x == -1 || side_size.y == -1)
-    {
-		// reportError("Calculating side size failed");
+  //calculate the master symbol side size
+  jab_vector2d side_size = _calculateSideSize(fps);
+  if(side_size.x == -1 || side_size.y == -1) {
+    // reportError("Calculating side size failed");
     //     free(fps);
-		return JAB_FAILURE;
-    }
+    return JAB_FAILURE;
+  }
 // #if TEST_MODE
 // 	JAB_REPORT_INFO(("Side sizes: %d %d", side_size.x, side_size.y))
 // #endif
     //try decoding using only finder patterns
 	//calculate perspective transform matrix
-	var pt = getPerspectiveTransform(fps[0].center, fps[1].center,
-															fps[2].center, fps[3].center,
-															side_size);
-	if(pt == null)
-	{
+	var pt = getPerspectiveTransform(fps[0].center, fps[1].center, fps[2].center, fps[3].center, side_size);
+	if(pt == null) {
 		// free(fps);
 		return JAB_FAILURE;
 	}
@@ -3375,8 +3323,7 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 // #if TEST_MODE
 // 	saveImage(test_mode_bitmap, "jab_sample_pos_fp.png");
 // #endif
-	if(matrix == null)
-	{
+	if(matrix == null) {
 		// reportError("Sampling master symbol failed");
 		// free(fps);
 		return JAB_FAILURE;
@@ -3395,38 +3342,33 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 	//decode master symbol
 	int decode_result = decodeMaster(matrix, master_symbol);
 	// free(matrix);
-	if(decode_result == JAB_SUCCESS)
-	{
+	if(decode_result == JAB_SUCCESS) {
 		// free(fps);
 		return JAB_SUCCESS;
-	}
-	else if(decode_result < 0)	//fatal error occurred
-	{
+	} else if(decode_result < 0) {	//fatal error occurred
 		// free(fps);
 		return JAB_FAILURE;
-	}
-	else	//if decoding using only finder patterns failed, try decoding using alignment patterns
-	{
+	} else { //if decoding using only finder patterns failed, try decoding using alignment patterns
+
 // #if TEST_MODE
 // 		JAB_REPORT_INFO(("Trying to sample master symbol using alignment pattern..."))
 // #endif // TEST_MODE
-		master_symbol.side_size.x = VERSION2SIZE(master_symbol.metadata.side_version.x);
-		master_symbol.side_size.y = VERSION2SIZE(master_symbol.metadata.side_version.y);
-		matrix = _sampleSymbolByAlignmentPattern(bitmap, ch, master_symbol, fps);
-		// free(fps);
-		if(matrix == null)
-		{
+  master_symbol.side_size.x = VERSION2SIZE(master_symbol.metadata.side_version.x);
+  master_symbol.side_size.y = VERSION2SIZE(master_symbol.metadata.side_version.y);
+  matrix = _sampleSymbolByAlignmentPattern(bitmap, ch, master_symbol, fps);
+  // free(fps);
+  if(matrix == null) {
 // #if TEST_MODE
 // 			reportError("Sampling master symbol using alignment pattern failed");
 // #endif // TEST_MODE
 			return JAB_FAILURE;
-		}
-		decode_result = decodeMaster(matrix, master_symbol);
-		// free(matrix);
-		if(decode_result == JAB_SUCCESS)
-			return JAB_SUCCESS;
-		else
-			return JAB_FAILURE;
+  }
+  decode_result = decodeMaster(matrix, master_symbol);
+  // free(matrix);
+  if(decode_result == JAB_SUCCESS)
+    return JAB_SUCCESS;
+  else
+    return JAB_FAILURE;
 	}
 }
 
@@ -3442,44 +3384,39 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
  * @return slave_symbol the slave symbol
  *
 */
-Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol> _detectSlave(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol host_symbol, jab_decoded_symbol slave_symbol, int docked_position)
-{
-    if(docked_position < 0 || docked_position > 3)
-    {
-        // reportError("Wrong docking position");
-      return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol);
-    }
+Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol> _detectSlave(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol host_symbol, jab_decoded_symbol slave_symbol, int docked_position) {
+  if(docked_position < 0 || docked_position > 3) {
+    // reportError("Wrong docking position");
+    return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol);
+  }
 
-    //find slave symbol next to the host symbol
-    if(_findSlaveSymbol(bitmap, ch, host_symbol, slave_symbol, docked_position) == JAB_FAILURE)
-    {
-        // JAB_REPORT_ERROR(("Slave symbol %d not found", slave_symbol.index))
-      return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol);
-    }
+  //find slave symbol next to the host symbol
+  if(_findSlaveSymbol(bitmap, ch, host_symbol, slave_symbol, docked_position) == JAB_FAILURE) {
+    // JAB_REPORT_ERROR(("Slave symbol %d not found", slave_symbol.index))
+    return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol);
+  }
 
-    //calculate perspective transform matrix
-    var pt = getPerspectiveTransform(slave_symbol.pattern_positions[0], slave_symbol.pattern_positions[1],
-                                                            slave_symbol.pattern_positions[2], slave_symbol.pattern_positions[3],
-                                                            slave_symbol.side_size);
-    if(pt == null)
-    {
-        return null;
-    }
+  //calculate perspective transform matrix
+  var pt = getPerspectiveTransform(slave_symbol.pattern_positions[0], slave_symbol.pattern_positions[1],
+                                                          slave_symbol.pattern_positions[2], slave_symbol.pattern_positions[3],
+                                                          slave_symbol.side_size);
+  if(pt == null) {
+    return null;
+  }
 
-    //sample slave symbol
+  //sample slave symbol
 // #if TEST_MODE
 // 	test_mode_color = 255;
 // #endif
-    jab_bitmap matrix = sampleSymbol(bitmap, pt, slave_symbol.side_size);
-    if(matrix == null)
-    {
-        // JAB_REPORT_ERROR(("Sampling slave symbol %d failed", slave_symbol.index))
-        // free(pt);
-        return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol); //JAB_FAILURE;
-    }
-
+  jab_bitmap matrix = sampleSymbol(bitmap, pt, slave_symbol.side_size);
+  if(matrix == null) {
+    // JAB_REPORT_ERROR(("Sampling slave symbol %d failed", slave_symbol.index))
     // free(pt);
-    return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(matrix, host_symbol, slave_symbol);
+    return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol); //JAB_FAILURE;
+  }
+
+  // free(pt);
+  return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(matrix, host_symbol, slave_symbol);
 }
 
 /**
@@ -3494,41 +3431,35 @@ Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol> _detectSlave(jab_bitm
 */
 Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, List<jab_decoded_symbol> symbols, int host_index, int total)
 {
-    var docked_positions = List<int>.filled(4, 0);
-    docked_positions[0] = symbols[host_index].metadata.docked_position & 0x08;
-    docked_positions[1] = symbols[host_index].metadata.docked_position & 0x04;
-    docked_positions[2] = symbols[host_index].metadata.docked_position & 0x02;
-    docked_positions[3] = symbols[host_index].metadata.docked_position & 0x01;
+  var docked_positions = List<int>.filled(4, 0);
+  docked_positions[0] = symbols[host_index].metadata.docked_position & 0x08;
+  docked_positions[1] = symbols[host_index].metadata.docked_position & 0x04;
+  docked_positions[2] = symbols[host_index].metadata.docked_position & 0x02;
+  docked_positions[3] = symbols[host_index].metadata.docked_position & 0x01;
 
-    for(int j=0; j<4; j++)
-    {
-        if(docked_positions[j] > 0 && total<MAX_SYMBOL_NUMBER)
-        {
-            symbols[total].index = total;
-            symbols[total].host_index = host_index;
-            symbols[total].metadata = symbols[host_index].slave_metadata[j];
-            var result = _detectSlave(bitmap, ch, symbols[host_index], symbols[total], j);
-            jab_bitmap matrix = result.item1;
-            symbols[host_index] = result.item2;
-            symbols[total] = result.item3;
-            if(matrix == null)
-            {
-                // JAB_REPORT_ERROR(("Detecting slave symbol %d failed", symbols[*total].index))
-                return Tuple2<int, int>(JAB_FAILURE, total);
-            }
-            if(decodeSlave(matrix, symbols[total]) == JAB_SUCCESS)
-            {
-                total++;
-                // free(matrix);
-            }
-            else
-            {
-                // free(matrix);
-                return Tuple2<int, int>(JAB_FAILURE, total);
-            }
-        }
+  for(int j=0; j<4; j++) {
+    if(docked_positions[j] > 0 && total<MAX_SYMBOL_NUMBER) {
+      symbols[total].index = total;
+      symbols[total].host_index = host_index;
+      symbols[total].metadata = symbols[host_index].slave_metadata[j];
+      var result = _detectSlave(bitmap, ch, symbols[host_index], symbols[total], j);
+      jab_bitmap matrix = result.item1;
+      symbols[host_index] = result.item2;
+      symbols[total] = result.item3;
+      if(matrix == null) {
+        // JAB_REPORT_ERROR(("Detecting slave symbol %d failed", symbols[*total].index))
+        return Tuple2<int, int>(JAB_FAILURE, total);
+      }
+      if(decodeSlave(matrix, symbols[total]) == JAB_SUCCESS) {
+        total++;
+        // free(matrix);
+      } else {
+        // free(matrix);
+        return Tuple2<int, int>(JAB_FAILURE, total);
+      }
     }
-    return Tuple2<int, int>(JAB_SUCCESS, total);
+  }
+  return Tuple2<int, int>(JAB_SUCCESS, total);
 }
 
 
@@ -3543,12 +3474,10 @@ Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, Lis
  * @return the decoded data | NULL if failed
  * @return status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
 */
-Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol> symbols, int max_symbol_number)
-{
+Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol> symbols, int max_symbol_number) {
 	int status;
 	if(status != 0) status = 0;
-	if(symbols == null)
-	{
+	if(symbols == null) {
 		// reportError("Invalid symbol buffer");
 		return null;
 	}
@@ -3556,8 +3485,7 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
 	//binarize r, g, b channels
 	var ch = List<jab_bitmap>.filled(3, null);
 	balanceRGB(bitmap);
-    if(binarizerRGB(bitmap, ch, null) == 0)
-	{
+    if(binarizerRGB(bitmap, ch, null) == 0) {
 		return null;
 	}
 // #if TEST_MODE
@@ -3578,100 +3506,88 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
 // #endif
 
 	//initialize symbols buffer
-    symbols = List<jab_decoded_symbol>.filled(max_symbol_number, null); // memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
-    int total = 0;	//total number of decoded symbols
-    bool res = true;
+  symbols = List<jab_decoded_symbol>.filled(max_symbol_number, null); // memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
+  int total = 0;	//total number of decoded symbols
+  bool res = true;
 
-    //detect and decode master symbol
-    if(_detectMaster(bitmap, ch, symbols[0])==JAB_SUCCESS)
-	{
-		total++;
-	}
-    //detect and decode docked slave symbols recursively
-    if(total>0)
-    {
-        for(int i=0; i<total && total<max_symbol_number; i++)
-        {
-          var result = _decodeDockedSlaves(bitmap, ch, symbols, i, total);
-          total= result.item2;
-          if(result.item1 == JAB_FAILURE)
-          {
-              res = false;
-              break;
-          }
-        }
+  //detect and decode master symbol
+  if(_detectMaster(bitmap, ch, symbols[0])==JAB_SUCCESS) {
+  total++;
+  }
+  //detect and decode docked slave symbols recursively
+  if(total>0) {
+    for(int i=0; i<total && total<max_symbol_number; i++) {
+      var result = _decodeDockedSlaves(bitmap, ch, symbols, i, total);
+      total= result.item2;
+      if(result.item1 == JAB_FAILURE) {
+          res = false;
+          break;
+      }
     }
+  }
 
     //check result
-	if(total == 0 || (mode == NORMAL_DECODE && res == 0 ))
-	{
+	if(total == 0 || (mode == NORMAL_DECODE && res == 0 )) {
 		if(symbols[0].module_size > 0 && status as bool)
 			status = 1;
 		//clean memory
 		for(int i=0; i<3; ch[i++]= null); //free(ch[i++]
-		for(int i=0; i<=min(total, max_symbol_number-1); i++)
-		{
+		for(int i=0; i<=min(total, max_symbol_number-1); i++) {
 			symbols[i].palette= null;
 			symbols[i].data= null;
 		}
         return null;
 	}
-	if(mode == COMPATIBLE_DECODE && res == 0)
-	{
+	if(mode == COMPATIBLE_DECODE && res == 0) {
 		if(status!=0) status = 2;
 		res = true;
 	}
 
 	//concatenate the decoded data
-    int total_data_length = 0;
-    for(int i=0; i<total; i++)
-    {
-        total_data_length += symbols[i].data.length;
-    }
-    var decoded_bits = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
+  int total_data_length = 0;
+  for(int i=0; i<total; i++) {
+      total_data_length += symbols[i].data.length;
+  }
+  var decoded_bits = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
 	decoded_bits.data=Uint8List(total_data_length);
-    if(decoded_bits == null){
-        // reportError("Memory allocation for decoded bits failed");
-        if(status!=0) status = 1;
-        return null;
-    }
-    int offset = 0;
-    for(int i=0; i<total; i++)
-    {
-        var src = symbols[i].data.data;
-        var dst = decoded_bits.data;
-        // dst += offset;
-				dst.setRange(offset, symbols[i].data.length, src); // memcpy(dst, src, symbols[i].data.length);
-        offset += symbols[i].data.length;
-    }
-    decoded_bits.length = total_data_length;
-    //decode data
-    var decoded_data = decodeData(decoded_bits);
-    if(decoded_data == null)
-	{
-		// reportError("Decoding data failed");
-		if(status!=0) status = 1;
-		res = false;
-	}
+  if(decoded_bits == null) {
+      // reportError("Memory allocation for decoded bits failed");
+      if(status!=0) status = 1;
+      return null;
+  }
+  int offset = 0;
+  for(int i=0; i<total; i++) {
+      var src = symbols[i].data.data;
+      var dst = decoded_bits.data;
+      // dst += offset;
+      dst.setRange(offset, symbols[i].data.length, src); // memcpy(dst, src, symbols[i].data.length);
+      offset += symbols[i].data.length;
+  }
+  decoded_bits.length = total_data_length;
+  //decode data
+  var decoded_data = decodeData(decoded_bits);
+  if(decoded_data == null) {
+    // reportError("Decoding data failed");
+    if(status!=0) status = 1;
+    res = false;
+  }
 
-    //clean memory
-    for(int i=0; i<3; ch[i++]=null);
-    for(int i=0; i<=min(total, max_symbol_number-1); i++)
-    {
-			symbols[i].palette= null;
-			symbols[i].data= null;
-    }
+  //clean memory
+  for(int i=0; i<3; ch[i++]=null);
+  for(int i=0; i<=min(total, max_symbol_number-1); i++) {
+    symbols[i].palette= null;
+    symbols[i].data= null;
+  }
     // free(decoded_bits);
 // #if TEST_MODE
 // 	free(test_mode_bitmap);
 // #endif // TEST_MODE
 	if(res == 0) return null;
-	if(status!=0)
-	{
+	if(status!=0) {
 		if(status != 2)
 			status = 3;
 	}
-    return Tuple2<jab_data, int>(decoded_data, status);
+  return Tuple2<jab_data, int>(decoded_data, status);
 }
 
 // /**

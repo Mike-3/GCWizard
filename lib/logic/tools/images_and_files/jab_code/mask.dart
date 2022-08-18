@@ -409,44 +409,39 @@ const W3 = 3;
  * @param mask_type the mask pattern reference
  * @param color_number the number of module colors
 */
-void demaskSymbol(jab_data data, List<int> data_map, jab_vector2d symbol_size, int mask_type, int color_number)
-{
+void demaskSymbol(jab_data data, List<int> data_map, jab_vector2d symbol_size, int mask_type, int color_number) {
 	int symbol_width = symbol_size.x;
 	int symbol_height= symbol_size.y;
-    int count = 0;
-	for(int x=0; x<symbol_width; x++)
-	{
-		for(int y=0; y<symbol_height; y++)
-		{
-			if(data_map[y * symbol_width + x] == 0)
-			{
+	int count = 0;
+	for(int x=0; x<symbol_width; x++) {
+		for(int y=0; y<symbol_height; y++) {
+			if(data_map[y * symbol_width + x] == 0) {
 				if(count > data.length -1) return;
 				int index = data.data[count];
-				switch(mask_type)
-				{
+				switch(mask_type) {
 					case 0:
-                        index ^= (x + y) % color_number;
+						index ^= (x + y) % color_number;
 						break;
 					case 1:
-                        index ^= x % color_number;
+						index ^= x % color_number;
 						break;
 					case 2:
-                        index ^= y % color_number;
+						index ^= y % color_number;
 						break;
 					case 3:
-                        index ^= ((x / 2 + y / 3) % color_number).toInt();
+						index ^= ((x / 2 + y / 3) % color_number).toInt();
 						break;
 					case 4:
-                        index ^= ((x / 3 + y / 2) % color_number).toInt();
+						index ^= ((x / 3 + y / 2) % color_number).toInt();
 						break;
 					case 5:
-                        index ^= (((x + y) / 2 + (x + y) / 3) % color_number).toInt();
+						index ^= (((x + y) / 2 + (x + y) / 3) % color_number).toInt();
 						break;
 					case 6:
-                        index ^= ((x*x * y) % 7 + (2*x*x + 2*y) % 19) % color_number;
+						index ^= ((x*x * y) % 7 + (2*x*x + 2*y) % 19) % color_number;
 						break;
 					case 7:
-                        index ^= ((x * y*y) % 5 + (2*x + y*y) % 13) % color_number;
+						index ^= ((x * y*y) % 5 + (2*x + y*y) % 13) % color_number;
 						break;
 				}
 				data.data[count] = index;
