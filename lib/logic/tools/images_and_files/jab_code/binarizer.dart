@@ -460,8 +460,7 @@ void _getHistogram(jab_bitmap bitmap, int channel, List<int> hist) {
 	//get histogram
 	// memset(hist, 0, 256*sizeof(int));
 	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
-	for(int i=0; i<bitmap.width*bitmap.height; i++)
-	{
+	for(int i=0; i<bitmap.width*bitmap.height; i++) {
 		hist[bitmap.pixel[i*bytes_per_pixel + channel]]++;
 	}
 }
@@ -512,7 +511,7 @@ void balanceRGB(jab_bitmap bitmap) {
 	_getHistogram(bitmap, 2, hist_b);
 
 	//calculate max and min for each channel
-    //threshold for the number of pixels having the max or min values
+	//threshold for the number of pixels having the max or min values
 	int count_ths = 20;
 	var r = _getHistMaxMin(hist_r, count_ths);
 	var g = _getHistMaxMin(hist_g, count_ths);

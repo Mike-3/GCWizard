@@ -49,8 +49,8 @@ const INTERLEAVE_SEED = 226759;
 void deinterleaveData(jab_data data) {
   var index = List<int>.filled(data.length, 0); //malloc(data.length * sizeof(int));
   if(index == null) {
-      // reportError("Memory allocation for index buffer in deinterleaver failed");
-      return;
+    // reportError("Memory allocation for index buffer in deinterleaver failed");
+    return;
   }
   for(int i=0; i<data.length; i++) {
     index[i] = i;
@@ -72,7 +72,7 @@ void deinterleaveData(jab_data data) {
 
   tmp_data.insertAll(0, data.data); //memcpy(tmp_data, data.data, data.length*sizeof(jab_char));
 	for(int i=0; i<data.length; i++) {
-      data.data[index[i]] = tmp_data[i];
+    data.data[index[i]] = tmp_data[i];
   }
   // free(tmp_data);
   // free(index);

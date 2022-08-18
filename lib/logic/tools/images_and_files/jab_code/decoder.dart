@@ -133,8 +133,7 @@ void _interpolatePalette(Int8List palette, int color_number)
 				int sum = palette[offset + 480 + j] + palette[offset + 672 + j];
 				palette[offset + 576 + j] = (sum / 2) as int;
 			}
-		}
-		else
+		} else
 			return;
 	}
 }
