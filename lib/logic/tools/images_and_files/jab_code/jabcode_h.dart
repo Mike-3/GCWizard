@@ -100,7 +100,7 @@ class jab_point {
 */
 class jab_data {
 	int	length;
-	Uint8List	data;
+	String data; //Uint8List	data;
 }
 
 /**
@@ -152,10 +152,10 @@ class jab_encode {
 	int		master_symbol_width;
 	int		master_symbol_height;
 	Int8List		palette;				///< Palette holding used module colors in format RGB
-	jab_vector2d	symbol_versions;
+	List<jab_vector2d>	symbol_versions;
 	Int8List 		symbol_ecc_levels;
 	Int32List		symbol_positions;
-	jab_symbol		symbols;				///< Pointer to internal representation of JAB Code symbols
+	List<jab_symbol>		symbols;				///< Pointer to internal representation of JAB Code symbols
 	jab_bitmap		bitmap;
 }
 
