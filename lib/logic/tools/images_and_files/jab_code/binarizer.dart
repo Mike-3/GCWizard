@@ -358,8 +358,7 @@ int CAP(int val,int min,int max)	{return (val < min ? min : (val > max ? max : v
  * @brief Filter out noises in binary bitmap
  * @param binary the binarized bitmap
 */
-void _filterBinary(jab_bitmap binary)
-{
+void _filterBinary(jab_bitmap binary) {
 	int width = binary.width;
 	int height= binary.height;
 
@@ -376,14 +375,11 @@ void _filterBinary(jab_bitmap binary)
 
 	//horizontal filtering
 	var tmp = binary.clone(); // memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
-	for(int i=half_size; i<height-half_size; i++)
-	{
-		for(int j=half_size; j<width-half_size; j++)
-		{
+	for(int i=half_size; i<height-half_size; i++) {
+		for(int j=half_size; j<width-half_size; j++) {
 			int sum = 0;
 			sum += tmp.pixel[i*width + j] > 0 ? 1 : 0;
-			for(int k=1; k<=half_size; k++)
-			{
+			for(int k=1; k<=half_size; k++) {
 				sum += tmp.pixel[i*width + (j - k)] > 0 ? 1 : 0;
 				sum += tmp.pixel[i*width + (j + k)] > 0 ? 1 : 0;
 			}
@@ -392,14 +388,11 @@ void _filterBinary(jab_bitmap binary)
 	}
 	//vertical filtering
 	tmp = binary.clone(); //memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
-	for(int i=half_size; i<height-half_size; i++)
-	{
-		for(int j=half_size; j<width-half_size; j++)
-		{
+	for(int i=half_size; i<height-half_size; i++) {
+		for(int j=half_size; j<width-half_size; j++) {
 			int sum = 0;
 			sum += tmp.pixel[i*width + j] > 0 ? 1 : 0;
-			for(int k=1; k<=half_size; k++)
-			{
+			for(int k=1; k<=half_size; k++) {
 				sum += tmp.pixel[(i - k)*width + j] > 0 ? 1 : 0;
 				sum += tmp.pixel[(i + k)*width + j] > 0 ? 1 : 0;
 			}
@@ -463,8 +456,7 @@ void _filterBinary(jab_bitmap binary)
  * @param channel the channel
  * @param hist the histogram
 */
-void _getHistogram(jab_bitmap bitmap, int channel, List<int> hist)
-{
+void _getHistogram(jab_bitmap bitmap, int channel, List<int> hist) {
 	//get histogram
 	// memset(hist, 0, 256*sizeof(int));
 	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
@@ -481,24 +473,19 @@ void _getHistogram(jab_bitmap bitmap, int channel, List<int> hist)
  * @result item1 the min index
  * @result item2 the max index
 */
-Tuple2<int, int> _getHistMaxMin(List<int> hist, int ths)
-{
+Tuple2<int, int> _getHistMaxMin(List<int> hist, int ths) {
 	//get min
 	var min = 0;
-	for(int i=0; i<256; i++)
-	{
-		if(hist[i] > ths)
-		{
+	for(int i=0; i<256; i++) {
+		if(hist[i] > ths) {
 			min = i;
 			break;
 		}
 	}
 	//get max
 	var max = 255;
-	for(int i=255; i>=0; i--)
-	{
-		if(hist[i] > ths)
-		{
+	for(int i=255; i>=0; i--) {
+		if(hist[i] > ths) {
 			max = i;
 			break;
 		}
@@ -510,20 +497,19 @@ Tuple2<int, int> _getHistMaxMin(List<int> hist, int ths)
  * @brief Stretch the histograms of R, G and B channels
  * @param bitmap the image
 */
-void balanceRGB(jab_bitmap bitmap)
-{
+void balanceRGB(jab_bitmap bitmap) {
 	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
-    int bytes_per_row = bitmap.width * bytes_per_pixel;
+	int bytes_per_row = bitmap.width * bytes_per_pixel;
 
 	// int max_r, max_g, max_b;
 	//   int min_r, min_g, min_b;
-    var hist_r = List<int>.filled(256, 0);
+	var hist_r = List<int>.filled(256, 0);
 	var hist_g = List<int>.filled(256, 0);
 	var hist_b = List<int>.filled(256, 0);
 
-    _getHistogram(bitmap, 0, hist_r);
-    _getHistogram(bitmap, 1, hist_g);
-    _getHistogram(bitmap, 2, hist_b);
+	_getHistogram(bitmap, 0, hist_r);
+	_getHistogram(bitmap, 1, hist_g);
+	_getHistogram(bitmap, 2, hist_b);
 
 	//calculate max and min for each channel
     //threshold for the number of pixels having the max or min values
@@ -533,10 +519,8 @@ void balanceRGB(jab_bitmap bitmap)
 	var b = _getHistMaxMin(hist_b, count_ths);
 
 	//normalize each channel
-	for(int i=0; i<bitmap.height; i++)
-	{
-		for(int j=0; j<bitmap.width; j++)
-		{
+	for(int i=0; i<bitmap.height; i++) {
+		for(int j=0; j<bitmap.width; j++) {
 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 			//R channel
 			if		(bitmap.pixel[offset + 0] < r.item1)	bitmap.pixel[offset + 0] = 0;
@@ -560,14 +544,12 @@ void balanceRGB(jab_bitmap bitmap)
  * @result item1 the average value
  * @result item2 the variance value
  */
-Tuple2<double, double> getAveVar(Uint8List rgb)
-{
+Tuple2<double, double> getAveVar(Uint8List rgb) {
 	//calculate mean
 	var ave = (rgb[0] + rgb[1] + rgb[2]) / 3;
 	//calculate variance
 	var sum = 0.0;
-	for(var i=0; i<3; i++)
-	{
+	for(var i=0; i<3; i++) {
 		sum += (rgb[i] - ave) * (rgb[i] - ave);
 	}
 	return Tuple2<double, double>(ave, sum / 3);
@@ -576,8 +558,7 @@ Tuple2<double, double> getAveVar(Uint8List rgb)
 /**
  * @brief Swap two variables
 */
-void _swap(int a, int b, List<int> list)
-{
+void _swap(int a, int b, List<int> list) {
 	int tmp;
 	tmp = list[a];
 	list[a] = list[b];
@@ -591,8 +572,7 @@ void _swap(int a, int b, List<int> list)
  * @result item2 index middle value
  * @result item3 index max value
  */
-Tuple3<int, int, int> getMinMax(Uint8List rgb)
-{
+Tuple3<int, int, int> getMinMax(Uint8List rgb) {
 	const index_min = 0;
 	const index_mid = 1;
 	const index_max = 2;
@@ -616,14 +596,11 @@ Tuple3<int, int, int> getMinMax(Uint8List rgb)
  * @param blk_ths the black color thresholds for RGB channels
  * @return JAB_SUCCESS | JAB_FAILURE
 */
-int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
-{
-	for(int i=0; i<3; i++)
-	{
+int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths) {
+	for(int i=0; i<3; i++) {
 		rgb[i] = jab_bitmap(); //(jab_bitmap*)calloc(1, sizeof(jab_bitmap) + bitmap.width*bitmap.height*sizeof(jab_byte));
 		rgb[i].pixel= Uint8List(bitmap.width*bitmap.height);
-		if(rgb[i] == null)
-		{
+		if(rgb[i] == null) {
 			// JAB_REPORT_ERROR(("Memory allocation for binary bitmap %d failed", i))
 			return JAB_FAILURE;
 		}
@@ -645,17 +622,13 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 	int block_size_y = (bitmap.height/ block_num_y).toInt();
 	var pixel_ave = <List<double>>[]; //.filled(3, 0)>.filled(block_num_x*block_num_y, 0); //double pixel_ave[block_num_x*block_num_y][3];
 	// memset(pixel_ave, 0, sizeof(double)*block_num_x*block_num_y*3);
-	for(int i=0; i<block_num_x*block_num_y; i++)
-	{
+	for(int i=0; i<block_num_x*block_num_y; i++) {
 		pixel_ave.add(List<double>.filled(3, 0));
 	}
 	
-		if(blk_ths == null)
-    {
-		for(int i=0; i<block_num_y; i++)
-		{
-			for(int j=0; j<block_num_x; j++)
-			{
+	if(blk_ths == null) {
+		for(int i=0; i<block_num_y; i++) {
+			for(int j=0; j<block_num_x; j++) {
 				int block_index = i*block_num_x + j;
 
 				int sx = j * block_size_x;
@@ -663,53 +636,45 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 				int sy = i * block_size_y;
 				int ey = (i == block_num_y-1) ? bitmap.height: (sy + block_size_y);
 				double counter = 0;
-				for(int y=sy; y<ey; y++)
-				{
-						for(int x=sx; x<ex; x++)
-						{
-								int offset = y * bytes_per_row + x * bytes_per_pixel;
-								pixel_ave[block_index][0] += bitmap.pixel[offset + 0];
-								pixel_ave[block_index][1] += bitmap.pixel[offset + 1];
-								pixel_ave[block_index][2] += bitmap.pixel[offset + 2];
-								counter++;
-						}
+				for(int y=sy; y<ey; y++) {
+					for(int x=sx; x<ex; x++) {
+						int offset = y * bytes_per_row + x * bytes_per_pixel;
+						pixel_ave[block_index][0] += bitmap.pixel[offset + 0];
+						pixel_ave[block_index][1] += bitmap.pixel[offset + 1];
+						pixel_ave[block_index][2] += bitmap.pixel[offset + 2];
+						counter++;
+					}
 				}
 				pixel_ave[block_index][0] /= counter;
 				pixel_ave[block_index][1] /= counter;
 				pixel_ave[block_index][2] /= counter;
 			}
 		}
-    }
+	}
 
 	//binarize each pixel in each channel
 	double ths_std = 0.08;
 	var rgb_ths = List<double>.filled(3, 0); //[3] = {0, 0, 0};
-	for(int i=0; i<bitmap.height; i++)
-	{
-		for(int j=0; j<bitmap.width; j++)
-		{
+	for(int i=0; i<bitmap.height; i++) {
+		for(int j=0; j<bitmap.width; j++) {
 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 			//check black pixel
-			if(blk_ths == null)
-            {
-                int block_index = (min(i/block_size_y, block_num_y-1) * block_num_x + min(j/block_size_x, block_num_x-1)).toInt();
-                rgb_ths[0] = pixel_ave[block_index][0];
-                rgb_ths[1] = pixel_ave[block_index][1];
-                rgb_ths[2] = pixel_ave[block_index][2];
-            }
-            else
-            {
-                rgb_ths[0] = blk_ths[0];
-                rgb_ths[1] = blk_ths[1];
-                rgb_ths[2] = blk_ths[2];
-            }
-			if(bitmap.pixel[offset + 0] < rgb_ths[0] && bitmap.pixel[offset + 1] < rgb_ths[1] && bitmap.pixel[offset + 2] < rgb_ths[2])
-            {
-                rgb[0].pixel[i*bitmap.width + j] = 0;
-                rgb[1].pixel[i*bitmap.width + j] = 0;
-                rgb[2].pixel[i*bitmap.width + j] = 0;
-                continue;
-            }
+			if(blk_ths == null) {
+				int block_index = (min(i/block_size_y, block_num_y-1) * block_num_x + min(j/block_size_x, block_num_x-1)).toInt();
+				rgb_ths[0] = pixel_ave[block_index][0];
+				rgb_ths[1] = pixel_ave[block_index][1];
+				rgb_ths[2] = pixel_ave[block_index][2];
+			} else {
+				rgb_ths[0] = blk_ths[0];
+				rgb_ths[1] = blk_ths[1];
+				rgb_ths[2] = blk_ths[2];
+			}
+			if(bitmap.pixel[offset + 0] < rgb_ths[0] && bitmap.pixel[offset + 1] < rgb_ths[1] && bitmap.pixel[offset + 2] < rgb_ths[2]) {
+				rgb[0].pixel[i*bitmap.width + j] = 0;
+				rgb[1].pixel[i*bitmap.width + j] = 0;
+				rgb[2].pixel[i*bitmap.width + j] = 0;
+				continue;
+			}
 
 			// double ave, vari;
 			var result = getAveVar(bitmap.pixel.sublist(offset, offset + 4));
@@ -719,14 +684,11 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths)
 			var result1 = getMinMax(bitmap.pixel.sublist(offset, offset + 4));
 			std /= bitmap.pixel[offset + result1.item3].toDouble();	//normalize std
 
-			if(std < ths_std && (bitmap.pixel[offset + 0] > rgb_ths[0] && bitmap.pixel[offset + 1] > rgb_ths[1] && bitmap.pixel[offset + 2] > rgb_ths[2]))
-			{
+			if(std < ths_std && (bitmap.pixel[offset + 0] > rgb_ths[0] && bitmap.pixel[offset + 1] > rgb_ths[1] && bitmap.pixel[offset + 2] > rgb_ths[2])) {
 				rgb[0].pixel[i*bitmap.width + j] = 255;
 				rgb[1].pixel[i*bitmap.width + j] = 255;
 				rgb[2].pixel[i*bitmap.width + j] = 255;
-			}
-			else
-			{
+			} else {
 				rgb[result1.item3].pixel[i*bitmap.width + j] = 255; //index_max
 				rgb[result1.item1].pixel[i*bitmap.width + j] = 0; //index_min
 				double r1 = bitmap.pixel[offset + result1.item2] / bitmap.pixel[offset + result1.item1];

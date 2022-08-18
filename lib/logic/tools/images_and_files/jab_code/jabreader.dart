@@ -70,8 +70,7 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 	}
 
 	//output warning if the code is only partly decoded with COMPATIBLE_DECODE mode
-	if(decode_status == 2)
-	{
+	if(decode_status == 2) {
 		return Future.value(Tuple2<String, String> (null,
 				"The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
 		// JAB_REPORT_INFO(("The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
@@ -94,7 +93,7 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 		// for(int i=0; i<decoded_data.length; i++)
 		// 	print(decoded_data.data[i]);
 
-		return Future.value(Tuple2<String, String> (null, String.fromCharCodes(decoded_data.data)));
+	return Future.value(Tuple2<String, String> (null, String.fromCharCodes(decoded_data.data)));
 	// }
 
 	// free(bitmap);

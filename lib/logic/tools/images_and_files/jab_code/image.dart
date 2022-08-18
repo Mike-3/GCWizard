@@ -192,8 +192,7 @@ import 'jabcode_h.dart';
  * @param filename the image filename
  * @return Pointer to the code bitmap read from image | NULL
 */
-jab_bitmap readImage(Uint8List image)
-{
+jab_bitmap readImage(Uint8List image) {
 	// png_image image;
   //   memset(&image, 0, sizeof(image));
   //   image.version = PNG_IMAGE_VERSION;
@@ -204,34 +203,34 @@ jab_bitmap readImage(Uint8List image)
 	// {
 	// 	image.format = PNG_FORMAT_RGBA;
 
-		// bitmap = (jab_bitmap *)calloc(1, sizeof(jab_bitmap) + PNG_IMAGE_SIZE(image));
-		// if(bitmap == NULL)
-    //     {
-		// 	png_image_free(&image);
-		// 	reportError("Memory allocation failed");
-		// 	return NULL;
-		// }
+	// bitmap = (jab_bitmap *)calloc(1, sizeof(jab_bitmap) + PNG_IMAGE_SIZE(image));
+	// if(bitmap == NULL)
+	//     {
+	// 	png_image_free(&image);
+	// 	reportError("Memory allocation failed");
+	// 	return NULL;
+	// }
 
-		// bitmap.pixel= _image.data;
-		bitmap.width = _image.width;
-		bitmap.height= _image.height;
-		bitmap.bits_per_channel = BITMAP_BITS_PER_CHANNEL;
-		bitmap.bits_per_pixel = BITMAP_BITS_PER_PIXEL;
-		bitmap.channel_count = BITMAP_CHANNEL_COUNT;
+	// bitmap.pixel= _image.data;
+	bitmap.width = _image.width;
+	bitmap.height= _image.height;
+	bitmap.bits_per_channel = BITMAP_BITS_PER_CHANNEL;
+	bitmap.bits_per_pixel = BITMAP_BITS_PER_PIXEL;
+	bitmap.channel_count = BITMAP_CHANNEL_COUNT;
 
 	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
 	int bytes_per_row = bitmap.width * bytes_per_pixel;
 
-		bitmap.pixel = Uint8List(bitmap.width * bitmap.height * bitmap.channel_count);
-		for (int y=0; y<bitmap.height;y++) {
-			for (int x=0; x<bitmap.width;x++) {
-				var pixel = _image.getPixel(x, y);
-				var offset = y*bytes_per_row + x*bytes_per_pixel;
-				bitmap.pixel[offset+0]=Image.getRed(pixel);
-				bitmap.pixel[offset+1]=Image.getGreen(pixel);
-				bitmap.pixel[offset+2]=Image.getBlue(pixel);
-			}
+	bitmap.pixel = Uint8List(bitmap.width * bitmap.height * bitmap.channel_count);
+	for (int y=0; y<bitmap.height;y++) {
+		for (int x=0; x<bitmap.width;x++) {
+			var pixel = _image.getPixel(x, y);
+			var offset = y*bytes_per_row + x*bytes_per_pixel;
+			bitmap.pixel[offset+0]=Image.getRed(pixel);
+			bitmap.pixel[offset+1]=Image.getGreen(pixel);
+			bitmap.pixel[offset+2]=Image.getBlue(pixel);
 		}
+	}
 
 	//     if(png_image_finish_read(&image,
 		// 						 NULL/*background*/,

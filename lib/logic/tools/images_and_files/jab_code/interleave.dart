@@ -46,40 +46,34 @@ const INTERLEAVE_SEED = 226759;
  * @brief In-place deinterleaving
  * @param data the input data to be deinterleaved
 */
-void deinterleaveData(jab_data data)
-{
-    var index = List<int>.filled(data.length, 0); //malloc(data.length * sizeof(int));
-    if(index == null)
-    {
-        // reportError("Memory allocation for index buffer in deinterleaver failed");
-        return;
-    }
-    for(int i=0; i<data.length; i++)
-    {
-		index[i] = i;
-    }
-    //interleave index
-    setSeed(INTERLEAVE_SEED);
-    for(int i=0; i<data.length; i++)
-    {
-		int pos = ( lcg64_temper() / UINT32_MAX * (data.length - i) ).toInt();
-		int tmp = index[data.length - 1 - i];
-		index[data.length - 1 -i] = index[pos];
-		index[pos] = tmp;
-    }
-    //deinterleave data
-    var tmp_data = Int8List(data.length); // (jab_char *)malloc(data.length * sizeof(jab_char));
-    if(tmp_data == null)
-    {
-        // reportError("Memory allocation for temporary buffer in deinterleaver failed");
-        return;
-    }
+void deinterleaveData(jab_data data) {
+  var index = List<int>.filled(data.length, 0); //malloc(data.length * sizeof(int));
+  if(index == null) {
+      // reportError("Memory allocation for index buffer in deinterleaver failed");
+      return;
+  }
+  for(int i=0; i<data.length; i++) {
+    index[i] = i;
+  }
+  //interleave index
+  setSeed(INTERLEAVE_SEED);
+  for(int i=0; i<data.length; i++) {
+    int pos = ( lcg64_temper() / UINT32_MAX * (data.length - i) ).toInt();
+    int tmp = index[data.length - 1 - i];
+    index[data.length - 1 -i] = index[pos];
+    index[pos] = tmp;
+  }
+  //deinterleave data
+  var tmp_data = Int8List(data.length); // (jab_char *)malloc(data.length * sizeof(jab_char));
+  if(tmp_data == null) {
+    // reportError("Memory allocation for temporary buffer in deinterleaver failed");
+    return;
+  }
 
-    tmp_data.insertAll(0, data.data); //memcpy(tmp_data, data.data, data.length*sizeof(jab_char));
-	for(int i=0; i<data.length; i++)
-    {
-        data.data[index[i]] = tmp_data[i];
-    }
-    // free(tmp_data);
-    // free(index);
+  tmp_data.insertAll(0, data.data); //memcpy(tmp_data, data.data, data.length*sizeof(jab_char));
+	for(int i=0; i<data.length; i++) {
+      data.data[index[i]] = tmp_data[i];
+  }
+  // free(tmp_data);
+  // free(index);
 }

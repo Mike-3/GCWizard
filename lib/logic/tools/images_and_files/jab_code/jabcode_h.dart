@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:ffi';
 import 'dart:typed_data';
 
 /**
@@ -76,6 +75,7 @@ int SIZE2VERSION(int x) { return ((x - 17) / 4).toInt();}
 class jab_vector2d {
 	int	x;
 	int	y;
+
 	jab_vector2d(intx, inty) {
 		this.x = x;
 		this.y = y;
@@ -88,6 +88,7 @@ class jab_vector2d {
 class jab_point {
 	double	x;
 	double	y;
+
 	jab_point(double x, double y) {
 		this.x = x;
 		this.y = y;
@@ -106,24 +107,24 @@ class jab_data {
  * @brief Code bitmap
 */
 class jab_bitmap {
-   int	width;
-   int	height;
-   int	bits_per_pixel;
-   int	bits_per_channel;
-   int	channel_count;
-   Uint8List		pixel;
+	int	width;
+	int	height;
+	int	bits_per_pixel;
+	int	bits_per_channel;
+	int	channel_count;
+	Uint8List		pixel;
 
-	 jab_bitmap clone() {
-		 var _clone = jab_bitmap();
-		 _clone.width = width;
-		 _clone.height = height;
-		 _clone.bits_per_pixel = bits_per_pixel;
-		 _clone.bits_per_channel = bits_per_channel;
-		 _clone.channel_count = channel_count;
-		 _clone.pixel = Uint8List.fromList(pixel);
+	jab_bitmap clone() {
+		var _clone = jab_bitmap();
+		_clone.width = width;
+		_clone.height = height;
+		_clone.bits_per_pixel = bits_per_pixel;
+		_clone.bits_per_channel = bits_per_channel;
+		_clone.channel_count = channel_count;
+		_clone.pixel = Uint8List.fromList(pixel);
 
-		 return _clone;
-	 }
+		return _clone;
+	}
 }
 
 /**
