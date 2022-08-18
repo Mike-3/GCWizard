@@ -802,13 +802,10 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 		//write the bits into part2
 		for(int i=0; i<bits_per_module; i++) {
 			var bit = (bits >> (bits_per_module - 1 - i)) & 0x01;
-			if(part2_bit_count < MASTER_METADATA_PART2_LENGTH)
-			{
+			if(part2_bit_count < MASTER_METADATA_PART2_LENGTH) {
 				part2[part2_bit_count] = bit;
 				part2_bit_count++;
-			}
-			else	//if part2 is full, stop
-			{
+			} else {	//if part2 is full, stop
 				break;
 			}
 		}
@@ -1198,8 +1195,7 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	}
 	//decode metadata for docked slave symbols
 	for(int i=0; i<4; i++) {
-		if((symbol.metadata.docked_position & (0x08 >> i)) != 0)
-		{
+		if((symbol.metadata.docked_position & (0x08 >> i)) != 0) {
 			int read_bit_length = _decodeSlaveMetadata(symbol, i, raw_data, metadata_offset);
 			if(read_bit_length == DECODE_METADATA_FAILED) {
 				// free(raw_data);
@@ -1398,13 +1394,13 @@ jab_data decodeData(jab_data bits) {
 		int value = 0;
 		int n;
 		if(mode != jab_encode_mode.Byte) {
-				var result = _readData(bits, index, character_size[mode]);
-				n = result.item1;
-				value = result.item2;
-				if(n < character_size[mode])	//did not read enough bits
-						break;
-				//update index
-				index += character_size[mode];
+			var result = _readData(bits, index, character_size[mode]);
+			n = result.item1;
+			value = result.item2;
+			if(n < character_size[mode])	//did not read enough bits
+					break;
+			//update index
+			index += character_size[mode];
 		}
 
 		//decode value
@@ -1533,8 +1529,7 @@ jab_data decodeData(jab_data bits) {
 					decoded_bytes[count++] = jab_decoding_table_numeric[value];
 					if(pre_mode != jab_encode_mode.None)
 						mode = pre_mode;
-				}
-				else {
+				} else {
 					switch(value) {
 						case 13:
 							mode = jab_encode_mode.Punct;
@@ -1575,7 +1570,7 @@ jab_data decodeData(jab_data bits) {
 							}
 							break;
 						default:
-						// reportError("Invalid value decoded");
+							// reportError("Invalid value decoded");
 							decoded_bytes = null ; //free(decoded_bytes);
 							return null;
 					}

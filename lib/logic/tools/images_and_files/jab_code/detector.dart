@@ -1536,7 +1536,7 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
           //check red channel
           module_size_r = module_size_g;
           int core_color_in_red_channel = jab_default_palette[FP3_CORE_COLOR * 3 + 0];
-          if(_crossCheckColor(ch[0], core_color_in_red_channel, module_size_r.toInt(), 5, centerx_r.toInt(), i, 0)== JAB_SUCCESS) {
+          if(_crossCheckColor(ch[0], core_color_in_red_channel, module_size_r.toInt(), 5, centerx_r.toInt(), i, 0) == JAB_SUCCESS) {
             type_r = 0;
             finder_pattern1_found = JAB_SUCCESS;
           }
@@ -1562,7 +1562,7 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
           var fp= jab_finder_pattern();
           fp.center = jab_point(fp.center.x, i.toDouble() );
           fp.found_count = 1;
-          if(finder_pattern1_found!=0) {
+          if(finder_pattern1_found == JAB_SUCCESS) {
             if(!_checkModuleSize2(module_size_g, module_size_b)) continue;
             fp.center = jab_point((centerx_g + centerx_b) / 2.0, fp.center.y);
             fp.module_size = (module_size_g + module_size_b) / 2.0;
@@ -1572,25 +1572,25 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
             {
               fp.type = FP0;	//candidate for fp0
             } else if(type_r == jab_default_palette[FP3_CORE_COLOR * 3] &&
-                type_g == jab_default_palette[FP3_CORE_COLOR * 3 + 1] &&
-                type_b == jab_default_palette[FP3_CORE_COLOR * 3 + 2])
+              type_g == jab_default_palette[FP3_CORE_COLOR * 3 + 1] &&
+              type_b == jab_default_palette[FP3_CORE_COLOR * 3 + 2])
             {
               fp.type = FP3;	//candidate for fp3
             } else {
               continue;		//invalid type
             }
-          } else if(finder_pattern2_found==JAB_SUCCESS) {
+          } else if(finder_pattern2_found == JAB_SUCCESS) {
             if(!_checkModuleSize2(module_size_r, module_size_g)) continue;
             fp.center = jab_point((centerx_r + centerx_g) / 2.0, fp.center.y);
             fp.module_size = (module_size_r + module_size_g) / 2.0;
             if(type_r == jab_default_palette[FP1_CORE_COLOR * 3] &&
-               type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
-               type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
+              type_g == jab_default_palette[FP1_CORE_COLOR * 3 + 1] &&
+              type_b == jab_default_palette[FP1_CORE_COLOR * 3 + 2])
             {
               fp.type = FP1;	//candidate for fp1
             } else if(type_r == jab_default_palette[FP2_CORE_COLOR * 3] &&
-                type_g == jab_default_palette[FP2_CORE_COLOR * 3 + 1] &&
-                type_b == jab_default_palette[FP2_CORE_COLOR * 3 + 2])
+              type_g == jab_default_palette[FP2_CORE_COLOR * 3 + 1] &&
+              type_b == jab_default_palette[FP2_CORE_COLOR * 3 + 2])
             {
               fp.type = FP2;	//candidate for fp2
             } else {
@@ -1861,7 +1861,7 @@ Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point 
   state_index=0;
   for(i=1; i<=centery && state_index<=1; i++) {
     if( image.pixel[(centery-i)*image.width + centerx] == image.pixel[(centery-(i-1))*image.width + centerx] ) {
-        state_count[1 - state_index]++;
+      state_count[1 - state_index]++;
     } else {
       if(state_index > 0 && state_count[1 - state_index] < 3) {
         state_count[1 - (state_index-1)] += state_count[1 - state_index];
@@ -1880,7 +1880,7 @@ Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point 
   state_index=0;
   for(i=1; (centery+i)<image.height && state_index<=1; i++) {
     if( image.pixel[(centery+i)*image.width + centerx] == image.pixel[(centery+(i-1))*image.width + centerx] ) {
-        state_count[1 + state_index]++;
+      state_count[1 + state_index]++;
     } else {
       if(state_index > 0 && state_count[1 + state_index] < 3) {
         state_count[1 + (state_index-1)] += state_count[1 + state_index];
@@ -1948,13 +1948,13 @@ Tuple2<double, double> _crossCheckPatternHorizontalAP(List<int> row, int channel
   state_index=0;
   for(i=1; (centerx-i)>=startx && state_index<=1; i++) {
     if( row[centerx - i] == row[centerx - (i-1)] ) {
-        state_count[1 - state_index]++;
+      state_count[1 - state_index]++;
     } else {
       if(state_index > 0 && state_count[1 - state_index] < 3) {
-          state_count[1 - (state_index-1)] += state_count[1 - state_index];
-          state_count[1 - state_index] = 0;
-          state_index--;
-          state_count[1 - state_index]++;
+        state_count[1 - (state_index-1)] += state_count[1 - state_index];
+        state_count[1 - state_index] = 0;
+        state_index--;
+        state_count[1 - state_index]++;
       } else {
         state_index++;
         if(state_index > 1) break;
@@ -2262,8 +2262,8 @@ jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, doubl
 int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol host_symbol, jab_decoded_symbol slave_symbol, int docked_position) {
   var aps = List<jab_alignment_pattern>.filled (4, null); //calloc(4, sizeof(jab_alignment_pattern));
   if(aps == null) {
-      // reportError("Memory allocation for alignment patterns failed");
-      return JAB_FAILURE;
+    // reportError("Memory allocation for alignment patterns failed");
+    return JAB_FAILURE;
   }
 
   //get slave symbol side size from its metadata
@@ -2288,11 +2288,11 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
   switch(docked_position) {
     case 3:
       /*
-          fp[0] ... fp[1] .. ap[0] ... ap[1]
-            .         .         .         .
-            .  master .         .  slave  .
-            .         .         .         .
-          fp[3] ... fp[2] .. ap[3] ... ap[2]
+      fp[0] ... fp[1] .. ap[0] ... ap[1]
+        .         .         .         .
+        .  master .         .  slave  .
+        .         .         .         .
+      fp[3] ... fp[2] .. ap[3] ... ap[2]
       */
       alpha1 = atan2(disty01, distx01);
       alpha2 = atan2(disty32, distx32);
@@ -2309,11 +2309,11 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
       break;
     case 2:
       /*
-          ap[0] ... ap[1] .. fp[0] ... fp[1]
-            .         .        .         .
-            .  slave  .        .  master .
-            .         .        .         .
-          ap[3] ... ap[2] .. fp[3] ... fp[2]
+      ap[0] ... ap[1] .. fp[0] ... fp[1]
+        .         .        .         .
+        .  slave  .        .  master .
+        .         .        .         .
+      ap[3] ... ap[2] .. fp[3] ... fp[2]
       */
       alpha1 = atan2(disty32, distx32);
       alpha2 = atan2(disty01, distx01);
@@ -2330,18 +2330,18 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
       break;
     case 1:
       /*
-          fp[0] ... fp[1]
-            .         .
-            .  master .
-            .         .
-          fp[3] ... fp[2]
-            .			.
-            . 		.
-          ap[0] ... ap[1]
-            .         .
-            .  slave  .
-            .         .
-          ap[3] ... ap[2]
+      fp[0] ... fp[1]
+        .         .
+        .  master .
+        .         .
+      fp[3] ... fp[2]
+        .			.
+        . 		.
+      ap[0] ... ap[1]
+        .         .
+        .  slave  .
+        .         .
+      ap[3] ... ap[2]
       */
       alpha1 = atan2(disty12, distx12);
       alpha2 = atan2(disty03, distx03);
@@ -2358,18 +2358,18 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
       break;
     case 0:
       /*
-          ap[0] ... ap[1]
-            .         .
-            .  slave  .
-            .         .
-          ap[3] ... ap[2]
-            .			.
-            . 		.
-          fp[0] ... fp[1]
-            .         .
-            .  master .
-            .         .
-          fp[3] ... fp[2]
+      ap[0] ... ap[1]
+        .         .
+        .  slave  .
+        .         .
+      ap[3] ... ap[2]
+        .			.
+        . 		.
+      fp[0] ... fp[1]
+        .         .
+        .  master .
+        .         .
+      fp[3] ... fp[2]
       */
       alpha1 = atan2(disty03, distx03);
       alpha2 = atan2(disty12, distx12);
@@ -2392,8 +2392,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
   //find the alignment pattern around ap1
   aps[ap1] = _findAlignmentPattern(ch, aps[ap1].center.x, aps[ap1].center.y, host_symbol.module_size, ap1);
   if(aps[ap1].found_count == 0) {
-      // JAB_REPORT_ERROR(("The first alignment pattern in slave symbol %d not found", slave_symbol.index))
-      return JAB_FAILURE;
+    // JAB_REPORT_ERROR(("The first alignment pattern in slave symbol %d not found", slave_symbol.index))
+    return JAB_FAILURE;
   }
   //calculate the coordinate of ap2
   aps[ap2].center.x = host_symbol.pattern_positions[hp2].x + sign * 7 * host_symbol.module_size * cos(alpha2);
@@ -2401,8 +2401,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
   //find alignment pattern around ap2
   aps[ap2] = _findAlignmentPattern(ch, aps[ap2].center.x, aps[ap2].center.y, host_symbol.module_size, ap2);
   if(aps[ap2].found_count == 0) {
-      // JAB_REPORT_ERROR(("The second alignment pattern in slave symbol %d not found", slave_symbol.index))
-      return JAB_FAILURE;
+    // JAB_REPORT_ERROR(("The second alignment pattern in slave symbol %d not found", slave_symbol.index))
+    return JAB_FAILURE;
   }
 
   //estimate the module size in the slave symbol
@@ -2421,8 +2421,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
 
   //if neither ap3 nor ap4 is found, failed
   if(aps[ap3].found_count == 0 && aps[ap4].found_count == 0) {
-      // free(aps);
-      return JAB_FAILURE;
+    // free(aps);
+    return JAB_FAILURE;
   }
   //if only 3 aps are found, try anyway by estimating the coordinate of the fourth one
   if(aps[ap3].found_count == 0) {
@@ -2485,15 +2485,15 @@ Tuple2<int, int> _getSideSize(int size) {
 	var flag = 1;
   switch (size & 0x03) { //mod 4
   case 0:
-      size++;
-      break;
+    size++;
+    break;
   case 2:
-      size--;
-      break;
+    size--;
+    break;
   case 3:
-      size += 2;	//error is bigger than 1, guess the next version and try anyway
-      flag = 0;
-      break;
+    size += 2;	//error is bigger than 1, guess the next version and try anyway
+    flag = 0;
+    break;
   }
   if(size < 21) {
 		size = -1;
@@ -3109,7 +3109,7 @@ List<double> _getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> f
 int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol master_symbol) {
   //find master symbol
   int status;
-  var result =  _findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
+  var result = _findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
   status = result.item1;
   var fps = result.item2;
   if(status == FATAL_ERROR) return JAB_FAILURE;
@@ -3123,7 +3123,7 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
     //binarize the bitmap using the average pixel values as thresholds
     for(int i=0; i<3;i++) ch[i]= null;
     if(binarizerRGB(bitmap, ch, rgb_ave)==0) {
-        return JAB_FAILURE;
+      return JAB_FAILURE;
     }
     //find master symbol
     result = _findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
@@ -3323,7 +3323,7 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
 	//binarize r, g, b channels
 	var ch = List<jab_bitmap>.filled(3, null);
 	balanceRGB(bitmap);
-    if(binarizerRGB(bitmap, ch, null) == 0) {
+  if(binarizerRGB(bitmap, ch, null) == 0) {
 		return null;
 	}
 // #if TEST_MODE
@@ -3358,9 +3358,9 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
       var result = _decodeDockedSlaves(bitmap, ch, symbols, i, total);
       total= result.item2;
       if(result.item1 == JAB_FAILURE) {
-          res = false;
-          break;
-      }
+        res = false;
+        break;
+     }
     }
   }
 
