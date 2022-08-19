@@ -557,11 +557,10 @@ Tuple2<double, double> getAveVar(Uint8List rgb) {
 /**
  * @brief Swap two variables
 */
-void _swap(int a, int b, List<int> list) {
-	int tmp;
-	tmp = list[a];
-	list[a] = list[b];
-	list[b] = tmp;
+void _swap(int index1, int index2, List<int> list) {
+	int tmp = list[index1];
+	list[index1] = list[index2];
+	list[index2] = tmp;
 }
 
 /**

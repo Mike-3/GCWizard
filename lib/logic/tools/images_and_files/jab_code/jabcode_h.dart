@@ -100,7 +100,7 @@ class jab_point {
 */
 class jab_data {
 	int	length;
-	String data; //Uint8List	data;
+	Uint8List data;
 }
 
 /**
@@ -134,8 +134,8 @@ class jab_symbol {
 	int		index;
 	jab_vector2d	side_size;
 	int		host;
-	var		slaves = List<int>.filled(4,0); //[4]
-	var 		wcwr =  List<int>.filled(2,0); //[2]
+	var		slaves = List<int>.filled(4,0);
+	var 		wcwr =  List<int>.filled(2,0);
 	jab_data		data;
 	Int8List		data_map;
 	jab_data		metadata;

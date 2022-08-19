@@ -39,8 +39,8 @@ import 'mask.dart';
 
 
 
-_memcpy(Int8List palette,int dst, int src, int length) {
-	palette.replaceRange(dst, dst + length, palette.getRange(src, src + length));
+_memcpy(Int8List dst, int dst_offset, int src_offset, int length) {
+	dst.replaceRange(dst_offset, dst_offset + length, dst.getRange(src_offset, src_offset + length));
 }
 
 /**
@@ -251,7 +251,9 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
 		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		_getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		var result = getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		x = result.item1;
+		y = result.item2;
 
 		//color palette 1
 		color_index = master_palette_placement_index[1][color_counter] % color_number; //for 4-color and 8-color symbols
@@ -260,7 +262,9 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
 		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		_getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		result = getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		x = result.item1;
+		y = result.item2;
 
 		//color palette 2
 		color_index = master_palette_placement_index[2][color_counter] % color_number; //for 4-color and 8-color symbols
@@ -269,7 +273,9 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
 		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		_getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		result = getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		x = result.item1;
+		y = result.item2;
 
 		//color palette 3
 		color_index = master_palette_placement_index[3][color_counter] % color_number; //for 4-color and 8-color symbols
@@ -278,7 +284,9 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
 		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		_getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		result = getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		x = result.item1;
+		y = result.item2;
 
 		//next color
 		color_counter++;
@@ -587,8 +595,10 @@ void _getPaletteThreshold(Int8List palette, int color_number, List<double> palet
  * @param next_module_count the index number of the next module
  * @param x the x coordinate of the current and the next module
  * @param y the y coordinate of the current and the next module
+ * @result x the x coordinate of the current and the next module
+ * @result y the y coordinate of the current and the next module
 */
-void _getNextMetadataModuleInMaster(int matrix_height, int matrix_width, int next_module_count, int x, int y) {//ToDo x und y als Referenz/ Rückgabewert
+Tuple2<int, int> getNextMetadataModuleInMaster(int matrix_height, int matrix_width, int next_module_count, int x, int y) {
 	if(next_module_count % 4 == 0 || next_module_count % 4 == 2) {
 		y = matrix_height - 1 - y;
 	}
@@ -608,11 +618,12 @@ void _getNextMetadataModuleInMaster(int matrix_height, int matrix_width, int nex
 			x -= 1;
 		}
 	}
-    if(next_module_count == 44 || next_module_count == 96 || next_module_count == 156) {
-        int tmp = x;
-        x = y;
-        y = tmp;
-    }
+	if(next_module_count == 44 || next_module_count == 96 || next_module_count == 156) {
+		int tmp = x;
+		x = y;
+		y = tmp;
+	}
+	return Tuple2<int, int>(x, y);
 }
 
 /**
@@ -734,7 +745,9 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		_getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		var result = getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		x = result.item1;
+		y = result.item2;
 	}
 
 	//decode encoded Nc
@@ -813,7 +826,9 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 		data_map[y * matrix.width + x] = 1;
 		//go to the next module
 		module_count++;
-		_getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		var result = getNextMetadataModuleInMaster(matrix.height, matrix.width, module_count, x, y);
+		x = result.item1;
+		y = result.item2;
 	}
 
 	//decode ldpc for part2
