@@ -18,10 +18,13 @@
 // 	printf("\n");
 // }
 
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:tuple/tuple.dart';
+import 'package:utility/utility.dart';
 
 import 'detector.dart';
+import 'encoder.dart';
 import 'image.dart';
 import 'jabcode_h.dart';
 
@@ -30,24 +33,6 @@ import 'jabcode_h.dart';
  * @return 0: success | 255: not detectable | other non-zero: decoding failed
 */
 Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
-	// if(argc < 2 || (0 == strcmp(argv[1],"--help")))
-	// {
-	// 	printUsage();
-	// 	return 255;
-	// }
-
-	bool output_as_file = false;
-	// if(argc > 2)
-	// {
-	// 	if(0 == strcmp(argv[2], "--output"))
-	// 		output_as_file = true;
-	// 	else
-	// 	{
-	// 		// printf("Unknown parameter: %s\n", argv[2]);
-	// 		return 255;
-	// 	}
-	// }
-
 	//load image
 	var bitmap = readImage(bytes); //argv[1]
 
@@ -76,27 +61,29 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 		// JAB_REPORT_INFO(("The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
 	}
 
-	//output result
-	// if(output_as_file)
-	// {
-	// 	// FILE* output_file = fopen(argv[3], "wb");
-	// 	// if(output_file == null)
-	// 	// {
-	// 	// 	// reportError("Can not open the output file");
-	// 	// 	return 255;
-	// 	// }
-	// 	// fwrite(decoded_data.data, decoded_data.length, 1, output_file);
-	// 	// fclose(output_file);
-	// }
-	// else
-	// {
-		// for(int i=0; i<decoded_data.length; i++)
-		// 	print(decoded_data.data[i]);
-
 	return Future.value(Tuple2<String, String> (null, String.fromCharCodes(decoded_data.data)));
-	// }
+}
 
-	// free(bitmap);
-	// free(decoded_data);
-  //   return 0;
+/// Generating Bar Code
+Future<Uint8List> generateJabCode(String code,
+		{int color_number = 8,
+			int moduleSize = 12,
+			int symbol_number = 1,
+			int border = 10}) async {
+	if (code == null || code == "") return null;
+
+	var enc = createEncode(color_number, symbol_number);
+	var data = jab_data();
+	data.data = utf8.encode(code);
+	data.length= data.data.length;
+
+	var result = generateJABCode(enc, data) ;
+	if (result != 0) return null;
+enc.bitmap
+	var qrCode = qr.QrCode.fromData(
+		data: code,
+		errorCorrectLevel: qr.QrErrorCorrectLevel.L,
+	);
+	moduleSize = max(1, moduleSize);
+	return _createQrCode(qrCode, moduleSize.toDouble(), border.toDouble());
 }
