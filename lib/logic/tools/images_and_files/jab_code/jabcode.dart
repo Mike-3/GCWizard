@@ -64,12 +64,12 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 	return Future.value(Tuple2<String, String> (null, String.fromCharCodes(decoded_data.data)));
 }
 
-/// Generating Bar Code
+/// Generating Jab Code
 Future<Uint8List> generateJabCode(String code,
 		{int color_number = 8,
 			int moduleSize = 12,
 			int symbol_number = 1,
-			int border = 10}) async {
+			double border = 10}) async {
 	if (code == null || code == "") return null;
 
 	var enc = createEncode(color_number, symbol_number);
@@ -79,11 +79,6 @@ Future<Uint8List> generateJabCode(String code,
 
 	var result = generateJABCode(enc, data) ;
 	if (result != 0) return null;
-enc.bitmap
-	var qrCode = qr.QrCode.fromData(
-		data: code,
-		errorCorrectLevel: qr.QrErrorCorrectLevel.L,
-	);
-	moduleSize = max(1, moduleSize);
-	return _createQrCode(qrCode, moduleSize.toDouble(), border.toDouble());
+
+	return saveImage(enc.bitmap, border);
 }

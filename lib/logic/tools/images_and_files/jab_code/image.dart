@@ -230,7 +230,7 @@ jab_bitmap readImage(Uint8List image) {
 Future<Uint8List> saveImage(jab_bitmap bitmap, double border) async {
 	if (bitmap == null) return null;
 
-	var _image = Image.Image.rgb(bitmap.width, bitmap.height);
+	var _image = Image.Image(bitmap.width, bitmap.height);
 	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
 	int bytes_per_row = bitmap.width * bytes_per_pixel;
 
@@ -249,5 +249,5 @@ Future<Uint8List> saveImage(jab_bitmap bitmap, double border) async {
 	if (border > 0)
 		data = await addBorder(data, border: border);
 
-	return data;
+	return Future.value(data);
 }

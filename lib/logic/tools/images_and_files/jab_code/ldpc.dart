@@ -30,6 +30,9 @@ import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random_h.
 import 'jabcode_h.dart';
 import 'ldpc_h.dart';
 
+const LPDC_METADATA_SEED =	38545;
+const LPDC_MESSAGE_SEED =	785465;
+
 /**
  * @brief Create matrix A for message data
  * @param wc the number of '1's in a column
