@@ -9,7 +9,7 @@
 
 
  Symbol sampling
- */
+*/
 
 import 'transform.dart';
 import 'detector_h.dart';

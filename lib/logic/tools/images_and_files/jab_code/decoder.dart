@@ -980,7 +980,7 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 
 	//read raw data
 	var raw_module_data = _readRawModuleData(matrix, symbol, data_map, norm_palette, pal_ths);
-	if(raw_module_data == null) {;
+	if(raw_module_data == null) {
 		return FATAL_ERROR;
 	}
 
@@ -989,7 +989,6 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 
 	//change to one-bit-per-byte representation
 	var raw_data = _rawModuleData2RawData(raw_module_data, symbol.metadata.Nc + 1);
-
 	if(raw_data == null) {
 		return FATAL_ERROR;
 	}
@@ -1102,8 +1101,7 @@ int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	x = result.item3;
 	y = result.item3;
 	if(result.item1 != JAB_SUCCESS) {
-		// reportError("Reading color palettes in master symbol failed");
-		return JAB_FAILURE;
+		return JAB_FAILURE; //Reading color palettes in master symbol failed
 	}
 
 	//normalize the RGB values in color palettes
@@ -1205,7 +1203,7 @@ jab_data decodeData(jab_data bits) {
 			n = result.item1;
 			value = result.item2;
 			if(n < character_size[mode])	//did not read enough bits
-					break;
+				break;
 			//update index
 			index += character_size[mode];
 		}

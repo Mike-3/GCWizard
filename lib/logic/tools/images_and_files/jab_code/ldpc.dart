@@ -231,7 +231,6 @@ List<int> _createMetadataMatrixA(int wc, int capacity) {
       permutation[pos] = tmp;
     }
   }
-  // free(permutation);
   return matrixA;
 }
 

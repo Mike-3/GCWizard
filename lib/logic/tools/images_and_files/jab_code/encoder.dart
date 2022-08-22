@@ -1830,7 +1830,7 @@ int generateJABCode(jab_encode enc, jab_data data) {
   //encode data using optimal encoding modes
   var encoded_data = _encodeData(data, encoded_length, encode_seq);
   if(encoded_data == null) {
-      return 1;
+    return 1;
   }
   //set master symbol version if not given
   if(enc.symbol_number == 1 && (enc.symbol_versions[0].x == 0 || enc.symbol_versions[0].y == 0)) {

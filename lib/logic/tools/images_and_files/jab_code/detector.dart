@@ -35,7 +35,7 @@ Tuple2<int, double> _checkPatternCross(List<int> state_count) {
   double module_size;
   for(int i=1; i<layer_number+1; i++) {
     if(state_count[i] == 0)
-        return Tuple2<int, double>(JAB_FAILURE, module_size);
+      return Tuple2<int, double>(JAB_FAILURE, module_size);
     inside_layer_size += state_count[i];
   }
 
@@ -92,14 +92,14 @@ Tuple6<int, int, int, double, double, int> _seekPattern(jab_bitmap ch, int row, 
   int min = start;
   int max = end;
   for(int p=min; p<max; p++) {
-      //first pixel in a scanline
-      if(p == min) {
-          state_count[cur_state]++;
-          start = p;
-      } else {
-        //previous pixel and current pixel
-        int prev;
-        int curr;
+    //first pixel in a scanline
+    if(p == min) {
+        state_count[cur_state]++;
+        start = p;
+    } else {
+      //previous pixel and current pixel
+      int prev;
+      int curr;
     if(row >= 0) {		//horizontal scan
       prev = ch.pixel[row*ch.width + (p-1)];
       curr = ch.pixel[row*ch.width + p];
@@ -198,8 +198,8 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
   for(int j=min; j<max; j++) {
     //first pixel in a scanline
     if(j == min) {
-        state_count[cur_state]++;
-        startx = j;
+      state_count[cur_state]++;
+      startx = j;
     } else {
       //the pixel has the same color as the preceding pixel
       if(row[j] == row[j-1]) {
@@ -250,12 +250,12 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
             return Tuple6<int, int, int, double, double, int>(JAB_SUCCESS, startx, endx, centerx, module_size, skip);
 
           } else { //check failed, update state_count
-              startx += state_count[0];
-              for(int k=0; k<state_number-1; k++) {
-                  state_count[k] = state_count[k+1];
-              }
-              state_count[state_number-1] = 1;
-              cur_state = state_number-1;
+            startx += state_count[0];
+            for(int k=0; k<state_number-1; k++) {
+                state_count[k] = state_count[k+1];
+            }
+            state_count[state_number-1] = 1;
+            cur_state = state_number-1;
           }
         }
       }
