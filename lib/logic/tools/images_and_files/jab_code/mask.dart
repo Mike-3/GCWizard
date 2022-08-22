@@ -1,38 +1,29 @@
 import 'encoder_h.dart';
 import 'jabcode_h.dart';
 
-/**
- * libjabcode - JABCode Encoding/Decoding Library
- *
- * Copyright 2016 by Fraunhofer SIT. All rights reserved.
- * See LICENSE file for full terms of use and distribution.
- *
- * Contact: Huajian Liu <liu@sit.fraunhofer.de>
- *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
- *
- * @file mask.c
- * @brief Data module masking
- */
+/*
+ libjabcode - JABCode Encoding/Decoding Library
 
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <math.h>
-// #include "jabcode.h"
-// #include "encoder.h"
-// #include "detector.h"
+ Copyright 2016 by Fraunhofer SIT. All rights reserved.
+ See LICENSE file for full terms of use and distribution.
+
+ Contact: Huajian Liu <liu@sit.fraunhofer.de>
+			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
+
+ Data module masking
+*/
 
 const W1 = 100;
 const W2 = 3;
 const W3 = 3;
 
-/**
- * @brief Apply mask penalty rule 1
- * @param matrix the symbol matrix
- * @param width the symbol matrix width
- * @param height the symbol matrix height
- * @param color_number the number of module colors
- * @return the penalty score
+/*
+ Apply mask penalty rule 1
+ @param matrix the symbol matrix
+ @param width the symbol matrix width
+ @param height the symbol matrix height
+ @param color_number the number of module colors
+ @return the penalty score
 */
 int applyRule1(List<int> matrix, int width, int height, int color_number) {
 	int fp0_c1, fp0_c2;
@@ -113,12 +104,12 @@ int applyRule1(List<int> matrix, int width, int height, int color_number) {
 	return W1 * score;
 }
 
-/**
- * @brief Apply mask penalty rule 2
- * @param matrix the symbol matrix
- * @param width the symbol matrix width
- * @param height the symbol matrix height
- * @return the penalty score
+/*
+ Apply mask penalty rule 2
+ @param matrix the symbol matrix
+ @param width the symbol matrix width
+ @param height the symbol matrix height
+ @return the penalty score
 */
 int applyRule2(List<int> matrix, int width, int height) {
 	int score = 0;
@@ -137,12 +128,12 @@ int applyRule2(List<int> matrix, int width, int height) {
 	return W2 * score;
 }
 
-/**
- * @brief Apply mask penalty rule 3
- * @param matrix the symbol matrix
- * @param width the symbol matrix width
- * @param height the symbol matrix height
- * @return the penalty score
+/*
+ Apply mask penalty rule 3
+ @param matrix the symbol matrix
+ @param width the symbol matrix width
+ @param height the symbol matrix height
+ @return the penalty score
 */
 int applyRule3(List<int> matrix, int width, int height) {
 	int score = 0;
@@ -183,25 +174,24 @@ int applyRule3(List<int> matrix, int width, int height) {
 	return score;
 }
 
-/**
- * @brief Evaluate masking results
- * @param matrix the symbol matrix
- * @param width the symbol matrix width
- * @param height the symbol matrix height
- * @param color_number the number of module colors
- * @return the penalty score
+/*
+ Evaluate masking results
+ @param matrix the symbol matrix
+ @param width the symbol matrix width
+ @param height the symbol matrix height
+ @param color_number the number of module colors
+ @return the penalty score
 */
-int evaluateMask(List<int> matrix, int width, int height, int color_number)
-{
+int evaluateMask(List<int> matrix, int width, int height, int color_number) {
 	return applyRule1(matrix, width, height, color_number) + applyRule2(matrix, width, height) + applyRule3(matrix, width, height);
 }
 
-/**
- * @brief Mask the data modules in symbols
- * @param enc the encode parameters
- * @param mask_type the mask pattern reference
- * @param masked the masked symbol matrix
- * @param cp the code parameters
+/*
+ Mask the data modules in symbols
+ @param enc the encode parameters
+ @param mask_type the mask pattern reference
+ @param masked the masked symbol matrix
+ @param cp the code parameters
 */
 void maskSymbols(jab_encode enc, int mask_type, List<int> masked, jab_code cp){
 	for(int k=0; k<enc.symbol_number; k++) {
@@ -263,23 +253,19 @@ void maskSymbols(jab_encode enc, int mask_type, List<int> masked, jab_code cp){
 	}
 }
 
-/**
- * @brief Mask modules
- * @param enc the encode parameters
- * @param cp the code parameters
- * @return the mask pattern reference | -1 if fails
+/*
+ Mask modules
+ @param enc the encode parameters
+ @param cp the code parameters
+ @return the mask pattern reference | -1 if fails
 */
 int maskCode(jab_encode enc, jab_code cp) {
 	int mask_type = 0;
 	int min_penalty_score = 10000;
 
 	//allocate memory for masked code
-    var masked = List<int>.filled (cp.code_size.x * cp.code_size.y, -1); //set all bytes in masked as 0xFF //int *)malloc(cp.code_size.x * cp.code_size.y * sizeof(int));
-    if(masked == null)
-    {
-        // reportError("Memory allocation for masked code failed");
-        return -1;
-    }
+    var masked = List<int>.filled(cp.code_size.x * cp.code_size.y, -1); //set all bytes in masked as 0xFF //int *)malloc(cp.code_size.x * cp.code_size.y * sizeof(int));
+
 	// memset(masked, -1, cp.code_size.x * cp.code_size.y * sizeof(int)); //set all bytes in masked as 0xFF
 
 	//evaluate each mask pattern
@@ -288,9 +274,7 @@ int maskCode(jab_encode enc, jab_code cp) {
 		maskSymbols(enc, t, masked, cp);
 		//calculate the penalty score
 		penalty_score = evaluateMask(masked, cp.code_size.x, cp.code_size.y, enc.color_number);
-// #if TEST_MODE
-// 		//JAB_REPORT_INFO(("Penalty score: %d", penalty_score))
-// #endif
+
 		if(penalty_score < min_penalty_score) {
 			mask_type = t;
 			min_penalty_score = penalty_score;
@@ -300,18 +284,16 @@ int maskCode(jab_encode enc, jab_code cp) {
 	//mask all symbols with the selected mask pattern
 	maskSymbols(enc, mask_type, null, null);
 
-    //clean memory
-    // free(masked);
 	return mask_type;
 }
 
-/**
- * @brief Demask modules
- * @param data the decoded data module values
- * @param data_map the data module positions
- * @param symbol_size the symbol size in module
- * @param mask_type the mask pattern reference
- * @param color_number the number of module colors
+/*
+ Demask modules
+ @param data the decoded data module values
+ @param data_map the data module positions
+ @param symbol_size the symbol size in module
+ @param mask_type the mask pattern reference
+ @param color_number the number of module colors
 */
 void demaskSymbol(jab_data data, List<int> data_map, jab_vector2d symbol_size, int mask_type, int color_number) {
 	int symbol_width = symbol_size.x;

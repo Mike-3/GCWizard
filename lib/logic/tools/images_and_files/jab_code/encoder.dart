@@ -1,25 +1,15 @@
-/**
- * libjabcode - JABCode Encoding/Decoding Library
- *
- * Copyright 2016 by Fraunhofer SIT. All rights reserved.
- * See LICENSE file for full terms of use and distribution.
- *
- * Contact: Huajian Liu <liu@sit.fraunhofer.de>
- *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
- *
- * @file encoder.c
- * @brief Symbol encoding
- */
+/*
+ libjabcode - JABCode Encoding/Decoding Library
 
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <math.h>
-// #include "jabcode.h"
-// #include "encoder.h"
-// #include "ldpc.h"
-// #include "detector.h"
-// #include "decoder.h"
+ Copyright 2016 by Fraunhofer SIT. All rights reserved.
+ See LICENSE file for full terms of use and distribution.
+
+ Contact: Huajian Liu <liu@sit.fraunhofer.de>
+ 			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
+
+ Symbol encoding
+*/
+
 
 import 'dart:core';
 import 'dart:math';
@@ -33,10 +23,10 @@ import 'jabcode_h.dart';
 import 'ldpc.dart';
 import 'mask.dart';
 
-/**
- * @brief Generate color palettes with more than 8 colors
- * @param color_number the number of colors
- * @param palette the color palette
+/*
+ Generate color palettes with more than 8 colors
+ @param color_number the number of colors
+ @param palette the color palette
 */
 void _genColorPalette(int color_number, Int8List palette){
 	if(color_number < 8)
@@ -94,11 +84,11 @@ void _genColorPalette(int color_number, Int8List palette){
 	}
 }
 
-/**
- * @brief Set default color palette
- * @param color_number the number of colors
- * @param palette the color palette
- */
+/*
+ Set default color palette
+ @param color_number the number of colors
+ @param palette the color palette
+*/
 void _setDefaultPalette(int color_number, Int8List palette) {
   if(color_number == 4) {
     palette.setRange(0, 0+3, jab_default_palette.sublist(FP0_CORE_COLOR * 3)); //black   000 for 00 // memcpy(palette + 0, jab_default_palette + FP0_CORE_COLOR * 3, 3);	//black   000 for 00
@@ -114,42 +104,42 @@ void _setDefaultPalette(int color_number, Int8List palette) {
   }
 }
 
-/**
- * @brief Set default error correction levels
- * @param symbol_number the number of symbols
- * @param ecc_levels the ecc_level for each symbol
- */
+/*
+ Set default error correction levels
+ @param symbol_number the number of symbols
+ @param ecc_levels the ecc_level for each symbol
+*/
 void _setDefaultEccLevels(int symbol_number, Int8List ecc_levels){
   ecc_levels = Int8List(symbol_number);
 }
 
-/**
- * @brief Swap two integer elements
- * @param index1 the first index
- * @param index2 the second index2
- */
+/*
+ Swap two integer elements
+ @param index1 the first index
+ @param index2 the second index2
+*/
 void _swap_int(int index1, int index2, Int32List list) {
   int temp= list[index1];
   list[index1]=list[index2];
   list[index2]=temp;
 }
 
-/**
- * @brief Swap two byte elements
- * @param index1 the first index
- * @param index2 the second index2
- */
+/*
+ Swap two byte elements
+ @param index1 the first index
+ @param index2 the second index2
+*/
 void _swap_int8(int index1, int index2, Int8List list) {
   int temp= list[index1];
   list[index1]=list[index2];
   list[index2]=temp;
 }
 
-/**
- * @brief Swap two vector2d
- * @param index1 the first index
- * @param index2 the second index2
- */
+/*
+ Swap two vector2d
+ @param index1 the first index
+ @param index2 the second index2
+*/
 void _swap_vector_2D(int index1, int index2, List<jab_vector2d> list) {
   jab_vector2d temp= list[index1];
   list[index1]=list[index2];
@@ -157,13 +147,13 @@ void _swap_vector_2D(int index1, int index2, List<jab_vector2d> list) {
 }
 
 
-/**
- * @brief Convert decimal to binary
- * @param dec the decimal value
- * @param bin the data in binary representation
- * @param start_position the position to write in encoded data array
- * @param length the length of the converted binary sequence
- */
+/*
+ Convert decimal to binary
+ @param dec the decimal value
+ @param bin the data in binary representation
+ @param start_position the position to write in encoded data array
+ @param length the length of the converted binary sequence
+*/
 void _convert_dec_to_bin(int dec, Uint8List bin, int start_position, int length) {
   if(dec < 0) dec += 256;
   for (int j=0; j<length; j++) {
@@ -173,12 +163,12 @@ void _convert_dec_to_bin(int dec, Uint8List bin, int start_position, int length)
   }
 }
 
-/**
- * @brief Create encode object
- * @param color_number the number of module colors
- * @param symbol_number the number of symbols
- * @return the created encode parameter object | null: fatal error (out of memory)
- */
+/*
+ Create encode object
+ @param color_number the number of module colors
+ @param symbol_number the number of symbols
+ @return the created encode parameter object | null: fatal error (out of memory)
+*/
 jab_encode createEncode(int color_number, int symbol_number) {
   var enc = jab_encode();
   if(enc == null)
@@ -233,54 +223,27 @@ jab_encode createEncode(int color_number, int symbol_number) {
   return enc;
 }
 
-/**
- * @brief Analyze the input data and determine the optimal encoding modes for each character
- * @param input the input character data
- * @param encoded_length the shortest encoding length
- * @return the optimal encoding sequence | null: fatal error (out of memory)
- */
+/*
+ Analyze the input data and determine the optimal encoding modes for each character
+ @param input the input character data
+ @param encoded_length the shortest encoding length
+ @return the optimal encoding sequence | null: fatal error (out of memory)
+*/
 List<int> _analyzeInputData(jab_data input, int encoded_length) {
   int encode_seq_length=ENC_MAX;
-  var seq = Uint8List (input.length); //(jab_char *)malloc(sizeof(jab_char)*input.length);
-  if(seq == null) {
-    // reportError("Memory allocation for sequence failed");
-    return null;
-  }
+  var seq = Uint8List(input.length); //(jab_char *)malloc(sizeof(jab_char)*input.length);
   var curr_seq_len= List<int>.filled((input.length+2)*14, 0);
-  if(curr_seq_len == null){
-    // reportError("Memory allocation for current sequence length failed");
-    // free(seq);
-    return null;
-  }
   var prev_mode=List<int>.filled(((2*input.length+2)*14), 0);
-  if(prev_mode == null){
-    // reportError("Memory allocation for previous mode failed");
-    // free(seq);
-    // free(curr_seq_len);
-    return null;
-  }
+
   for (int i=0; i < (2*input.length+2)*14; i++)
     prev_mode[i] = (ENC_MAX/2).toInt();
 
   var switch_mode = List<int>.filled(28, 0);
-  if(switch_mode == null){
-    // reportError("Memory allocation for mode switch failed");
-    // free(seq);
-    // free(curr_seq_len);
-    // free(prev_mode);
-    return null;
-  }
+
   for (int i=0; i < 28; i++)
     switch_mode[i] = (ENC_MAX/2).toInt();
   var temp_switch_mode = List<int>.filled(28, 0);
-  if(temp_switch_mode == null){
-    // reportError("Memory allocation for mode switch failed");
-    // free(seq);
-    // free(curr_seq_len);
-    // free(prev_mode);
-    // free(switch_mode);
-    return null;
-  }
+
   for (int i=0; i < 28; i++)
     temp_switch_mode[i] = (ENC_MAX/2).toInt();
 
@@ -354,13 +317,11 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
           switch_mode[2*index]=index;
           switch_mode[2*index+1]=j;
           is_shift=true;
-          if(jp_to_nxt_char==1 && j==11)
-          {
+          if(jp_to_nxt_char==1 && j==11) {
               confirm=1;
               prev_mode_index=index;
           }
-        }
-        else if ((curr_seq_len[(i+1)*14+prev_mode[curr_seq_counter*14+j]]>len ||
+        } else if ((curr_seq_len[(i+1)*14+prev_mode[curr_seq_counter*14+j]]>len ||
                 (jp_to_nxt_char==1 && curr_seq_len[(i+1)*14+prev_mode[curr_seq_counter*14+j]]+character_size[prev_mode[curr_seq_counter*14+j]%7]>len)) && j == 13 ) {
           curr_seq_len[(i+1)*14+prev_mode[curr_seq_counter*14+j]]=len;
           prev_mode[(curr_seq_counter+1)*14+prev_mode[curr_seq_counter*14+j]]=j;
@@ -497,18 +458,13 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
       return null;
   }
   encoded_length=encode_seq_length;
-  // free(seq);
-  // free(curr_seq_len);
-  // free(prev_mode);
-  // free(switch_mode);
-  // free(temp_switch_mode);
   return encode_seq;
 }
 
-/**
- * @brief Check if master symbol shall be encoded in default mode
- * @param enc the encode parameters
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Check if master symbol shall be encoded in default mode
+ @param enc the encode parameters
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _isDefaultMode(jab_encode enc) {
 	if(enc.color_number == 8 && (enc.symbol_ecc_levels[0] == 0 || enc.symbol_ecc_levels[0] == DEFAULT_ECC_LEVEL)) {
@@ -517,11 +473,11 @@ int _isDefaultMode(jab_encode enc) {
 	return JAB_FAILURE;
 }
 
-/**
- * @brief Calculate the (encoded) metadata length
- * @param enc the encode parameters
- * @param index the symbol index
- * @return the metadata length (encoded length for master symbol)
+/*
+ Calculate the (encoded) metadata length
+ @param enc the encode parameters
+ @param index the symbol index
+ @return the metadata length (encoded length for master symbol)
 */
 int _getMetadataLength(jab_encode enc, int index){
   int length = 0;
@@ -553,12 +509,12 @@ int _getMetadataLength(jab_encode enc, int index){
   return length;
 }
 
-/**
- * @brief Calculate the data capacity of a symbol
- * @param enc the encode parameters
- * @param index the symbol index
- * @return the data capacity
- */
+/*
+ Calculate the data capacity of a symbol
+ @param enc the encode parameters
+ @param index the symbol index
+ @return the data capacity
+*/
 int _getSymbolCapacity(jab_encode enc, int index) {
 	//number of modules for finder patterns
   int nb_modules_fp;
@@ -592,12 +548,12 @@ int _getSymbolCapacity(jab_encode enc, int index) {
 	return capacity;
 }
 
-/**
- * @brief Get the optimal error correction capability
- * @param capacity the symbol capacity
- * @param net_data_length the original data length
- * @param wcwr the LPDC parameters wc and wr
- */
+/*
+ Get the optimal error correction capability
+ @param capacity the symbol capacity
+ @param net_data_length the original data length
+ @param wcwr the LPDC parameters wc and wr
+*/
 void _getOptimalECC(int capacity, int net_data_length, List<int> wcwr) {
 	double min = capacity.toDouble();
 	for (int k=3; k<=6+2; k++) {
@@ -612,13 +568,13 @@ void _getOptimalECC(int capacity, int net_data_length, List<int> wcwr) {
 	}
 }
 
-/**
- * @brief Encode the input data
- * @param data the character input data
- * @param encoded_length the optimal encoding length
- * @param encode_seq the optimal encoding sequence
- * @return the encoded data | null if failed
- */
+/*
+ Encode the input data
+ @param data the character input data
+ @param encoded_length the optimal encoding length
+ @param encode_seq the optimal encoding sequence
+ @return the encoded data | null if failed
+*/
 jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
   var encoded_data = jab_data();//List<jab_data>.filled ()jab_data *)malloc(sizeof(jab_data) + encoded_length*sizeof(jab_char));
   encoded_data.data = Uint8List(encoded_length);
@@ -652,9 +608,7 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
         if(length < ENC_MAX)
           _convert_dec_to_bin(mode_switch[encode_seq[counter]][encode_seq[counter+1]],encoded_data.data,position,length);
         else {
-          // reportError("Encoding data failed");
-          // free(encoded_data);
-          return null;
+          return null; //Encoding data failed
         }
         position+=latch_shift_to[encode_seq[counter]][encode_seq[counter+1]];
         if(encode_seq[counter+1] == 6 || encode_seq[counter+1] == 13)
@@ -681,9 +635,7 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
           else if (tmp==13 && tmp1!=10)
             decimal_value=18;
           else {
-            // reportError("Encoding data failed");
-            // free(encoded_data);
-            return null;
+            return null; //Encoding data failed
           }
           if (character_size[encode_seq[counter+1]%7] < ENC_MAX)
           _convert_dec_to_bin(decimal_value,encoded_data.data,position,character_size[encode_seq[counter+1]%7]);
@@ -692,17 +644,14 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
           end_of_loop--;
           current_encoded_length++;
         } else {
-          // reportError("Encoding data failed");
-          // free(encoded_data);
-          return null;
+          return null; //Encoding data failed
         }
       } else {
         //byte mode
         if(encode_seq[counter] != encode_seq[counter+1]) {
           //loop over sequence to check how many characters in byte mode follow
           byte_counter=0;
-          for(int byte_loop=counter+1;byte_loop<=end_of_loop;byte_loop++)
-          {
+          for(int byte_loop=counter+1;byte_loop<=end_of_loop;byte_loop++) {
             if(encode_seq[byte_loop]==6 || encode_seq[byte_loop]==13)
               byte_counter++;
             else
@@ -748,9 +697,7 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
         if (character_size[encode_seq[counter+1]%7] < ENC_MAX)
           _convert_dec_to_bin(tmp,encoded_data.data,position,character_size[encode_seq[counter+1]%7]);
         else {
-          // reportError("Encoding data failed");
-          // free(encoded_data);
-          return null;
+          return null; //Encoding data failed
         }
         position+=character_size[encode_seq[counter+1]%7];
         counter++;
@@ -767,19 +714,17 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
       }
 
     } else {
-      // reportError("Encoding data failed");
-      // free(encoded_data);
-      return null;
+      return null; //Encoding data failed
     }
     current_encoded_length++;
   }
   return encoded_data;
 }
 
-/**
- * @brief Encode metadata
- * @param enc the encode parameters
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Encode metadata
+ @param enc the encode parameters
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _encodeMasterMetadata(jab_encode enc) {
 	int partI_length 	= (MASTER_METADATA_PART1_LENGTH/2).toInt();	//partI net length
@@ -797,19 +742,11 @@ int _encodeMasterMetadata(jab_encode enc) {
 	//write each part of master metadata
 	//Part I
 	var partI = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + partI_length*sizeof(jab_char));
-	if(partI == null)
-	{
-		// reportError("Memory allocation for metadata Part I in master symbol failed");
-		return JAB_FAILURE;
-	}
 	partI.length = partI_length;
 	_convert_dec_to_bin(Nc, partI.data, 0, partI.length);
 	//Part II
 	var partII = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + partII_length*sizeof(jab_char));
-	if(partII == null) {
-		// reportError("Memory allocation for metadata Part II in master symbol failed");
-		return JAB_FAILURE;
-	}
+
 	partII.length = partII_length;
 	_convert_dec_to_bin(V,   partII.data, 0, V_length);
 	_convert_dec_to_bin(E1,  partII.data, V_length, 3);
@@ -819,53 +756,36 @@ int _encodeMasterMetadata(jab_encode enc) {
 	//encode each part of master metadata
 	var wcwr = [2, -1];
 	//Part I
-	var encoded_partI   = encodeLDPC(partI, wcwr);
-	if(encoded_partI == null)
-	{
-		// reportError("LDPC encoding master metadata Part I failed");
-		return JAB_FAILURE;
+	var encoded_partI = encodeLDPC(partI, wcwr);
+	if(encoded_partI == null) {
+		return JAB_FAILURE; //LDPC encoding master metadata Part I failed
 	}
 	//Part II
 	var encoded_partII  = encodeLDPC(partII, wcwr);
 	if(encoded_partII == null) {
-		// reportError("LDPC encoding master metadata Part II failed");
-		return JAB_FAILURE;
+		return JAB_FAILURE; //LDPC encoding master metadata Part II failed
 	}
 
 	int encoded_metadata_length = encoded_partI.length + encoded_partII.length;
 	enc.symbols[0].metadata = jab_data(); // (jab_data *)malloc(sizeof(jab_data) + encoded_metadata_length*sizeof(jab_char));
-	if(enc.symbols[0].metadata == null)
-	{
-		// reportError("Memory allocation for encoded metadata in master symbol failed");
-		return JAB_FAILURE;
-	}
 	enc.symbols[0].metadata.length = encoded_metadata_length;
 	//copy encoded parts into metadata
 	_memcpy(enc.symbols[0].metadata.data,0, encoded_partI.data, 0, encoded_partI.length);
 	_memcpy(enc.symbols[0].metadata.data, encoded_partI.length, encoded_partII.data, 0, encoded_partII.length);
 
-  // free(partI);
-  // free(partII);
-  // free(encoded_partI);
-  // free(encoded_partII);
   return JAB_SUCCESS;
 }
 
-/**
- * @brief Update master symbol metadata PartII if the default masking reference is changed
- * @param enc the encode parameter
- * @param mask_ref the masking reference
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Update master symbol metadata PartII if the default masking reference is changed
+ @param enc the encode parameter
+ @param mask_ref the masking reference
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _updateMasterMetadataPartII(jab_encode enc, int mask_ref) {
 	int partII_length	= (MASTER_METADATA_PART2_LENGTH/2).toInt();	//partII net length
 	var partII = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + partII_length*sizeof(jab_char));
   partII.data=Uint8List(partII_length);
-	if(partII == null)
-	{
-		// reportError("Memory allocation for metadata Part II in master symbol failed");
-		return JAB_FAILURE;
-	}
 	partII.length = partII_length;
 
 	//set V and E
@@ -886,20 +806,17 @@ int _updateMasterMetadataPartII(jab_encode enc, int mask_ref) {
 	var wcwr = [2, -1];
 	var encoded_partII = encodeLDPC(partII, wcwr);
 	if(encoded_partII == null) {
-		// reportError("LDPC encoding master metadata Part II failed");
-		return JAB_FAILURE;
+		return JAB_FAILURE; //LDPC encoding master metadata Part II failed
 	}
 	//update metadata
 	_memcpy(enc.symbols[0].metadata.data, MASTER_METADATA_PART1_LENGTH, encoded_partII.data, 0, encoded_partII.length);
 
-	// free(partII);
-	// free(encoded_partII);
 	return JAB_SUCCESS;
 }
 
-/**
- * @brief Update master symbol metadata PartII if the default masking reference is changed
- * @param enc the encode parameter
+/*
+ Update master symbol metadata PartII if the default masking reference is changed
+ @param enc the encode parameter
 */
 void _placeMasterMetadataPartII(jab_encode enc) {
   //rewrite metadata in master with mask information
@@ -946,11 +863,11 @@ _memcpy(Uint8List dst, int dst_offset, Uint8List src, int src_offset, int length
   dst.replaceRange(dst_offset, dst_offset + length, src.getRange(src_offset, src_offset + length));
 }
 
-/**
- * @brief Get color index for the color palette
- * @param index the color index in the palette
- * @param index_size the size of index
- * @param color_number the number of colors
+/*
+ Get color index for the color palette
+ @param index the color index in the palette
+ @param index_size the size of index
+ @param color_number the number of colors
 */
 void _getColorPaletteIndex(Uint8List index, int index_size, int color_number){
 	for(int i=0; i<index_size; i++){
@@ -993,26 +910,19 @@ void _getColorPaletteIndex(Uint8List index, int index_size, int color_number){
 	}
 }
 
-/**
- * @brief Create symbol matrix
- * @param enc the encode parameter
- * @param index the symbol index
- * @param ecc_encoded_data encoded data
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Create symbol matrix
+ @param enc the encode parameter
+ @param index the symbol index
+ @param ecc_encoded_data encoded data
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
   //Allocate matrix
   enc.symbols[index].matrix = Int8List(enc.symbols[index].side_size.x * enc.symbols[index].side_size.y); // (jab_byte *)calloc(enc.symbols[index].side_size.x * enc.symbols[index].side_size.y, sizeof(jab_byte));
-  if(enc.symbols[index].matrix == null) {
-    // reportError("Memory allocation for symbol matrix failed");
-    return JAB_FAILURE;
-  }
   //Allocate boolean matrix
   enc.symbols[index].data_map = Int8List(enc.symbols[index].side_size.x * enc.symbols[index].side_size.y); //(jab_byte *)malloc(enc.symbols[index].side_size.x * enc.symbols[index].side_size.y * sizeof(jab_byte));
-  if(enc.symbols[index].data_map == null) {
-    // reportError("Memory allocation for data map failed");
-    return JAB_FAILURE;
-  }
+
   enc.symbols[index].data_map.fillRange(0, enc.symbols[index].data_map.length-1, 1);  // memset(enc.symbols[index].data_map, 1, enc.symbols[index].side_size.x * enc.symbols[index].side_size.y * sizeof(jab_byte));
 
   //set alignment patterns
@@ -1264,9 +1174,6 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
       enc.symbols[index].data_map[(height-1-slave_palette_position[i-2].x)*width + slave_palette_position[i-2].y] = 0;
     }
   }
-// #if TEST_MODE
-// 	FILE* fp = fopen("jab_enc_module_data.bin", "wb");
-// #endif // TEST_MODE
   //Data placement
   int written_mess_part=0;
   int padding=0;
@@ -1287,9 +1194,7 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
           written_mess_part++;
         }
         enc.symbols[index].matrix[i]=color_index;//i % enc.color_number;
-// #if TEST_MODE
-// 				fwrite(&enc.symbols[index].matrix[i], 1, 1, fp);
-// #endif // TEST_MODE
+
       } else if(enc.symbols[index].data_map[i]!=0) { //write padding bits
         color_index=0;
         for(int j=0;j<nb_of_bits_per_mod;j++) {
@@ -1300,23 +1205,17 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
             padding=0;
         }
         enc.symbols[index].matrix[i]=color_index;//i % enc.color_number;
-// #if TEST_MODE
-// 				fwrite(&enc.symbols[index].matrix[i], 1, 1, fp);
-// #endif // TEST_MODE
       }
     }
   }
-// #if TEST_MODE
-// 	fclose(fp);
-// #endif // TEST_MODE
 	return JAB_SUCCESS;
 }
 
-/**
- * @brief Swap two symbols
- * @param enc the encode parameters
- * @param index1 the index number of the first symbol
- * @param index2 the index number of the second symbol
+/*
+ Swap two symbols
+ @param enc the encode parameters
+ @param index1 the index number of the first symbol
+ @param index2 the index number of the second symbol
 */
 void _swap_symbols(jab_encode enc, int index1, int index2) {
 	_swap_int(index1, index2, enc.symbol_positions);
@@ -1328,10 +1227,10 @@ void _swap_symbols(jab_encode enc, int index1, int index2) {
   enc.symbols[index2] = s;
 }
 
-/**
- * @brief Assign docked symbols to their hosts
- * @param enc the encode parameters
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Assign docked symbols to their hosts
+ @param enc the encode parameters
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _assignDockedSymbols(jab_encode enc) {
 	//initialize host and slaves
@@ -1400,17 +1299,14 @@ int _assignDockedSymbols(jab_encode enc) {
   return JAB_SUCCESS;
 }
 
-/**
- * @brief Calculate the code parameters according to the input symbols
- * @param enc the encode parameters
- * @return the code parameters
+/*
+ Calculate the code parameters according to the input symbols
+ @param enc the encode parameters
+ @return the code parameters
 */
 jab_code _getCodePara(jab_encode enc) {
   var cp = jab_code(); // (jab_code *)malloc(sizeof(jab_code));
-  if(cp = null) {
-    // reportError("Memory allocation for code parameter failed");
-    return null;
-  }
+
   //calculate the module size in pixel
   if(enc.master_symbol_width != 0 || enc.master_symbol_height != 0) {
     int dimension_x = (enc.master_symbol_width/enc.symbols[0].side_size.x).toInt();
@@ -1443,17 +1339,8 @@ jab_code _getCodePara(jab_encode enc) {
   cp.rows = max_y - cp.min_y + 1;
   cp.cols = max_x - cp.min_x + 1;
   cp.row_height = List<int>.filled(cp.rows, 0); // (int *)malloc(cp.rows * sizeof(int));
-  if(cp.row_height == null) {
-    // free(cp);
-    // reportError("Memory allocation for row height in code parameter failed");
-    return null;
-  }
   cp.col_width = List<int>.filled(cp.cols, 0); //(int *)malloc(cp.cols * sizeof(int));
-  if(cp.col_width == null) {
-    // free(cp);
-    //   reportError("Memory allocation for column width in code parameter failed");
-    return null;
-  }
+
   cp.code_size.x = 0;
   cp.code_size.y = 0;
   bool flag = false;
@@ -1482,11 +1369,11 @@ jab_code _getCodePara(jab_encode enc) {
   return cp;
 }
 
-/**
- * @brief Create bitmap for the code
- * @param enc the encode parameters
- * @param cp the code parameters
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Create bitmap for the code
+ @param enc the encode parameters
+ @param cp the code parameters
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _createBitmap(jab_encode enc, jab_code cp) {
   //create bitmap
@@ -1495,11 +1382,8 @@ int _createBitmap(jab_encode enc, jab_code cp) {
   int bytes_per_pixel = BITMAP_CHANNEL_COUNT;
   int bytes_per_row = width * bytes_per_pixel;
   enc.bitmap = jab_bitmap(); //(jab_bitmap *)calloc(1, sizeof(jab_bitmap) + width*height*bytes_per_pixel*sizeof(jab_byte));
-  enc.bitmap.pixel=Uint8List( width*height*bytes_per_pixel);
-  if(enc.bitmap == null) {
-    // reportError("Memory allocation for bitmap failed");
-    return JAB_FAILURE;
-  }
+  enc.bitmap.pixel = Uint8List( width*height*bytes_per_pixel);
+
   enc.bitmap.width = width;
   enc.bitmap.height= height;
   enc.bitmap.bits_per_channel = BITMAP_BITS_PER_CHANNEL;
@@ -1540,10 +1424,10 @@ int _createBitmap(jab_encode enc, jab_code cp) {
 }
 
 
-/**
- * @brief Checks if the docked symbol sizes are valid
- * @param enc the encode parameters
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Checks if the docked symbol sizes are valid
+ @param enc the encode parameters
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _checkDockedSymbolSize(jab_encode enc) {
 	for(int i=0; i<enc.symbol_number; i++) {
@@ -1556,12 +1440,10 @@ int _checkDockedSymbolSize(jab_encode enc) {
 				int y_diff = jab_symbol_pos[hpos].y - jab_symbol_pos[spos].y;
 
 				if(x_diff == 0 && enc.symbol_versions[i].x != enc.symbol_versions[slave_index].x) {
-					// JAB_REPORT_ERROR(("Slave symbol at position %d has different side version in X direction as its host symbol at position %d", spos, hpos))
-					return JAB_FAILURE;
+					return JAB_FAILURE; //Slave symbol at position %d has different side version in X direction as its host symbol at position %d", spos, hpos
 				}
 				if(y_diff == 0 && enc.symbol_versions[i].y != enc.symbol_versions[slave_index].y) {
-					// JAB_REPORT_ERROR(("Slave symbol at position %d has different side version in Y direction as its host symbol at position %d", spos, hpos))
-					return JAB_FAILURE;
+					return JAB_FAILURE; //Slave symbol at position %d has different side version in Y direction as its host symbol at position %d", spos, hpos
 				}
 			}
 		}
@@ -1569,11 +1451,11 @@ int _checkDockedSymbolSize(jab_encode enc) {
 	return JAB_SUCCESS;
 }
 
-/**
- * @brief Set the minimal master symbol version
- * @param enc the encode parameters
- * @param encoded_data the encoded message
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Set the minimal master symbol version
+ @param enc the encode parameters
+ @param encoded_data the encoded message
+ @return JAB_SUCCESS | JAB_FAILURE
  */
 int _setMasterSymbolVersion(jab_encode enc, jab_data encoded_data) {
   //calculate required number of data modules depending on data_length
@@ -1604,11 +1486,9 @@ int _setMasterSymbolVersion(jab_encode enc, jab_data encoded_data) {
 				level = j;
 		}
 		if(level > 0) {
-			// JAB_REPORT_ERROR(("Message does not fit into one symbol with the given ECC level. Please use an ECC level lower than %d with '--ecc-level %d'", level, level))
-			return JAB_FAILURE;
+			return JAB_FAILURE; //Message does not fit into one symbol with the given ECC level. Please use an ECC level lower than %d with '--ecc-level %d'", level, level
 		} else {
-			// reportError("Message does not fit into one symbol. Use more symbols.");
-			return JAB_FAILURE;
+			return JAB_FAILURE; //"Message does not fit into one symbol. Use more symbols.
 		}
 	}
 	//update symbol side size
@@ -1618,10 +1498,10 @@ int _setMasterSymbolVersion(jab_encode enc, jab_data encoded_data) {
   return JAB_SUCCESS;
 }
 
-/**
- * @brief Add variable E to slave symbol metadata the data payload for each symbol
- * @param slave the slave symbol
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Add variable E to slave symbol metadata the data payload for each symbol
+ @param slave the slave symbol
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _addE2SlaveMetadata(jab_symbol slave) {
 	//copy old metadata to new metadata
@@ -1630,14 +1510,8 @@ int _addE2SlaveMetadata(jab_symbol slave) {
 	var old_metadata = slave.metadata;
 	slave.metadata = jab_data(); // (jab_data *)malloc(sizeof(jab_data) + new_metadata_length*sizeof(jab_char));
   slave.metadata.data = Uint8List(new_metadata_length);
-  if(slave.metadata == null)
-	{
-		// reportError("Memory allocation for metadata in slave symbol failed");
-		return JAB_FAILURE;
-	}
 	slave.metadata.length = new_metadata_length;
   slave.metadata.data.setRange(0, old_metadata_length, old_metadata.data); // = _memcpy(slave.metadata.data, old_metadata.data, old_metadata_length);
-	// free(old_metadata);
 
 	//update SE = 1
 	slave.metadata.data[1] = 1;
@@ -1649,11 +1523,11 @@ int _addE2SlaveMetadata(jab_symbol slave) {
 	return JAB_SUCCESS;
 }
 
-/**
- * @brief Update slave metadata E in its host data stream
- * @param enc the encode parameters
- * @param host_index the host symbol index
- * @param slave_index the slave symbol index
+/*
+ Update slave metadata E in its host data stream
+ @param enc the encode parameters
+ @param host_index the host symbol index
+ @param slave_index the slave symbol index
 */
 void _updateSlaveMetadataE(jab_encode enc, int host_index, int slave_index) {
 	var host = enc.symbols[host_index];
@@ -1696,11 +1570,11 @@ void _updateSlaveMetadataE(jab_encode enc, int host_index, int slave_index) {
 	}
 }
 
-/**
- * @brief Set the data payload for each symbol
- * @param enc the encode parameters
- * @param encoded_data the encoded message
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Set the data payload for each symbol
+ @param enc the encode parameters
+ @param encoded_data the encoded message
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _fitDataIntoSymbols(jab_encode enc, jab_data encoded_data) {
 	//calculate the net capacity of each symbol and the total net capacity
@@ -1812,22 +1686,20 @@ int _fitDataIntoSymbols(jab_encode enc, jab_data encoded_data) {
 	return JAB_SUCCESS;
 }
 
-/**
- * @brief Initialize symbols
- * @param enc the encode parameters
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Initialize symbols
+ @param enc the encode parameters
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _initSymbols(jab_encode enc){
 	//check all information for multi-symbol code are valid
 	if(enc.symbol_number > 1) {
 		for(int i=0; i<enc.symbol_number; i++) {
 			if(enc.symbol_versions[i].x < 1 || enc.symbol_versions[i].x > 32 || enc.symbol_versions[i].y < 1 || enc.symbol_versions[i].y > 32) {
-				// JAB_REPORT_ERROR(("Incorrect symbol version for symbol %d", i))
-				return JAB_FAILURE;
+				return JAB_FAILURE; //Incorrect symbol version for symbol %d", i
 			}
 			if(enc.symbol_positions[i] < 0 || enc.symbol_positions[i] > MAX_SYMBOL_NUMBER) {
-				// JAB_REPORT_ERROR(("Incorrect symbol position for symbol %d", i))
-				return JAB_FAILURE;
+				return JAB_FAILURE; //Incorrect symbol position for symbol %d", i
 			}
 		}
 	}
@@ -1844,8 +1716,7 @@ int _initSymbols(jab_encode enc){
 	}
   //if no master symbol exists in multi-symbol code
   if(enc.symbol_number > 1 && enc.symbol_positions[0] != 0) {
-  // reportError("Master symbol missing");
-  return JAB_FAILURE;
+  return JAB_FAILURE; //Master symbol missing
   }
   //if only one symbol but its position is not 0 - set to zero. Everything else makes no sense.
   if(enc.symbol_number == 1 && enc.symbol_positions[0] != 0)
@@ -1854,8 +1725,7 @@ int _initSymbols(jab_encode enc){
   for(int i=0; i<enc.symbol_number-1; i++) {
     for(int j=i+1; j<enc.symbol_number; j++) {
       if(enc.symbol_positions[i] == enc.symbol_positions[j]) {
-        // reportError("Duplicate symbol position");
-        return JAB_FAILURE;
+        return JAB_FAILURE; //Duplicate symbol position
       }
     }
   }
@@ -1876,10 +1746,10 @@ int _initSymbols(jab_encode enc){
   return JAB_SUCCESS;
 }
 
-/**
- * @brief Set metadata for slave symbols
- * @param enc the encode parameters
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Set metadata for slave symbols
+ @param enc the encode parameters
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _setSlaveMetadata(jab_encode enc) {
 	//set slave metadata variables
@@ -1932,63 +1802,54 @@ int _setSlaveMetadata(jab_encode enc) {
 	return JAB_SUCCESS;
 }
 
-/**
- * @brief Generate JABCode
- * @param enc the encode parameters
- * @param data the input data
- * @return 0:success | 1: out of memory | 2:no input data | 3:incorrect symbol version or position | 4: input data too long
+/*
+ Generate JABCode
+ @param enc the encode parameters
+ @param data the input data
+ @return 0:success | 1: out of memory | 2:no input data | 3:incorrect symbol version or position | 4: input data too long
 */
 int generateJABCode(jab_encode enc, jab_data data) {
-    //Check data
-    if(data == null) {
-      // reportError("No input data specified!");
-      return 2;
-    }
-    if(data.length == 0) {
-      // reportError("No input data specified!");
-      return 2;
-    }
+  //Check data
+  if(data == null) {
+    return 2;
+  }
+  if(data.length == 0) {
+    return 2;
+  }
 
-    //initialize symbols and set metadata in symbols
-    if(_initSymbols(enc) != JAB_SUCCESS)
-		  return 3;
+  //initialize symbols and set metadata in symbols
+  if(_initSymbols(enc) != JAB_SUCCESS)
+    return 3;
 
-    //get the optimal encoded length and encoding sequence
-    int encoded_length;
-    var encode_seq = _analyzeInputData(data, encoded_length);
-    if(encode_seq == null) {
-      // reportError("Analyzing input data failed");
+  //get the optimal encoded length and encoding sequence
+  int encoded_length;
+  var encode_seq = _analyzeInputData(data, encoded_length);
+  if(encode_seq == null) {
+    return 1; //Analyzing input data failed
+  }
+  //encode data using optimal encoding modes
+  var encoded_data = _encodeData(data, encoded_length, encode_seq);
+  if(encoded_data == null) {
       return 1;
+  }
+  //set master symbol version if not given
+  if(enc.symbol_number == 1 && (enc.symbol_versions[0].x == 0 || enc.symbol_versions[0].y == 0)) {
+    if(_setMasterSymbolVersion(enc, encoded_data) == JAB_FAILURE) {
+      return 4;
     }
-	  //encode data using optimal encoding modes
-    var encoded_data = _encodeData(data, encoded_length, encode_seq);
-    // free(encode_seq);
-    if(encoded_data == null) {
-        return 1;
-    }
-    //set master symbol version if not given
-    if(enc.symbol_number == 1 && (enc.symbol_versions[0].x == 0 || enc.symbol_versions[0].y == 0)) {
-      if(_setMasterSymbolVersion(enc, encoded_data) == JAB_FAILURE) {
-        // free(encoded_data);
-        return 4;
-      }
-    }
-    //set metadata for slave symbols
-    if(_setSlaveMetadata(enc) == JAB_FAILURE) {
-      // free(encoded_data);
-      return 1;
-    }
+  }
+  //set metadata for slave symbols
+  if(_setSlaveMetadata(enc) == JAB_FAILURE) {
+    return 1;
+  }
 	//assign encoded data into symbols
 	if(_fitDataIntoSymbols(enc, encoded_data) == JAB_FAILURE) {
-		// free(encoded_data);
 		return 4;
 	}
-	// free(encoded_data);
 	//set master metadata
 	if(_isDefaultMode(enc) == JAB_FAILURE) {
 		if(_encodeMasterMetadata(enc) == JAB_FAILURE) {
-			// JAB_REPORT_ERROR(("Encoding master symbol metadata failed"))
-      return 1;
+      return 1; //Encoding master symbol metadata failed
 		}
 	}
 
@@ -1997,18 +1858,15 @@ int generateJABCode(jab_encode enc, jab_data data) {
     //error correction for data
     var ecc_encoded_data = encodeLDPC(enc.symbols[i].data, enc.symbols[i].wcwr);
     if(ecc_encoded_data == null) {
-      // JAB_REPORT_ERROR(("LDPC encoding for the data in symbol %d failed", i))
-      return 1;
+      return 1; //LDPC encoding for the data in symbol %d failed", i
     }
     //interleave
     interleaveData(ecc_encoded_data);
     //create Matrix
     var cm_flag = _createMatrix(enc, i, ecc_encoded_data);
-    // free(ecc_encoded_data);
     if(cm_flag == JAB_FAILURE) {
-      // JAB_REPORT_ERROR(("Creating matrix for symbol %d failed", i))
-      return 1;
-      }
+      return 1; //Creating matrix for symbol %d failed", i
+    }
   }
 
   //mask all symbols in the code
@@ -2021,14 +1879,8 @@ int generateJABCode(jab_encode enc, jab_data data) {
   } else {
     var mask_reference = maskCode(enc, cp);
     if(mask_reference < 0) {
-      // free(cp.row_height);
-      // free(cp.col_width);
-      // free(cp);
       return 1;
     }
-// #if TEST_MODE
-// 		JAB_REPORT_INFO(("mask reference: %d", mask_reference))
-// #endif
     if(mask_reference != DEFAULT_MASKING_REFERENCE) {
       //re-encode PartII of master symbol metadata
       _updateMasterMetadataPartII(enc, mask_reference);
@@ -2039,21 +1891,9 @@ int generateJABCode(jab_encode enc, jab_data data) {
 
   //create the code bitmap
   var cb_flag = _createBitmap(enc, cp);
-  // free(cp.row_height);
-  // free(cp.col_width);
-  // free(cp);
   if(cb_flag == JAB_FAILURE) {
-    // JAB_REPORT_ERROR(("Creating the code bitmap failed"))
-    return 1;
+    return 1; //Creating the code bitmap failed
   }
   return 0;
 }
 
-// /**
-//  * @brief Report error message
-//  * @param message the error message
-// */
-// void reportError(jab_char* message)
-// {
-//     printf("JABCode Error: %s\n", message);
-// }

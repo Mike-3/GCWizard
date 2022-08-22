@@ -1,21 +1,18 @@
 import 'dart:core';
 import 'dart:typed_data';
 
-/**
- * libjabcode - JABCode Encoding/Decoding Library
- *
- * Copyright 2016 by Fraunhofer SIT. All rights reserved.
- * See LICENSE file for full terms of use and distribution.
- *
- * Contact: Huajian Liu <liu@sit.fraunhofer.de>
- *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
- *
- * @file jabcode.h
- * @brief Main libjabcode header
- */
+/*
+ libjabcode - JABCode Encoding/Decoding Library
 
-// #ifndef JABCODE_H
-// const JABCODE_H
+ Copyright 2016 by Fraunhofer SIT. All rights reserved.
+ See LICENSE file for full terms of use and distribution.
+
+ Contact: Huajian Liu <liu@sit.fraunhofer.de>
+			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
+
+ Main libjabcode header
+*/
+
 
 const VERSION ="2.0.0";
 //const BUILD_DATE = __DATE__
@@ -51,26 +48,9 @@ const COMPATIBLE_DECODE	= 1;
 
 int VERSION2SIZE(int x) {return (x * 4 + 17);}
 int SIZE2VERSION(int x) { return ((x - 17) / 4).toInt();}
-// const MAX(a,b) 			({__typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b;})
-// const MIN(a,b) 			({__typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b;})
 
-//JAB_REPORT_ERROR(String x)	{ print("JABCode Error: "); print (x); print("\n"); }
-//JAB_REPORT_INFO(String x)	{ print("JABCode Info: "); print (x); print("\n"); }
-
-//typedef byte 		jab_byte;
-//typedef char 				jab_char;
-//typedef unsigned char 		jab_boolean;
-//typedef int 				jab_int32;
-//typedef unsigned int 		jab_uint32;
-//typedef short 				jab_int16;
-//typedef unsigned short 		jab_uint16;
-//typedef long long 			jab_int64;
-//typedef unsigned long long	jab_uint64;
-//typedef float				jab_float;
-//typedef double              jab_double;
-
-/**
- * @brief 2-dimensional integer vector
+/*
+ 2-dimensional integer vector
 */
 class jab_vector2d {
 	int	x;
@@ -82,8 +62,8 @@ class jab_vector2d {
 	}
 }
 
-/**
- * @brief 2-dimensional float vector
+/*
+ 2-dimensional float vector
 */
 class jab_point {
 	double	x;
@@ -95,16 +75,16 @@ class jab_point {
 	}
 }
 
-/**
- * @brief Data structure
+/*
+ Data structure
 */
 class jab_data {
 	int	length;
 	Uint8List data;
 }
 
-/**
- * @brief Code bitmap
+/*
+ Code bitmap
 */
 class jab_bitmap {
 	int	width;
@@ -127,8 +107,8 @@ class jab_bitmap {
 	}
 }
 
-/**
- * @brief Symbol parameters
+/*
+ Symbol parameters
 */
 class jab_symbol {
 	int		index;
@@ -142,8 +122,8 @@ class jab_symbol {
 	Int8List		matrix;
 }
 
-/**
- * @brief Encode parameters
+/*
+ Encode parameters
 */
 class jab_encode {
 	int		color_number;
@@ -159,8 +139,8 @@ class jab_encode {
 	jab_bitmap		bitmap;
 }
 
-/**
- * @brief Decoded metadata
+/*
+ Decoded metadata
 */
 class jab_metadata {
 	bool default_mode;
@@ -171,8 +151,8 @@ class jab_metadata {
 	jab_vector2d ecl;
 }
 
-/**
- * @brief Decoded symbol
+/*
+ Decoded symbol
 */
 class jab_decoded_symbol {
 	int index;
@@ -187,15 +167,3 @@ class jab_decoded_symbol {
 	jab_data data;
 }
 
-
-//extern jab_encode* createEncode(jab_int32 color_number, jab_int32 symbol_number);
-//extern void destroyEncode(jab_encode* enc);
-//extern jab_int32 generateJABCode(jab_encode* enc, jab_data* data);
-//extern jab_data* decodeJABCode(jab_bitmap* bitmap, jab_int32 mode, jab_int32* status);
-//extern jab_data* decodeJABCodeEx(jab_bitmap* bitmap, jab_int32 mode, jab_int32* status, jab_decoded_symbol* symbols, jab_int32 max_symbol_number);
-//extern jab_boolean saveImage(jab_bitmap* bitmap, jab_char* filename);
-//extern jab_boolean saveImageCMYK(jab_bitmap* bitmap, jab_boolean isCMYK, jab_char* filename);
-//extern jab_bitmap* readImage(jab_char* filename);
-//extern void reportError(jab_char* message);
-//
-//#endif

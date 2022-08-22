@@ -15,14 +15,6 @@ import 'jabcode_h.dart';
  * @brief Detector header
  */
 
-// #ifndef JABCODE_DETECTOR_H
-// #define JABCODE_DETECTOR_H
-
-// #define TEST_MODE			0
-// #if TEST_MODE
-// jab_bitmap* test_mode_bitmap;
-// jab_int32	test_mode_color;
-// #endif
 
 const MAX_MODULES 		= 145;	//the number of modules in side-version 32
 const MAX_SYMBOL_ROWS		= 3;
@@ -35,8 +27,8 @@ double DIST(x1, y1, x2, y2) {
 	return (sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)));
 }
 
-/**
- * @brief Detection modes
+/*
+  Detection modes
 */
 enum jab_detect_mode {
 	QUICK_DETECT,
@@ -44,8 +36,8 @@ enum jab_detect_mode {
 	INTENSIVE_DETECT
 }
 
-/**
- * @brief Finder pattern
+/*
+  Finder pattern
 */
 class jab_finder_pattern {
 	int		type = 0;
@@ -63,9 +55,9 @@ class jab_finder_pattern {
 	}
 }
 
-/**
- * @brief Alignment pattern
- */
+/*
+  Alignment pattern
+*/
 class jab_alignment_pattern {
 	int		type = 0;
 	double		module_size = 0.0;
@@ -82,8 +74,8 @@ class jab_alignment_pattern {
 	}
 }
 
-/**
- * @brief Perspective transform
+/*
+  Perspective transform
 */
 class jab_perspective_transform  {
 	double a11;

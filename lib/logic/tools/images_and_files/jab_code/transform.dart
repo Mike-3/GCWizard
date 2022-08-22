@@ -1,47 +1,36 @@
-/**
- * libjabcode - JABCode Encoding/Decoding Library
- *
- * Copyright 2016 by Fraunhofer SIT. All rights reserved.
- * See LICENSE file for full terms of use and distribution.
- *
- * Contact: Huajian Liu <liu@sit.fraunhofer.de>
- *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
- *
- * @file transform.c
- * @brief Matrix transform
- */
+/*
+ libjabcode - JABCode Encoding/Decoding Library
 
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <math.h>
-// #include "include\jabcode.h"
-// #include "detector.h"
+ Copyright 2016 by Fraunhofer SIT. All rights reserved.
+ See LICENSE file for full terms of use and distribution.
+
+ Contact: Huajian Liu <liu@sit.fraunhofer.de>
+			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
+
+ Matrix transform
+*/
 
 import 'detector_h.dart';
 import 'jabcode_h.dart';
 
-/**
- * @brief Calculate transformation matrix of square to quadrilateral
- * @param x0 the x coordinate of the 1st destination point
- * @param y0 the y coordinate of the 1st destination point
- * @param x1 the x coordinate of the 2nd destination point
- * @param y1 the y coordinate of the 2nd destination point
- * @param x2 the x coordinate of the 3rd destination point
- * @param y2 the y coordinate of the 3rd destination point
- * @param x3 the x coordinate of the 4th destination point
- * @param y3 the y coordinate of the 4th destination point
- * @return the transformation matrix
+/*
+ Calculate transformation matrix of square to quadrilateral
+ @param x0 the x coordinate of the 1st destination point
+ @param y0 the y coordinate of the 1st destination point
+ @param x1 the x coordinate of the 2nd destination point
+ @param y1 the y coordinate of the 2nd destination point
+ @param x2 the x coordinate of the 3rd destination point
+ @param y2 the y coordinate of the 3rd destination point
+ @param x3 the x coordinate of the 4th destination point
+ @param y3 the y coordinate of the 4th destination point
+ @return the transformation matrix
 */
 jab_perspective_transform _square2Quad( double x0, double y0,
 										double x1, double y1,
 										double x2, double y2,
 										double x3, double y3) {
 	var pt = jab_perspective_transform(); //(jab_perspective_transform*)malloc(sizeof(jab_perspective_transform));
-	if(pt == null) {
-		// reportError("Memory allocation for perspective transform failed");
-		return null;
-	}
+
 	double dx3 = x0 - x1 + x2 - x3;
 	double dy3 = y0 - y1 + y2 - y3;
 	if (dx3 == 0 && dy3 == 0) {
@@ -76,17 +65,17 @@ jab_perspective_transform _square2Quad( double x0, double y0,
 	}
 }
 
-/**
- * @brief Calculate transformation matrix of quadrilateral to square
- * @param x0 the x coordinate of the 1st source point
- * @param y0 the y coordinate of the 1st source point
- * @param x1 the x coordinate of the 2nd source point
- * @param y1 the y coordinate of the 2nd source point
- * @param x2 the x coordinate of the 3rd source point
- * @param y2 the y coordinate of the 3rd source point
- * @param x3 the x coordinate of the 4th source point
- * @param y3 the y coordinate of the 4th source point
- * @return the transformation matrix
+/*
+ Calculate transformation matrix of quadrilateral to square
+ @param x0 the x coordinate of the 1st source point
+ @param y0 the y coordinate of the 1st source point
+ @param x1 the x coordinate of the 2nd source point
+ @param y1 the y coordinate of the 2nd source point
+ @param x2 the x coordinate of the 3rd source point
+ @param y2 the y coordinate of the 3rd source point
+ @param x3 the x coordinate of the 4th source point
+ @param y3 the y coordinate of the 4th source point
+ @return the transformation matrix
 */
 jab_perspective_transform _quad2Square( double x0, double y0,
 										double x1, double y1,
@@ -94,10 +83,7 @@ jab_perspective_transform _quad2Square( double x0, double y0,
 										double x3, double y3)
 {
 	var pt = jab_perspective_transform(); //(jab_perspective_transform*)malloc(sizeof(jab_perspective_transform));
-	if(pt == null) {
-		// reportError("Memory allocation for perspective transform failed");
-		return null;
-	}
+
 	var s2q = _square2Quad(x0, y0, x1, y1, x2, y2, x3, y3);
 	//calculate the adjugate matrix of s2q
 	pt.a11 = s2q.a22 * s2q.a33 - s2q.a23 * s2q.a32;
@@ -109,22 +95,19 @@ jab_perspective_transform _quad2Square( double x0, double y0,
 	pt.a13 = s2q.a12 * s2q.a23 - s2q.a13 * s2q.a22;
 	pt.a23 = s2q.a13 * s2q.a21 - s2q.a11 * s2q.a23;
 	pt.a33 = s2q.a11 * s2q.a22 - s2q.a12 * s2q.a21;
-	// free(s2q);
+
 	return pt;
 }
 
-/**
- * @brief Calculate matrix multiplication
- * @param m1 the multiplicand
- * @param m2 the multiplier
- * @return m1 x m2
+/*
+ Calculate matrix multiplication
+ @param m1 the multiplicand
+ @param m2 the multiplier
+ @return m1 x m2
 */
 jab_perspective_transform _multiply(jab_perspective_transform m1, jab_perspective_transform m2) {
 	var product = jab_perspective_transform(); // (jab_perspective_transform*)malloc(sizeof(jab_perspective_transform));
-	if(product == null) {
-		// reportError("Memory allocation for perpective transform failed");
-		return null;
-	}
+
 	product.a11 = m1.a11 * m2.a11 + m1.a12 * m2.a21 + m1.a13 * m2.a31;
 	product.a21 = m1.a21 * m2.a11 + m1.a22 * m2.a21 + m1.a23 * m2.a31;
 	product.a31 = m1.a31 * m2.a11 + m1.a32 * m2.a21 + m1.a33 * m2.a31;
@@ -137,25 +120,25 @@ jab_perspective_transform _multiply(jab_perspective_transform m1, jab_perspectiv
 	return product;
 }
 
-/**
- * @brief Calculate transformation matrix of quadrilateral to quadrilateral
- * @param x0 the x coordinate of the 1st source point
- * @param y0 the y coordinate of the 1st source point
- * @param x1 the x coordinate of the 2nd source point
- * @param y1 the y coordinate of the 2nd source point
- * @param x2 the x coordinate of the 3rd source point
- * @param y2 the y coordinate of the 3rd source point
- * @param x3 the x coordinate of the 4th source point
- * @param y3 the y coordinate of the 4th source point
- * @param x0p the x coordinate of the 1st destination point
- * @param y0p the y coordinate of the 1st destination point
- * @param x1p the x coordinate of the 2nd destination point
- * @param y1p the y coordinate of the 2nd destination point
- * @param x2p the x coordinate of the 3rd destination point
- * @param y2p the y coordinate of the 3rd destination point
- * @param x3p the x coordinate of the 4th destination point
- * @param y3p the y coordinate of the 4th destination point
- * @return the transformation matrix
+/*
+ Calculate transformation matrix of quadrilateral to quadrilateral
+ @param x0 the x coordinate of the 1st source point
+ @param y0 the y coordinate of the 1st source point
+ @param x1 the x coordinate of the 2nd source point
+ @param y1 the y coordinate of the 2nd source point
+ @param x2 the x coordinate of the 3rd source point
+ @param y2 the y coordinate of the 3rd source point
+ @param x3 the x coordinate of the 4th source point
+ @param y3 the y coordinate of the 4th source point
+ @param x0p the x coordinate of the 1st destination point
+ @param y0p the y coordinate of the 1st destination point
+ @param x1p the x coordinate of the 2nd destination point
+ @param y1p the y coordinate of the 2nd destination point
+ @param x2p the x coordinate of the 3rd destination point
+ @param y2p the y coordinate of the 3rd destination point
+ @param x3p the x coordinate of the 4th destination point
+ @param y3p the y coordinate of the 4th destination point
+ @return the transformation matrix
 */
 jab_perspective_transform perspectiveTransform(double x0, double y0,
 												double x1, double y1,
@@ -177,19 +160,18 @@ jab_perspective_transform perspectiveTransform(double x0, double y0,
 	if(pt == null) {
 		return null;
 	}
-	// free(q2s);
-	// free(s2q);
+
 	return pt;
 }
 
-/**
- * @brief Get perspetive transformation matrix
- * @param p0 the coordinate of the 1st finder/alignment pattern
- * @param p1 the coordinate of the 2nd finder/alignment pattern
- * @param p2 the coordinate of the 3rd finder/alignment pattern
- * @param p3 the coordinate of the 4th finder/alignment pattern
- * @param side_size the side size of the symbol
- * @return the transformation matrix
+/*
+ Get perspetive transformation matrix
+ @param p0 the coordinate of the 1st finder/alignment pattern
+ @param p1 the coordinate of the 2nd finder/alignment pattern
+ @param p2 the coordinate of the 3rd finder/alignment pattern
+ @param p3 the coordinate of the 4th finder/alignment pattern
+ @param side_size the side size of the symbol
+ @return the transformation matrix
 */
 jab_perspective_transform getPerspectiveTransform(jab_point p0,
 												   jab_point p1,
@@ -207,11 +189,11 @@ jab_perspective_transform getPerspectiveTransform(jab_point p0,
 							   );
 }
 
-/**
- * @brief Warp points from source image to destination image in place
- * @param pt the transformation matrix
- * @param points the source points
- * @param length the number of source points
+/*
+ Warp points from source image to destination image in place
+ @param pt the transformation matrix
+ @param points the source points
+ @param length the number of source points
 */
 void warpPoints(jab_perspective_transform pt, List<jab_point> points, int length) {
 	for (int i=0; i<length; i++) {

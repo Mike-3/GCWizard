@@ -1,24 +1,14 @@
-/**
- * libjabcode - JABCode Encoding/Decoding Library
- *
- * Copyright 2016 by Fraunhofer SIT. All rights reserved.
- * See LICENSE file for full terms of use and distribution.
- *
- * Contact: Huajian Liu <liu@sit.fraunhofer.de>
- *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
- *
- * @file detector.c
- * @brief JABCode detector
- */
+/*
+libjabcode - JABCode Encoding/Decoding Library
 
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <math.h>
-// #include "jabcode.h"
-// #incor.h"
-// #include "decoder.h"
-// #include "encoder.h"
+Copyright 2016 by Fraunhofer SIT. All rights reserved.
+See LICENSE file for full terms of use and distribution.
+
+Contact: Huajian Liu <liu@sit.fraunhofer.de>
+			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
+
+JABCode detector
+ */
 
 import 'dart:core';
 import 'dart:core';
@@ -35,11 +25,11 @@ import 'jabcode_h.dart';
 import 'decoder_h.dart';
 import 'detector_h.dart';
 
-/**
- * @brief Check the proportion of layer sizes in finder pattern
- * @param state_count the layer sizes in pixel
- * @return JAB_SUCCESS | JAB_FAILURE
- * @return module_size the module size
+/*
+ Check the proportion of layer sizes in finder pattern
+ @param state_count the layer sizes in pixel
+ @return item1 JAB_SUCCESS | JAB_FAILURE
+ @return item2 module_size the module size
  */
 Tuple2<int, double> _checkPatternCross(List<int> state_count) {
   int layer_number = 3;
@@ -55,7 +45,6 @@ Tuple2<int, double> _checkPatternCross(List<int> state_count) {
   module_size = layer_size;
   double layer_tolerance = layer_size / 2.0;
 
-  // int size_condition;
 	//layer size proportion must be n-1-1-1-m where n>1, m>1
 	bool size_condition = (layer_size - state_count[1]).abs() < layer_tolerance &&
 					 (layer_size - state_count[2]).abs() < layer_tolerance &&
@@ -67,56 +56,35 @@ Tuple2<int, double> _checkPatternCross(List<int> state_count) {
   return Tuple2<int, double>(size_condition ? JAB_SUCCESS : JAB_FAILURE, module_size);;
 }
 
-// /**
-//  * @brief Check if the input module sizes are the same
-//  * @param size_r the first module size
-//  * @param size_g the second module size
-//  * @param size_b the third module size
-//  * @return JAB_SUCCESS | JAB_FAILURE
-// */
-// jab_boolean checkModuleSize3(double size_r, double size_g, double size_b)
-// {
-// 	double mean= (size_r + size_g + size_b) / 3.0f;
-// 	double tolerance = mean / 2.5f;
-//
-// 	jab_boolean condition = fabs(mean - size_r) < tolerance &&
-// 							fabs(mean - size_g) < tolerance &&
-// 							fabs(mean - size_b) < tolerance;
-// 	return condition;
-// }
-
-/**
- * @brief Check if the input module sizes are the same
- * @param size1 the first module size
- * @param size2 the second module size
-
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Check if the input module sizes are the same
+ @param size1 the first module size
+ @param size2 the second module size
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 bool _checkModuleSize2(double size1, double size2) {
 	double mean= (size1 + size2) / 2.0;
 	double tolerance = mean / 2.5;
 
-	bool condition = (mean - size1).abs() < tolerance && (mean - size2).abs() < tolerance;
-
-	return condition;
+  return (mean - size1).abs() < tolerance && (mean - size2).abs() < tolerance;
 }
 
-/**
- * @brief Find a candidate scanline of finder pattern
- * @param ch the image channel
- * @param row the row to be scanned
- * @param col the column to be scanned
- * @param start the start position
- * @param end the end position
- * @param center the center of the candidate scanline
- * @param module_size the module size
- * @param skip the number of pixels to be skipped in the next scan
- * @return JAB_SUCCESS | JAB_FAILURE
- * @return start the start position
- * @return end the end position
- * @return center the center of the candidate scanline
- * @return module_size the module size
- * @return skip the number of pixels to be skipped in the next scan
+/*
+ Find a candidate scanline of finder pattern
+ @param ch the image channel
+ @param row the row to be scanned
+ @param col the column to be scanned
+ @param start the start position
+ @param end the end position
+ @param center the center of the candidate scanline
+ @param module_size the module size
+ @param skip the number of pixels to be skipped in the next scan
+ @return item1 JAB_SUCCESS | JAB_FAILURE
+ @return item2 start the start position
+ @return item3 end the end position
+ @return item4 center the center of the candidate scanline
+ @return item5 module_size the module size
+ @return item6 skip the number of pixels to be skipped in the next scan
 */
 Tuple6<int, int, int, double, double, int> _seekPattern(jab_bitmap ch, int row, int col, int start, int end, double center, double module_size, int skip) {
   int state_number = 5;
@@ -207,20 +175,20 @@ Tuple6<int, int, int, double, double, int> _seekPattern(jab_bitmap ch, int row, 
   return Tuple6<int, int, int, double, double, int>(JAB_FAILURE, start, end, center, module_size, skip);
 }
 
-/**
- * @brief Find a candidate horizontal scanline of finder pattern
- * @param row the bitmap row
- * @param startx the start position
- * @param endx the end position
- * @param centerx the center of the candidate scanline
- * @param module_size the module size
- * @param skip the number of pixels to be skipped in the next scan
- * @return JAB_SUCCESS | JAB_FAILURE
- * @return startx the start position
- * @return endx the end position
- * @return centerx the center of the candidate scanline
- * @return module_size the module size
- * @return skip the number of pixels to be skipped in the next scan
+/*
+ Find a candidate horizontal scanline of finder pattern
+ @param row the bitmap row
+ @param startx the start position
+ @param endx the end position
+ @param centerx the center of the candidate scanline
+ @param module_size the module size
+ @param skip the number of pixels to be skipped in the next scan
+ @return item1 JAB_SUCCESS | JAB_FAILURE
+ @return item2 startx the start position
+ @return item3 endx the end position
+ @return item4 centerx the center of the candidate scanline
+ @return item5 module_size the module size
+ @return item6 skip the number of pixels to be skipped in the next scan
 */
 Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row, int startx, int endx, double centerx, double module_size, int skip) {
   int state_number = 5;
@@ -299,18 +267,17 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
   return Tuple6<int, int, int, double, double, int>(JAB_FAILURE, startx, endx, centerx, module_size, skip);;
 }
 
-/**
- * @brief Crosscheck the finder pattern candidate in diagonal direction
- * @param image the image bitmap
- * @param type the finder pattern type
- * @param module_size_max the maximal allowed module size
-
- * @param module_size the module size in diagonal direction
- * @param dir the finder pattern direction
- * @param both_dir scan both diagonal scanlines
- * @return the number of confirmed diagonal scanlines
- * @return centerx the x coordinate of the finder pattern center
- * @return centery the y coordinate of the finder pattern center
+/*
+ @brief Crosscheck the finder pattern candidate in diagonal direction
+ @param image the image bitmap
+ @param type the finder pattern type
+ @param module_size_max the maximal allowed module size
+ @param module_size the module size in diagonal direction
+ @param dir the finder pattern direction
+ @param both_dir scan both diagonal scanlines
+ @return item1 the number of confirmed diagonal scanlines
+ @return item2 centerx the x coordinate of the finder pattern center
+ @return item3 centery the y coordinate of the finder pattern center
 */
 Tuple3<int, double, double> _crossCheckPatternDiagonal(jab_bitmap image, int type, double module_size_max, double centerx, double centery, double module_size, int dir, bool both_dir) {
   int state_number = 5;
@@ -444,16 +411,15 @@ Tuple3<int, double, double> _crossCheckPatternDiagonal(jab_bitmap image, int typ
   return Tuple3<int, double, double>(confirmed, centerx, centery);
 }
 
-/**
- * @brief Crosscheck the finder pattern candidate in vertical direction
- * @param image the image bitmap
- * @param module_size_max the maximal allowed module size
- * @param centerx the x coordinate of the finder pattern center
- * @param centery the y coordinate of the finder pattern center
- * @param module_size the module size in vertical direction
- * @return JAB_SUCCESS | JAB_FAILURE
- * @return centery the y coordinate of the finder pattern center
- * @return module_size the module size in vertical direction
+/*
+ Crosscheck the finder pattern candidate in vertical direction
+ @param image the image bitmap
+ @param module_size_max the maximal allowed module size
+ @param centerx the x coordinate of the finder pattern center
+ @param centery the y coordinate of the finder pattern center
+ @return item1 JAB_SUCCESS | JAB_FAILURE
+ @return item2 centery the y coordinate of the finder pattern center
+ @return item3 module_size the module size in vertical direction
 */
 Tuple3<int, double, double> _crossCheckPatternVertical(jab_bitmap image, double module_size_max, double centerx, double centery) {
 	int state_number = 5;
@@ -517,15 +483,15 @@ Tuple3<int, double, double> _crossCheckPatternVertical(jab_bitmap image, double 
   return Tuple3<int, double, double>(JAB_FAILURE, centery, module_size);
 }
 
-/**
- * @brief Crosscheck the finder pattern candidate in horizontal direction
- * @param image the image bitmap
- * @param module_size_max the maximal allowed module size
- * @param centerx the x coordinate of the finder pattern center
- * @param centery the y coordinate of the finder pattern center
- * @return JAB_SUCCESS | JAB_FAILURE
- * @return centerx the x coordinate of the finder pattern center
- * @return module_size the module size in horizontal direction
+/*
+ Crosscheck the finder pattern candidate in horizontal direction
+ @param image the image bitmap
+ @param module_size_max the maximal allowed module size
+ @param centerx the x coordinate of the finder pattern center
+ @param centery the y coordinate of the finder pattern center
+ @return item1 JAB_SUCCESS | JAB_FAILURE
+ @return item2 centerx the x coordinate of the finder pattern center
+ @return item3 module_size the module size in horizontal direction
 */
 Tuple3<int, double, double> _crossCheckPatternHorizontal(jab_bitmap image, double module_size_max, double centerx, double centery) {
   int state_number = 5;
@@ -590,16 +556,16 @@ Tuple3<int, double, double> _crossCheckPatternHorizontal(jab_bitmap image, doubl
   return Tuple3<int, double, double>(JAB_FAILURE, centerx, module_size);
 }
 
-/**
- * @brief Crosscheck the finder pattern color
- * @param image the image bitmap
- * @param color the expected module color
- * @param module_size the module size
- * @param module_number the number of modules that should be checked
- * @param centerx the x coordinate of the finder pattern center
- * @param centery the y coordinate of the finder pattern center
- * @param dir the check direction
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Crosscheck the finder pattern color
+ @param image the image bitmap
+ @param color the expected module color
+ @param module_size the module size
+ @param module_number the number of modules that should be checked
+ @param centerx the x coordinate of the finder pattern center
+ @param centery the y coordinate of the finder pattern center
+ @param dir the check direction
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _crossCheckColor(jab_bitmap image, int color, int module_size, int module_number, int centerx, int centery, int dir) {
 	int tolerance = 3;
@@ -667,22 +633,22 @@ int _crossCheckColor(jab_bitmap image, int color, int module_size, int module_nu
 	}
 }
 
-/**
- * @brief Crosscheck the finder pattern candidate in one channel
- * @param ch the binarized color channel
- * @param type the finder pattern type
- * @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
- * @param module_size_max the maximal allowed module size
- * @param module_size the module size in all directions
- * @param centerx the x coordinate of the finder pattern center
- * @param centery the y coordinate of the finder pattern center
- * @param dir the finder pattern direction
- * @param dcc the diagonal crosscheck result
- * @return JAB_SUCCESS | JAB_FAILURE
- * @return module_size the module size in all directions
- * @return center  coordinate of the finder pattern center
- * @return dir the finder pattern direction
- * @return dcc the diagonal crosscheck result
+/*
+ Crosscheck the finder pattern candidate in one channel
+ @param ch the binarized color channel
+ @param type the finder pattern type
+ @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
+ @param module_size_max the maximal allowed module size
+ @param module_size the module size in all directions
+ @param centerx the x coordinate of the finder pattern center
+ @param centery the y coordinate of the finder pattern center
+ @param dir the finder pattern direction
+ @param dcc the diagonal crosscheck result
+ @return item1 JAB_SUCCESS | JAB_FAILURE
+ @return item2 module_size the module size in all directions
+ @return item3 center  coordinate of the finder pattern center
+ @return item4 dir the finder pattern direction
+ @return item5 dcc the diagonal crosscheck result
 */
 Tuple5<int, double, jab_point, int, int> _crossCheckPatternCh(jab_bitmap ch, int type, int h_v, double module_size_max, double module_size, double centerx, double centery, int dir, int dcc) {
 	double module_size_v = 0.0;
@@ -751,17 +717,17 @@ Tuple5<int, double, jab_point, int, int> _crossCheckPatternCh(jab_bitmap ch, int
 	return Tuple5<int, double, jab_point, int, int>(JAB_FAILURE, module_size, jab_point(centerx, centery), dir, dcc);
 }
 
-/**
- * @brief Crosscheck the finder pattern candidate
- * @param ch the binarized color channels of the image
- * @param fp the finder pattern
- * @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Crosscheck the finder pattern candidate
+ @param ch the binarized color channels of the image
+ @param fp the finder pattern
+ @param h_v the direction of the candidate scanline, 0:horizontal 1:vertical
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _crossCheckPattern(List<jab_bitmap> ch, jab_finder_pattern fp, int h_v) {
-    double module_size_max = fp.module_size * 2.0;
+  double module_size_max = fp.module_size * 2.0;
 
-    //check g channel
+  //check g channel
 	double module_size_g;
   double centerx_g = fp.center.x;
   double centery_g = fp.center.y;
@@ -856,13 +822,13 @@ int _crossCheckPattern(List<jab_bitmap> ch, jab_finder_pattern fp, int h_v) {
 	return JAB_SUCCESS;
 }
 
-/**
- * @brief Save a found alignment pattern into the alignment pattern list
- * @param ap the alignment pattern
- * @param aps the alignment pattern list
- * @param counter the number of alignment patterns in the list
- * @return  -1 if added as a new alignment pattern | the alignment pattern index if combined with an existing pattern
- * @return counter the number of alignment patterns in the list
+/*
+ Save a found alignment pattern into the alignment pattern list
+ @param ap the alignment pattern
+ @param aps the alignment pattern list
+ @param counter the number of alignment patterns in the list
+ @return item1 -1 if added as a new alignment pattern | the alignment pattern index if combined with an existing pattern
+ @return item2 counter the number of alignment patterns in the list
 */
 Tuple2<int, int> _saveAlignmentPattern(jab_alignment_pattern ap, List<jab_alignment_pattern> aps, int counter) {
   //combine the alignment patterns at the same position with the same size
@@ -886,12 +852,12 @@ Tuple2<int, int> _saveAlignmentPattern(jab_alignment_pattern ap, List<jab_alignm
   return Tuple2<int, int>(-1, counter);
 }
 
-/**
- * @brief Save a found finder pattern into the finder pattern list
- * @param fp the finder pattern
- * @param fps the finder pattern list
- * @param counter the number of finder patterns in the list
- * @param fp_type_count the number of finder pattern types in the list
+/*
+ Save a found finder pattern into the finder pattern list
+ @param fp the finder pattern
+ @param fps the finder pattern list
+ @param counter the number of finder patterns in the list
+ @param fp_type_count the number of finder pattern types in the list
 */
 void _saveFinderPattern(jab_finder_pattern fp, List<jab_finder_pattern> fps, int counter, List<int> fp_type_count) {
   //combine the finder patterns at the same position with the same size
@@ -917,99 +883,11 @@ void _saveFinderPattern(jab_finder_pattern fp, List<jab_finder_pattern> fps, int
   // fp_type_count[fp.type]++;
 }
 
-// #if TEST_MODE
-// void drawFoundFinderPatterns(jab_finder_pattern* fps, int number, int color)
-// {
-//     int bytes_per_pixel = test_mode_bitmap.bits_per_pixel / 8;
-//     int bytes_per_row = test_mode_bitmap.width * bytes_per_pixel;
-//     for(int k = 0; k<number; k++)
-//     {
-//         if(fps[k].found_count > 0)
-//         {
-//             int centerx = (int)(fps[k].center.x + 0.5f);
-//             int centery = (int)(fps[k].center.y + 0.5f);
-//
-//             int starty = (int)(fps[k].center.y - fps[k].module_size/2 + 0.5f);
-//             int endy = (int)(fps[k].center.y + fps[k].module_size/2 + 1 + 0.5f);
-//             for(int i=starty; i<endy; i++)
-//             {
-// 				if(i*bytes_per_row + centerx*bytes_per_pixel + 2 < test_mode_bitmap.width * test_mode_bitmap.height * bytes_per_pixel)
-// 				{
-// 					test_mode_bitmap.pixel[i*bytes_per_row + centerx*bytes_per_pixel] 	   = (color >> 16) & 0xff;
-// 					test_mode_bitmap.pixel[i*bytes_per_row + centerx*bytes_per_pixel + 1] = (color >>  8) & 0xff;;
-// 					test_mode_bitmap.pixel[i*bytes_per_row + centerx*bytes_per_pixel + 2] = color & 0xff;
-//                 }
-//                 else
-//                 {
-// 					JAB_REPORT_ERROR(("Drawing finder pattern %d out of image", k))
-// 					break;
-// 				}
-//             }
-//
-//             int startx = (int)(fps[k].center.x - fps[k].module_size/2 + 0.5f);
-//             int endx = (int)(fps[k].center.x + fps[k].module_size/2 + 1 + 0.5f);
-//             for(int i=startx; i<endx; i++)
-//             {
-// 				if(centery*bytes_per_row + i*bytes_per_pixel + 2 < test_mode_bitmap.width * test_mode_bitmap.height * bytes_per_pixel)
-// 				{
-// 					test_mode_bitmap.pixel[centery*bytes_per_row + i*bytes_per_pixel] 	   = (color >> 16) & 0xff;
-// 					test_mode_bitmap.pixel[centery*bytes_per_row + i*bytes_per_pixel + 1] = (color >>  8) & 0xff;;
-// 					test_mode_bitmap.pixel[centery*bytes_per_row + i*bytes_per_pixel + 2] = color & 0xff;
-//                 }
-//                 else
-//                 {
-// 					JAB_REPORT_ERROR(("Drawing finder pattern %d out of image", k))
-// 					break;
-// 				}
-//             }
-//         }
-//     }
-// }
-// #endif
-
-// /**
-//  * @brief Remove the finder patterns with greatly different module size
-//  * @param fps the finder pattern list
-//  * @param fp_count the number of finder patterns in the list
-//  * @param mean the average module size
-//  * @param threshold the tolerance threshold
-// */
-// void removeBadPatterns(jab_finder_pattern* fps, int fp_count, double mean, double threshold)
-// {
-//     int remove_count = 0;
-//     int backup[fp_count];
-//     for(int i=0; i<fp_count; i++)
-//     {
-//         if( fps[i].found_count < 2 || fabs(fps[i].module_size - mean) > threshold )
-//         {
-//             backup[i] = fps[i].found_count;
-//             fps[i].found_count = 0;
-//             remove_count++;
-//         }
-//     }
-//     //in case all finder patterns were removed, recover the one whose module size differs from the mean minimally
-//     if(remove_count == fp_count)
-//     {
-//         double min = (threshold + mean)* 100;
-//         int min_index = 0;
-//         for(int i=0; i<fp_count; i++)
-//         {
-//             double diff = (double)fabs(fps[i].module_size - mean);
-//             if(diff < min)
-//             {
-//                 min = diff;
-//                 min_index = i;
-//             }
-//         }
-//         fps[min_index].found_count = backup[min_index];
-//         remove_count--;
-//     }
-// }
-
-/**
- * @brief Find the finder pattern with most detected times
- * @param fps the finder pattern list
- * @param fp_count the number of finder patterns in the list
+/*
+ Find the finder pattern with most detected times
+ @param fps the finder pattern list
+ @param fp_count the number of finder patterns in the list
+ @return finder pattern
 */
 jab_finder_pattern _getBestPattern(List<jab_finder_pattern> fps, int fp_count) {
   int counter = 0;
@@ -1044,12 +922,12 @@ jab_finder_pattern _getBestPattern(List<jab_finder_pattern> fps, int fp_count) {
   return fp;
 }
 
-/**
- * @brief Select the best finder patterns out of the list
- * @param fps the finder pattern list
- * @param fp_count the number of finder patterns in the list
- * @param fp_type_count the number of each finder pattern type
- * @return the number of missing finder pattern types
+/*
+ Select the best finder patterns out of the list
+ @param fps the finder pattern list
+ @param fp_count the number of finder patterns in the list
+ @param fp_type_count the number of each finder pattern type
+ @return the number of missing finder pattern types
 */
 int _selectBestPatterns(List<jab_finder_pattern> fps, int fp_count, List<int> fp_type_count) {
   //classify finder patterns into four types
@@ -1133,14 +1011,14 @@ int _selectBestPatterns(List<jab_finder_pattern> fps, int fp_count, List<int> fp
 	return missing_fp_count;
 }
 
-/**
- * @brief Scan the image vertically
- * @param ch the binarized color channels of the image
- * @param min_module_size the minimal module size
- * @param fps the found finder patterns
- * @param fp_type_count the number of found finder patterns for each type
- * @param total_finder_patterns the number of totally found finder patterns
- * @return total_finder_patterns the number of totally found finder patterns
+/*
+ Scan the image vertically
+ @param ch the binarized color channels of the image
+ @param min_module_size the minimal module size
+ @param fps the found finder patterns
+ @param fp_type_count the number of found finder patterns for each type
+ @param total_finder_patterns the number of totally found finder patterns
+ @return total_finder_patterns the number of totally found finder patterns
 */
 int _scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_finder_pattern> fps, List<int> fp_type_count, int total_finder_patterns) {
   bool done = false;
@@ -1257,11 +1135,11 @@ int _scanPatternVertical(List<jab_bitmap> ch, int min_module_size, List<jab_find
   }
 }
 
-/**
- * @brief Search for the missing finder pattern at the estimated position
- * @param bitmap the image bitmap
- * @param fps the finder patterns
- * @param miss_fp_index the index of the missing finder pattern
+/*
+ Search for the missing finder pattern at the estimated position
+ @param bitmap the image bitmap
+ @param fps the finder patterns
+ @param miss_fp_index the index of the missing finder pattern
 */
 void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, int miss_fp_index) {
 	//determine the search area
@@ -1275,11 +1153,8 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
 
 	var rgb = List<jab_bitmap>.filled(3, null);
 	for(int i=0; i<3; i++) {
-		rgb[i] =jab_bitmap(); // (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + area_height*area_width*sizeof(jab_byte));
-		if(rgb[i] == null) {
-			// JAB_REPORT_INFO(("Memory allocation for binary bitmap failed, the missing finder pattern can not be found."))
-			return;
-		}
+		rgb[i] = jab_bitmap(); // (jab_bitmap*)calloc(1, sizeof(jab_bitmap) + area_height*area_width*sizeof(jab_byte));
+
 		rgb[i].width = area_width;
 		rgb[i].height= area_height;
 		rgb[i].bits_per_channel = 8;
@@ -1347,10 +1222,7 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
 	}
 	//search for the missing finder pattern
 	var fps_miss = List<jab_finder_pattern>.filled (MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
-  if(fps_miss == null) {
-      // reportError("Memory allocation for finder patterns failed, the missing finder pattern can not be found.");
-      return;
-  }
+
   int total_finder_patterns = 0;
   bool done = false;
   var fp_type_count = List<int>.filled(4, 0);
@@ -1472,13 +1344,13 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
   }
 }
 
-/**
- * @brief Find the master symbol in the image
- * @param bitmap the image bitmap
- * @param ch the binarized color channels of the image
- * @param mode the detection mode
- * @return the finder pattern list | NULL
- * @return status the detection status
+/*
+ Find the master symbol in the image
+ @param bitmap the image bitmap
+ @param ch the binarized color channels of the image
+ @param mode the detection mode
+ @return item1 the finder pattern list | NULL
+ @return item2 status the detection status
 */
 Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode) {
 	int status;
@@ -1617,20 +1489,7 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
 		_scanPatternVertical(ch, min_module_size, fps, fp_type_count, total_finder_patterns);
 		//set dir to 2?
 	}
-
-
-// #if TEST_MODE
-//     //output all found finder patterns
-//     JAB_REPORT_INFO(("Total found: %d", total_finder_patterns))
-//     for(int i=0; i<total_finder_patterns; i++)
-//     {
-//         JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
-//     }
-//     drawFoundFinderPatterns(fps, total_finder_patterns, 0x00ff00);
-//     saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
-// #endif
-
-    //set finder patterns' direction
+  
 	for(int i=0; i<total_finder_patterns; i++) {
 		fps[i].direction = fps[i].direction >=0 ? 1 : -1;
 	}
@@ -1639,9 +1498,8 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
 
 	//if more than one finder patterns are missing, detection fails
 	if(missing_fp_count > 1) {
-		// reportError("Too few finder pattern found");
-		// *status = JAB_FAILURE;
-		return Tuple2<int, List<jab_finder_pattern>>(status, fps);
+		status = JAB_FAILURE;
+		return Tuple2<int, List<jab_finder_pattern>>(status, fps); //Too few finder pattern found
 	}
 
     //if only one finder pattern is missing, try anyway by estimating the missing one
@@ -1693,42 +1551,27 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
 		  if(fps[miss_fp].center.x < 0 || fps[miss_fp].center.x > ch[0].width - 1 ||
          fps[miss_fp].center.y < 0 || fps[miss_fp].center.y > ch[0].height - 1)
 		  {
-        // JAB_REPORT_ERROR(("Finder pattern %d out of image", miss_fp))
         fps[miss_fp].found_count = 0;
-        status = JAB_FAILURE;
+        status = JAB_FAILURE; //Finder pattern %d out of image", miss_fp
         return Tuple2<int, List<jab_finder_pattern>>(status, fps);
       }
-
-		//try to find the missing finder pattern by a local search at the estimated position
-// #if TEST_MODE
-// 		JAB_REPORT_INFO(("Trying to confirm the missing finder pattern by a local search"))
-// #endif
+      
 		_seekMissingFinderPattern(bitmap, fps, miss_fp);
   }
-// #if TEST_MODE
-//     //output the final selected 4 patterns
-//     JAB_REPORT_INFO(("Final patterns:"))
-//     for(int i=0; i<4; i++)
-//     {
-//         JAB_REPORT_INFO(("x:%6.1f\ty:%6.1f\tsize:%.2f\tcnt:%d\ttype:%d\tdir:%d", fps[i].center.x, fps[i].center.y, fps[i].module_size, fps[i].found_count, fps[i].type, fps[i].direction))
-//     }
-// 	drawFoundFinderPatterns(fps, 4, 0xff0000);
-// 	saveImage(test_mode_bitmap, "jab_detector_result_fp.png");
-// #endif
+    
   status = JAB_SUCCESS;
   return Tuple2<int, List<jab_finder_pattern>>(status, fps);
 }
 
-/**
- * @brief Crosscheck the alignment pattern candidate in diagonal direction
- * @param image the image bitmap
- * @param ap_type the alignment pattern type
- * @param module_size_max the maximal allowed module size
- * @param center the alignment pattern center
- * @param dir the alignment pattern direction
- * @return the y coordinate of the diagonal scanline center | -1 if failed
- * @return dir the alignment pattern direction
-
+/*
+ Crosscheck the alignment pattern candidate in diagonal direction
+ @param image the image bitmap
+ @param ap_type the alignment pattern type
+ @param module_size_max the maximal allowed module size
+ @param center the alignment pattern center
+ @param dir the alignment pattern direction
+ @return item1 the y coordinate of the diagonal scanline center | -1 if failed
+ @return item2 dir the alignment pattern direction
  */
 Tuple2<double, int> _crossCheckPatternDiagonalAP(jab_bitmap image, int ap_type, int module_size_max, jab_point center, int dir) {
   int offset_x, offset_y;
@@ -1842,14 +1685,14 @@ Tuple2<double, int> _crossCheckPatternDiagonalAP(jab_bitmap image, int ap_type, 
   return Tuple2<double, int>(-1, dir);
 }
 
-/**
- * @brief Crosscheck the alignment pattern candidate in vertical direction
- * @param image the image bitmap
- * @param center the alignment pattern center
- * @param module_size_max the maximal allowed module size
- * @param module_size the module size in vertical direction
- * @return the y coordinate of the vertical scanline center | -1 if failed
- * @return module_size the module size in vertical direction
+/*
+ Crosscheck the alignment pattern candidate in vertical direction
+ @param image the image bitmap
+ @param center the alignment pattern center
+ @param module_size_max the maximal allowed module size
+ @param module_size the module size in vertical direction
+ @return the y coordinate of the vertical scanline center | -1 if failed
+ @return module_size the module size in vertical direction
 */
 Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point center, int module_size_max, double module_size) {
   var state_count = List<int>.filled(3, 0);
@@ -1906,18 +1749,18 @@ Tuple2<double, double> _crossCheckPatternVerticalAP(jab_bitmap image, jab_point 
   return Tuple2<double, double>(-1, module_size);
 }
 
-/**
- * @brief Crosscheck the alignment pattern candidate in horizontal direction
- * @param row the bitmap row
- * @param channel the color channel
- * @param startx the start position
- * @param endx the end position
- * @param centerx the center of the candidate scanline
- * @param ap_type the alignment pattern type
- * @param module_size_max the maximal allowed module size
- * @param module_size the module size in horizontal direction
- * @return the x coordinate of the horizontal scanline center | -1 if failed
- * @return module_size the module size in horizontal direction
+/*
+ Crosscheck the alignment pattern candidate in horizontal direction
+ @param row the bitmap row
+ @param channel the color channel
+ @param startx the start position
+ @param endx the end position
+ @param centerx the center of the candidate scanline
+ @param ap_type the alignment pattern type
+ @param module_size_max the maximal allowed module size
+ @param module_size the module size in horizontal direction
+ @return the x coordinate of the horizontal scanline center | -1 if failed
+ @return module_size the module size in horizontal direction
 */
 Tuple2<double, double> _crossCheckPatternHorizontalAP(List<int> row, int channel, int startx, int endx, int centerx, int ap_type, double module_size_max, double module_size) {
   int core_color = -1;
@@ -1993,23 +1836,23 @@ Tuple2<double, double> _crossCheckPatternHorizontalAP(List<int> row, int channel
   return Tuple2<double, double>(-1, module_size);
 }
 
-/**
- * @brief Crosscheck the alignment pattern
- * @param ch the binarized color channels of the image
- * @param y the y coordinate of the horizontal scanline
- * @param minx the minimal coordinate of the horizontal scanline
- * @param maxx the maximal coordinate of the horizontal scanline
- * @param cur_x the start position of the horizontal scanline
- * @param ap_type the alignment pattern type
- * @param max_module_size the maximal allowed module size
- * @param centerx the x coordinate of the alignment pattern center
- * @param centery the y coordinate of the alignment pattern center
- * @param module_size the module size
- * @param dir the alignment pattern direction
- * @return JAB_SUCCESS | JAB_FAILURE
- * @return center the  coordinate of the alignment pattern center
- * @return module_size the module size
- * @return dir the alignment pattern direction
+/*
+ Crosscheck the alignment pattern
+ @param ch the binarized color channels of the image
+ @param y the y coordinate of the horizontal scanline
+ @param minx the minimal coordinate of the horizontal scanline
+ @param maxx the maximal coordinate of the horizontal scanline
+ @param cur_x the start position of the horizontal scanline
+ @param ap_type the alignment pattern type
+ @param max_module_size the maximal allowed module size
+ @param centerx the x coordinate of the alignment pattern center
+ @param centery the y coordinate of the alignment pattern center
+ @param module_size the module size
+ @param dir the alignment pattern direction
+ @return item1 JAB_SUCCESS | JAB_FAILURE
+ @return item2 center the  coordinate of the alignment pattern center
+ @return item3 module_size the module size
+ @return item4 dir the alignment pattern direction
 */
 Tuple4<int, jab_point, double, int> _crossCheckPatternAP(List<jab_bitmap> ch, int y, int minx, int maxx, int cur_x, int ap_type, double max_module_size, double centerx, double centery, double module_size, int dir) {
 	//get row
@@ -2108,14 +1951,14 @@ Tuple4<int, jab_point, double, int> _crossCheckPatternAP(List<jab_bitmap> ch, in
 	return Tuple4<int, jab_point, double, int>(JAB_SUCCESS, jab_point(centerx, centery), module_size, dir);
 }
 
-/**
- * @brief Find alignment pattern around a given position
- * @param ch the binarized color channels of the image
- * @param x the x coordinate of the given position
- * @param y the y coordinate of the given position
- * @param module_size the module size
- * @param ap_type the alignment pattern type
- * @return the found alignment pattern
+/*
+ Find alignment pattern around a given position
+ @param ch the binarized color channels of the image
+ @param x the x coordinate of the given position
+ @param y the y coordinate of the given position
+ @param module_size the module size
+ @param ap_type the alignment pattern type
+ @return the found alignment pattern
 */
 jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, double y, double module_size, int ap_type) {
   jab_alignment_pattern ap;
@@ -2250,14 +2093,14 @@ jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, doubl
   return ap;
 }
 
-/**
- * @brief Find a docked slave symbol
- * @param bitmap the image bitmap
- * @param ch the binarized color channels of the image
- * @param host_symbol the host symbol
- * @param slave_symbol the slave symbol
- * @param docked_position the docked position
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Find a docked slave symbol
+ @param bitmap the image bitmap
+ @param ch the binarized color channels of the image
+ @param host_symbol the host symbol
+ @param slave_symbol the slave symbol
+ @param docked_position the docked position
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol host_symbol, jab_decoded_symbol slave_symbol, int docked_position) {
   var aps = List<jab_alignment_pattern>.filled (4, null); //calloc(4, sizeof(jab_alignment_pattern));
@@ -2392,8 +2235,7 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
   //find the alignment pattern around ap1
   aps[ap1] = _findAlignmentPattern(ch, aps[ap1].center.x, aps[ap1].center.y, host_symbol.module_size, ap1);
   if(aps[ap1].found_count == 0) {
-    // JAB_REPORT_ERROR(("The first alignment pattern in slave symbol %d not found", slave_symbol.index))
-    return JAB_FAILURE;
+    return JAB_FAILURE; //The first alignment pattern in slave symbol %d not found", slave_symbol.index
   }
   //calculate the coordinate of ap2
   aps[ap2].center.x = host_symbol.pattern_positions[hp2].x + sign * 7 * host_symbol.module_size * cos(alpha2);
@@ -2421,7 +2263,6 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
 
   //if neither ap3 nor ap4 is found, failed
   if(aps[ap3].found_count == 0 && aps[ap4].found_count == 0) {
-    // free(aps);
     return JAB_FAILURE;
   }
   //if only 3 aps are found, try anyway by estimating the coordinate of the fourth one
@@ -2434,9 +2275,7 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
     aps[ap3].found_count = 1;
     aps[ap3].module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap4].module_size) / 3.0;
     if(aps[ap3].center.x > bitmap.width - 1 || aps[ap3].center.y > bitmap.height - 1) {
-      // JAB_REPORT_ERROR(("Alignment pattern %d out of image", ap3))
-      // free(aps);
-      return JAB_FAILURE;
+      return JAB_FAILURE; //Alignment pattern %d out of image", ap3
     }
   }
   if(aps[ap4].found_count == 0) {
@@ -2448,9 +2287,7 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
     aps[ap4].found_count = 1;
     aps[ap4].module_size = (aps[ap1].module_size + aps[ap1].module_size + aps[ap3].module_size) / 3.0;
     if(aps[ap4].center.x > bitmap.width - 1 || aps[ap4].center.y > bitmap.height - 1) {
-      // JAB_REPORT_ERROR(("Alignment pattern %d out of image", ap4))
-      // free(aps);
-      return JAB_FAILURE;
+      return JAB_FAILURE; //Alignment pattern %d out of image", ap4
     }
   }
 
@@ -2460,26 +2297,15 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
   slave_symbol.pattern_positions[ap3] = aps[ap3].center;
   slave_symbol.pattern_positions[ap4] = aps[ap4].center;
   slave_symbol.module_size = (aps[ap1].module_size + aps[ap2].module_size + aps[ap3].module_size + aps[ap4].module_size) / 4.0;
-
-// #if TEST_MODE
-// 	JAB_REPORT_INFO(("Found alignment patterns in slave symbol %d:", slave_symbol.index))
-//     for(int i=0; i<4; i++)
-//     {
-//         JAB_REPORT_INFO(("x: %6.1f\ty: %6.1f\tcount: %d\ttype: %d\tsize: %.2f", aps[i].center.x, aps[i].center.y, aps[i].found_count, aps[i].type, aps[i].module_size))
-//     }
-//     drawFoundFinderPatterns((jab_finder_pattern*)aps, 4, 0xff0000);
-// 	saveImage(test_mode_bitmap, "jab_detector_result_slave.png");
-// #endif
-
-  // free(aps);
+    
   return JAB_SUCCESS;
 }
 
-/**
- * @brief Get the nearest valid side size to a given size
- * @param size the input size
- * @return the nearest valid side size | -1: invalid side size
- * @return flag the flag indicating the magnitude of error
+/*
+ Get the nearest valid side size to a given size
+ @param size the input size
+ @return the nearest valid side size | -1: invalid side size
+ @return flag the flag indicating the magnitude of error
 */
 Tuple2<int, int> _getSideSize(int size) {
 	var flag = 1;
@@ -2505,13 +2331,13 @@ Tuple2<int, int> _getSideSize(int size) {
   return Tuple2<int, int>(size, flag);
 }
 
-/**
- * @brief Choose the side size according to the detection reliability
- * @param size1 the first side size
- * @param flag1 the detection flag of the first size
- * @param size2 the second side size
- * @param flag2 the detection flag of the second size
- * @return the chosen side size
+/*
+ Choose the side size according to the detection reliability
+ @param size1 the first side size
+ @param flag1 the detection flag of the first size
+ @param size2 the second side size
+ @param flag2 the detection flag of the second size
+ @return the chosen side size
 */
 int _chooseSideSize(int size1, int flag1, int size2, int flag2) {
 	if(flag1 == -1 && flag2 == -1) {
@@ -2526,11 +2352,11 @@ int _chooseSideSize(int size1, int flag1, int size2, int flag2) {
 	}
 }
 
-/**
- * @brief Calculate the number of modules between two finder/alignment patterns
- * @param fp1 the first finder/alignment pattern
- * @param fp2 the second finder/alignment pattern
- * @return the number of modules
+/*
+ Calculate the number of modules between two finder/alignment patterns
+ @param fp1 the first finder/alignment pattern
+ @param fp2 the second finder/alignment pattern
+ @return the number of modules
 */
 int _calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2) {
   double dist = DIST(fp1.center.x, fp1.center.y, fp2.center.x, fp2.center.y);
@@ -2541,10 +2367,10 @@ int _calculateModuleNumber(jab_finder_pattern fp1, jab_finder_pattern fp2) {
   return number;
 }
 
-/**
- * @brief Calculate the side sizes of master symbol
- * @param fps the finder patterns
- * @return the horizontal and vertical side sizes
+/*
+ Calculate the side sizes of master symbol
+ @param fps the finder patterns
+ @return the horizontal and vertical side sizes
 */
 jab_vector2d _calculateSideSize(List<jab_finder_pattern> fps) {
   /* finder pattern type layout
@@ -2581,10 +2407,10 @@ jab_vector2d _calculateSideSize(List<jab_finder_pattern> fps) {
   return side_size;
 }
 
-/**
- * @brief Get the nearest valid position of the first alignment pattern
- * @param pos the input position
- * @return the nearest valid position | -1: invalid position
+/*
+ Get the nearest valid position of the first alignment pattern
+ @param pos the input position
+ @return the nearest valid position | -1: invalid position
 */
 int _getFirstAPPos(int pos) {
   switch (pos % 3) {
@@ -2600,13 +2426,13 @@ int _getFirstAPPos(int pos) {
   return pos;
 }
 
-/**
- * @brief Detect the first alignment pattern between two finder patterns
- * @param ch the binarized color channels of the image
- * @param side_version the side version
- * @param fp1 the first finder pattern
- * @param fp2 the second finder pattern
- * @return the position of the found alignment pattern | JAB_FAILURE: if not found
+/*
+ Detect the first alignment pattern between two finder patterns
+ @param ch the binarized color channels of the image
+ @param side_version the side version
+ @param fp1 the first finder pattern
+ @param fp2 the second finder pattern
+ @return the position of the found alignment pattern | JAB_FAILURE: if not found
 */
 int _detectFirstAP(List<jab_bitmap> ch, int side_version, jab_finder_pattern fp1, jab_finder_pattern fp2) {
   jab_alignment_pattern ap;
@@ -2660,26 +2486,22 @@ int _detectFirstAP(List<jab_bitmap> ch, int side_version, jab_finder_pattern fp1
   return JAB_FAILURE;
 }
 
-/**
- * @brief Confirm the side version by alignment pattern's positions
- * @param side_version the side version
- * @param found_ap_number the number of the found alignment patterns
- * @param ap_positions the positions of the found alignment patterns
- * @return the confirmed side version | JAB_FAILURE: if can not be confirmed
+/*
+ Confirm the side version by alignment pattern's positions
+ @param side_version the side version
+ @param found_ap_number the number of the found alignment patterns
+ @param ap_positions the positions of the found alignment patterns
+ @return the confirmed side version | JAB_FAILURE: if can not be confirmed
 */
 int _confirmSideVersion(int side_version, int first_ap_pos) {
   if(first_ap_pos <= 0) {
-// #if TEST_MODE
-//         JAB_REPORT_ERROR(("Invalid position of the first AP."))
-// #endif
     return JAB_FAILURE;
   }
 
   int v = side_version;
   int k = 1, sign = -1;
   bool flag = false;
-  do
-  {
+  do {
     if(first_ap_pos == jab_ap_pos[v-1][1]) {
         flag = true;
         break;
@@ -2693,32 +2515,23 @@ int _confirmSideVersion(int side_version, int first_ap_pos) {
   else return JAB_FAILURE;
 }
 
-/**
- * @brief Confirm the symbol size by alignment patterns
- * @param ch the binarized color channels of the image
- * @param fps the finder patterns
- * @param symbol the symbol
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Confirm the symbol size by alignment patterns
+ @param ch the binarized color channels of the image
+ @param fps the finder patterns
+ @param symbol the symbol
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _confirmSymbolSize(List<jab_bitmap> ch, List<jab_finder_pattern> fps, jab_decoded_symbol symbol) {
  	int first_ap_pos;
 
 	//side version x: scan the line between FP0 and FP1
   first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.x, fps[0], fps[1]);
-// #if TEST_MODE
-//     JAB_REPORT_INFO(("The position of the first AP between FP0 and FP1 is %d", first_ap_pos))
-// #endif // TEST_MODE
   int side_version_x = _confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
   if(side_version_x == 0) { //if failed, try the line between FP3 and FP2
     first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.x, fps[3], fps[2]);
-// #if TEST_MODE
-//         JAB_REPORT_INFO(("The position of the first AP between FP3 and FP2 is %d", first_ap_pos))
-// #endif // TEST_MODE
     side_version_x = _confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
     if(side_version_x == 0) {
-// #if TEST_MODE
-//             JAB_REPORT_ERROR(("Confirming side version x failed."))
-// #endif
       return JAB_FAILURE;
     }
   }
@@ -2727,20 +2540,11 @@ int _confirmSymbolSize(List<jab_bitmap> ch, List<jab_finder_pattern> fps, jab_de
 
   //side version y: scan the line between FP0 and FP3
   first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.y, fps[0], fps[3]);
-// #if TEST_MODE
-//     JAB_REPORT_INFO(("The position of the first AP between FP0 and FP3 is %d", first_ap_pos))
-// #endif // TEST_MODE
   int side_version_y = _confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
   if(side_version_y == 0) { //if failed, try the line between FP1 and FP2
     first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.y, fps[1], fps[2]);
-// #if TEST_MODE
-//         JAB_REPORT_INFO(("The position of the first AP between FP1 and FP2 is %d", first_ap_pos))
-// #endif // TEST_MODE
     side_version_y = _confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
     if(side_version_y == 0) {
-// #if TEST_MODE
-//             JAB_REPORT_ERROR(("Confirming side version y failed."))
-// #endif
       return JAB_FAILURE;
     }
   }
@@ -2750,30 +2554,25 @@ int _confirmSymbolSize(List<jab_bitmap> ch, List<jab_finder_pattern> fps, jab_de
   return JAB_SUCCESS;
 }
 
-/**
- * @brief Sample a symbol using alignment patterns
- * @param bitmap the image bitmap
- * @param ch the binarized color channels of the image
- * @param symbol the symbol to be sampled
- * @param fps the finder patterns
- * @return the sampled symbol matrix | NULL if failed
+/*
+ Sample a symbol using alignment patterns
+ @param bitmap the image bitmap
+ @param ch the binarized color channels of the image
+ @param symbol the symbol to be sampled
+ @param fps the finder patterns
+ @return the sampled symbol matrix | NULL if failed
 */
 jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol symbol, List<jab_finder_pattern> fps) {
 	//if no alignment pattern available, abort
   if(symbol.metadata.side_version.x < 6 && symbol.metadata.side_version.y < 6) {
-		// reportError("No alignment pattern is available");
-		return null;
+		return null; //No alignment pattern is available
 	}
 
 	//For default mode, first confirm the symbol side size
 	if(symbol.metadata.default_mode)   {
     if(_confirmSymbolSize(ch, fps, symbol) == JAB_FAILURE) {
-      // reportError("The symbol size can not be recognized.");
-      return null;
+      return null; //The symbol size can not be recognized.
     }
-// #if TEST_MODE
-//         JAB_REPORT_INFO(("Side sizes confirmed by APs: %d %d", symbol.side_size.x, symbol.side_size.y))
-// #endif
   }
 
   int side_ver_x_index = symbol.metadata.side_version.x - 1;
@@ -2781,13 +2580,10 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 	int number_of_ap_x = jab_ap_num[side_ver_x_index];
   int number_of_ap_y = jab_ap_num[side_ver_y_index];
 
-    //buffer for all possible alignment patterns
+  //buffer for all possible alignment patterns
 	var aps = List<jab_alignment_pattern>.filled (number_of_ap_x * number_of_ap_y, null); //jab_alignment_pattern *)malloc(number_of_ap_x * number_of_ap_y *sizeof(jab_alignment_pattern));
-	if(aps == null) {
-		// reportError("Memory allocation for alignment patterns failed");
-		return null;
-	}
-    //detect all APs
+
+  //detect all APs
 	for(int i=0; i<number_of_ap_y; i++) {
 		for(int j=0; j<number_of_ap_x; j++) {
 			int index = i * number_of_ap_x + j;
@@ -2839,17 +2635,10 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 				aps[index] = _findAlignmentPattern(ch, aps[index].center.x, aps[index].center.y, aps[index].module_size, APX);
 				if(aps[index].found_count == 0) {
 					aps[index] = tmp;	//recover the estimated one
-// #if TEST_MODE
-// 					JAB_REPORT_ERROR(("The alignment pattern (index: %d) at (X: %f, Y: %f) not found", index, aps[index].center.x, aps[index].center.y))
-// #endif
 				}
 			}
 		}
 	}
-
-// #if TEST_MODE
-// 	drawFoundFinderPatterns((jab_finder_pattern*)aps, number_of_ap_x * number_of_ap_y, 0x0000ff);
-// #endif
 
 	//determine the minimal sampling rectangle for each block
 	int block_number = (number_of_ap_x-1) * (number_of_ap_y-1);
@@ -2919,16 +2708,13 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 	}
 
 	//allocate the buffer for the sampled matrix of the symbol
-    int width = symbol.side_size.x;
+  int width = symbol.side_size.x;
 	int height= symbol.side_size.y;
 	int mtx_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
 	int mtx_bytes_per_row = width * mtx_bytes_per_pixel;
-	var matrix = jab_bitmap(); //  (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*mtx_bytes_per_pixel*sizeof(jab_byte));
+
+  var matrix = jab_bitmap(); //  (jab_bitmap*)malloc(sizeof(jab_bitmap) + width*height*mtx_bytes_per_pixel*sizeof(jab_byte));
   matrix.pixel = Uint8List(width*height);
-  if(matrix == null) {
-		// reportError("Memory allocation for symbol bitmap matrix failed");
-		return null;
-	}
 	matrix.channel_count = bitmap.channel_count;
 	matrix.bits_per_channel = bitmap.bits_per_channel;
 	matrix.bits_per_pixel = matrix.bits_per_channel * matrix.channel_count;
@@ -2994,16 +2780,9 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 			return null;
 		}
 		//sample the current block
-// #if TEST_MODE
-// 		test_mode_color = 0;
-// #endif
 		var block = sampleSymbol(bitmap, pt, blk_size);
-		// free(pt);
 		if(block == null) {
-			// reportError("Sampling block failed");
-			// free(aps);
-			// free(matrix);
-			return null;
+			return null; //Sampling block failed
 		}
 		//save the sampled block in the matrix
 		int start_x = jab_ap_pos[side_ver_x_index][rect[i].x] - 1;
@@ -3026,19 +2805,15 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
 		}
 		// free(block);
 	}
-// #if TEST_MODE
-//     saveImage(test_mode_bitmap, "jab_sample_pos_ap.png");
-// #endif
 
-	// free(aps);
 	return matrix;
 }
 
-/**
- * @brief Get the average pixel value around the found finder patterns
- * @param bitmap the image bitmap
- * @param fps the finder patterns
- * @result rgb_ave the average pixel value
+/*
+ Get the average pixel value around the found finder patterns
+ @param bitmap the image bitmap
+ @param fps the finder patterns
+ @result rgb_ave the average pixel value
 */
 List<double> _getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> fps ) {
   var rgb_ave = List<double>.filled(3, 0);
@@ -3099,12 +2874,12 @@ List<double> _getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> f
 
 
 
-/**
- * @brief Detect and decode a master symbol
- * @param bitmap the image bitmap
- * @param ch the binarized color channels of the image
- * @param master_symbol the master symbol
- * @return JAB_SUCCESS | JAB_FAILURE
+/*
+ Detect and decode a master symbol
+ @param bitmap the image bitmap
+ @param ch the binarized color channels of the image
+ @param master_symbol the master symbol
+ @return JAB_SUCCESS | JAB_FAILURE
 */
 int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol master_symbol) {
   //find master symbol
@@ -3112,15 +2887,12 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
   var result = _findMasterSymbol(bitmap, ch, jab_detect_mode.INTENSIVE_DETECT);
   status = result.item1;
   var fps = result.item2;
-  if(status == FATAL_ERROR) return JAB_FAILURE;
+  if(status == FATAL_ERROR)
+    return JAB_FAILURE;
   else if(status == JAB_FAILURE) {
-// #if TEST_MODE
-//         JAB_REPORT_INFO(("Trying to detect more finder patterns based on the found ones"))
-// #endif
     //calculate the average pixel value around the found FPs
     var rgb_ave = _getAveragePixelValue(bitmap, fps);
-    // free(fps);
-    //binarize the bitmap using the average pixel values as thresholds
+   //binarize the bitmap using the average pixel values as thresholds
     for(int i=0; i<3;i++) ch[i]= null;
     if(binarizerRGB(bitmap, ch, rgb_ave)==0) {
       return JAB_FAILURE;
@@ -3130,7 +2902,6 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
     status = result.item1;
     fps = result.item2;
     if(status == JAB_FAILURE || status == FATAL_ERROR) {
-      // free(fps);
       return JAB_FAILURE;
     }
   }
@@ -3138,13 +2909,9 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
   //calculate the master symbol side size
   jab_vector2d side_size = _calculateSideSize(fps);
   if(side_size.x == -1 || side_size.y == -1) {
-    // reportError("Calculating side size failed");
-    //     free(fps);
-    return JAB_FAILURE;
+    return JAB_FAILURE; //Calculating side size failed
   }
-// #if TEST_MODE
-// 	JAB_REPORT_INFO(("Side sizes: %d %d", side_size.x, side_size.y))
-// #endif
+
   //try decoding using only finder patterns
   //calculate perspective transform matrix
   var pt = getPerspectiveTransform(fps[0].center, fps[1].center, fps[2].center, fps[3].center, side_size);
@@ -3154,18 +2921,9 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
   }
 
 	//sample master symbol
-// #if TEST_MODE
-// 	test_mode_color = 255;
-// #endif
 	var matrix = sampleSymbol(bitmap, pt, side_size);
-	// free(pt);
-// #if TEST_MODE
-// 	saveImage(test_mode_bitmap, "jab_sample_pos_fp.png");
-// #endif
 	if(matrix == null) {
-		// reportError("Sampling master symbol failed");
-		// free(fps);
-		return JAB_FAILURE;
+		return JAB_FAILURE; //Sampling master symbol failed
 	}
 
 	//save the detection result
@@ -3182,28 +2940,17 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 	int decode_result = decodeMaster(matrix, master_symbol);
 	// free(matrix);
 	if(decode_result == JAB_SUCCESS) {
-		// free(fps);
 		return JAB_SUCCESS;
 	} else if(decode_result < 0) {	//fatal error occurred
-		// free(fps);
 		return JAB_FAILURE;
 	} else { //if decoding using only finder patterns failed, try decoding using alignment patterns
-
-// #if TEST_MODE
-// 		JAB_REPORT_INFO(("Trying to sample master symbol using alignment pattern..."))
-// #endif // TEST_MODE
   master_symbol.side_size.x = VERSION2SIZE(master_symbol.metadata.side_version.x);
   master_symbol.side_size.y = VERSION2SIZE(master_symbol.metadata.side_version.y);
   matrix = _sampleSymbolByAlignmentPattern(bitmap, ch, master_symbol, fps);
-  // free(fps);
   if(matrix == null) {
-// #if TEST_MODE
-// 			reportError("Sampling master symbol using alignment pattern failed");
-// #endif // TEST_MODE
-			return JAB_FAILURE;
+    return JAB_FAILURE;
   }
   decode_result = decodeMaster(matrix, master_symbol);
-  // free(matrix);
   if(decode_result == JAB_SUCCESS)
     return JAB_SUCCESS;
   else
@@ -3211,16 +2958,16 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 	}
 }
 
-/**
- * @brief Detect a slave symbol
- * @param bitmap the image bitmap
- * @param ch the binarized color channels of the image
- * @param host_symbol the host symbol
- * @param slave_symbol the slave symbol
- * @param docked_position the docked position
- * @return the sampled slave symbol matrix | NULL if failed
- * @return host_symbol the host symbol
- * @return slave_symbol the slave symbol
+/*
+ Detect a slave symbol
+ @param bitmap the image bitmap
+ @param ch the binarized color channels of the image
+ @param host_symbol the host symbol
+ @param slave_symbol the slave symbol
+ @param docked_position the docked position
+ @return item1 the sampled slave symbol matrix | NULL if failed
+ @return item2 host_symbol the host symbol
+ @return item3 slave_symbol the slave symbol
  *
 */
 Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol> _detectSlave(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol host_symbol, jab_decoded_symbol slave_symbol, int docked_position) {
@@ -3231,8 +2978,7 @@ Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol> _detectSlave(jab_bitm
 
   //find slave symbol next to the host symbol
   if(_findSlaveSymbol(bitmap, ch, host_symbol, slave_symbol, docked_position) == JAB_FAILURE) {
-    // JAB_REPORT_ERROR(("Slave symbol %d not found", slave_symbol.index))
-    return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol);
+    return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol); //"Slave symbol %d not found", slave_symbol.index
   }
 
   //calculate perspective transform matrix
@@ -3244,29 +2990,23 @@ Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol> _detectSlave(jab_bitm
   }
 
   //sample slave symbol
-// #if TEST_MODE
-// 	test_mode_color = 255;
-// #endif
   jab_bitmap matrix = sampleSymbol(bitmap, pt, slave_symbol.side_size);
   if(matrix == null) {
-    // JAB_REPORT_ERROR(("Sampling slave symbol %d failed", slave_symbol.index))
-    // free(pt);
-    return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol); //JAB_FAILURE;
+    return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol); //Sampling slave symbol %d failed", slave_symbol.index
   }
 
-  // free(pt);
   return Tuple3<jab_bitmap, jab_decoded_symbol, jab_decoded_symbol>(matrix, host_symbol, slave_symbol);
 }
 
-/**
- * @brief Decode docked slave symbols around a host symbol
- * @param bitmap the image bitmap
- * @param ch the binarized color channels of the image
- * @param symbols the symbol list
- * @param host_index the index number of the host symbol
- * @param total the number of symbols in the list
- * @return JAB_SUCCESS | JAB_FAILURE
- * @return total the number of symbols in the list
+/*
+ Decode docked slave symbols around a host symbol
+ @param bitmap the image bitmap
+ @param ch the binarized color channels of the image
+ @param symbols the symbol list
+ @param host_index the index number of the host symbol
+ @param total the number of symbols in the list
+ @return item1 JAB_SUCCESS | JAB_FAILURE
+ @return item2 total the number of symbols in the list
 */
 Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, List<jab_decoded_symbol> symbols, int host_index, int total) {
   var docked_positions = List<int>.filled(4, 0);
@@ -3285,14 +3025,11 @@ Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, Lis
       symbols[host_index] = result.item2;
       symbols[total] = result.item3;
       if(matrix == null) {
-        // JAB_REPORT_ERROR(("Detecting slave symbol %d failed", symbols[*total].index))
-        return Tuple2<int, int>(JAB_FAILURE, total);
+        return Tuple2<int, int>(JAB_FAILURE, total); //Detecting slave symbol %d failed", symbols[*total].index
       }
       if(decodeSlave(matrix, symbols[total]) == JAB_SUCCESS) {
         total++;
-        // free(matrix);
       } else {
-        // free(matrix);
         return Tuple2<int, int>(JAB_FAILURE, total);
       }
     }
@@ -3302,21 +3039,20 @@ Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, Lis
 
 
 
-/**
- * @brief Extended function to decode a JAB Code
- * @param bitmap the image bitmap
- * @param mode the decoding mode(NORMAL_DECODE: only output completely decoded data when all symbols are correctly decoded
+/*
+ Extended function to decode a JAB Code
+ @param bitmap the image bitmap
+ @param mode the decoding mode(NORMAL_DECODE: only output completely decoded data when all symbols are correctly decoded
  *								 COMPATIBLE_DECODE: also output partly decoded data even if some symbols are not correctly decoded
- * @param symbols the decoded symbols
- * @param max_symbol_number the maximal possible number of symbols to be decoded
- * @return the decoded data | NULL if failed
- * @return status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
+ @param symbols the decoded symbols
+ @param max_symbol_number the maximal possible number of symbols to be decoded
+ @return item1 the decoded data | NULL if failed
+ @return item2 status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
 */
-Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol> symbols, int max_symbol_number) {
+Tuple2<jab_data, int> _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol> symbols) {
 	int status;
 	if(status != 0) status = 0;
 	if(symbols == null) {
-		// reportError("Invalid symbol buffer");
 		return null;
 	}
 
@@ -3326,25 +3062,6 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
   if(binarizerRGB(bitmap, ch, null) == 0) {
 		return null;
 	}
-// #if TEST_MODE
-//     saveImage(bitmap, "jab_balanced.png");
-// #endif // TEST_MODE
-//
-// #if TEST_MODE
-//     test_mode_bitmap = (jab_bitmap*)malloc(sizeof(jab_bitmap) + bitmap.width * bitmap.height * bitmap.channel_count * (bitmap.bits_per_channel/8));
-//     test_mode_bitmap.bits_per_channel = bitmap.bits_per_channel;
-//     test_mode_bitmap.bits_per_pixel   = bitmap.bits_per_pixel;
-//     test_mode_bitmap.channel_count	  = bitmap.channel_count;
-//     test_mode_bitmap.height 		  = bitmap.height;
-//     test_mode_bitmap.width			  = bitmap.width;
-//     memcpy(test_mode_bitmap.pixel, bitmap.pixel, bitmap.width * bitmap.height * bitmap.channel_count * (bitmap.bits_per_channel/8));
-//     saveImage(ch[0], "jab_r.png");
-//     saveImage(ch[1], "jab_g.png");
-//     saveImage(ch[2], "jab_b.png");
-// #endif
-
-	//initialize symbols buffer
-  symbols = List<jab_decoded_symbol>.filled(max_symbol_number, null); // memset(symbols, 0, max_symbol_number * sizeof(jab_decoded_symbol));
   int total = 0;	//total number of decoded symbols
   bool res = true;
 
@@ -3354,7 +3071,7 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
   }
   //detect and decode docked slave symbols recursively
   if(total>0) {
-    for(int i=0; i<total && total<max_symbol_number; i++) {
+    for(int i=0; i<total && total<symbols.length; i++) {
       var result = _decodeDockedSlaves(bitmap, ch, symbols, i, total);
       total= result.item2;
       if(result.item1 == JAB_FAILURE) {
@@ -3370,8 +3087,8 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
 			status = 1;
 		//clean memory
 		for(int i=0; i<3;
-      ch[i++]= null); //free(ch[i++]
-		for(int i=0; i<=min(total, max_symbol_number-1); i++) {
+      ch[i++]= null);
+		for(int i=0; i<=min(total, symbols.length-1); i++) {
 			symbols[i].palette= null;
 			symbols[i].data= null;
 		}
@@ -3388,11 +3105,10 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
     total_data_length += symbols[i].data.length;
   }
   var decoded_bits = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
-	decoded_bits.data=Uint8List(total_data_length);
+	decoded_bits.data = Uint8List(total_data_length);
   if(decoded_bits == null) {
-    // reportError("Memory allocation for decoded bits failed");
     if(status!=0) status = 1;
-    return null;
+    return Tuple2<jab_data, int>(null, status);
   }
   int offset = 0;
   for(int i=0; i<total; i++) {
@@ -3406,22 +3122,18 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
   //decode data
   var decoded_data = decodeData(decoded_bits);
   if(decoded_data == null) {
-    // reportError("Decoding data failed");
-    if(status!=0) status = 1;
+    if(status!=0) status = 1; //Decoding data failed
     res = false;
   }
 
   //clean memory
   for(int i=0; i<3; ch[i++]=null);
-  for(int i=0; i<=min(total, max_symbol_number-1); i++) {
+  for(int i=0; i<=min(total, symbols.length-1); i++) {
     symbols[i].palette= null;
     symbols[i].data= null;
   }
-    // free(decoded_bits);
-// #if TEST_MODE
-// 	free(test_mode_bitmap);
-// #endif // TEST_MODE
-	if(res == 0) return null;
+	if(!res)
+    return Tuple2<jab_data, int>(null, status);;
 	if(status!=0) {
 		if(status != 2)
 			status = 3;
@@ -3429,16 +3141,15 @@ Tuple2<jab_data, int> decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_deco
   return Tuple2<jab_data, int>(decoded_data, status);
 }
 
-// /**
-//  * @brief Decode a JAB Code
-//  * @param bitmap the image bitmap
-//  * @param mode the decoding mode(NORMAL_DECODE: only output completely decoded data when all symbols are correctly decoded
-//  *								 COMPATIBLE_DECODE: also output partly decoded data even if some symbols are not correctly decoded
-//  * @param status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
-//  * @return the decoded data | NULL if failed
-// */
-// jab_data* decodeJABCode(jab_bitmap* bitmap, int mode, int* status)
-// {
-// 	jab_decoded_symbol symbols[MAX_SYMBOL_NUMBER];
-// 	return decodeJABCodeEx(bitmap, mode, status, symbols, MAX_SYMBOL_NUMBER);
-// }
+/*
+ Decode a JAB Code
+ @param bitmap the image bitmap
+ @param mode the decoding mode(NORMAL_DECODE: only output completely decoded data when all symbols are correctly decoded
+ 								 COMPATIBLE_DECODE: also output partly decoded data even if some symbols are not correctly decoded
+ @return item1 the decoded data | NULL if failed
+ @return item2 status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
+*/
+Tuple2<jab_data, int> decodeJABCode(jab_bitmap bitmap, int mode) {
+  var symbols = List<jab_decoded_symbol>.filled(MAX_SYMBOL_NUMBER, null);
+	return _decodeJABCodeEx(bitmap, mode, symbols);
+}

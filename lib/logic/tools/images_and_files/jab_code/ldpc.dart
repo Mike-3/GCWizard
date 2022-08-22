@@ -7,8 +7,7 @@
  * Contact: Huajian Liu <liu@sit.fraunhofer.de>
  *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
  *
- * @file ldpc.c
- * @brief LDPC encoder and decoder
+ *  LDPC encoder and decoder
  */
 
 // #include <stdlib.h>
@@ -28,18 +27,17 @@ import 'package:tuple/tuple.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random_h.dart';
 import 'jabcode_h.dart';
-import 'ldpc_h.dart';
 
 const LPDC_METADATA_SEED =	38545;
 const LPDC_MESSAGE_SEED =	785465;
 
-/**
- * @brief Create matrix A for message data
- * @param wc the number of '1's in a column
- * @param wr the number of '1's in a row
- * @param capacity the number of columns of the matrix
- * @return the matrix A | null if failed (out of memory)
- */
+/*
+ Create matrix A for message data
+ @param wc the number of '1's in a column
+ @param wr the number of '1's in a row
+ @param capacity the number of columns of the matrix
+ @return the matrix A | null if failed (out of memory)
+*/
 List<int> _createMatrixA(int wc, int wr, int capacity) {
   int nb_pcb;
   if(wr<4)
@@ -51,16 +49,8 @@ List<int> _createMatrixA(int wc, int wr, int capacity) {
   int offset=(capacity/32.0).ceil();
   //create a matrix with '0' entries
   var matrixA=List<int>.filled(((capacity/32.0).ceil())*nb_pcb, 0);
-  if(matrixA == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    return null;
-  }
   var permutation=List<int>.filled(capacity, 0); //calloc(, sizeof(int)); //(int *)calloc
-  if(permutation == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    // free(matrixA);
-    return null;
-  }
+
   for (int i=0;i<capacity;i++)
     permutation[i]=i;
 
@@ -83,21 +73,20 @@ List<int> _createMatrixA(int wc, int wr, int capacity) {
       permutation[pos] = tmp;
     }
   }
-  // free(permutation);
   return matrixA;
 }
 
-/**
- * @brief Gauss Jordan elimination algorithm
- * @param matrixA the matrix
- * @param wc the number of '1's in a column
- * @param wr the number of '1's in a row
- * @param capacity the number of columns of the matrix
- * @param matrix_rank the rank of the matrix
- * @param encode specifies if function is called by the encoder or decoder
- * @return 0: success | 1: fatal error (out of memory)
- * @return matrix_rank the rank of the matrix
- */
+/*
+ Gauss Jordan elimination algorithm
+ @param matrixA the matrix
+ @param wc the number of '1's in a column
+ @param wr the number of '1's in a row
+ @param capacity the number of columns of the matrix
+ @param matrix_rank the rank of the matrix
+ @param encode specifies if function is called by the encoder or decoder
+ @return item1 0: success | 1: fatal error (out of memory)
+ @return item2 matrix_rank the rank of the matrix
+*/
 Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank, int capacity, bool encode) {
   int loop=0;
   int nb_pcb;
@@ -106,45 +95,15 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
   else
     nb_pcb=(capacity/wr*wc).toInt();
 
-  int offset=(capacity/32.0).ceil();
+  int offset=(capacity/ 32.0).ceil();
 
   var matrixH=List<int>.filled(offset*nb_pcb, 0);// (int *)calloc(offset*nb_pcb,sizeof(int));
-  if(matrixH == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    return Tuple2<int, int>(1, matrix_rank);
-  }
-  matrixH.setRange(0, offset*nb_pcb, matrixA);// memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
-
   var column_arrangement=List<int>.filled(capacity, 0);
-  if(column_arrangement == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    // free(matrixH);
-    return Tuple2<int, int>(1, matrix_rank);
-  }
   var processed_column=List<bool>.filled(capacity, false);
-  if(processed_column == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    // free(matrixH);
-    // free(column_arrangement);
-    return Tuple2<int, int>(1, matrix_rank);
-  }
   var zero_lines_nb=List<int>.filled(nb_pcb, 0);
-  if(zero_lines_nb == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    // free(matrixH);
-    // free(column_arrangement);
-    // free(processed_column);
-    return Tuple2<int, int>(1, matrix_rank);
-  }
   var swap_col=List<int>.filled(2*capacity, 0);
-  if(swap_col == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    // free(matrixH);
-    // free(column_arrangement);
-    // free(processed_column);
-    // free(zero_lines_nb);
-    return Tuple2<int, int>(1, matrix_rank);
-  }
+
+  matrixH.setRange(0, offset*nb_pcb, matrixA);// memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
 
   int zero_lines=0;
 
@@ -251,35 +210,22 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
     matrixA.setRange(0, offset*nb_pcb, matrixH); //memcpy(,,offset*nb_pcb*sizeof(int));
   }
 
-  // free(column_arrangement);
-  // free(processed_column);
-  // free(zero_lines_nb);
-  // free(swap_col);
-  // free(matrixH);
   return Tuple2<int, int>(0, matrix_rank);
 }
-//
-/**
- * @brief Create the error correction matrix for the metadata
- * @param wc the number of '1's in a column
- * @param capacity the number of columns of the matrix
- * @return the error correction matrix | null if failed
- */
+
+/*
+ Create the error correction matrix for the metadata
+ @param wc the number of '1's in a column
+ @param capacity the number of columns of the matrix
+ @return the error correction matrix | null if failed
+*/
 List<int> _createMetadataMatrixA(int wc, int capacity) {
   int nb_pcb=(capacity/2).toInt();
   int offset=(capacity/32.0).ceil();
   //create a matrix with '0' entries
   var matrixA = List<int>.filled(offset*nb_pcb, 0); //(int *)calloc(offset*nb_pcb,sizeof(int));
-  if(matrixA == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    return null;
-  }
   var permutation = List<int>.filled(capacity, 0); //calloc(, sizeof(int));
-  if(permutation == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    // free(matrixA);
-    return null;
-  }
+
   for (int i=0;i<capacity;i++)
     permutation[i]=i;
   setSeed(LPDC_METADATA_SEED);
@@ -299,25 +245,20 @@ List<int> _createMetadataMatrixA(int wc, int capacity) {
   return matrixA;
 }
 
-/**
- * @brief Create the generator matrix to encode messages
- * @param matrixA the error correction matrix
- * @param capacity the number of columns of the matrix
- * @param Pn the number of net message bits
- * @return the generator matrix | null if failed (out of memory)
+/*
+ Create the generator matrix to encode messages
+ @param matrixA the error correction matrix
+ @param capacity the number of columns of the matrix
+ @param Pn the number of net message bits
+ @return the generator matrix | null if failed (out of memory)
 */
 List<int> _createGeneratorMatrix(List<int> matrixA, int capacity, int Pn) {
   int effwidth=(Pn/32.0).ceil()*32;
   int offset=(Pn/32.0).ceil();
   int offset_cap=(capacity/32.0).ceil();
   //create G [I C]
-  //remember matrixA is now A = [I CT], now use it and create G=[CT
-              //                                                 I ]
+  //remember matrixA is now A = [I CT], now use it and create G=[CTI ]
   var G= List<int>.filled(offset*capacity, 0); // int *)calloc(offset*capacity, sizeof(int));
-  if(G == null) {
-    // reportError("Memory allocation for matrix in LDPC failed");
-    return null;
-  }
 
   //fill identity matrix
   for (int i=0; i< Pn; i++)
@@ -340,11 +281,11 @@ List<int> _createGeneratorMatrix(List<int> matrixA, int capacity, int Pn) {
   return G;
 }
 
-/**
- * @brief LDPC encoding
- * @param data the data to be encoded
- * @param coderate_params the two code rate parameter wc and wr indicating how many '1' in a column (Wc) and how many '1' in a row of the parity check matrix
- * @return the encoded data | null if failed
+/*
+ LDPC encoding
+ @param data the data to be encoded
+ @param coderate_params the two code rate parameter wc and wr indicating how many '1' in a column (Wc) and how many '1' in a row of the parity check matrix
+ @return the encoded data | null if failed
 */
 jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
   int matrix_rank=0;
@@ -357,10 +298,6 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
     Pg = wr * ((Pg / wr).ceil());
   } else
     Pg=Pn*2;
-
-// #if TEST_MODE
-// 	JAB_REPORT_INFO(("wc: %d, wr: %d\tPg: %d, Pn: %d", wc, wr, Pg, Pn))
-// #endif // TEST_MODE
 
   //in order to speed up the ldpc encoding, sub blocks are established
   int nb_sub_blocks=0;
@@ -389,34 +326,22 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
     matrixA = _createMatrixA(wc, wr, Pg_sub_block);
   else
     matrixA = _createMetadataMatrixA(wc, Pg_sub_block);
-  if(matrixA == null) {
-    // reportError("Generator matrix could not be created in LDPC encoder.");
+  if(matrixA == null)
     return null;
-  }
+
   bool encode=true;
   var result = _GaussJordan(matrixA, wc, wr, Pg_sub_block, matrix_rank,encode);
   matrix_rank = result.item2;
-  if(result.item1 == 1) {
-    // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
-    // free(matrixA);
+  if(result.item1 == 1)
     return null;
-  }
+
   //Generator Matrix
   var G = _createGeneratorMatrix(matrixA, Pg_sub_block, Pg_sub_block - matrix_rank);
-  if(G == null) {
-    // reportError("Generator matrix could not be created in LDPC encoder.");
-    // free(matrixA);
+  if(G == null)
     return null;
-  }
-  // free(matrixA);
 
   var ecc_encoded_data = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + Pg*sizeof(jab_char));
   ecc_encoded_data.data = Uint8List(Pg);
-  if(ecc_encoded_data == null) {
-    // reportError("Memory allocation for LDPC encoded data failed");
-    // free(G);
-    return null;
-  }
 
   ecc_encoded_data.length = Pg;
   int temp,loop;
@@ -434,7 +359,7 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
       ecc_encoded_data.data[i+iter*Pg_sub_block]= ((temp >> 0) & 1);
     }
   }
-  // free(G);
+
   if(encoding_iterations != nb_sub_blocks) {
     int start=encoding_iterations*Pn_sub_block;
     int last_index=encoding_iterations*Pg_sub_block;
@@ -442,24 +367,18 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
     Pg_sub_block=Pg - encoding_iterations * Pg_sub_block;
     Pn_sub_block=(Pg_sub_block * (wr-wc) / wr).toInt();
     var matrixA = _createMatrixA(wc, wr, Pg_sub_block);
-    if(matrixA == null) {
-      // reportError("Generator matrix could not be created in LDPC encoder.");
+    if(matrixA == null)
       return null;
-    }
+
     var result = _GaussJordan(matrixA, wc, wr, Pg_sub_block, matrix_rank,encode);
     matrix_rank = result.item2;
-    if(result.item1==1) {
-      // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
-      // free(matrixA);
+    if(result.item1 == 1)
       return null;
-    }
+
     var G = _createGeneratorMatrix(matrixA, Pg_sub_block, Pg_sub_block - matrix_rank);
-    if(G == null){
-      // reportError("Generator matrix could not be created in LDPC encoder.");
-      // free(matrixA);
+    if(G == null)
       return null;
-    }
-    // free(matrixA);
+
     offset=((Pg_sub_block - matrix_rank)/32.0).ceil();
     for (int i=0;i<Pg_sub_block;i++){
       temp=0;
@@ -471,42 +390,26 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
       }
       ecc_encoded_data.data[i+last_index]= ((temp >> 0) & 1);
     }
-    // free(G);
   }
   return ecc_encoded_data;
 }
 
-/**
- * @brief Iterative hard decision error correction decoder
- * @param data the received data
- * @param matrix the parity check matrix
- * @param length the encoded data length
- * @param height the number of check bits
- * @param max_iter the maximal number of iterations
- * @param is_correct indicating if decodedMessage function could correct all errors
- * @param start_pos indicating the position to start reading in data array
- * @return  bool is_correct / 1: error correction succeeded | 0: fatal error (out of memory)
- */
+/*
+ Iterative hard decision error correction decoder
+ @param data the received data
+ @param matrix the parity check matrix
+ @param length the encoded data length
+ @param height the number of check bits
+ @param max_iter the maximal number of iterations
+ @param is_correct indicating if decodedMessage function could correct all errors
+ @param start_pos indicating the position to start reading in data array
+ @return item1  bool is_correct /
+ @return item2 error correction succeeded | 0: fatal error (out of memory)
+*/
 Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, int height, int max_iter, int start_pos) {
   var max_val=List<int>.filled(length, 0); // ()int *)calloc(length, sizeof(int));
-  if(max_val == null) {
-    // reportError("Memory allocation for LDPC decoder failed");
-
-    return Tuple2<bool, int>(false, 0);
-  }
   var equal_max=List<int>.filled(length, 0); //(int *)calloc(length, sizeof(int));
-  if(equal_max == null) {
-    // reportError("Memory allocation for LDPC decoder failed");
-    // free(max_val);
-    return Tuple2<bool, int>(false, 0);
-  }
   var prev_index=List<int>.filled(length, 0); //(int *)calloc(length, sizeof(int));
-  if(prev_index == null) {
-    // reportError("Memory allocation for LDPC decoder failed");
-    // free(max_val);
-    // free(equal_max);
-    return Tuple2<bool, int>(false, 0);
-  }
 
   bool is_correct=true;
   int check=0;
@@ -516,8 +419,7 @@ Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, i
 
   for (int kl=0;kl<max_iter;kl++) {
     max=0;
-    for(int j=0;j<height;j++)
-    {
+    for(int j=0;j<height;j++) {
       check=0;
       for (int i=0;i<length;i++) {
         if((((matrix[(j*offset+i/32).toInt()] >> (31-i%32)) & 1) & ((data[start_pos+i] >> 0) & 1))!=0)
@@ -571,23 +473,18 @@ Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, i
     else
       break;
   }
-// #if TEST_MODE
-//     JAB_REPORT_INFO(("start position:%d, stop position:%d, correct:%d", start_pos, start_pos+length,(int)*is_correct))
-// #endif
-//     free(prev_index);
-//     free(equal_max);
-//     free(max_val);
+
   return Tuple2<bool, int>(is_correct, 1);
 }
 
-/**
- * @brief LDPC decoding to perform hard decision
- * @param data the encoded data
- * @param length the encoded data length
- * @param wc the number of '1's in a column
- * @param wr the number of '1's in a row
- * @return the decoded data length | 0: fatal error (out of memory)
- */
+/*
+ LDPC decoding to perform hard decision
+ @param data the encoded data
+ @param length the encoded data length
+ @param wc the number of '1's in a column
+ @param wr the number of '1's in a row
+ @return the decoded data length | 0: fatal error (out of memory)
+*/
 int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
   int matrix_rank=0;
   int max_iter=25;
@@ -596,7 +493,7 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
   int decoded_data_len = 0;
   if(wr > 3) {
     Pg = (wr * (length / wr)).toInt();
-    Pn = (Pg * (wr - wc) / wr).toInt();                //number of source symbols
+    Pn = (Pg * (wr - wc) / wr).toInt(); //number of source symbols
   } else {
     Pg=length;
     Pn=(length/2).toInt();
@@ -634,16 +531,13 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
   else
     matrixA = _createMetadataMatrixA(wc, Pg_sub_block);
   if(matrixA == null) {
-    // reportError("LDPC matrix could not be created in decoder.");
-    return 0;
+    return 0; //LDPC matrix could not be created in decoder.
   }
   bool encode=false;
   var result = _GaussJordan(matrixA, wc, wr, Pg_sub_block, matrix_rank, encode);
   matrix_rank = result.item2;
   if(result.item1 != 0) {
-    // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
-    // free(matrixA);
-    return 0;
+    return 0; //Gauss Jordan Elimination in LDPC encoder failed.
   }
 
   int old_Pg_sub=Pg_sub_block;
@@ -655,16 +549,13 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
       Pn_sub_block=(Pg_sub_block * (wr-wc) / wr).toInt();
       var matrixA1 = _createMatrixA(wc, wr, Pg_sub_block);
       if(matrixA1 == null) {
-        // reportError("LDPC matrix could not be created in decoder.");
-        return 0;
+        return 0; //LDPC matrix could not be created in decoder.
       }
       bool encode=false;
       var result = _GaussJordan(matrixA1, wc, wr, Pg_sub_block, matrix_rank, encode);
       matrix_rank = result.item2;
       if(result.item1!= 0) {
-        // reportError("Gauss Jordan Elimination in LDPC encoder failed.");
-        // free(matrixA1);
-        return 0;
+        return 0; //Gauss Jordan Elimination in LDPC encoder failed.
       }
       //ldpc decoding
       //first check syndrom
@@ -680,17 +571,14 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
         }
       }
 
-      if(is_correct==0) {
+      if(is_correct == 0) {
         int start_pos=iter*old_Pg_sub;
-        var result=_decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter,start_pos);
+        var result = _decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter,start_pos);
         is_correct=result.item1;
-        if(result.item2 == 0) {
-          // reportError("LDPC decoder error.");
-          // free(matrixA1);
+        if(result.item2 == 0)
           return 0;
-        }
       }
-      if(is_correct==0) {
+      if(is_correct == 0) {
         bool is_correct=true;
         for (int i=0;i< matrix_rank; i++) {
           int temp=0;
@@ -701,13 +589,9 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
             break;
           }
         }
-        if(is_correct==0) {
-          // reportError("Too many errors in message. LDPC decoding failed.");
-          // free(matrixA1);
+        if(is_correct == 0)
           return 0;
-        }
       }
-      // free(matrixA1);
     } else {
       //ldpc decoding
       //first check syndrom
@@ -727,11 +611,9 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
         int start_pos=iter*old_Pg_sub;
         var result =_decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, start_pos);
         is_correct=result.item1;
-        if(result.item2 == 0) {
-          // reportError("LDPC decoder error.");
-          // free(matrixA);
+        if(result.item2 == 0)
           return 0;
-        }
+
         is_correct=true;
         for (int i=0;i< matrix_rank; i++) {
           int temp=0;
@@ -742,11 +624,8 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
             break;
           }
         }
-        if(is_correct==0) {
-          // reportError("Too many errors in message. LDPC decoding failed.");
-          // free(matrixA);
+        if(is_correct==0)
           return 0;
-        }
       }
     }
     int loop=0;
@@ -755,529 +634,5 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
       loop++;
     }
   }
-  // free(matrixA);
   return decoded_data_len;
 }
-
-// /**
-//  * @brief LDPC Iterative Log Likelihood decoding algorithm for binary codes
-//  * @param enc the received reliability value for each bit
-//  * @param matrix the error correction decoding matrix
-//  * @param length the encoded data length
-//  * @param checkbits the rank of the matrix
-//  * @param height the number of check bits
-//  * @param max_iter the maximal number of iterations
-//  * @param is_correct indicating if decodedMessage function could correct all errors
-//  * @param start_pos indicating the position to start reading in enc array
-//  * @param dec is the tentative decision after each decoding iteration
-//  * @return 1: success | 0: fatal error (out of memory)
-// */
-// int decodeMessageILL(jab_float* enc, int* matrix, int length, int checkbits, int height, int max_iter, jab_boolean *is_correct, int start_pos, jab_byte* dec)
-// {
-//     jab_double* lambda=(jab_double *)malloc(length * sizeof(jab_double));
-//     if(lambda == null)
-//     {
-//         reportError("Memory allocation for Lambda in LDPC decoder failed");
-//         return 0;
-//     }
-//     jab_double* old_nu_row=(jab_double *)malloc(length * sizeof(jab_double));
-//     if(old_nu_row == null)
-//     {
-//         reportError("Memory allocation for Lambda in LDPC decoder failed");
-//         free(lambda);
-//         return 0;
-//     }
-//     jab_double* nu=(jab_double *)malloc(length*height * sizeof(jab_double));
-//     if(nu == null)
-//     {
-//         reportError("Memory allocation for nu in LDPC decoder failed");
-//         free(old_nu_row);
-//         free(lambda);
-//         return 0;
-//     }
-//     memset(nu,0,length*height *sizeof(jab_double));
-//     int* index=(int *)malloc(length * sizeof(int));
-//     if(index == null)
-//     {
-//         reportError("Memory allocation for index in LDPC decoder failed");
-//         free(old_nu_row);
-//         free(lambda);
-//         free(nu);
-//         return 0;
-//     }
-//     int offset=ceil(length/(jab_float)32);
-//     jab_double product=1.0;
-//
-//     //set last bits
-//     for (int i=length-1;i >= length-(height-checkbits);i--)
-//     {
-//         enc[start_pos+i]=1.0;
-//         dec[start_pos+i]=0;
-//     }
-//     jab_double meansum=0.0;
-//     for (int i=0;i<length;i++)
-//         meansum+=enc[start_pos+i];
-//
-//     //calc variance
-//     meansum/=length;
-//     jab_double var=0.0;
-//     for (int i=0;i<length;i++)
-//         var+=(enc[start_pos+i]-meansum)*(enc[start_pos+i]-meansum);
-//     var/=(length-1);
-//
-//     //initialize lambda
-//     for (int i=0;i<length;i++)
-//     {
-//         if(dec[start_pos+i])
-//             enc[start_pos+i]=-enc[start_pos+i];
-//         lambda[i]=(jab_double)2.0*enc[start_pos+i]/var;
-//     }
-//
-//     //check node update
-//     int count;
-//     for (int kl=0;kl<max_iter;kl++)
-//     {
-//         for(int j=0;j<height;j++)
-//         {
-//             product=1.0;
-//             count=0;
-//             for (int i=0;i<length;i++)
-//             {
-//                 if((matrix[j*offset+i/32] >> (31-i%32)) & 1)
-//                 {
-//                     product*=tanh(-(lambda[i]-nu[j*length+i])*0.5);
-//                     index[count]=i;
-//                     ++count;
-//                 }
-//                 old_nu_row[i]=nu[j*length+i];
-//             }
-//             //update nu
-//             for (int i=0;i<count;i++)
-//             {
-//                 if(((matrix[j*offset+index[i]/32] >> (31-index[i]%32)) & 1) && tanh(-(lambda[index[i]]-old_nu_row[index[i]])*0.5) != 0.0)
-//                     nu[j*length+index[i]]=-2*atanh(product/tanh(-(lambda[index[i]]-old_nu_row[index[i]])*0.5));
-//                 else
-//                     nu[j*length+index[i]]=-2*atanh(product);
-//             }
-//         }
-//         //update lambda
-//         jab_double sum;
-//         for (int i=0;i<length;i++)
-//         {
-//             sum=0.0;
-//             for(int k=0;k<height;k++)
-//                 sum+=nu[k*length+i];
-//             lambda[i]=(jab_double)2.0*enc[start_pos+i]/var+sum;
-//             if(lambda[i]<0)
-//                 dec[start_pos+i]=1;
-//             else
-//                 dec[start_pos+i]=0;
-//         }
-//         //check matrix times dec
-//         *is_correct=(jab_boolean) 1;
-//         for (int i=0;i< height; i++)
-//         {
-//             int temp=0;
-//             for (int j=0;j<length;j++)
-//                 temp ^= (((matrix[i*offset+j/32] >> (31-j%32)) & 1) & ((dec[start_pos+j] >> 0) & 1)) << 0;
-//             if (temp)
-//             {
-//                 *is_correct=(jab_boolean) 0;
-//                 break;//message not correct
-//             }
-//         }
-//         if(!*is_correct && kl<max_iter-1)
-//             *is_correct=(jab_boolean) 1;
-//         else
-//             break;
-//     }
-// #if TEST_MODE
-//     JAB_REPORT_INFO(("start position:%d, stop position:%d, correct:%d", start_pos, start_pos+length,(int)*is_correct))
-// #endif
-//     free(lambda);
-//     free(nu);
-//     free(old_nu_row);
-//     free(index);
-//     return 1;
-// }
-//
-//
-// /**
-//  * @brief LDPC Iterative belief propagation decoding algorithm for binary codes
-//  * @param enc the received reliability value for each bit
-//  * @param matrix the decoding matrixreliability value for each bit
-//  * @param length the encoded data length
-//  * @param checkbits the rank of the matrix
-//  * @param height the number of check bits
-//  * @param max_iter the maximal number of iterations
-//  * @param is_correct indicating if decodedMessage function could correct all errors
-//  * @param start_pos indicating the position to start reading in enc array
-//  * @param dec is the tentative decision after each decoding iteration
-//  * @return 1: error correction succeded | 0: decoding failed
-// */
-// int decodeMessageBP(jab_float* enc, int* matrix, int length, int checkbits, int height, int max_iter, jab_boolean *is_correct, int start_pos, jab_byte* dec)
-// {
-//     jab_double* lambda=(jab_double *)malloc(length * sizeof(jab_double));
-//     if(lambda == null)
-//     {
-//         reportError("Memory allocation for Lambda in LDPC decoder failed");
-//         return 0;
-//     }
-//     jab_double* old_nu_row=(jab_double *)malloc(length * sizeof(jab_double));
-//     if(old_nu_row == null)
-//     {
-//         reportError("Memory allocation for Lambda in LDPC decoder failed");
-//         free(lambda);
-//         return 0;
-//     }
-//     jab_double* nu=(jab_double *)malloc(length*height * sizeof(jab_double));
-//     if(nu == null)
-//     {
-//         reportError("Memory allocation for nu in LDPC decoder failed");
-//         free(old_nu_row);
-//         free(lambda);
-//         return 0;
-//     }
-//     memset(nu,0,length*height *sizeof(jab_double));
-//     int* index=(int *)malloc(length * sizeof(int));
-//     if(index == null)
-//     {
-//         reportError("Memory allocation for index in LDPC decoder failed");
-//         free(old_nu_row);
-//         free(lambda);
-//         free(nu);
-//         return 0;
-//     }
-//     int offset=ceil(length/(jab_float)32);
-//     jab_double product=1.0;
-//
-//     //set last bits
-//     for (int i=length-1;i >= length-(height-checkbits);i--)
-//     {
-//         enc[start_pos+i]=1.0;
-//         dec[start_pos+i]=0;
-//     }
-//
-//     jab_double meansum=0.0;
-//     for (int i=0;i<length;i++)
-//         meansum+=enc[start_pos+i];
-//
-//     //calc variance
-//     meansum/=length;
-//     jab_double var=0.0;
-//     for (int i=0;i<length;i++)
-//         var+=(enc[start_pos+i]-meansum)*(enc[start_pos+i]-meansum);
-//     var/=(length-1);
-//
-//     //initialize lambda
-//     for (int i=0;i<length;i++)
-//     {
-//         if(dec[start_pos+i])
-//             enc[start_pos+i]=-enc[start_pos+i];
-//         lambda[i]=(jab_double)2.0*enc[start_pos+i]/var;
-//     }
-//
-//     //check node update
-//     int count;
-//     for (int kl=0;kl<max_iter;kl++)
-//     {
-//         for(int j=0;j<height;j++)
-//         {
-//             product=1.0;
-//             count=0;
-//             for (int i=0;i<length;i++)
-//             {
-//                 if((matrix[j*offset+i/32] >> (31-i%32)) & 1)
-//                 {
-//                     if (kl==0)
-//                         product*=tanh(lambda[i]*0.5);
-//                     else
-//                         product*=tanh(nu[j*length+i]*0.5);
-//                     index[count]=i;
-//                     ++count;
-//                 }
-//             }
-//             //update nu
-//             jab_double num=0.0, denum=0.0;
-//             for (int i=0;i<count;i++)
-//             {
-//                 if(((matrix[j*offset+index[i]/32] >> (31-index[i]%32)) & 1) && tanh(nu[j*length+index[i]]*0.5) != 0.0 && kl>0)// && tanh(-(lambda[index[i]]-old_nu_row[index[i]])/2) != 0.0)
-//                 {
-//                     num     = 1 + product / tanh(nu[j*length+index[i]]*0.5);
-//                     denum   = 1 - product / tanh(nu[j*length+index[i]]*0.5);
-//                 }
-//                 else if(((matrix[j*offset+index[i]/32] >> (31-index[i]%32)) & 1) && tanh(lambda[index[i]]*0.5) != 0.0 && kl==0)// && tanh(-(lambda[index[i]]-old_nu_row[index[i]])/2) != 0.0)
-//                 {
-//                     num     = 1 + product / tanh(lambda[index[i]]*0.5);
-//                     denum   = 1 - product / tanh(lambda[index[i]]*0.5);
-//                 }
-//                 else
-//                 {
-//                     num     = 1 + product;
-//                     denum   = 1 - product;
-//                 }
-//                 if (num == 0.0)
-//                     nu[j*length+index[i]]=-1;
-//                 else if(denum == 0.0)
-//                     nu[j*length+index[i]]= 1;
-//                 else
-//                     nu[j*length+index[i]]= log(num / denum);
-//             }
-//         }
-//         //update lambda
-//         jab_double sum;
-//         for (int i=0;i<length;i++)
-//         {
-//             sum=0.0;
-//             for(int k=0;k<height;k++)
-//             {
-//                 sum+=nu[k*length+i];
-//                 old_nu_row[k]=nu[k*length+i];
-//             }
-//             for(int k=0;k<height;k++)
-//             {
-//                 if((matrix[k*offset+i/32] >> (31-i%32)) & 1)
-//                     nu[k*length+i]=lambda[i]+(sum-old_nu_row[k]);
-//             }
-//             lambda[i]=2.0*enc[start_pos+i]/var+sum;
-//             if(lambda[i]<0)
-//                 dec[start_pos+i]=1;
-//             else
-//                 dec[start_pos+i]=0;
-//         }
-//         //check matrix times dec
-//         *is_correct=(jab_boolean) 1;
-//         for (int i=0;i< height; i++)
-//         {
-//             int temp=0;
-//             for (int j=0;j<length;j++)
-//                 temp ^= (((matrix[i*offset+j/32] >> (31-j%32)) & 1) & ((dec[start_pos+j] >> 0) & 1)) << 0;
-//             if (temp)
-//             {
-//                 *is_correct=(jab_boolean) 0;
-//                 break;//message not correct
-//             }
-//         }
-//         if(!*is_correct && kl<max_iter-1)
-//             *is_correct=(jab_boolean) 1;
-//         else
-//             break;
-//     }
-// #if TEST_MODE
-//     JAB_REPORT_INFO(("start position:%d, stop position:%d, correct:%d", start_pos, start_pos+length,(int)*is_correct))
-// #endif
-//     free(lambda);
-//     free(nu);
-//     free(old_nu_row);
-//     free(index);
-//     return 1;
-// }
-//
-// /**
-//  * @brief LDPC decoding to perform soft decision
-//  * @param enc the probability value for each bit position
-//  * @param length the encoded data length
-//  * @param wc the number of '1's in each column
-//  * @param wr the number of '1's in each row
-//  * @param dec the decoded data
-//  * @return the decoded data length | 0: decoding error
-// */
-// int decodeLDPC(jab_float* enc, int length, int wc, int wr, jab_byte* dec)
-// {
-//     int matrix_rank=0;
-//     int max_iter=25;
-//     int Pn, Pg, decoded_data_len = 0;
-//     if(wr > 3)
-//     {
-//         Pg = wr * (length / wr);
-//         Pn = Pg * (wr - wc) / wr; //number of source symbols
-//     }
-//     else
-//     {
-//         Pg=length;
-//         Pn=length/2;
-//         wc=2;
-//         if(Pn>36)
-//             wc=3;
-//     }
-//     decoded_data_len=Pn;
-//
-//     //in order to speed up the ldpc encoding, sub blocks are established
-//     int nb_sub_blocks=0;
-//     for(int i=1;i<10000;i++)
-//     {
-//         if(Pg / i < 2700)
-//         {
-//             nb_sub_blocks=i;
-//             break;
-//         }
-//     }
-//     int Pg_sub_block=0;
-//     int Pn_sub_block=0;
-//     if(wr > 3)
-//     {
-//         Pg_sub_block=((Pg / nb_sub_blocks) / wr) * wr;
-//         Pn_sub_block=Pg_sub_block * (wr-wc) / wr;
-//     }
-//     else
-//     {
-//         Pg_sub_block=Pg;
-//         Pn_sub_block=Pn;
-//     }
-//     int decoding_iterations=nb_sub_blocks=Pg / Pg_sub_block;//nb_sub_blocks;
-//     if(Pn_sub_block * nb_sub_blocks < Pn)
-//         decoding_iterations--;
-//
-//     //parity check matrix
-//     int* matrixA;
-//     if(wr > 0)
-//         matrixA = createMatrixA(wc, wr,Pg_sub_block);
-//     else
-//         matrixA = createMetadataMatrixA(wc, Pg_sub_block);
-//     if(matrixA == null)
-//     {
-//         reportError("LDPC matrix could not be created in decoder.");
-//         return 0;
-//     }
-//
-//     jab_boolean encode=0;
-//     if(GaussJordan(matrixA, wc, wr, Pg_sub_block, &matrix_rank,encode))
-//     {
-//         reportError("Gauss Jordan Elimination in LDPC encoder failed.");
-//         free(matrixA);
-//         return 0;
-//     }
-// #if TEST_MODE
-// 	//JAB_REPORT_INFO(("GaussJordan matrix done"))
-// #endif
-//     int old_Pg_sub=Pg_sub_block;
-//     int old_Pn_sub=Pn_sub_block;
-//     for (int iter = 0; iter < nb_sub_blocks; iter++)
-//     {
-//         if(decoding_iterations != nb_sub_blocks && iter == decoding_iterations)
-//         {
-//             matrix_rank=0;
-//             Pg_sub_block=Pg - decoding_iterations * Pg_sub_block;
-//             Pn_sub_block=Pg_sub_block * (wr-wc) / wr;
-//             int* matrixA1 = createMatrixA(wc, wr, Pg_sub_block);
-//             if(matrixA1 == null)
-//             {
-//                 reportError("LDPC matrix could not be created in decoder.");
-//                 return 0;
-//             }
-//             jab_boolean encode=0;
-//             if(GaussJordan(matrixA1, wc, wr, Pg_sub_block, &matrix_rank,encode))
-//             {
-//                 reportError("Gauss Jordan Elimination in LDPC encoder failed.");
-//                 free(matrixA1);
-//                 return 0;
-//             }
-//             //ldpc decoding
-//             //first check syndrom
-//             jab_boolean is_correct=1;
-//             int offset=ceil(Pg_sub_block/(jab_float)32);
-//             for (int i=0;i< matrix_rank; i++)
-//             {
-//                 int temp=0;
-//                 for (int j=0;j<Pg_sub_block;j++)
-//                     temp ^= (((matrixA1[i*offset+j/32] >> (31-j%32)) & 1) & ((dec[iter*old_Pg_sub+j] >> 0) & 1)) << 0; //
-//                 if (temp)
-//                 {
-//                     is_correct=(jab_boolean) 0; //message not correct
-//                     break;
-//                 }
-//             }
-//
-//             if(is_correct==0)
-//             {
-//                 int start_pos=iter*old_Pg_sub;
-//                 int success=decodeMessageBP(enc, matrixA1, Pg_sub_block, matrix_rank, wr<4 ? Pg_sub_block/2 : Pg_sub_block/wr*wc, max_iter, &is_correct,start_pos,dec);
-//                 if(success == 0)
-//                 {
-//                     reportError("LDPC decoder error.");
-//                     free(matrixA1);
-//                     return 0;
-//                 }
-//             }
-//             if(is_correct==0)
-//             {
-//                 jab_boolean is_correct=1;
-//                 for (int i=0;i< matrix_rank; i++)
-//                 {
-//                     int temp=0;
-//                     for (int j=0;j<Pg_sub_block;j++)
-//                         temp ^= (((matrixA1[i*offset+j/32] >> (31-j%32)) & 1) & ((dec[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-//                     if (temp)
-//                     {
-//                         is_correct=(jab_boolean) 0;//message not correct
-//                         break;
-//                     }
-//                 }
-//                 if(is_correct==0)
-//                 {
-//  //                   reportError("Too many errors in message. LDPC decoding failed.");
-//                     free(matrixA1);
-//                     return 0;
-//                 }
-//             }
-//             free(matrixA1);
-//         }
-//         else
-//         {
-//             //ldpc decoding
-//             //first check syndrom
-//             jab_boolean is_correct=1;
-//             int offset=ceil(Pg_sub_block/(jab_float)32);
-//             for (int i=0;i< matrix_rank; i++)
-//             {
-//                 int temp=0;
-//                 for (int j=0;j<Pg_sub_block;j++)
-//                     temp ^= (((matrixA[i*offset+j/32] >> (31-j%32)) & 1) & ((dec[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-//                 if (temp)
-//                 {
-//                     is_correct=(jab_boolean) 0;//message not correct
-//                     break;
-//                 }
-//             }
-//
-//             if(is_correct==0)
-//             {
-//                 int start_pos=iter*old_Pg_sub;
-//                 int success=decodeMessageBP(enc, matrixA, Pg_sub_block, matrix_rank, wr<4 ? Pg_sub_block/2 : Pg_sub_block/wr*wc, max_iter, &is_correct, start_pos,dec);
-//                 if(success == 0)
-//                 {
-//                     reportError("LDPC decoder error.");
-//                     free(matrixA);
-//                     return 0;
-//                 }
-//                 is_correct=1;
-//                 for (int i=0;i< matrix_rank; i++)
-//                 {
-//                     int temp=0;
-//                     for (int j=0;j<Pg_sub_block;j++)
-//                         temp ^= (((matrixA[i*offset+j/32] >> (31-j%32)) & 1) & ((dec[iter*old_Pg_sub+j] >> 0) & 1)) << 0;
-//                     if (temp)
-//                     {
-//                         is_correct=(jab_boolean)0;//message not correct
-//                         break;
-//                     }
-//                 }
-//                 if(is_correct==0)
-//                 {
-//        //             reportError("Too many errors in message. LDPC decoding failed.");
-//                     free(matrixA);
-//                     return 0;
-//                 }
-//             }
-//         }
-//
-//         int loop=0;
-//         for (int i=iter*old_Pg_sub;i < iter * old_Pg_sub + Pn_sub_block; i++)
-//         {
-//             dec[iter*old_Pn_sub+loop]=dec[i+ matrix_rank];
-//             loop++;
-//         }
-//     }
-//     free(matrixA);
-//     return decoded_data_len;
-// }

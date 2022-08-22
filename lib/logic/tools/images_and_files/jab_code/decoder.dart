@@ -1,33 +1,20 @@
-/**
- * libjabcode - JABCode Encoding/Decoding Library
- *
- * Copyright 2016 by Fraunhofer SIT. All rights reserved.
- * See LICENSE file for full terms of use and distribution.
- *
- * Contact: Huajian Liu <liu@sit.fraunhofer.de>
- *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
- *
- * @file decoder.c
- * @brief Data decoding
- */
+/*
+ libjabcode - JABCode Encoding/Decoding Library
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include <math.h>
-//#include "jabcode.h"
-//#include "detector.h"
-//#include "decoder.h"
-//#include "ldpc.h"
-//#include "encoder.h"
+ Copyright 2016 by Fraunhofer SIT. All rights reserved.
+ See LICENSE file for full terms of use and distribution.
+
+ Contact: Huajian Liu <liu@sit.fraunhofer.de>
+			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
+
+ Data decoding
+*/
 
 import 'dart:core';
 import 'dart:ffi';
 import 'dart:math';
 import 'dart:typed_data';
-
 import 'package:tuple/tuple.dart';
-
 import 'binarizer.dart';
 import 'decoder_h.dart';
 import 'detector_h.dart';
@@ -43,11 +30,11 @@ _memcpy(Int8List dst, int dst_offset, int src_offset, int length) {
 	dst.replaceRange(dst_offset, dst_offset + length, dst.getRange(src_offset, src_offset + length));
 }
 
-/**
- * @brief Copy 16-color sub-blocks of 64-color palette into 32-color blocks of 256-color palette and interpolate into 32 colors
- * @param palette the color palette
- * @param dst_offset the start offset in the destination palette
- * @param src_offset the start offset in the source palette
+/*
+ Copy 16-color sub-blocks of 64-color palette into 32-color blocks of 256-color palette and interpolate into 32 colors
+ @param palette the color palette
+ @param dst_offset the start offset in the destination palette
+ @param src_offset the start offset in the source palette
 */
 void _copyAndInterpolateSubblockFrom16To32(Int8List palette, int dst_offset, int src_offset) {
 	//copy
@@ -73,13 +60,12 @@ void _copyAndInterpolateSubblockFrom16To32(Int8List palette, int dst_offset, int
 	}
 }
 
-/**
- * @brief Interpolate 64-color palette into 128-/256-color palette
- * @param palette the color palette
- * @param color_number the number of colors
+/*
+ Interpolate 64-color palette into 128-/256-color palette
+ @param palette the color palette
+ @param color_number the number of colors
 */
-void _interpolatePalette(Int8List palette, int color_number)
-{
+void _interpolatePalette(Int8List palette, int color_number) {
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++) {
 		int offset = color_number * 3 * i;
 		if(color_number == 128)	{											//each block includes 16 colors
@@ -138,14 +124,14 @@ void _interpolatePalette(Int8List palette, int color_number)
 	}
 }
 
-/**
- * @brief Write colors into color palettes
- * @param matrix the symbol matrix
- * @param symbol the master/slave symbol
- * @param p_index the color palette index
- * @param color_index the color index in color palette
- * @param x the x coordinate of the color module
- * @param y the y coordinate of the color module
+/*
+ Write colors into color palettes
+ @param matrix the symbol matrix
+ @param symbol the master/slave symbol
+ @param p_index the color palette index
+ @param color_index the color index in color palette
+ @param x the x coordinate of the color module
+ @param y the y coordinate of the color module
 */
 void _writeColorPalette(jab_bitmap matrix, jab_decoded_symbol symbol, int p_index, int color_index, int x, int y) {
 	int color_number = pow(2, symbol.metadata.Nc + 1);
@@ -159,13 +145,13 @@ void _writeColorPalette(jab_bitmap matrix, jab_decoded_symbol symbol, int p_inde
 	symbol.palette[palette_offset + color_index*3 + 2] = matrix.pixel[mtx_offset + 2];
 }
 
-/**
- * @brief Get the coordinates of the modules in finder/alignment patterns used for color palette
- * @param p_index the color palette index
- * @param matrix_width the matrix width
- * @param matrix_height the matrix height
- * @result p1 the coordinate of the first module
- * @result p2 the coordinate of the second module
+/*
+ Get the coordinates of the modules in finder/alignment patterns used for color palette
+ @param p_index the color palette index
+ @param matrix_width the matrix width
+ @param matrix_height the matrix height
+ @result item1 p1 the coordinate of the first module
+ @result item2 p2 the coordinate of the second module
 */
 Tuple2<jab_vector2d, jab_vector2d> _getColorPalettePosInFP(int p_index, int matrix_width, int matrix_height) {
 	jab_vector2d p1;
@@ -201,35 +187,26 @@ Tuple2<jab_vector2d, jab_vector2d> _getColorPalettePosInFP(int p_index, int matr
 	return Tuple2<jab_vector2d, jab_vector2d>(p1, p2);
 }
 
-/**
- * @brief Read the color palettes in master symbol
- * @param matrix the symbol matrix
- * @param symbol the master symbol
- * @param data_map the data module positions
- * @param module_count the start module index
- * @param x the x coordinate of the start module
- * @param y the y coordinate of the start module
- * @return JAB_SUCCESS | FATAL_ERROR
- * @return module_count the start module index
- * @return x the x coordinate of the start module
- * @return y the y coordinate of the start module
+/*
+ Read the color palettes in master symbol
+ @param matrix the symbol matrix
+ @param symbol the master symbol
+ @param data_map the data module positions
+ @param module_count the start module index
+ @param x the x coordinate of the start module
+ @param y the y coordinate of the start module
+ @return item1 JAB_SUCCESS | FATAL_ERROR
+ @return item2 module_count the start module index
+ @return item3 x the x coordinate of the start module
+ @return item4 y the y coordinate of the start module
 */
 Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, int module_count, int x, int y) {
-	////allocate buffer for palette
 	int color_number = pow(2, symbol.metadata.Nc + 1);
-	//free(symbol.palette);
-	//symbol.palette = (Int8*)malloc(color_number * sizeof(Int8) * 3 * COLOR_PALETTE_NUMBER);
-	//if(symbol.palette == NULL)
-	//{
-	//	reportError("Memory allocation for master palette failed");
-	//	return FATAL_ERROR;
-	//}
 	symbol.palette = Int8List(color_number * 3 * COLOR_PALETTE_NUMBER); //(Int8*)malloc(color_number * sizeof(Int8) * 3 * COLOR_PALETTE_NUMBER);
 
 	//read colors from finder patterns
 	int color_index;			//the color index number in color palette
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++) {
-
 		var result = _getColorPalettePosInFP(i, matrix.width, matrix.height);
 		jab_vector2d p1 = result.item1;
 		jab_vector2d p2 = result.item2;
@@ -299,27 +276,19 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
 	return Tuple4<int, int, int, int>(JAB_SUCCESS, module_count, x, y);
 }
 
-/**
- * @brief Read the color palettes in master symbol
- * @param matrix the symbol matrix
- * @param symbol the slave symbol
- * @param data_map the data module positions
- * @return JAB_SUCCESS | FATAL_ERROR
+/*
+ Read the color palettes in master symbol
+ @param matrix the symbol matrix
+ @param symbol the slave symbol
+ @param data_map the data module positions
+ @return JAB_SUCCESS | FATAL_ERROR
 */
-int _readColorPaletteInSlave(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map)
-{
-	//allocate buffer for palette
+int _readColorPaletteInSlave(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map) {
 	int color_number = pow(2, symbol.metadata.Nc + 1);
 	symbol.palette?.clear();
-	// symbol.palette = (Int8*)malloc(color_number * sizeof(Int8) * 3 * COLOR_PALETTE_NUMBER);
-  //   if(symbol.palette == null)
-  //   {
-	// 	reportError("Memory allocation for slave palette failed");
-	// 	return FATAL_ERROR;
-  //   }
 
-    //read colors from alignment patterns
-    int color_index;			//the color index number in color palette
+	//read colors from alignment patterns
+	int color_index;			//the color index number in color palette
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++) {
 		var result = _getColorPalettePosInFP(i, matrix.width, matrix.height);
 		jab_vector2d p1 = result.item1;
@@ -380,12 +349,12 @@ int _readColorPaletteInSlave(jab_bitmap matrix, jab_decoded_symbol symbol, Int8L
 	return JAB_SUCCESS;
 }
 
-/**
- * @brief Get the index of the nearest color palette
- * @param matrix the symbol matrix
- * @param x the x coordinate of the module
- * @param y the y coordinate of the module
- * @return the index of the nearest color palette
+/*
+ Get the index of the nearest color palette
+ @param matrix the symbol matrix
+ @param x the x coordinate of the module
+ @param y the y coordinate of the module
+ @return the index of the nearest color palette
 */
 int _getNearestPalette(jab_bitmap matrix, int x, int y) {
 	//set the palette coordinate
@@ -414,16 +383,16 @@ int _getNearestPalette(jab_bitmap matrix, int x, int y) {
 	return p_index;
 }
 
-/**
- * @brief Decode a module using hard decision
- * @param matrix the symbol matrix
- * @param palette the color palettes
- * @param color_number the number of module colors
- * @param norm_palette the normalized color palettes
- * @param pal_ths the palette RGB value thresholds
- * @param x the x coordinate of the module
- * @param y the y coordinate of the module
- * @return the decoded value
+/*
+ Decode a module using hard decision
+ @param matrix the symbol matrix
+ @param palette the color palettes
+ @param color_number the number of module colors
+ @param norm_palette the normalized color palettes
+ @param pal_ths the palette RGB value thresholds
+ @param x the x coordinate of the module
+ @param y the y coordinate of the module
+ @return the decoded value
 */
 int _decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<double> norm_palette, List<double> pal_ths, int x, int y) {
 	//get the nearest palette
@@ -491,39 +460,16 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<
 				index1 = 7;
 			}
 		}
-		//if the minimum is close to the second minimum, do further match
-/*		if(min1 * 1.5 > min2)
-		{
-			//printf("min1(%d) * 1.5 > min2(%d), %d %d %d", index1, index2, rgb[0], rgb[1], rgb[2]);
-			int rg = abs(rgb[0] - rgb[1]);
-			int rb = abs(rgb[0] - rgb[2]);
-			int gb = abs(rgb[1] - rgb[2]);
-
-			int c1rg = abs(palette[color_number*3*p_index + index1*3 + 0] - palette[color_number*3*p_index + index1*3 + 1]);
-			int c1rb = abs(palette[color_number*3*p_index + index1*3 + 0] - palette[color_number*3*p_index + index1*3 + 2]);
-			int c1gb = abs(palette[color_number*3*p_index + index1*3 + 1] - palette[color_number*3*p_index + index1*3 + 2]);
-			int diff1 = abs(rg - c1rg) + abs(rb - c1rb) + abs(gb - c1gb);
-
-			int c2rg = abs(palette[color_number*3*p_index + index2*3 + 0] - palette[color_number*3*p_index + index2*3 + 1]);
-			int c2rb = abs(palette[color_number*3*p_index + index2*3 + 0] - palette[color_number*3*p_index + index2*3 + 2]);
-			int c2gb = abs(palette[color_number*3*p_index + index2*3 + 1] - palette[color_number*3*p_index + index2*3 + 2]);
-			int diff2 = abs(rg - c2rg) + abs(rb - c2rb) + abs(gb - c2gb);
-
-			if(diff2 < diff1)
-				index1 = index2;
-			//printf("final: %d\n", index1);
-		}
-*/
 	} else {	//if no palette is available, decode the module as black/white
 		index1 = ((rgb[0] > 100 ? 1 : 0) + (rgb[1] > 100 ? 1 : 0) + (rgb[2] > 100 ? 1 : 0)) > 1 ? 1 : 0;
 	}
 	return index1;
 }
 
-/**
- * @brief Decode a module for PartI (Nc) of the metadata of master symbol
- * @param rgb the pixel value in RGB format
- * @return the decoded value
+/*
+ Decode a module for PartI (Nc) of the metadata of master symbol
+ @param rgb the pixel value in RGB format
+ @return the decoded value
 */
 int _decodeModuleNc(Uint8List rgb) {
 	int ths_black = 80;
@@ -556,11 +502,11 @@ int _decodeModuleNc(Uint8List rgb) {
 	return ((bits[0] << 2) + (bits[1] << 1) + bits[2]);
 }
 
-/**
- * @brief Get the pixel value thresholds for each channel of the colors in the palette
- * @param palette the color palette
- * @param color_number the number of colors
- * @param palette_ths the palette RGB value thresholds
+/*
+ Get the pixel value thresholds for each channel of the colors in the palette
+ @param palette the color palette
+ @param color_number the number of colors
+ @param palette_ths the palette RGB value thresholds
 */
 void _getPaletteThreshold(Int8List palette, int color_number, List<double> palette_ths) {
 	if(color_number == 4) {
@@ -588,15 +534,15 @@ void _getPaletteThreshold(Int8List palette, int color_number, List<double> palet
 	}
 }
 
-/**
- * @brief Get the coordinate of the next metadata module in master symbol
- * @param matrix_height the height of the matrix
- * @param matrix_width the width of the matrix
- * @param next_module_count the index number of the next module
- * @param x the x coordinate of the current and the next module
- * @param y the y coordinate of the current and the next module
- * @result x the x coordinate of the current and the next module
- * @result y the y coordinate of the current and the next module
+/*
+ Get the coordinate of the next metadata module in master symbol
+ @param matrix_height the height of the matrix
+ @param matrix_width the width of the matrix
+ @param next_module_count the index number of the next module
+ @param x the x coordinate of the current and the next module
+ @param y the y coordinate of the current and the next module
+ @result item1 x the x coordinate of the current and the next module
+ @result item2 y the y coordinate of the current and the next module
 */
 Tuple2<int, int> getNextMetadataModuleInMaster(int matrix_height, int matrix_width, int next_module_count, int x, int y) {
 	if(next_module_count % 4 == 0 || next_module_count % 4 == 2) {
@@ -626,13 +572,13 @@ Tuple2<int, int> getNextMetadataModuleInMaster(int matrix_height, int matrix_wid
 	return Tuple2<int, int>(x, y);
 }
 
-/**
- * @brief Decode slave symbol metadata
- * @param host_symbol the host symbol
- * @param docked_position the docked position
- * @param data the data stream of the host symbol
- * @param offset the metadata start offset in the data stream
- * @return the read metadata bit length | DECODE_METADATA_FAILED
+/*
+ Decode slave symbol metadata
+ @param host_symbol the host symbol
+ @param docked_position the docked position
+ @param data the data stream of the host symbol
+ @param offset the metadata start offset in the data stream
+ @return the read metadata bit length | DECODE_METADATA_FAILED
 */
 int _decodeSlaveMetadata(jab_decoded_symbol host_symbol, int docked_position, jab_data data, int offset) {
 	//set metadata from host symbol
@@ -689,20 +635,18 @@ int _decodeSlaveMetadata(jab_decoded_symbol host_symbol, int docked_position, ja
 		//check wc and wr
 		int wc = host_symbol.slave_metadata[docked_position].ecl.x;
 		int wr = host_symbol.slave_metadata[docked_position].ecl.y;
-		// if(wc >= wr)
-		// {
-		// 	reportError("Incorrect error correction parameter in slave metadata");
-		// 	return DECODE_METADATA_FAILED;
-		// }
+		if(wc >= wr) {
+			return DECODE_METADATA_FAILED;
+		}
 	}
 	return (offset - index);
 }
 
-/**
- * @brief Decode the encoded bits of Nc from the module color
- * @param module1_color the color of the first module
- * @param module2_color the color of the second module
- * @return the decoded bits
+/*
+ Decode the encoded bits of Nc from the module color
+ @param module1_color the color of the first module
+ @param module2_color the color of the second module
+ @return the decoded bits
 */
 int _decodeNcModuleColor(Int8 module1_color, Int8 module2_color) {
 	for(int i=0; i<8; i++) {
@@ -712,15 +656,18 @@ int _decodeNcModuleColor(Int8 module1_color, Int8 module2_color) {
 	return 8; //if no match, return an invalid value
 }
 
-/**
- * @brief Decode the PartI of master symbol metadata
- * @param matrix the symbol matrix
- * @param symbol the master symbol
- * @param data_map the data module positions
- * @param module_count the index number of the next module
- * @param x the x coordinate of the current and the next module
- * @param y the y coordinate of the current and the next module
- * @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED
+/*
+ Decode the PartI of master symbol metadata
+ @param matrix the symbol matrix
+ @param symbol the master symbol
+ @param data_map the data module positions
+ @param module_count the index number of the next module
+ @param x the x coordinate of the current and the next module
+ @param y the y coordinate of the current and the next module
+ @return item1 JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED
+ @return item2 module_count the index number of the next module
+ @return item3 x the x coordinate of the current and the next module
+ @return item4 y the y coordinate of the current and the next module
 */
 Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, int module_count, int x, int y) {
 
@@ -729,15 +676,11 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 	int mtx_bytes_per_pixel = (matrix.bits_per_pixel / 8).toInt();
 	int mtx_bytes_per_row = matrix.width * mtx_bytes_per_pixel;
 	int mtx_offset;
-	while(module_count < MASTER_METADATA_PART1_MODULE_NUMBER)
-	{
+	while(module_count < MASTER_METADATA_PART1_MODULE_NUMBER) {
 		//decode bit out of the module at (x,y)
 		mtx_offset = y * mtx_bytes_per_row + y * mtx_bytes_per_pixel;
 		int rgb =  _decodeModuleNc(matrix.pixel.sublist(mtx_offset, mtx_offset+3)); //&matrix.pixel[mtx_offset]
 		if(rgb != 0 && rgb != 3 && rgb != 6) {
-// #if TEST_MODE
-// 		reportError("Invalid module color in primary metadata part 1 found");
-// #endif
 			return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 		}
 		module_color[module_count] = rgb;
@@ -755,9 +698,6 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 	bits[0] = _decodeNcModuleColor(module_color[0] as Int8, module_color[1] as Int8);	//the first 3 bits
 	bits[1] = _decodeNcModuleColor(module_color[2] as Int8, module_color[3] as Int8);	//the last 3 bits
 	if(bits[0] > 7 || bits[1] > 7) {
-// #if TEST_MODE
-// 		reportError("Invalid color combination in primary metadata part 1 found");
-// #endif
 		return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 	}
 	//set bits in part1
@@ -773,9 +713,6 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 
 	//decode ldpc for part1
 	if( decodeLDPChd(part1, MASTER_METADATA_PART1_LENGTH, MASTER_METADATA_PART1_LENGTH > 36 ? 4 : 3, 0) == 0) {
-// #if TEST_MODE
-// 		reportError("LDPC decoding for master metadata part 1 failed");
-// #endif
 		return Tuple4<int, int, int, int>(JAB_FAILURE, module_count, x, y);
 	}
 	//parse part1
@@ -784,20 +721,20 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 	return Tuple4<int, int, int, int>(JAB_SUCCESS, module_count, x, y);
 }
 
-/**
- * @brief Decode the PartII of master symbol metadata
- * @param matrix the symbol matrix
- * @param symbol the master symbol
- * @param data_map the data module positions
- * @param norm_palette the normalized color palettes
- * @param pal_ths the palette RGB value thresholds
- * @param module_count the index number of the next module
- * @param x the x coordinate of the current and the next module
- * @param y the y coordinate of the current and the next module
- * @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED | FATAL_ERROR
- * @return module_count the index number of the next module
- * @return x the x coordinate of the current and the next module
- * @return y the y coordinate of the current and the next module
+/*
+ Decode the PartII of master symbol metadata
+ @param matrix the symbol matrix
+ @param symbol the master symbol
+ @param data_map the data module positions
+ @param norm_palette the normalized color palettes
+ @param pal_ths the palette RGB value thresholds
+ @param module_count the index number of the next module
+ @param x the x coordinate of the current and the next module
+ @param y the y coordinate of the current and the next module
+ @return item1 JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED | FATAL_ERROR
+ @return item2 module_count the index number of the next module
+ @return item3 x the x coordinate of the current and the next module
+ @return item4 y the y coordinate of the current and the next module
 */
 Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths, int module_count, int x, int y) {
 	var part2 = List<int>.filled(MASTER_METADATA_PART2_LENGTH, 0);			//38 encoded bits
@@ -833,9 +770,6 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 
 	//decode ldpc for part2
 	if( decodeLDPChd(part2, MASTER_METADATA_PART2_LENGTH, MASTER_METADATA_PART2_LENGTH > 36 ? 4 : 3, 0) == 0) {
-// #if TEST_MODE
-// 		reportError("LDPC decoding for master metadata part 2 failed");
-// #endif
 		return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 	}
 
@@ -878,44 +812,31 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 	//check side version
 	symbol.side_size.x = VERSION2SIZE(symbol.metadata.side_version.x);
 	symbol.side_size.y = VERSION2SIZE(symbol.metadata.side_version.y);
-	// if(matrix.width != symbol.side_size.x || matrix.height != symbol.side_size.y)
-	// {
-	// 	reportError("Primary symbol matrix size does not match the metadata");
-	// 	return JAB_FAILURE;
-	// }
+	if(matrix.width != symbol.side_size.x || matrix.height != symbol.side_size.y) {
+		return Tuple4<int, int, int, int>(JAB_FAILURE, module_count, x, y);
+	}
 	//check wc and wr
 	int wc = symbol.metadata.ecl.x;
 	int wr = symbol.metadata.ecl.y;
-	// if(wc >= wr)
-	// {
-	// 	reportError("Incorrect error correction parameter in primary symbol metadata");
-	// 	return DECODE_METADATA_FAILED;
-	// }
-	return Tuple4<int, int, int, int>(JAB_SUCCESS, module_count, x, y);;
+	if(wc >= wr) {
+		return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
+	}
+	return Tuple4<int, int, int, int>(JAB_SUCCESS, module_count, x, y);
 }
 
-/**
- * @brief Decode data modules
- * @param matrix the symbol matrix
- * @param symbol the symbol to be decoded
- * @param data_map the data module positions
- * @param norm_palette the normalized color palettes
- * @param pal_ths the palette RGB value thresholds
- * @return the decoded data | NULL if failed
+/*
+ Decode data modules
+ @param matrix the symbol matrix
+ @param symbol the symbol to be decoded
+ @param data_map the data module positions
+ @param norm_palette the normalized color palettes
+ @param pal_ths the palette RGB value thresholds
+ @return the decoded data | NULL if failed
 */
 jab_data _readRawModuleData(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths) {
 	int color_number = pow(2, symbol.metadata.Nc + 1);
 	int module_count = 0;
 	var data = jab_data() ;//(jab_data*)malloc(sizeof(jab_data) + matrix.width * matrix.height * sizeof(jab_char));
-  //   if(data == null)
-	// {
-	// 	reportError("Memory allocation for raw module data failed");
-	// 	return NULL;
-	// }
-
-// #if TEST_MODE
-// 	Int8 decoded_module_color_index[matrix.height * matrix.width];
-// #endif
 
 	for(int j=0; j<matrix.width; j++) {
 		for(int i=0; i<matrix.height; i++) {
@@ -925,74 +846,23 @@ jab_data _readRawModuleData(jab_bitmap matrix, jab_decoded_symbol symbol, Int8Li
 				//write the bits into data
 				data.data[module_count] = bits; //(jab_char)))
 				module_count++;
-// #if TEST_MODE
-// 				decoded_module_color_index[i*matrix.width + j] = bits;
-// #endif
-			} else {
-// #if TEST_MODE
-// 				decoded_module_color_index[i*matrix.width + j] = 255;
-// #endif
 			}
 		}
 	}
 	data.length = module_count;
 
-// #if TEST_MODE
-// 	FILE* fp1 = fopen("jab_dec_module_sampled_rgb.raw", "wb");
-// 	FILE* fp2 = fopen("jab_dec_module_decoded_rgb.raw", "wb");
-// 	for(int i=0; i<matrix.height; i++)
-// 	{
-// 		for(int j=0; j<matrix.width; j++)
-// 		{
-// 			Int8 rgb1[3], rgb2[3];
-// 			int mtx_bytes_per_pixel = matrix.bits_per_pixel / 8;
-// 			int mtx_bytes_per_row = matrix.width * mtx_bytes_per_pixel;
-// 			int mtx_offset = i * mtx_bytes_per_row + j * mtx_bytes_per_pixel;
-// 			rgb1[0] = matrix.pixel[mtx_offset + 0];
-// 			rgb1[1] = matrix.pixel[mtx_offset + 1];
-// 			rgb1[2] = matrix.pixel[mtx_offset + 2];
-//
-// 			if(data_map[i*matrix.width + j] == 0)
-// 			{
-// 				int index = decoded_module_color_index[i*matrix.width + j];
-// 				rgb2[0] = jab_default_palette[index*3 + 0];
-// 				rgb2[1] = jab_default_palette[index*3 + 1];
-// 				rgb2[2] = jab_default_palette[index*3 + 2];
-// 			}
-// 			else
-// 			{
-// 				rgb2[0] = rgb1[0];
-// 				rgb2[1] = rgb1[1];
-// 				rgb2[2] = rgb1[2];
-// 				//rgb1[0] = rgb2[0] = 128;
-// 				//rgb1[1] = rgb2[1] = 128;
-// 				//rgb1[2] = rgb2[2] = 128;
-// 			}
-// 			fwrite(rgb1, 3, 1, fp1);
-// 			fwrite(rgb2, 3, 1, fp2);
-// 		}
-// 	}
-// 	fclose(fp1);
-// 	fclose(fp2);
-// #endif // TEST_MODE
-
 	return data;
 }
 
-/**
- * @brief Convert multi-bit-per-byte raw module data to one-bit-per-byte raw data
- * @param raw_module_data the input raw module data
- * @param bits_per_module the number of bits per module
- * @return the converted data | NULL if failed
+/*
+ Convert multi-bit-per-byte raw module data to one-bit-per-byte raw data
+ @param raw_module_data the input raw module data
+ @param bits_per_module the number of bits per module
+ @return the converted data | NULL if failed
 */
 jab_data _rawModuleData2RawData(jab_data raw_module_data, int bits_per_module) {
-	//
 	var raw_data = jab_data(); //)(jab_data *)malloc(sizeof(jab_data) + raw_module_data.length * bits_per_module * sizeof(jab_char));
-  //   if(raw_data == NULL)
-	// {
-	// 	reportError("Memory allocation for raw data failed");
-	// 	return NULL;
-	// }
+
 	for(int i=0; i<raw_module_data.length; i++) {
 		for(int j=0; j<bits_per_module; j++) {
 			raw_data.data[i * bits_per_module + j] = (raw_module_data.data[i] >> (bits_per_module - 1 - j)) & 0x01;
@@ -1002,12 +872,12 @@ jab_data _rawModuleData2RawData(jab_data raw_module_data, int bits_per_module) {
 	return raw_data;
 }
 
-/**
- * @brief Mark the positions of finder patterns and alignment patterns in the data map
- * @param data_map the data module positions
- * @param width the width of the data map
- * @param height the height of the data map
- * @param type the symbol type, 0: master, 1: slave
+/*
+ Mark the positions of finder patterns and alignment patterns in the data map
+ @param data_map the data module positions
+ @param width the width of the data map
+ @param height the height of the data map
+ @param type the symbol type, 0: master, 1: slave
 */
 void _fillDataMap(Int8List data_map, int width, int height, int type) {
 	int side_ver_x_index = SIZE2VERSION(width) - 1;
@@ -1049,8 +919,7 @@ void _fillDataMap(Int8List data_map, int width, int height, int type) {
 
 				data_map[(y_offset - 1) * width + (x_offset + 1)] = 1;
 				data_map[(y_offset + 1) * width + (x_offset - 1)] =  1;
-				if(type == 0) 	//master symbol
-				{
+				if(type == 0) { 	//master symbol
 					data_map[(y_offset - 2) * width + (x_offset + 2)] = 1;
 					data_map[(y_offset - 2) * width + (x_offset + 1)] = 1;
 					data_map[(y_offset - 2) * width +  x_offset] 	    = 1;
@@ -1079,15 +948,12 @@ void _fillDataMap(Int8List data_map, int width, int height, int type) {
 	}
 }
 
-/**
- * @brief Load default metadata values and color palettes for master symbol
- * @param matrix the symbol matrix
- * @param symbol the master symbol
+/*
+ Load default metadata values and color palettes for master symbol
+ @param matrix the symbol matrix
+ @param symbol the master symbol
 */
 void _loadDefaultMasterMetadata(jab_bitmap matrix, jab_decoded_symbol symbol) {
-// #if TEST_MODE
-// 	JAB_REPORT_INFO(("Loading default master metadata"))
-// #endif
 	//set default metadata values
 	symbol.metadata.default_mode = true;
 	symbol.metadata.Nc = DEFAULT_MODULE_COLOR_MODE;
@@ -1099,72 +965,32 @@ void _loadDefaultMasterMetadata(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	symbol.metadata.side_version.y = SIZE2VERSION(matrix.height);	//no default value
 }
 
-/**
- * @brief Decode symbol
- * @param matrix the symbol matrix
- * @param symbol the symbol to be decoded
- * @param data_map the data module positions
- * @param norm_palette the normalized color palettes
- * @param pal_ths the palette RGB value thresholds
- * @param type the symbol type, 0: master, 1: slave
- * @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED | FATAL_ERROR
+/*
+ Decode symbol
+ @param matrix the symbol matrix
+ @param symbol the symbol to be decoded
+ @param data_map the data module positions
+ @param norm_palette the normalized color palettes
+ @param pal_ths the palette RGB value thresholds
+ @param type the symbol type, 0: master, 1: slave
+ @return JAB_SUCCESS | JAB_FAILURE | DECODE_METADATA_FAILED | FATAL_ERROR
 */
 int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths, int type) {
-// #if TEST_MODE
-// 	int color_number = (int)pow(2, symbol.metadata.Nc + 1);
-// 	printf("p1:\n");
-// 	for(int i=0;i<color_number;i++)
-// 	{
-// 		printf("%d\t%d\t%d\n", symbol.palette[i*3], symbol.palette[i*3+1], symbol.palette[i*3+2]);
-// 	}
-// 	printf("p2:\n");
-// 	for(int i=0;i<color_number;i++)
-// 	{
-// 		printf("%d\t%d\t%d\n", symbol.palette[3*color_number+i*3], symbol.palette[3*color_number+i*3+1], symbol.palette[3*color_number+i*3+2]);
-// 	}
-// 	printf("p3:\n");
-// 	for(int i=0;i<color_number;i++)
-// 	{
-// 		printf("%d\t%d\t%d\n", symbol.palette[3*color_number*2+i*3], symbol.palette[3*color_number*2+i*3+1], symbol.palette[3*color_number*2+i*3+2]);
-// 	}
-// 	printf("p4:\n");
-// 	for(int i=0;i<color_number;i++)
-// 	{
-// 		printf("%d\t%d\t%d\n", symbol.palette[3*color_number*3+i*3], symbol.palette[3*color_number*3+i*3+1], symbol.palette[3*color_number*3+i*3+2]);
-// 	}
-// #endif // TEST_MODE
-
-	//fill data map
 	_fillDataMap(data_map, matrix.width, matrix.height, type);
 
 	//read raw data
 	var raw_module_data = _readRawModuleData(matrix, symbol, data_map, norm_palette, pal_ths);
-	if(raw_module_data == null)
-	{
-		// JAB_REPORT_ERROR(("Reading raw module data in symbol %d failed", symbol.index))
-		// free(data_map);
+	if(raw_module_data == null) {;
 		return FATAL_ERROR;
 	}
-// #if TEST_MODE
-// 	FILE* fp = fopen("jab_dec_module_data.bin", "wb");
-// 	fwrite(raw_module_data.data, raw_module_data.length, 1, fp);
-// 	fclose(fp);
-// #endif // TEST_MODE
 
 	//demask
 	demaskSymbol(raw_module_data, data_map, symbol.side_size, symbol.metadata.mask_type, pow(2, symbol.metadata.Nc + 1));
-	// free(data_map);
-// #if TEST_MODE
-// 	fp = fopen("jab_demasked_module_data.bin", "wb");
-// 	fwrite(raw_module_data.data, raw_module_data.length, 1, fp);
-// 	fclose(fp);
-// #endif // TEST_MODE
 
 	//change to one-bit-per-byte representation
 	var raw_data = _rawModuleData2RawData(raw_module_data, symbol.metadata.Nc + 1);
-	// free(raw_module_data);
+
 	if(raw_data == null) {
-		// JAB_REPORT_ERROR(("Reading raw data in symbol %d failed", symbol.index))
 		return FATAL_ERROR;
 	}
 
@@ -1178,24 +1004,14 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	raw_data.length = Pg;	//drop the padding bits
 	deinterleaveData(raw_data);
 
-// #if TEST_MODE
-// 	JAB_REPORT_INFO(("wc:%d, wr:%d, Pg:%d, Pn: %d", wc, wr, Pg, Pn))
-// 	fp = fopen("jab_dec_bit_data.bin", "wb");
-// 	fwrite(raw_data.data, raw_data.length, 1, fp);
-// 	fclose(fp);
-// #endif // TEST_MODE
-
 	//decode ldpc
 	if(decodeLDPChd(raw_data.data, Pg, symbol.metadata.ecl.x, symbol.metadata.ecl.y) != Pn) {
-	// JAB_REPORT_ERROR(("LDPC decoding for data in symbol %d failed", symbol.index))
-	// free(raw_data);
-	return JAB_FAILURE;
+		return JAB_FAILURE;
 	}
 
 	//find the start flag of metadata
 	int metadata_offset = Pn - 1;
-	while(raw_data.data[metadata_offset] == 0)
-	{
+	while(raw_data.data[metadata_offset] == 0) {
 		metadata_offset--;
 	}
 	//skip the flag bit
@@ -1221,19 +1037,13 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	}
 
 	//copy the decoded data to symbol
-	int net_data_length = metadata_offset + 1;
+	// int net_data_length = metadata_offset + 1;
 	symbol.data = jab_data(); // (jab_data *)malloc(sizeof(jab_data) + net_data_length * sizeof(jab_char));
-	if(symbol.data == null) {
-		// reportError("Memory allocation for symbol data failed");
-		// free(raw_data);
-		return FATAL_ERROR;
-	}
+
 	// symbol.data.length = net_data_length;
 	// memcpy(symbol.data.data, raw_data.data, net_data_length);
 	symbol.data.data.insertAll(0, raw_data.data);
 
-	//clean memory
-	// free(raw_data);
 	return JAB_SUCCESS;
 }
 
@@ -1247,24 +1057,19 @@ void _normalizeColorPalette(jab_decoded_symbol symbol, List<double> norm_palette
 	}
 }
 
-/**
- * @brief Decode master symbol
- * @param matrix the symbol matrix
- * @param symbol the master symbol
- * @return JAB_SUCCESS | JAB_FAILURE | FATAL_ERROR
+/*
+ Decode master symbol
+ @param matrix the symbol matrix
+ @param symbol the master symbol
+ @return JAB_SUCCESS | JAB_FAILURE | FATAL_ERROR
 */
 int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	if(matrix == null) {
-		// reportError("Invalid master symbol matrix");
 		return FATAL_ERROR;
 	}
 
 	//create data map
 	var data_map = Int8List(matrix.width*matrix.height);// (Int8*)calloc(1, matrix.width*matrix.height*sizeof(Int8));
-	if(data_map == null) {
-		// reportError("Memory allocation for data map in master failed");
-		return FATAL_ERROR;
-	}
 
 	//decode metadata and color palette
 	int x = MASTER_METADATA_X;
@@ -1327,30 +1132,23 @@ int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	return _decodeSymbol(matrix, symbol, data_map, norm_palette, pal_ths, 0);
 }
 
-/**
- * @brief Decode slave symbol
- * @param matrix the symbol matrix
- * @param symbol the slave symbol
- * @return JAB_SUCCESS | JAB_FAILURE | FATAL_ERROR
+/*
+ Decode slave symbol
+ @param matrix the symbol matrix
+ @param symbol the slave symbol
+ @return JAB_SUCCESS | JAB_FAILURE | FATAL_ERROR
 */
 int decodeSlave(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	if(matrix == null) {
-		// reportError("Invalid slave symbol matrix");
-		return FATAL_ERROR;
+		return FATAL_ERROR; //Invalid slave symbol matrix
 	}
 
 	//create data map
 	var data_map = Int8List(matrix.width*matrix.height); // (Int8*)calloc(1, matrix.width*matrix.height*sizeof(Int8));
-	if(data_map == null) {
-		// reportError("Memory allocation for data map in slave failed");
-		return FATAL_ERROR;
-	}
 
 	//read color palettes
 	if(_readColorPaletteInSlave(matrix, symbol, data_map) < 0) {
-		// reportError("Reading color palettes in slave symbol failed");
-		data_map = null; //free(data_map);
-		return FATAL_ERROR;
+		return FATAL_ERROR; // Reading color palettes in slave symbol failed;
 	}
 
 	//normalize the RGB values in color palettes
@@ -1368,36 +1166,30 @@ int decodeSlave(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	return _decodeSymbol(matrix, symbol, data_map, norm_palette, pal_ths, 1);
 }
 
-/**
- * @brief Read bit data
- * @param data the data buffer
- * @param start the start reading offset
- * @param length the length of the data to be read
- * @param value the read data
- * @return the length of the read data
+/*
+ Read bit data
+ @param data the data buffer
+ @param start the start reading offset
+ @param length the length of the data to be read
+ @return item1 the length of the read data
+ @param item2 value the read data
 */
-Tuple2<int,int> _readData(jab_data data, int start, int length) { //int* value
+Tuple2<int, int> _readData(jab_data data, int start, int length) {
 	int i;
 	int val = 0;
 	for(i=start; i<(start + length) && i<data.length; i++) {
 		val += data.data[i] << (length - 1 - (i - start));
 	}
-	// value = val;
 	return Tuple2<int,int>((i - start), val);
 }
 
-/**
- * @brief Interpret decoded bits
- * @param bits the input bits
- * @return the data message
+/*
+ Interpret decoded bits
+ @param bits the input bits
+ @return the data message
 */
 jab_data decodeData(jab_data bits) {
 	var decoded_bytes = Uint8List(bits.length); //Int8 *)malloc(bits.length * sizeof(Int8));
-	if(decoded_bytes == null) {
-		// reportError("Memory allocation for decoded bytes failed");
-		return null;
-	}
-
 	var mode = jab_encode_mode.Upper;
 	var pre_mode = jab_encode_mode.None;
 	int index = 0;	//index of input bits
@@ -1533,9 +1325,7 @@ jab_data decodeData(jab_data bits) {
 							}
 							break;
 						default:
-							// reportError("Invalid value decoded");
-							decoded_bytes = null ; //free(decoded_bytes);
-							return null;
+							return null; //Invalid value decoded
 					}
 				}
 				break;
@@ -1585,9 +1375,7 @@ jab_data decodeData(jab_data bits) {
 							}
 							break;
 						default:
-							// reportError("Invalid value decoded");
-							decoded_bytes = null ; //free(decoded_bytes);
-							return null;
+							return null;  //Invalid value decoded
 					}
 				}
 				break;
@@ -1596,9 +1384,7 @@ jab_data decodeData(jab_data bits) {
 					decoded_bytes[count++] = jab_decoding_table_punct[value];
 					mode = pre_mode;
 				} else {
-					// reportError("Invalid value decoded");
-					decoded_bytes = null ; //free(decoded_bytes);
-					return null;
+					return null; //Invalid value decoded
 				}
 				break;
 			case jab_encode_mode.Mixed:
@@ -1620,9 +1406,7 @@ jab_data decodeData(jab_data bits) {
 					}
 					mode = pre_mode;
 				} else {
-					// reportError("Invalid value decoded");
-					decoded_bytes = null ; //free(decoded_bytes);
-					return null;
+					return null;  //Invalid value decoded
 				}
 				break;
 			case jab_encode_mode.Alphanumeric:
@@ -1660,9 +1444,7 @@ jab_data decodeData(jab_data bits) {
 							break;
 					}
 				} else {
-					// reportError("Invalid value decoded");
-					decoded_bytes = null; // free(decoded_bytes);
-					return null;
+					return null;  //Invalid value decoded
 				}
 				break;
 			case jab_encode_mode.Byte:
@@ -1672,9 +1454,7 @@ jab_data decodeData(jab_data bits) {
 				n = result.item1;
 				value = result.item2;
 				if(n < 4)	{ //did not read enough bits
-          // reportError("Not enough bits to decode");
-					decoded_bytes = null; // free(decoded_bytes);
-					return null;
+					return null; // Not enough bits to decode
 				}
 				//update index
 				index += 4;
@@ -1684,9 +1464,7 @@ jab_data decodeData(jab_data bits) {
 					n = result.item1;
 					value = result.item2;
 					if(n < 13) {	//did not read enough bits
-						// reportError("Not enough bits to decode");
-						decoded_bytes = null; // free(decoded_bytes);
-						return null;
+						return null; // Not enough bits to decode
 					}
 					value += 15+1;	//the number of encoded bytes = value + 15
 					//update index
@@ -1699,9 +1477,7 @@ jab_data decodeData(jab_data bits) {
 					n = result.item1;
 					value = result.item2;
 					if(n < 8)	{ //did not read enough bits
-            // reportError("Not enough bits to decode");
-						decoded_bytes = null; // free(decoded_bytes);
-						return null;
+						return null; // Not enough bits to decode
 					}
 					//update index
 					index += 8;
@@ -1728,14 +1504,7 @@ jab_data decodeData(jab_data bits) {
 
 	//copy decoded data
 	var decoded_data = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + count * sizeof(Int8));
-	// if(decoded_data == null){
-  //       reportError("Memory allocation for decoded data failed");
-  //       return null;
-  //   }
-  //   decoded_data.length = count;
-  //   memcpy(decoded_data.data, decoded_bytes, count);
-	//
-	// free(decoded_bytes);
+
 	decoded_data.data = decoded_bytes;
 	return decoded_data;
 }
