@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:tuple/tuple.dart';
-import 'package:utility/utility.dart';
 
 import 'detector.dart';
 import 'encoder.dart';

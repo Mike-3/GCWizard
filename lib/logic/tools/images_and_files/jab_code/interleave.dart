@@ -1,10 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random.dart';
-import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random_h.dart';
-
-import 'jabcode_h.dart';
-
 /*
  libjabcode - JABCode Encoding/Decoding Library
  Copyright 2016 by Fraunhofer SIT. All rights reserved.
@@ -15,6 +8,10 @@ import 'jabcode_h.dart';
  Data interleaving
 */
 
+import 'dart:typed_data';
+
+import 'pseudo_random.dart';
+import 'jabcode_h.dart';
 
 const INTERLEAVE_SEED = 226759;
 

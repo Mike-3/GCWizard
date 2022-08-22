@@ -1,6 +1,3 @@
-import 'encoder_h.dart';
-import 'jabcode_h.dart';
-
 /*
  libjabcode - JABCode Encoding/Decoding Library
 
@@ -13,9 +10,12 @@ import 'jabcode_h.dart';
  Data module masking
 */
 
-const W1 = 100;
-const W2 = 3;
-const W3 = 3;
+import 'encoder_h.dart';
+import 'jabcode_h.dart';
+
+const _w1 = 100;
+const _w2 = 3;
+const _w3 = 3;
 
 /*
  Apply mask penalty rule 1
@@ -101,7 +101,7 @@ int applyRule1(List<int> matrix, int width, int height, int color_number) {
 			}
 		}
 	}
-	return W1 * score;
+	return _w1 * score;
 }
 
 /*
@@ -125,7 +125,7 @@ int applyRule2(List<int> matrix, int width, int height) {
 			}
 		}
 	}
-	return W2 * score;
+	return _w2 * score;
 }
 
 /*
@@ -156,19 +156,19 @@ int applyRule3(List<int> matrix, int width, int height) {
 						same_color_count++;
 					else {
 						if(same_color_count >= 5)
-							score += W3 + (same_color_count - 5);
+							score += _w3 + (same_color_count - 5);
 						same_color_count = 1;
 						pre_color = cur_color;
 					}
 				} else {
 					if(same_color_count >= 5)
-						score += W3 + (same_color_count - 5);
+						score += _w3 + (same_color_count - 5);
 					same_color_count = 0;
 					pre_color = -1;
 				}
 			}
 			if(same_color_count >= 5)
-				score += W3 + (same_color_count - 5);
+				score += _w3 + (same_color_count - 5);
 		}
 	}
 	return score;

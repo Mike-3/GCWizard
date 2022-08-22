@@ -11,13 +11,11 @@ JABCode detector
  */
 
 import 'dart:core';
-import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:gc_wizard/logic/tools/images_and_files/jab_code/sample.dart';
-import 'package:gc_wizard/logic/tools/images_and_files/jab_code/transform.dart';
 import 'package:tuple/tuple.dart';
-
+import 'sample.dart';
+import 'transform.dart';
 import 'binarizer.dart';
 import 'decoder.dart';
 import 'encoder_h.dart';

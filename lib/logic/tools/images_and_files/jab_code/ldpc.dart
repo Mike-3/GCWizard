@@ -1,31 +1,21 @@
-/**
- * libjabcode - JABCode Encoding/Decoding Library
- *
- * Copyright 2016 by Fraunhofer SIT. All rights reserved.
- * See LICENSE file for full terms of use and distribution.
- *
- * Contact: Huajian Liu <liu@sit.fraunhofer.de>
- *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
- *
- *  LDPC encoder and decoder
- */
+/*
+ libjabcode - JABCode Encoding/Decoding Library
 
-// #include <stdlib.h>
-// #include <math.h>
-// #include "jabcode.h"
-// #include "ldpc.h"
-// #include <string.h>
-// #include <stdio.h>
-// #include "detector.h"
-// #include "pseudo_random.h"
+ Copyright 2016 by Fraunhofer SIT. All rights reserved.
+ See LICENSE file for full terms of use and distribution.
+
+ Contact: Huajian Liu <liu@sit.fraunhofer.de>
+			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
+
+  LDPC encoder and decoder
+*/
 
 import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:tuple/tuple.dart';
 
-import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random.dart';
-import 'package:gc_wizard/logic/tools/images_and_files/jab_code/pseudo_random_h.dart';
+import 'pseudo_random.dart';
 import 'jabcode_h.dart';
 
 const LPDC_METADATA_SEED =	38545;

@@ -1,6 +1,3 @@
-import 'dart:core';
-import 'dart:typed_data';
-
 /*
  libjabcode - JABCode Encoding/Decoding Library
 
@@ -13,10 +10,10 @@ import 'dart:typed_data';
  Main libjabcode header
 */
 
+import 'dart:core';
+import 'dart:typed_data';
 
 const VERSION ="2.0.0";
-//const BUILD_DATE = __DATE__
-
 const MAX_SYMBOL_NUMBER       = 61;
 const MAX_COLOR_NUMBER        = 256;
 const MAX_SIZE_ENCODING_MODE  = 256;

@@ -10,11 +10,11 @@
  Data decoding
 */
 
+import 'package:tuple/tuple.dart';
 import 'dart:core';
 import 'dart:ffi';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:tuple/tuple.dart';
 import 'binarizer.dart';
 import 'decoder_h.dart';
 import 'detector_h.dart';

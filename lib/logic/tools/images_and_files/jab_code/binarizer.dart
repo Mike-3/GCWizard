@@ -1,12 +1,3 @@
-import 'dart:core';
-import 'dart:ffi';
-import 'dart:math';
-import 'dart:typed_data';
-
-import 'package:tuple/tuple.dart';
-
-import 'jabcode_h.dart';
-
 /*
  libjabcode - JABCode Encoding/Decoding Library
 
@@ -19,6 +10,12 @@ import 'jabcode_h.dart';
  Binarize the image
 */
 
+import 'dart:core';
+import 'dart:math';
+import 'dart:typed_data';
+import 'package:tuple/tuple.dart';
+
+import 'jabcode_h.dart';
 
 const BLOCK_SIZE_POWER = 5;
 const BLOCK_SIZE =			(1 << BLOCK_SIZE_POWER);

@@ -1,20 +1,17 @@
+/*
+ libjabcode - JABCode Encoding/Decoding Library
+
+ Copyright 2016 by Fraunhofer SIT. All rights reserved.
+ See LICENSE file for full terms of use and distribution.
+
+ Contact: Huajian Liu <liu@sit.fraunhofer.de>
+			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
+
+ Detector header*/
+
 import 'dart:math';
 
 import 'jabcode_h.dart';
-
-/**
- * libjabcode - JABCode Encoding/Decoding Library
- *
- * Copyright 2016 by Fraunhofer SIT. All rights reserved.
- * See LICENSE file for full terms of use and distribution.
- *
- * Contact: Huajian Liu <liu@sit.fraunhofer.de>
- *			Waldemar Berchtold <waldemar.berchtold@sit.fraunhofer.de>
- *
- * @file detector.h
- * @brief Detector header
- */
-
 
 const MAX_MODULES 		= 145;	//the number of modules in side-version 32
 const MAX_SYMBOL_ROWS		= 3;
