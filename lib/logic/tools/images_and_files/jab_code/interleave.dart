@@ -16,7 +16,7 @@ import 'jabcode_h.dart';
 const INTERLEAVE_SEED = 226759;
 
 /*
- @brief In-place interleaving
+ In-place interleaving
  @param data the input data to be interleaved
 */
 void interleaveData(jab_data data) {
@@ -30,7 +30,7 @@ void interleaveData(jab_data data) {
 }
 
 /*
- @brief In-place deinterleaving
+ In-place deinterleaving
  @param data the input data to be deinterleaved
 */
 void deinterleaveData(jab_data data) {

@@ -150,8 +150,8 @@ void _writeColorPalette(jab_bitmap matrix, jab_decoded_symbol symbol, int p_inde
  @param p_index the color palette index
  @param matrix_width the matrix width
  @param matrix_height the matrix height
- @result item1 p1 the coordinate of the first module
- @result item2 p2 the coordinate of the second module
+ @return item1 p1 the coordinate of the first module
+ @return item2 p2 the coordinate of the second module
 */
 Tuple2<jab_vector2d, jab_vector2d> _getColorPalettePosInFP(int p_index, int matrix_width, int matrix_height) {
 	jab_vector2d p1;
@@ -541,8 +541,8 @@ void _getPaletteThreshold(Int8List palette, int color_number, List<double> palet
  @param next_module_count the index number of the next module
  @param x the x coordinate of the current and the next module
  @param y the y coordinate of the current and the next module
- @result item1 x the x coordinate of the current and the next module
- @result item2 y the y coordinate of the current and the next module
+ @return item1 x the x coordinate of the current and the next module
+ @return item2 y the y coordinate of the current and the next module
 */
 Tuple2<int, int> getNextMetadataModuleInMaster(int matrix_height, int matrix_width, int next_module_count, int x, int y) {
 	if(next_module_count % 4 == 0 || next_module_count % 4 == 2) {
@@ -1170,7 +1170,7 @@ int decodeSlave(jab_bitmap matrix, jab_decoded_symbol symbol) {
  @param start the start reading offset
  @param length the length of the data to be read
  @return item1 the length of the read data
- @param item2 value the read data
+ @return item2 value the read data
 */
 Tuple2<int, int> _readData(jab_data data, int start, int length) {
 	int i;

@@ -82,8 +82,8 @@ void _getHistogram(jab_bitmap bitmap, int channel, List<int> hist) {
  Get the min and max index in the histogram whose value is larger than the threshold
  @param hist the histogram
  @param ths the threshold
- @result item1 the min index
- @result item2 the max index
+ @return item1 the min index
+ @return item2 the max index
 */
 Tuple2<int, int> _getHistMaxMin(List<int> hist, int ths) {
 	//get min
@@ -151,8 +151,8 @@ void balanceRGB(jab_bitmap bitmap) {
 /*
  Get the average and variance of RGB values
  @param rgb the pixel with RGB values
- @result item1 the average value
- @result item2 the variance value
+ @return item1 the average value
+ @return item2 the variance value
 */
 Tuple2<double, double> getAveVar(Uint8List rgb) {
 	//calculate mean
@@ -177,9 +177,9 @@ void _swap(int index1, int index2, List<int> list) {
 /*
  Get the min, middle and max value of three values and the corresponding indexes
  @param rgb the pixel with RGB values
- @result item1 index min value
- @result item2 index middle value
- @result item3 index max value
+ @return item1 index min value
+ @return item2 index middle value
+ @return item3 index max value
 */
 Tuple3<int, int, int> getMinMax(Uint8List rgb) {
 	const index_min = 0;

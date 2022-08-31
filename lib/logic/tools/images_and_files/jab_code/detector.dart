@@ -2811,7 +2811,7 @@ jab_bitmap _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> c
  Get the average pixel value around the found finder patterns
  @param bitmap the image bitmap
  @param fps the finder patterns
- @result rgb_ave the average pixel value
+ @return rgb_ave the average pixel value
 */
 List<double> _getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> fps ) {
   var rgb_ave = List<double>.filled(3, 0);
