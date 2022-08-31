@@ -266,7 +266,7 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
 }
 
 /*
- @brief Crosscheck the finder pattern candidate in diagonal direction
+ Crosscheck the finder pattern candidate in diagonal direction
  @param image the image bitmap
  @param type the finder pattern type
  @param module_size_max the maximal allowed module size

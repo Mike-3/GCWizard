@@ -25,7 +25,7 @@ double DIST(x1, y1, x2, y2) {
 }
 
 /*
-  Detection modes
+ Detection modes
 */
 enum jab_detect_mode {
 	QUICK_DETECT,
@@ -34,7 +34,7 @@ enum jab_detect_mode {
 }
 
 /*
-  Finder pattern
+ Finder pattern
 */
 class jab_finder_pattern {
 	int		type = 0;

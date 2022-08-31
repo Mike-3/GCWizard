@@ -16,8 +16,8 @@
 import 'dart:typed_data';
 import 'jabcode_h.dart';
 
-/**
- * @brief Default color palette in RGB format
+/*
+ Default color palette in RGB format
 */
 final jab_default_palette = Int8List.fromList([0, 	0, 		0, 		//0: black
 											   0, 	0, 		255, 	//1: blue
@@ -29,27 +29,27 @@ final jab_default_palette = Int8List.fromList([0, 	0, 		0, 		//0: black
 											   255,	255,	255		//7: white
 											   ]);
 
-/**
- * @brief Color palette placement index in master symbol
+/*
+ Color palette placement index in master symbol
 */
 final master_palette_placement_index = List<List<int>>.from({{0, 3, 5, 6, 1, 2, 4, 7}, {0, 6, 5, 3, 1, 2, 4, 7},
 															                               {6, 0, 5, 3, 1, 2, 4, 7}, {3, 0, 5, 6, 1, 2, 4, 7}});
 
-/**
- * @brief Color palette placement index in slave symbol
+/*
+ Color palette placement index in slave symbol
 */
 final slave_palette_placement_index = List<int>.from({3, 6, 5, 0, 1, 2, 4, 7});
 
-/**
- * @brief Finder pattern core color index in default palette
+/*
+  Finder pattern core color index in default palette
 */
 const	FP0_CORE_COLOR = 0;
 const	FP1_CORE_COLOR = 0;
 const	FP2_CORE_COLOR = 6;
 const	FP3_CORE_COLOR = 3;
 
-/**
- * @brief Alignment pattern core color index in default palette
+/*
+ Alignment pattern core color index in default palette
 */
 const	AP0_CORE_COLOR = 3;
 const	AP1_CORE_COLOR = 3;
@@ -57,29 +57,29 @@ const	AP2_CORE_COLOR = 3;
 const	AP3_CORE_COLOR = 3;
 const APX_CORE_COLOR = 6;
 
-/**
- * @brief Finder pattern core color index for all color modes
+/*
+ Finder pattern core color index for all color modes
 */
 final fp0_core_color_index = Int8List.fromList([0, 0, FP0_CORE_COLOR, 0, 0, 0, 0, 0]);
 final fp1_core_color_index = Int8List.fromList([0, 0, FP1_CORE_COLOR, 0, 0, 0, 0, 0]);
 final fp2_core_color_index = Int8List.fromList([0, 2, FP2_CORE_COLOR, 14, 30, 60, 124, 252]);
 final fp3_core_color_index = Int8List.fromList([0, 3, FP3_CORE_COLOR, 3, 7, 15, 15, 31]);
-/**
- * @brief Alignment pattern core color index for all color modes
+/*
+ Alignment pattern core color index for all color modes
 */
 final apn_core_color_index = Int8List.fromList([0, 3, AP0_CORE_COLOR, 3, 7, 15, 15, 31]);
 final apx_core_color_index = Int8List.fromList([0, 2, APX_CORE_COLOR, 14, 30, 60, 124, 252]);
 
-/**
- * @brief Finder pattern types
+/*
+ Finder pattern types
 */
 const FP0 = 0;
 const FP1 = 1;
 const FP2 = 2;
 const FP3 = 3;
 
-/**
- * @brief Alignment pattern types
+/*
+ Alignment pattern types
 */
 const AP0	= 0;
 const AP1	= 1;
@@ -87,8 +87,8 @@ const AP2	= 2;
 const AP3	= 3;
 const APX	= 4;
 
-/**
- * @brief Code parameters
+/*
+ Code parameters
 */
 class jab_code {
 	int 		dimension;				///<Module size in pixel
@@ -101,8 +101,8 @@ class jab_code {
   List<int>		col_width;
 }
 
-/**
- * @brief Decoding order of cascaded symbols
+/*
+ Decoding order of cascaded symbols
 */
 final jab_symbol_pos = List<jab_vector2d>.from(
 		{ { 0, 0},
@@ -114,13 +114,13 @@ final jab_symbol_pos = List<jab_vector2d>.from(
 			{-1, 4}, { 1, 4}, {-2, 3}, { 2, 3}, {-3, 2}, { 3, 2}, {-4, 1}, { 4, 1}, {-5, 0}, { 5, 0}
 		});
 
-/**
- * @brief Nc color encoding table
+/*
+ Nc color encoding table
 */
 final nc_color_encode_table = List<Int8List>.from({{0,0}, {0,3}, {0,6}, {3,0}, {3,3}, {3,6}, {6,0}, {6,3}});
 
-/**
- * @brief Encoding table
+/*
+ Encoding table
 */
 final jab_enconing_table = List<List<int>>.from(
         {{-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1},
@@ -176,8 +176,8 @@ final jab_enconing_table = List<List<int>>.from(
          {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,31,-1}, {-1,-1,-1,-1,-1,-1}, {-1,-1,-1,-1,-1,-1},
          {-1,-1,-1,-1,-1,-1}});
 
-/**
- * @brief Switch mode length
+/*
+ Switch mode length
 */
 final latch_shift_to = List<List<int>>.from(
         {{0,5,5,ENC_MAX,ENC_MAX,5,ENC_MAX,ENC_MAX,ENC_MAX,ENC_MAX,5,7,ENC_MAX,11},
@@ -197,13 +197,13 @@ final latch_shift_to = List<List<int>>.from(
 
 //Encoding is based on following mode order:
 //1.upper, 2.lower, 3.numeric, 4.punct, 5.mixed, 6.alphanumeric, 7.byte
-/**
- * @brief Size of message mode
+/*
+ Size of message mode
 */
 final character_size = List<int>.from({5,5,4,4,5,6,8});
 
-/**
- * @brief Mode switch message
+/*
+ Mode switch message
 */
 //first latch followed by shift to and the last two are ECI and FNC1
 final mode_switch = List<List<int>>.from(
@@ -216,18 +216,18 @@ final mode_switch = List<List<int>>.from(
          {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}});		//byte mode
 
 
-/**
- * @brief code rate of each ecc level
+/*
+ code rate of each ecc level
 */
 final ecclevel2coderate = List<double>.from({0.55, 0.63, 0.57, 0.55, 0.50, 0.43, 0.34, 0.25, 0.20, 0.17, 0.14});
 
-/**
- * @brief wc and wr
+/*
+ wc and wr
 */
 final ecclevel2wcwr = List<List<int>>.from({{4, 9}, {3, 8}, {3, 7}, {4, 9}, {3, 6}, {4, 7}, {4, 6}, {3, 4}, {4, 5}, {5, 6}, {6, 7}});
 
-/**
- * @brief Positions of finder/alignment patterns (side-version 1-32)
+/*
+ Positions of finder/alignment patterns (side-version 1-32)
 */
 final jab_ap_pos = List<List<int>>.from({ {4, 18, 0, 0, 0, 0, 0, 0, 0},
 											 {4, 22, 0, 0, 0, 0, 0, 0, 0},
@@ -262,8 +262,8 @@ final jab_ap_pos = List<List<int>>.from({ {4, 18, 0, 0, 0, 0, 0, 0, 0},
 											 {4, 17, 35, 53, 71, 89, 107, 119, 138},
 											 {4, 20, 38, 55, 73, 91, 108, 126, 142}
 										   });
-/**
- * @brief Number of finder/alignment patterns on row/column (side-version 1-32)
+/*
+ Number of finder/alignment patterns on row/column (side-version 1-32)
 */
 final jab_ap_num = List<int>.from({2, 2, 2, 2, 2,
 										 3, 3, 3, 3,
