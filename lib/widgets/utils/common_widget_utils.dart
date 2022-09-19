@@ -100,13 +100,12 @@ List<Widget> columnedMultiLineOutput(BuildContext context, List<List<dynamic>> d
                       ? Container()
                       : GCWIconButton(
                           icon: Icons.content_copy,
+                          iconSize: 14,
                           size: IconButtonSize.TINY,
                           onPressed: () {
                             insertIntoGCWClipboard(context, copyText);
                           },
                         ),
-                  width: 25,
-                  height: 22,
                 )
         ],
       ),
@@ -182,5 +181,8 @@ double maxScreenHeight(BuildContext context) {
 }
 
 int sortToolListAlphabetically(GCWTool a, GCWTool b) {
+  if (a.toolName == null)
+    print(a.i18nPrefix);
+
   return removeDiacritics(a.toolName).toLowerCase().compareTo(removeDiacritics(b.toolName).toLowerCase());
 }
