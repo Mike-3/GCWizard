@@ -3,15 +3,13 @@ import 'dart:typed_data';
 import "package:flutter_test/flutter_test.dart";
 import 'package:gc_wizard/widgets/utils/file_utils.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/jab_code/jabcode.dart';
-import 'package:path/path.dart' as path;
 import 'package:tuple/tuple.dart';
 
 var testDirPath = 'test/resources/jabcode/';
 
 void main() {
 
-
-  group("jabcode.foundSignalTimes:", () {
+  group("jabcode.scanBytes:", () {
     var files = readSamples();
     List<Map<String, dynamic>> _inputsToExpected = [
       {'input' : files[0], 'expectedOutput' : Tuple2<String, String>('Mike', null)},
@@ -29,11 +27,11 @@ void main() {
 }
 
 
-List<io.FileSystemEntity> readSamples() {
+List<String> readSamples() {
   io.Directory dir = new io.Directory(testDirPath);
   Set<String> allowedExtensions = {'.png'};
   var files = dir.listSync(recursive: true).where((file) => (allowedExtensions.contains(getFileExtension(file.path))));
-  return files;
+  return files.map((e) => e.uri.path).toList();
 }
 
 Uint8List _getFileData(String path) {
