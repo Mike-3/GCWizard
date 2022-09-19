@@ -14,7 +14,7 @@ import 'jabcode_h.dart';
 */
 Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 	//load image
-	var bitmap = readImage(bytes); //argv[1]
+	var bitmap = readImage(bytes);
 
 	if(bitmap == null)
 		return null;
