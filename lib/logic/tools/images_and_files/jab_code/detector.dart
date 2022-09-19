@@ -202,9 +202,9 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
       startx = j;
     } else {
       //the pixel has the same color as the preceding pixel
-      if(row[j] == row[j-1]) {
-          state_count[cur_state]++;
-      }
+      if(row[j] == row[j-1])
+        state_count[cur_state]++;
+
       //the pixel has different color from the preceding pixel
       if(row[j] != row[j-1] || j == max-1) {
         //change state
@@ -242,7 +242,7 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
           if(result.item1 == JAB_SUCCESS) {
             module_size = result.item2;
             endx = j+1;
-            if(skip != 0)  skip = state_count[0];
+            skip =state_count[0]; // if(skip != 0) skip = state_count[0]; TODO Wieder rückgängig
             int end;
             if(j == (max - 1) && row[j] == row[j-1]) end = j + 1;
             else end = j;
@@ -251,9 +251,9 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
 
           } else { //check failed, update state_count
             startx += state_count[0];
-            for(int k=0; k<state_number-1; k++) {
-                state_count[k] = state_count[k+1];
-            }
+            for(int k=0; k<state_number-1; k++)
+              state_count[k] = state_count[k+1];
+
             state_count[state_number-1] = 1;
             cur_state = state_number-1;
           }
@@ -262,7 +262,7 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
     }
   }
   endx = max;
-  return Tuple6<int, int, int, double, double, int>(JAB_FAILURE, startx, endx, centerx, module_size, skip);;
+  return Tuple6<int, int, int, double, double, int>(JAB_FAILURE, startx, endx, centerx, module_size, skip);
 }
 
 /*
@@ -545,7 +545,7 @@ Tuple3<int, double, double> _crossCheckPatternHorizontal(jab_bitmap image, doubl
 
   //check module size, if it is too big, assume it is a false positive
   var ret = _checkPatternCross(state_count);
-  if((ret.item1==JAB_SUCCESS) && (ret.item2 <= module_size_max)) { //module_size
+  if((ret.item1 == JAB_SUCCESS) && (ret.item2 <= module_size_max)) { //module_size
 		module_size = ret.item2;
     //calculate the center x
     centerx = (startx+i - state_count[4] - state_count[3]) - state_count[2] / 2.0;
@@ -570,7 +570,7 @@ int _crossCheckColor(jab_bitmap image, int color, int module_size, int module_nu
 	//horizontal
 	if(dir == 0) {
 		int length = module_size * (module_number - 1); //module number minus one for better tolerance
-		int startx = (centerx - length/2) < 0 ? 0 : (centerx - length/2);
+		int startx = ((centerx - length/2) < 0 ? 0 : (centerx - length/2)).toInt();
 		int unmatch = 0;
 		for(int j=startx; j<(startx+length) && j<image.width; j++) {
 			if(image.pixel[centery * image.width + j] != color) unmatch++;
@@ -584,7 +584,7 @@ int _crossCheckColor(jab_bitmap image, int color, int module_size, int module_nu
 	//vertical
 	else if(dir == 1) {
 		int length = module_size * (module_number - 1);
-		int starty = (centery - length/2) < 0 ? 0 : (centery - length/2);
+		int starty = ((centery - length/2) < 0 ? 0 : (centery - length/2)).toInt();
 		int unmatch = 0;
 		for(int i=starty; i<(starty+length) && i<image.height; i++) {
 			if(image.pixel[image.width * i + centerx] != color) unmatch++;
@@ -1398,10 +1398,10 @@ Tuple2<int, List<jab_finder_pattern>> _findMasterSymbol(jab_bitmap bitmap, List<
         centerx_r = centerx_g;
         centerx_b = centerx_g;
         //check blue channel for Finder Pattern UL and LL
-        var result = _crossCheckPatternHorizontal(ch[2], module_size_g*2, centerx_b, i.toDouble());
+        var result = _crossCheckPatternHorizontal(ch[2], module_size_g * 2, centerx_b, i.toDouble());
         centerx_b=result.item2;
         module_size_b=result.item3;
-        if(result.item1==JAB_SUCCESS) {
+        if(result.item1 == JAB_SUCCESS) {
           type_b = row_b[centerx_b.toInt()] > 0 ? 255 : 0;
           //check red channel
           module_size_r = module_size_g;
@@ -3050,9 +3050,8 @@ Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, Lis
 Tuple2<jab_data, int> _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol> symbols) {
 	int status;
 	if(status != 0) status = 0;
-	if(symbols == null) {
+	if(symbols == null)
 		return null;
-	}
 
 	//binarize r, g, b channels
 	var ch = List<jab_bitmap>.filled(3, null);
@@ -3080,19 +3079,19 @@ Tuple2<jab_data, int> _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_dec
   }
 
     //check result
-	if(total == 0 || (mode == NORMAL_DECODE && res == 0 )) {
-		if(symbols[0].module_size > 0 && status as bool)
+	if(total == 0 || (mode == NORMAL_DECODE && !res)) {
+		if(symbols[0]?.module_size != null && symbols[0]?.module_size > 0 && status != 0)
 			status = 1;
-		//clean memory
-		for(int i=0; i<3;
-      ch[i++]= null);
-		for(int i=0; i<=min(total, symbols.length-1); i++) {
-			symbols[i].palette= null;
-			symbols[i].data= null;
-		}
+		// //clean memory
+		// for(int i=0; i<3;
+    //   ch[i++]= null);
+		// for(int i=0; i<=min(total, symbols.length-1); i++) {
+		// 	symbols[i]?.palette= null;
+		// 	symbols[i]?.data= null;
+		// }
     return null;
 	}
-	if(mode == COMPATIBLE_DECODE && res == 0) {
+	if(mode == COMPATIBLE_DECODE && !res) {
 		if(status!=0) status = 2;
 		res = true;
 	}
@@ -3120,19 +3119,19 @@ Tuple2<jab_data, int> _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_dec
   //decode data
   var decoded_data = decodeData(decoded_bits);
   if(decoded_data == null) {
-    if(status!=0) status = 1; //Decoding data failed
+    if(status != 0) status = 1; //Decoding data failed
     res = false;
   }
 
-  //clean memory
-  for(int i=0; i<3; ch[i++]=null);
-  for(int i=0; i<=min(total, symbols.length-1); i++) {
-    symbols[i].palette= null;
-    symbols[i].data= null;
-  }
+  // //clean memory
+  // for(int i=0; i<3; ch[i++]=null);
+  // for(int i=0; i<=min(total, symbols.length-1); i++) {
+  //   symbols[i].palette= null;
+  //   symbols[i].data= null;
+  // }
 	if(!res)
     return Tuple2<jab_data, int>(null, status);;
-	if(status!=0) {
+	if(status != 0) {
 		if(status != 2)
 			status = 3;
 	}
