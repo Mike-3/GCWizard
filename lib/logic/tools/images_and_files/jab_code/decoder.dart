@@ -374,8 +374,7 @@ int _getNearestPalette(jab_bitmap matrix, int x, int y) {
 	int p_index = 0;
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++) {
 		double dist = DIST(x, y, px[i], py[i]);
-		if(dist < min)
-		{
+		if(dist < min) {
 			min = dist;
 			p_index = i;
 		}
@@ -416,12 +415,12 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<
 		return index1;
 	}
 	if(palette != null) {
-	    //normalize the RGB values
-        double rgb_max = max(rgb[0].toDouble(), max(rgb[1].toDouble(), rgb[2].toDouble()));
-        double r = rgb[0] / rgb_max;
-        double g = rgb[1] / rgb_max;
-        double b = rgb[2] / rgb_max;
-        //double l = ((rgb[0] + rgb[1] + rgb[2]) / 3.0f) / 255.0f;
+		//normalize the RGB values
+		double rgb_max = max(rgb[0].toDouble(), max(rgb[1].toDouble(), rgb[2].toDouble()));
+		double r = rgb[0] / rgb_max;
+		double g = rgb[1] / rgb_max;
+		double b = rgb[2] / rgb_max;
+		//double l = ((rgb[0] + rgb[1] + rgb[2]) / 3.0f) / 255.0f;
 
 		double min1 = 255*255*3.0;
 		double min2 = 255*255*3.0;
@@ -455,8 +454,7 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<
 
 			if(rgb_sum < ((p0_sum + p7_sum) / 2)) {
 				index1 = 0;
-			}
-			else {
+			} else {
 				index1 = 7;
 			}
 		}
@@ -888,7 +886,7 @@ void _fillDataMap(Int8List data_map, int width, int height, int type) {
 		for(int j=0; j<number_of_ap_x; j++) {
 			//the center coordinate
 			int x_offset = jab_ap_pos[side_ver_x_index][j] - 1;
-						int y_offset = jab_ap_pos[side_ver_y_index][i] - 1;
+			int y_offset = jab_ap_pos[side_ver_y_index][i] - 1;
 			//the cross
 			data_map[y_offset 	* width + x_offset]		  	= 1;
 			data_map[y_offset		* width + (x_offset - 1)] = 1;
@@ -900,8 +898,7 @@ void _fillDataMap(Int8List data_map, int width, int height, int type) {
 			if(i == 0 && (j == 0 || j == number_of_ap_x - 1)) {	//at finder pattern 0 and 1 positions
 				data_map[(y_offset - 1) * width + (x_offset - 1)] = 1;
 				data_map[(y_offset + 1) * width + (x_offset + 1)] = 1;
-				if(type == 0)	//master symbol
-				{
+				if(type == 0)	{ //master symbol
 					data_map[(y_offset - 2) * width + (x_offset - 2)] = 1;
 					data_map[(y_offset - 2) * width + (x_offset - 1)] = 1;
 					data_map[(y_offset - 2) * width +  x_offset] 	    = 1;
@@ -914,8 +911,7 @@ void _fillDataMap(Int8List data_map, int width, int height, int type) {
 					data_map[(y_offset + 1) * width + (x_offset + 2)] = 1;
 					data_map[ y_offset		* width + (x_offset + 2)]   =  1;
 				}
-			}
-			else if(i == number_of_ap_y - 1 && (j == 0 || j == number_of_ap_x - 1))	{ //at finder pattern 2 and 3 positions
+			} else if(i == number_of_ap_y - 1 && (j == 0 || j == number_of_ap_x - 1))	{ //at finder pattern 2 and 3 positions
 
 				data_map[(y_offset - 1) * width + (x_offset + 1)] = 1;
 				data_map[(y_offset + 1) * width + (x_offset - 1)] =  1;
@@ -1446,7 +1442,6 @@ jab_data decodeData(jab_data bits) {
 				}
 				break;
 			case jab_encode_mode.Byte:
-			{
 				//read 4 bits more
 				var result = _readData(bits, index, 4);
 				n = result.item1;
@@ -1483,7 +1478,6 @@ jab_data decodeData(jab_data bits) {
 				}
 				mode = pre_mode;
 				break;
-			}
 			case jab_encode_mode.ECI:
 				//TODO: not implemented
 				index += bits.length;

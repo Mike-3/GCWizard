@@ -420,8 +420,7 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
       seq_len+=character_size[encode_seq[i-1]%7];
       if(encode_seq[i-1]!=encode_seq[i])
         seq_len+=latch_shift_to[encode_seq[i-1]][encode_seq[i]];
-    }
-    else if (i-1==0) {
+    } else if (i-1==0) {
       encode_seq[i-1]=0;
       if(encode_seq[i-1]!=encode_seq[i])
         seq_len+=latch_shift_to[encode_seq[i-1]][encode_seq[i]];

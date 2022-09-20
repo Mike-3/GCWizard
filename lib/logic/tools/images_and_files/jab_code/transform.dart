@@ -35,14 +35,14 @@ jab_perspective_transform _square2Quad( double x0, double y0,
 	double dy3 = y0 - y1 + y2 - y3;
 	if (dx3 == 0 && dy3 == 0) {
 		pt.a11 = x1 - x0;
-        pt.a21 = x2 - x1;
-        pt.a31 = x0;
-        pt.a12 = y1 - y0;
-        pt.a22 = y2 - y1;
-        pt.a32 = y0;
-        pt.a13 = 0;
-        pt.a23 = 0;
-        pt.a33 = 1;
+		pt.a21 = x2 - x1;
+		pt.a31 = x0;
+		pt.a12 = y1 - y0;
+		pt.a22 = y2 - y1;
+		pt.a32 = y0;
+		pt.a13 = 0;
+		pt.a23 = 0;
+		pt.a33 = 1;
 		return pt;
 	} else {
 		double dx1 = x1 - x2;

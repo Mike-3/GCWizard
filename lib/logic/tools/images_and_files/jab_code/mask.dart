@@ -52,15 +52,15 @@ int applyRule1(List<int> matrix, int width, int height, int color_number) {
 		for(int j=0; j<width; j++) {
 			if(j >= 2 && j <= width - 3 && i >= 2 && i <= height - 3) {
 				if(matrix[i * width + j - 2] == fp0_c1 &&	//finder pattern 0
-				   matrix[i * width + j - 1] == fp0_c2 &&
-				   matrix[i * width + j    ] == fp0_c1 &&
-				   matrix[i * width + j + 1] == fp0_c2 &&
-				   matrix[i * width + j + 2] == fp0_c1 &&
-				   matrix[(i - 2) * width + j] == fp0_c1 &&
-				   matrix[(i - 1) * width + j] == fp0_c2 &&
-				   matrix[(i    ) * width + j] == fp0_c1 &&
-				   matrix[(i + 1) * width + j] == fp0_c2 &&
-				   matrix[(i + 2) * width + j] == fp0_c1)
+					 matrix[i * width + j - 1] == fp0_c2 &&
+					 matrix[i * width + j    ] == fp0_c1 &&
+					 matrix[i * width + j + 1] == fp0_c2 &&
+					 matrix[i * width + j + 2] == fp0_c1 &&
+					 matrix[(i - 2) * width + j] == fp0_c1 &&
+					 matrix[(i - 1) * width + j] == fp0_c2 &&
+					 matrix[(i    ) * width + j] == fp0_c1 &&
+					 matrix[(i + 1) * width + j] == fp0_c2 &&
+					 matrix[(i + 2) * width + j] == fp0_c1)
 				   score++;
 				else if(
 				   matrix[i * width + j - 2] == fp1_c1 &&	//finder pattern 1
@@ -75,16 +75,16 @@ int applyRule1(List<int> matrix, int width, int height, int color_number) {
 				   matrix[(i + 2) * width + j] == fp1_c1)
 				   score++;
 				else if(
-				   matrix[i * width + j - 2] == fp2_c1 &&	//finder pattern 2
-				   matrix[i * width + j - 1] == fp2_c2 &&
-				   matrix[i * width + j    ] == fp2_c1 &&
-				   matrix[i * width + j + 1] == fp2_c2 &&
-				   matrix[i * width + j + 2] == fp2_c1 &&
-				   matrix[(i - 2) * width + j] == fp2_c1 &&
-				   matrix[(i - 1) * width + j] == fp2_c2 &&
-				   matrix[(i    ) * width + j] == fp2_c1 &&
-				   matrix[(i + 1) * width + j] == fp2_c2 &&
-				   matrix[(i + 2) * width + j] == fp2_c1)
+					 matrix[i * width + j - 2] == fp2_c1 &&	//finder pattern 2
+					 matrix[i * width + j - 1] == fp2_c2 &&
+					 matrix[i * width + j    ] == fp2_c1 &&
+					 matrix[i * width + j + 1] == fp2_c2 &&
+					 matrix[i * width + j + 2] == fp2_c1 &&
+					 matrix[(i - 2) * width + j] == fp2_c1 &&
+					 matrix[(i - 1) * width + j] == fp2_c2 &&
+					 matrix[(i    ) * width + j] == fp2_c1 &&
+					 matrix[(i + 1) * width + j] == fp2_c2 &&
+					 matrix[(i + 2) * width + j] == fp2_c1)
 				   score++;
 				else if(
 				   matrix[i * width + j - 2] == fp3_c1 &&	//finder pattern 3
@@ -264,7 +264,7 @@ int maskCode(jab_encode enc, jab_code cp) {
 	int min_penalty_score = 10000;
 
 	//allocate memory for masked code
-    var masked = List<int>.filled(cp.code_size.x * cp.code_size.y, -1); //set all bytes in masked as 0xFF //int *)malloc(cp.code_size.x * cp.code_size.y * sizeof(int));
+	var masked = List<int>.filled(cp.code_size.x * cp.code_size.y, -1); //set all bytes in masked as 0xFF //int *)malloc(cp.code_size.x * cp.code_size.y * sizeof(int));
 
 	// memset(masked, -1, cp.code_size.x * cp.code_size.y * sizeof(int)); //set all bytes in masked as 0xFF
 
