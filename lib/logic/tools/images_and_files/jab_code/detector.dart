@@ -297,8 +297,7 @@ Tuple3<int, double, double> _crossCheckPatternDiagonal(jab_bitmap image, int typ
     fix_dir = true;
   } else {
     //for fp0 (and fp1 in 4 color mode), first check the diagonal at +45 degree
-    if(type == FP0 || type == FP1)
-    {
+    if(type == FP0 || type == FP1) {
       offset_x = -1;
       offset_y = -1;
       dir = 1;

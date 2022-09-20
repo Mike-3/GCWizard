@@ -277,8 +277,7 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
       else if((jab_enconing_table[tmp][j]==-18 && tmp1==10) || (jab_enconing_table[tmp][j]<-18 && tmp1==32)) { //read next character to decide if encodalbe in current mode
         curr_seq_len[(i+1)*14+j]=curr_seq_len[(i+1)*14+j+7]=character_size[j];
         jp_to_nxt_char=1; //jump to next character
-      }
-      else //not encodable in this mode
+      } else //not encodable in this mode
         curr_seq_len[(i+1)*14+j]=curr_seq_len[(i+1)*14+j+7]=ENC_MAX;
     }
     curr_seq_len[(i+1)*14+6]=curr_seq_len[(i+1)*14+13]=character_size[6]; //input sequence can always be encoded by byte mode
@@ -452,8 +451,7 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
         //--------------------------------
         counter=0;
       }
-    }
-    else
+    } else
       return null;
   }
   encoded_length=encode_seq_length;
@@ -623,8 +621,7 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
           _convert_dec_to_bin(jab_enconing_table[tmp][encode_seq[counter+1]%7],encoded_data.data,position,character_size[encode_seq[counter+1]%7]);
           position+=character_size[encode_seq[counter+1]%7];
           counter++;
-        }
-        else if (jab_enconing_table[tmp][encode_seq[counter+1]%7]<-1) {
+        } else if (jab_enconing_table[tmp][encode_seq[counter+1]%7]<-1) {
           int tmp1=data.data[current_encoded_length+1];
           if (tmp1 < 0)
             tmp1+=256;
@@ -846,8 +843,7 @@ void _placeMasterMetadataPartII(jab_encode enc) {
 				else
 					color_index |= 1 << (nb_of_bits_per_mod-1-j);
 				metadata_index++;
-			}
-			else
+			} else
 				break;
 		}
     enc.symbols[0].matrix[y*enc.symbols[0].side_size.x + x] = color_index;
@@ -1141,8 +1137,7 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
           if(metadata_index < enc.symbols[index].metadata.length) {
             color_index += (enc.symbols[index].metadata.data[metadata_index]) << (nb_of_bits_per_mod-1-j);
             metadata_index++;
-          }
-          else
+          } else
             break;
         }
         enc.symbols[index].matrix  [y*enc.symbols[index].side_size.x + x] = color_index;
@@ -1603,8 +1598,8 @@ int _fitDataIntoSymbols(jab_encode enc, jab_data encoded_data) {
 		//add flag bit
 		s_payload_length++;
 		//add host metadata S length (master metadata Part III or slave metadata Part III)
-		if(i == 0)	s_payload_length += 4;
-		else		s_payload_length += 3;
+		if(i == 0) s_payload_length += 4;
+		else	s_payload_length += 3;
 		//add slave metadata length
 		for(int j=0; j<4; j++) {
 			if(enc.symbols[i].slaves[j] > 0) {

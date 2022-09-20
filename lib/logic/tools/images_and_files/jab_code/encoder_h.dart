@@ -20,13 +20,13 @@ import 'jabcode_h.dart';
  Default color palette in RGB format
 */
 final jab_default_palette = Int8List.fromList([0, 	0, 		0, 		//0: black
-											   0, 	0, 		255, 	//1: blue
-											   0, 	255,	0,		//2: green
-											   0,	255, 	255,	//3: cyan
-											   255, 0,		0,		//4: red
-											   255, 0, 		255,	//5: magenta
-											   255,	255,	0,		//6: yellow
-											   255,	255,	255		//7: white
+											   0, 	  0, 	255, 	//1: blue
+											   0, 	255,	  0,	//2: green
+											   0,	  255, 	255,	//3: cyan
+											   255,   0,		0,	//4: red
+											   255,   0, 	255,	//5: magenta
+											   255,	255,	  0,	//6: yellow
+											   255,	255,	255	  //7: white
 											   ]);
 
 /*
