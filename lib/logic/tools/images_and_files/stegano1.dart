@@ -50,8 +50,8 @@ bool GetStegano(GCWFile sourceFile, SteganoInfo steganoInfo, Uint8List bytesAtta
           header += Strings.Chr(Convert.ToInt32(octetString, 2));
           if ((header.length == HEADER_SECRET_TEXT.Length)) {
             if ((header == HEADER_SECRET_TEXT)) {
-            steganoInfo.SecretText = "";
-            state = 1;
+              steganoInfo.SecretText = "";
+              state = 1;
             } else
               state = 2;
             header = "";
