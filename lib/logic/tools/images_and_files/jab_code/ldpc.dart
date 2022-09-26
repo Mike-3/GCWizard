@@ -106,7 +106,7 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
       }
     }
     if(pivot_column < capacity) {
-      processed_column[pivot_column]=true;
+      processed_column[pivot_column] = true;
       column_arrangement[pivot_column]=i;
       if (pivot_column>=nb_pcb) {
         swap_col[2*loop]=pivot_column;
@@ -138,8 +138,8 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
         if (processed_column[j] == 0) {
           column_arrangement[j]=column_arrangement[i];
           column_arrangement[i]=0;
-          processed_column[j]=true;
-          processed_column[i]=false;
+          processed_column[j] = true;
+          processed_column[i] = false;
           swap_col[2*loop]=i;
           swap_col[2*loop+1]=j;
           column_arrangement[i]=j;
@@ -155,8 +155,8 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
   for (int kl=0;kl< nb_pcb;kl++) {
     if(processed_column[kl] == 0 && loop1 < loop-loop2) {
       column_arrangement[kl]=column_arrangement[swap_col[2*loop1]];
-      processed_column[kl]=true;
-      swap_col[2*loop1+1]=kl;
+      processed_column[kl] = true;
+      swap_col[2*loop1+1] = kl;
       loop1++;
     }
   }
@@ -336,7 +336,7 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
   int temp,loop;
   int offset=((Pg_sub_block - matrix_rank)/32.0).ceil();
   //G * message = ecc_encoded_Data
-  for(int iter=0; iter < encoding_iterations; iter++) {
+  for (int iter=0; iter < encoding_iterations; iter++) {
     for (int i=0;i<Pg_sub_block;i++) {
       temp=0;
       loop=0;
