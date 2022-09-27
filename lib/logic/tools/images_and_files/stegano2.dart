@@ -16,7 +16,8 @@ String decodeSteganoNetData(Image.Image bmpData) {
   if (bmpData == null)
     return null;
 
-  _BitIterator bi;
+  const colorChannels = 3;
+  var bi = _BitIterator(((bmpData.width * bmpData.height * colorChannels) / 8).ceil());
 
   int i = 0;
   // lastProg = 1,
@@ -45,12 +46,17 @@ String decodeSteganoNetData(Image.Image bmpData) {
 String _convert(Uint8List buf) {
   if (buf == null)
     return null;
+  print(buf);
   return utf8.decode(buf);
 }
 
 class _BitIterator {
 
-  var _buf = Uint8List(0);
+  _BitIterator(int length) {
+    _buf = Uint8List.fromList(List<int>.filled(length, 0));
+  }
+
+  Uint8List _buf;
 
   Uint8List data() {
     // this algorithm is more safe then before, it starts from behind and looks for 0x00
@@ -71,19 +77,28 @@ class _BitIterator {
         break;
     }
     if (resize > 0)
-      _buf.length = resize;
+      _resizeBuffer(resize);
 
     return _buf;
   }
 
   void setBit(int i, int b) {
     if (i / 8 >= _buf.length)
-      _buf.length = (i / 8 + 1).toInt();
+      _resizeBuffer((i / 8 + 1).toInt());
 
     /** ~ -> NOT Operator to clear the i-th postition in byte and than overwrite it
      * by the bit out from the source
      */
     int curr = _buf[(i / 8).toInt()];
     _buf[(i / 8).toInt()] = ((curr & ~((b & 0x01) << i % 8)) | ((b & 0x01) << i % 8));
+  }
+  
+  void _resizeBuffer(int length) {
+    if (_buf.length < length) {
+      var list = _buf.toList();
+      list.addAll(List<int>.filled(length - _buf.length, 0));
+      _buf = Uint8List.fromList(list);
+    } else if (_buf.length > length)
+      _buf = _buf.sublist(0, length);
   }
 }
