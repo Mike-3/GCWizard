@@ -150,7 +150,7 @@ class _SteganoState extends State<Stegano> {
       _error = i18n(context, 'stegano_decode_image_required');
     } else {
       try {
-        _text = await decodeStegano(_file, _currentKey);
+        _text = await decodeAllSteganoVariants(_file, _currentKey);
       } catch (e) {
         _error = i18n(context, 'stegano_decoding_error');
         _error2 = e.toString();
