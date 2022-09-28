@@ -44,10 +44,31 @@ String decodeSteganoNetData(Image.Image bmpData) {
 }
 
 String _convert(Uint8List buf) {
-  if (buf == null)
+  if (buf == null || buf.length < 2)
     return null;
-  print(buf);
-  return utf8.decode(buf);
+  var header = buf[0];
+
+  switch (header) {
+    case 1:
+      const endIdentifier = 0xFF;
+      var  end = -1;
+      for (int i = 1; i < buf.length; i++) {
+        if (buf[i] == endIdentifier && buf[i-1] == endIdentifier) {
+          end = i -2;
+          break;
+        }
+      }
+      if (end > 0) {
+        try {
+          return utf8.decode(buf.sublist(1, end));
+        } catch (e) {
+          return null;
+        }
+      }
+      break;
+    default:
+      return null;
+  }
 }
 
 class _BitIterator {
@@ -59,9 +80,10 @@ class _BitIterator {
   Uint8List _buf;
 
   Uint8List data() {
-    // this algorithm is more safe then before, it starts from behind and looks for 0x00
+    // it starts from behind and looks for 0x00
+    const empty = 0x00;
     int resize = 0;
-    int current = 0, next = 0xFF, empty = 0x00;
+    int current = 0, next = 0xFF;
     for (int i = _buf.length - 1; i > 0; i--) {
       current = _buf[i];
       if (i - 1 > 0)
