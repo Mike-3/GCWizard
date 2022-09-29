@@ -647,12 +647,6 @@ Future<List<GCWFile>> extractRarArchive(GCWFile file, {String password}) async {
   return fileList;
 }
 
-List<GCWFile> extractRarArchive1(GCWFile file) {
-  extractRarArchive(file).then((value) {
-    return value;
-  });
-}
-
 Uint8List encodeTrimmedPng(img.Image image) {
   var out = img.encodePng(image);
   return trimNullBytes(out);
