@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:gc_wizard/logic/tools/images_and_files/stegano2.dart';
+import 'package:gc_wizard/logic/tools/images_and_files/stegano_dot_net.dart';
 import 'package:gc_wizard/plugins/flutter_steganography/decoder.dart';
 import 'package:gc_wizard/plugins/flutter_steganography/encoder.dart';
 import 'package:gc_wizard/plugins/flutter_steganography/requests/decode_request.dart';
@@ -8,6 +8,23 @@ import 'package:gc_wizard/plugins/flutter_steganography/requests/encode_request.
 import 'package:gc_wizard/widgets/utils/gcw_file.dart' as local;
 
 const int MAX_LENGTH = 5000;
+
+enum SteganoSource{
+  FlutterStegano,
+  SteganoDotNet,
+}
+
+class SteganoOutput {
+  SteganoSource source;
+  String text;
+  List<local.GCWFile> files;
+
+  SteganoOutput(SteganoSource source, String text, List<local.GCWFile> files) {
+    this.source = source;
+    this.text = text;
+    this.files = files;
+  }
+}
 
 Future<Uint8List> encodeStegano(local.GCWFile file, String message, String key, String filename) async {
   Uint8List data = file.bytes;
@@ -17,33 +34,29 @@ Future<Uint8List> encodeStegano(local.GCWFile file, String message, String key, 
   return response;
 }
 
-Future<String> decodeAllSteganoVariants(local.GCWFile file, String key) async {
-  String result;
-  String result1;
+Future<List<SteganoOutput>> decodeAllSteganoVariants(local.GCWFile file, String key) async {
+  var result = <SteganoOutput>[];
+  SteganoOutput steganoOutput;
+
   try {
-    result1 = await decodeStegano(file, key);
+    steganoOutput = await decodeStegano(file, key);
   } catch (e) {
-    result1 = null;
+    steganoOutput = null;
   }
-  var result2 = decodeSteganoNet(file);
+  if (steganoOutput != null)
+    result.add(steganoOutput);
 
-  if (result1 != null) {
-    if (result != null) result += "\n\n";
-    result += result1;
-  }
+  steganoOutput = await decodeSteganoDotNet(file);
+  if (steganoOutput != null)
+    result.add(steganoOutput);
 
-  if (result2 != null) {
-    if (result != null) result += "\n\n";
-    result += result2;
-  }
-
-  if (result == null)
+  if (result == null || result.length == 0)
     throw Exception('abnormal_length_nothing_to_decode');
 
   return Future.value(result);
 }
 
-Future<String> decodeStegano(local.GCWFile file, String key) async {
+Future<SteganoOutput> decodeStegano(local.GCWFile file, String key) async {
   Uint8List data = file.bytes;
   // the key is use to decrypt your encrypted message with AES256 algorithm
   DecodeRequest request = DecodeRequest(data, key: key);
@@ -51,5 +64,6 @@ Future<String> decodeStegano(local.GCWFile file, String key) async {
   if (response != null && response.length > MAX_LENGTH) {
     throw Exception('abnormal_length_nothing_to_decode');
   }
-  return response;
+  if (response != null)
+    return Future.value(SteganoOutput(SteganoSource.FlutterStegano, response, null));
 }

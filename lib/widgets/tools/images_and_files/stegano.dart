@@ -150,7 +150,19 @@ class _SteganoState extends State<Stegano> {
       _error = i18n(context, 'stegano_decode_image_required');
     } else {
       try {
-        _text = await decodeAllSteganoVariants(_file, _currentKey);
+        var steganoOutputs = await decodeAllSteganoVariants(_file, _currentKey);
+        if (steganoOutputs != null) {
+          steganoOutputs.forEach((element) {
+            if (_text == null)
+              _text = "";
+            else
+              _text += "/n" + element.source.toString() + "----------------/n";
+
+              if (element.text != null) _text += element.text;
+              if (element.files != null) _text += "-> files";
+          });
+        }
+
       } catch (e) {
         _error = i18n(context, 'stegano_decoding_error');
         _error2 = e.toString();

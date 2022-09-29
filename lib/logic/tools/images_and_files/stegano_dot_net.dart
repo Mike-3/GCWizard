@@ -3,16 +3,19 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:gc_wizard/logic/tools/images_and_files/stegano.dart';
+import 'package:gc_wizard/widgets/utils/file_utils.dart';
+import 'package:gc_wizard/widgets/utils/gcw_file.dart';
 import 'package:image/image.dart' as Image;
 import 'package:gc_wizard/widgets/utils/gcw_file.dart' as local;
 
-String decodeSteganoNet(local.GCWFile sourceFile) {
+Future<SteganoOutput> decodeSteganoDotNet(local.GCWFile sourceFile) {
   if (sourceFile == null)
     return null;
-  return decodeSteganoNetData(Image.decodeImage(sourceFile.bytes));
+  return decodeSteganoDotNetData(Image.decodeImage(sourceFile.bytes));
 }
 
-String decodeSteganoNetData(Image.Image bmpData) {
+Future<SteganoOutput> decodeSteganoDotNetData(Image.Image bmpData) async {
   if (bmpData == null)
     return null;
 
@@ -43,32 +46,66 @@ String decodeSteganoNetData(Image.Image bmpData) {
   return _convert(bi.data());
 }
 
-String _convert(Uint8List buf) {
+Future<SteganoOutput> _convert(Uint8List buf) async {
   if (buf == null || buf.length < 2)
     return null;
+
+  const terminator = 0xFF; // here we fix a bug of windows version 2 Terminators are present
   var header = buf[0];
+  String outputText;
+  List<local.GCWFile>  outputFiles;
+  print(buf);
 
   switch (header) {
-    case 1:
-      const endIdentifier = 0xFF;
+    case 1: //only text
       var  end = -1;
       for (int i = 1; i < buf.length; i++) {
-        if (buf[i] == endIdentifier && buf[i-1] == endIdentifier) {
-          end = i -2;
+        if (buf[i] == terminator && buf[i-1] == terminator) {
+          end = i - 1;
           break;
         }
       }
       if (end > 0) {
         try {
-          return utf8.decode(buf.sublist(1, end));
-        } catch (e) {
-          return null;
-        }
+          outputText = utf8.decode(buf.sublist(1, end));
+        } catch (e) {}
       }
+      break;
+    //case 1: //text + encryption
+
+    case 2: //text and files
+      try {
+        outputFiles = await extractArchive(GCWFile(bytes: buf.sublist(1)));
+      } catch (e) {}
+
+      var start = -1;
+      var end = -1;
+      for (int i = buf.length -1; i > 0; i++) {
+        if (end < 0) {
+          if (buf[i] == terminator && buf[i - 1] == terminator)
+            end = i - 1;
+        } else if (buf[i] == 0x00) {
+          start = i + 1;
+          break;
+        };
+      }
+      if (start > 0 && end > 0 && end > start) {
+        try {
+          outputText = utf8.decode(buf.sublist(start, end));
+        } catch (e) {}
+      }
+
+
+
+    //case 2: //text and files + encryption
+
       break;
     default:
       return null;
   }
+
+  if (outputText != null || outputFiles != null)
+    return Future.value(SteganoOutput(SteganoSource.SteganoDotNet, outputText, outputFiles));
 }
 
 class _BitIterator {
