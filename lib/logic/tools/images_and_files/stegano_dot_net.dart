@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:gc_wizard/logic/tools/images_and_files/hidden_data.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/stegano.dart';
 import 'package:gc_wizard/widgets/utils/file_utils.dart';
 import 'package:gc_wizard/widgets/utils/gcw_file.dart';
@@ -23,18 +24,9 @@ Future<SteganoOutput> decodeSteganoDotNetData(Image.Image bmpData) async {
   var bi = _BitIterator(((bmpData.width * bmpData.height * colorChannels) / 8).ceil());
 
   int i = 0;
-  // lastProg = 1,
-  //     currProg = -1,
-  //     i = 0,
-  //     colorChannels = 3;
-  // int progGes = bmpData.width * bmpData.height * bmpData.numberOfChannels;
 
   for (int x = 0; x < bmpData.width; x++) {
     for (int y = 0; y < bmpData.height; y++) {
-      // currProg = ((x * y * colorChannels * 100) / progGes).toInt();
-      // if (currProg > lastProg)
-      //   lastProg = currProg;
-
       var pixelColor = bmpData.getPixel(x, y);
       bi.setBit(i, Image.getRed(pixelColor));
       bi.setBit(i + 1, Image.getGreen(pixelColor));
@@ -54,17 +46,18 @@ Future<SteganoOutput> _convert(Uint8List buf) async {
   var header = buf[0];
   String outputText;
   List<local.GCWFile>  outputFiles;
-  print(buf);
+  // print(buf);
 
   switch (header) {
     case 1: //only text
-      var  end = -1;
+      var end = -1;
       for (int i = 1; i < buf.length; i++) {
         if (buf[i] == terminator && buf[i-1] == terminator) {
           end = i - 1;
           break;
         }
       }
+
       if (end > 0) {
         try {
           outputText = utf8.decode(buf.sublist(1, end));
@@ -75,26 +68,23 @@ Future<SteganoOutput> _convert(Uint8List buf) async {
 
     case 2: //text and files
       try {
-        outputFiles = await extractArchive(GCWFile(bytes: buf.sublist(1)));
+        var zipFileLength = zipFileSize(buf.sublist(1));
+        if (zipFileLength != null && zipFileLength > 0) {
+          var zipFile = buf.sublist(1, zipFileLength + 1);
+          outputFiles = await extractArchive(GCWFile(bytes: zipFile));
+
+          var start = -1;
+          for (int i = zipFile.length - 1; i > 0; i--) {
+            if (zipFile[i] == 0x00) {
+              start = i + 1;
+              break;
+            };
+          }
+
+          if (start > 0)
+            outputText = utf8.decode(zipFile.sublist(start));
+        }
       } catch (e) {}
-
-      var start = -1;
-      var end = -1;
-      for (int i = buf.length -1; i > 0; i++) {
-        if (end < 0) {
-          if (buf[i] == terminator && buf[i - 1] == terminator)
-            end = i - 1;
-        } else if (buf[i] == 0x00) {
-          start = i + 1;
-          break;
-        };
-      }
-      if (start > 0 && end > 0 && end > start) {
-        try {
-          outputText = utf8.decode(buf.sublist(start, end));
-        } catch (e) {}
-      }
-
 
 
     //case 2: //text and files + encryption

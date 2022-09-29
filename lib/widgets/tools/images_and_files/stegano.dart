@@ -156,10 +156,13 @@ class _SteganoState extends State<Stegano> {
             if (_text == null)
               _text = "";
             else
-              _text += "/n" + element.source.toString() + "----------------/n";
+              _text += "\n" + element.source.toString() + "----------------\n";
 
               if (element.text != null) _text += element.text;
-              if (element.files != null) _text += "-> files";
+              if (element.files != null) {
+                if (element.text != null)  _text += "\n";
+                _text += "-> files";
+              }
           });
         }
 

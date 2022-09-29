@@ -372,7 +372,7 @@ int _gifColorMap(Uint8List data, int offset, int countOffset) {
 
 int zipFileSize(Uint8List data) {
   if (data == null) return null;
-  if (getFileType(data) != '.zip') return null;
+  if (getFileType(data) != FileType.ZIP) return null;
 
   var offset = 0;
   if (offset + 30 > data.length) return null;
