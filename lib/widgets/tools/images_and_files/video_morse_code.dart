@@ -158,24 +158,25 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     if (_outData == null) return null;
 
     return Column(children: <Widget>[
-      _play
-          ? Image.memory(_platformFile.bytes)
-          : _filtered
-              ? GCWGallery(
-                  imageData:
-                    _convertImageData(_outData["images"], null, null), //_convertImageDataFiltered _outData["durations"], _outData["imagesFiltered"]
-                  onDoubleTap: (index) {
-                    setState(() {
-                      // List<List<int>> imagesFiltered = _outData["imagesFiltered"];
-
-                      // _marked[imagesFiltered[index].first] = !_marked[imagesFiltered[index].first];
-                      // _markedListSetColumn(imagesFiltered[index], _marked[imagesFiltered[index].first]);
-                      // _outText = decodeMorseCode(_outData["durations"], _marked);
-                    });
-                  },
-                )
-              : GCWGallery(
-                  imageData: _convertImageData(_outData["images"], null, null), //_outData["durations"], _outData["imagesFiltered"]
+      // _play
+      //     ? Image.memory(_platformFile.bytes)
+          // : _filtered
+          //     ? GCWGallery(
+          //         imageData:
+          //           _convertImageData(_outData["images"], null, null), //_convertImageDataFiltered _outData["durations"], _outData["imagesFiltered"]
+          //         onDoubleTap: (index) {
+          //           setState(() {
+          //             // List<List<int>> imagesFiltered = _outData["imagesFiltered"];
+          //
+          //             // _marked[imagesFiltered[index].first] = !_marked[imagesFiltered[index].first];
+          //             // _markedListSetColumn(imagesFiltered[index], _marked[imagesFiltered[index].first]);
+          //             // _outText = decodeMorseCode(_outData["durations"], _marked);
+          //           });
+          //         },
+          //       )
+          //     :
+      GCWGallery(
+                  imageData: _convertImageData(_outData["images"], _outData["durations"], _outData["brightnesses"]),
                   onDoubleTap: (index) {
                     setState(() {
                       // if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
@@ -228,13 +229,13 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
         list.add(GCWImageViewData(local.GCWFile(bytes: image),
             description: description, marked: _marked[imagesFiltered[i].first]));
       }
-      _outText = decodeMorseCode(durations, _marked);
+      //_outText = decodeMorseCode(durations, _marked);
     }
     return list;
   }
 
   List<GCWImageViewData> _convertImageData(
-      List<Uint8List> images, List<int> durations, List<List<int>> imagesFiltered) {
+      List<Uint8List> images, List<int> durations, List<double> brightnesses) {
     var list = <GCWImageViewData>[];
 
     if (images != null) {
