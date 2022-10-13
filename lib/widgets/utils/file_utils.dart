@@ -33,6 +33,7 @@ enum FileType {
   WMV,
   WAV,
   MP3,
+  MP4,
   OGG,
   SND,
   FDL,

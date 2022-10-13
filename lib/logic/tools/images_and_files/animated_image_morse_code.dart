@@ -29,7 +29,7 @@ Future<Map<String, dynamic>> analyseImageMorseCode(Uint8List bytes, {SendPort se
       outMap.addAll({"imagesFiltered": filteredList});
     });
 
-    return out; // Future.value(out);
+    return out;
   } on Exception {
     return null;
   }

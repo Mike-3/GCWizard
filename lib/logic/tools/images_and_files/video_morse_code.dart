@@ -8,49 +8,60 @@ import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-Future<Map<String, dynamic>> analyseImageMorseCodeAsync(dynamic jobData) async {
+Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   if (jobData == null) return null;
 
-  var output = await analyseImageMorseCode(jobData.parameters, sendAsyncPort: jobData.sendAsyncPort);
+  var output = await analyseVideoMorseCode(jobData.parameters, sendAsyncPort: jobData.sendAsyncPort);
 
   if (jobData.sendAsyncPort != null) jobData.sendAsyncPort.send(output);
 
   return output;
 }
 
-Future<Map<String, dynamic>> analyseImageMorseCode(Uint8List bytes, {SendPort sendAsyncPort}) async {
+Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {SendPort sendAsyncPort}) async {
   try {
-    var out = animated_image.analyseImage(bytes, sendAsyncPort: sendAsyncPort, filterImages: (outMap, frames) {
-      List<Uint8List> imageList = outMap["images"];
-      var filteredList = <List<int>>[];
+    // var out = animated_image.analyseImage(bytes, sendAsyncPort: sendAsyncPort, filterImages: (outMap, frames) {
+    //   List<Uint8List> imageList = outMap["images"];
+    //   var filteredList = <List<int>>[];
+    //
+    //   // for (var i = 0; i < imageList.length; i++) filteredList = _filterImages(filteredList, i, imageList);
+    //
+    //   // filteredList = _searchHighSignalImage(frames, filteredList);
+    //   // outMap.addAll({"imagesFiltered": filteredList});
+    // });
+    var out = Map<String, dynamic>();
+    var imageList = await _createThumbnailImages(videoPath);
 
-      for (var i = 0; i < imageList.length; i++) filteredList = _filterImages(filteredList, i, imageList);
-
-      filteredList = _searchHighSignalImage(frames, filteredList);
-      outMap.addAll({"imagesFiltered": filteredList});
-    });
-
-    return out; // Future.value(out);
+    out.addAll({"images": imageList});
+    return out;
   } on Exception {
     return null;
   }
 }
 
-Future<Uint8List> _createThumbnailImages(String videoPath) async {
+Future<List<Uint8List>> _createThumbnailImages(String videoPath) async {
+  var intervall = 50;
+  var timeStamp = 0;
+  Uint8List thumbnail;
+  List<Uint8List> _byteList = [];
 
-  VideoPlayerController
-  return VideoThumbnail.thumbnailData(
-    video: videoPath,
-    maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-    quality: 25,
-  );
+
+  do {
+    thumbnail = await _createThumbnailImage(videoPath, timeStamp);
+    timeStamp += intervall;
+    if (thumbnail != null)
+      _byteList.add(thumbnail);
+  } while (thumbnail == null);
+
+  return _byteList;
 }
 
-Future<Uint8List> _createThumbnailImage(String videoPath) async {
+Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async {
   return VideoThumbnail.thumbnailData(
     video: videoPath,
-    maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-    quality: 25,
+    //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+    quality: 75,
+    timeMs: timeStampMs
   );
 }
 

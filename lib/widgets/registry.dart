@@ -193,6 +193,7 @@ import 'package:gc_wizard/widgets/tools/crypto_and_encodings/language_games/spoo
 import 'package:gc_wizard/widgets/tools/crypto_and_encodings/maya_numbers.dart';
 import 'package:gc_wizard/widgets/tools/crypto_and_encodings/mexican_army_cipher_wheel.dart';
 import 'package:gc_wizard/widgets/tools/crypto_and_encodings/morse.dart';
+import 'package:gc_wizard/widgets/tools/images_and_files/video_morse_code.dart';
 import 'package:gc_wizard/widgets/tools/science_and_technology/music_notes/music_notes.dart';
 import 'package:gc_wizard/widgets/tools/crypto_and_encodings/navajo.dart';
 import 'package:gc_wizard/widgets/tools/crypto_and_encodings/numeral_words/numeral_words_converter.dart';
@@ -1175,6 +1176,12 @@ initializeRegistry(BuildContext context) {
         i18nPrefix: 'vanity_selection',
         categories: [ToolCategory.SCIENCE_AND_TECHNOLOGY],
         searchKeys: []),
+    GCWTool(tool: VideoMorseCode(), i18nPrefix: 'video_morse_code', isBeta: true, categories: [
+      ToolCategory.IMAGES_AND_FILES
+    ], searchKeys: [
+      'video_morse_code',
+      'video_images',
+    ]),
     GCWTool(
         tool: VigenereSelection(),
         i18nPrefix: 'vigenere_selection',

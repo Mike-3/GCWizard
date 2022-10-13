@@ -188,6 +188,7 @@ import 'package:gc_wizard/widgets/tools/images_and_files/image_flip_rotate.dart'
 import 'package:gc_wizard/widgets/tools/images_and_files/magic_eye_solver.dart';
 import 'package:gc_wizard/widgets/tools/images_and_files/qr_code.dart';
 import 'package:gc_wizard/widgets/tools/images_and_files/stegano.dart';
+import 'package:gc_wizard/widgets/tools/images_and_files/video_morse_code.dart';
 import 'package:gc_wizard/widgets/tools/images_and_files/visual_cryptography.dart';
 import 'package:gc_wizard/widgets/tools/science_and_technology/alcohol_mass.dart';
 import 'package:gc_wizard/widgets/tools/science_and_technology/apparent_temperature/heat_index.dart';
@@ -677,6 +678,7 @@ void _initStaticToolList() {
       className(UrwigoTextDeobfuscation()),
       className(VanitySelection()),
       className(VariableCoordinateFormulas()),
+      className(VideoMorseCode()),
       className(Vigenere()),
       className(VigenereBreaker()),
       className(VisualCryptography()),
