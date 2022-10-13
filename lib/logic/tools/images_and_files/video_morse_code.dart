@@ -62,6 +62,7 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   var minMax = _minMaxBrightness(brightnessList);
   out.addAll({"minBrightness": minMax.item1});
   out.addAll({"maxBrightness": minMax.item2});
+  out.addAll({"threshold": _findThreshold (brightnessList, minMax.item1, minMax.item2 )});
 
   return out;
 }
@@ -92,14 +93,41 @@ Tuple2 <double, double> _minMaxBrightness(List<double> brightnessList) {
   return Tuple2 <double, double>(_min, _max);
 }
 
+double _findThreshold(List<double> brightnessList, double min, double max) {
+  // """Return threshold value to split `signal` into two bins.
+  //       Assumes `signal` is bimodal.
+  //       :param signal: signal to threshold.
+  //       :param tolerance: acceptable amount of wiggle when computing threshold.
+  //       :return: computed threshold value.
+  //       """
+  // # Initial threshold guess is the halfway point.
+  var tolerance = 1;
+  var threshold = min + ((max - min) / 2);
+
+  // # Guarantee the while loop gets entered at least once.
+  var last_threshold = threshold + tolerance + 1;
+
+  // # Find the "best" threshold.
+  while ((threshold - last_threshold).abs() > tolerance) {
+    var lowList = brightnessList.where((signal) => signal < threshold);
+    var low = (lowList.reduce((a, b) => a + b))/ lowList.length;  //signal[signal < threshold].mean();
+    var highList = brightnessList.where((signal) => signal >= threshold);
+    var high = (lowList.reduce((a, b) => a + b))/ highList.length; //signal[signal >= threshold].mean();
+    last_threshold = threshold;
+    threshold = low + ((high - low) / 2);
+  }
+  return threshold;
+}
+
 
 double _imageLuminance(Image.Image image) {
-  var sum = 0;
+  var sum = -9999;
   for (var x = 0; x < image.width; x++) {
     for (var y = 0; y < image.height; y++) {
-      sum += Image.getLuminance(image.getPixel(x, y));
+      //sum += Image.getLuminance(image.getPixel(x, y));
+      sum = max(sum, Image.getLuminance(image.getPixel(x, y)));
     }
   }
 
-  return sum / (image.width * image.height);
+  return sum.toDouble(); // sum / (image.width * image.height);
 }
