@@ -52,12 +52,16 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
       durationList.add(intervall);
       brightnessList.add(await _imageBrightness(thumbnail));
     }
-  } while (thumbnail == null);
+  } while (thumbnail != null);
 
   var out = Map<String, dynamic>();
   out.addAll({"images": imageList});
   out.addAll({"durations": durationList});
   out.addAll({"brightnesses": brightnessList});
+
+  var minMax = _minMaxBrightness(brightnessList);
+  out.addAll({"minBrightness": minMax.item1});
+  out.addAll({"maxBrightness": minMax.item2});
 
   return out;
 }
@@ -74,6 +78,18 @@ Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async
 Future<double> _imageBrightness(Uint8List image) async {
   var _image = Image.decodeImage(image);
   return _imageLuminance(_image);
+}
+
+Tuple2 <double, double> _minMaxBrightness(List<double> brightnessList) {
+  var _min = 99999.9;
+  var _max = -99999.9;
+
+  brightnessList.forEach((brightness) {
+    _min = min(_min, brightness);
+    _max = max(_max, brightness);
+  });
+
+  return Tuple2 <double, double>(_min, _max);
 }
 
 
