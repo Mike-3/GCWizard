@@ -5187,6 +5187,8 @@
   "vanity_words_search_description" : "Converts Vanity-Numbers in numeral words",
   "vanity_words_search_example" : "663 → ONE → 1",
   "vanity_words_search_ambigous" : "ambiguous from here",
+  "video_morse_code_title": "Video Morse code",
+  "video_morse_code_description": "Analyse videos for hidden Morse codes",
   "vigenere_selection_title": "Vigenère Cipher",
   "vigenere_selection_description": "Shifts letters by the letter value of the key. Incl. Gronsfeld and Trithemius",
   "vigenere_selection_example": "ABC with key DEF → DFH",

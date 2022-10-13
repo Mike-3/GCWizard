@@ -2,7 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/i18n/app_localizations.dart';
-import 'package:gc_wizard/logic/tools/images_and_files/animated_image_morse_code.dart';
+// import 'package:gc_wizard/logic/tools/images_and_files/animated_image_morse_code.dart';
+import 'package:gc_wizard/logic/tools/images_and_files/video_morse_code.dart';
 import 'package:gc_wizard/theme/theme_colors.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_iconbutton.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_output_text.dart';
@@ -162,7 +163,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           : _filtered
               ? GCWGallery(
                   imageData:
-                      _convertImageDataFiltered(_outData["images"], _outData["durations"], _outData["imagesFiltered"]),
+                    _convertImageData(_outData["images"], null, null), //_convertImageDataFiltered _outData["durations"], _outData["imagesFiltered"]
                   onDoubleTap: (index) {
                     setState(() {
                       // List<List<int>> imagesFiltered = _outData["imagesFiltered"];
@@ -174,11 +175,11 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
                   },
                 )
               : GCWGallery(
-                  imageData: _convertImageData(_outData["images"], _outData["durations"], _outData["imagesFiltered"]),
+                  imageData: _convertImageData(_outData["images"], null, null), //_outData["durations"], _outData["imagesFiltered"]
                   onDoubleTap: (index) {
                     setState(() {
-                      if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
-                      _outText = decodeMorseCode(_outData["durations"], _marked);
+                      // if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
+                      // _outText = decodeMorseCode(_outData["durations"], _marked);
                     });
                   },
                 ),
@@ -238,7 +239,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
     if (images != null) {
       var imageCount = images.length;
-      _initMarkedList(images, imagesFiltered);
+      // _initMarkedList(images, imagesFiltered);
 
       for (var i = 0; i < images.length; i++) {
         String description = (i + 1).toString() + '/$imageCount';
@@ -247,7 +248,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
         }
         list.add(GCWImageViewData(local.GCWFile(bytes: images[i]), description: description, marked: _marked[i]));
       }
-      _outText = decodeMorseCode(durations, _marked);
+      // _outText = decodeMorseCode(durations, _marked);
     }
     return list;
   }
@@ -260,7 +261,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
         return Center(
           child: Container(
             child: GCWAsyncExecuter(
-              isolatedFunction: analyseImageMorseCodeAsync,
+              isolatedFunction: analyseVideoMorseCodeAsync,
               parameter: _buildJobDataDecode(),
               onReady: (data) => _saveOutputDecode(data),
               isOverlay: true,
@@ -274,12 +275,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
-    return GCWAsyncExecuterParameters(_platformFile.bytes);
-  }
-
-  Future<GCWAsyncExecuterParameters> _buildJobDataEncode() async {
-    return GCWAsyncExecuterParameters(
-        Tuple4<Uint8List, Uint8List, String, int>(_highImage, _lowImage, _currentInput, _currentDotDuration));
+    return GCWAsyncExecuterParameters(_platformFile.path);
   }
 
   _saveOutputDecode(Map<String, dynamic> output) {
@@ -303,13 +299,6 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     });
   }
 
-  _saveOutputEncode(Uint8List output) {
-    _encodeOutputImage = output;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {});
-    });
-  }
 
   _exportFiles(BuildContext context, String fileName, List<Uint8List> data) async {
     createZipFile(fileName, '.' + fileExtension(FileType.PNG), data).then((bytes) async {
