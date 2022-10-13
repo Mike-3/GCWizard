@@ -49,7 +49,7 @@ enum FileType {
   GWC,
   LUA
 }
-enum FileClass { IMAGE, ARCHIVE, SOUND, DATA, TEXT, BINARY }
+enum FileClass { IMAGE, ARCHIVE, SOUND, DATA, TEXT, BINARY, VIDEO }
 
 const Map<FileType, Map<String, dynamic>> _FILE_TYPES = {
   // https://en.wikipedia.org/wiki/List_of_file_signatures
@@ -196,6 +196,14 @@ const Map<FileType, Map<String, dynamic>> _FILE_TYPES = {
     ],
     'mime_types': ['audio/mpeg', 'audio/mp3', 'audio/mpeg3', 'audio/x-mpeg-3'],
     'file_class': FileClass.SOUND
+  },
+  FileType.MP4: {
+    'extensions': ['mp4'],
+    'magic_bytes': <List<int>>[
+      [0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D]
+    ],
+    'mime_types': ['video/mp4', 'audio/mp4'],
+    'file_class': FileClass.VIDEO
   },
   FileType.OGG: {
     'extensions': ['ogg', 'oga'],

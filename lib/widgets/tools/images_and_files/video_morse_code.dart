@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/i18n/app_localizations.dart';
+import 'package:gc_wizard/logic/tools/images_and_files/animated_image_morse_code.dart';
 // import 'package:gc_wizard/logic/tools/images_and_files/animated_image_morse_code.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/video_morse_code.dart';
 import 'package:gc_wizard/theme/theme_colors.dart';
@@ -94,7 +95,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   Widget _decodeWidgets() {
     return Column(children: <Widget>[
       GCWOpenFile(
-        supportedFileTypes: AnimatedImageState.allowedExtensions,
+        supportedFileTypes: allowedExtensions,
         onLoaded: (_file) {
           if (_file == null) {
             showToast(i18n(context, 'common_loadfile_exception_notloaded'));
@@ -176,7 +177,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           //       )
           //     :
       GCWGallery(
-                  imageData: _convertImageData(_outData["images"], _outData["durations"], _outData["brightnesses"]),
+                  imageData: _convertImageData(_outData["images"], _outData["durations"], _outData["brightnesses"], _outData),
                   onDoubleTap: (index) {
                     setState(() {
                       // if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
@@ -197,14 +198,20 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     ]);
   }
 
-  _initMarkedList(List<Uint8List> images, List<List<int>> imagesFiltered) {
+  _initMarkedList(List<Uint8List> images, Map<String, dynamic> _outData) {
     if (_marked == null || _marked.length != images.length) {
       _marked = List.filled(images.length, false);
 
-      // first image default as high signal
-      if (imagesFiltered.length == 2) {
-        _markedListSetColumn(imagesFiltered[0], true);
-      }
+      List<double> brightnesses = _outData["brightnesses"];
+      double treshold = _outData["threshold"];
+      for (var i = 0; i < brightnesses.length; i++) {
+        _marked[i] = brightnesses[i] > treshold;
+      };
+
+      // // first image default as high signal
+      // if (imagesFiltered.length == 2) {
+      //   _markedListSetColumn(imagesFiltered[0], true);
+      // }
     }
   }
 
@@ -220,7 +227,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
     if (images != null) {
       var imageCount = images.length;
-      _initMarkedList(images, imagesFiltered);
+      // _initMarkedList(images, imagesFiltered);
 
       for (var i = 0; i < imagesFiltered.length; i++) {
         String description = imagesFiltered[i].length.toString() + '/$imageCount';
@@ -230,49 +237,63 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
             description: description, marked: _marked[imagesFiltered[i].first]));
       }
       //_outText = decodeMorseCode(durations, _marked);
+
+
     }
     return list;
   }
 
   List<GCWImageViewData> _convertImageData(
-      List<Uint8List> images, List<int> durations, List<double> brightnesses) {
+      List<Uint8List> images, List<int> durations, List<double> brightnesses, Map<String, dynamic> _outData) {
     var list = <GCWImageViewData>[];
 
     if (images != null) {
       var imageCount = images.length;
-      // _initMarkedList(images, imagesFiltered);
+      _initMarkedList(images, _outData);
+      var _duration = 0;
 
       for (var i = 0; i < images.length; i++) {
         String description = (i + 1).toString() + '/$imageCount';
         if ((durations != null) && (i < durations.length)) {
-          description += ': ' + durations[i].toString() + ' ms';
+          _duration += durations[i];
+          description += ': ' + _duration.toString() + ' ms ' + brightnesses[i].toString();
         }
-        list.add(GCWImageViewData(local.GCWFile(bytes: images[i]), description: description, marked: _marked[i]));
+        if (i == images.length-1 || _marked[i] != _marked[i+1]) {
+          list.add(GCWImageViewData(local.GCWFile(bytes: images[i]), description: description, marked: _marked[i]));
+          _duration = 0;
+        }
       }
-      // _outText = decodeMorseCode(durations, _marked);
+       _outText = decodeMorseCode(durations, _marked);
+
+      // _outText = Map<String, dynamic>();
+      // _outText.addAll({"text": _outData["minBrightness"].toString() + '/ ' + _outData["maxBrightness"].toString()});
+      // _outText.addAll({"morse": _outData["threshold"].toString()});
     }
     return list;
   }
 
+
   _analysePlatformFileAsync() async {
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return Center(
-          child: Container(
-            child: GCWAsyncExecuter(
-              isolatedFunction: analyseVideoMorseCodeAsync,
-              parameter: _buildJobDataDecode(),
-              onReady: (data) => _saveOutputDecode(data),
-              isOverlay: true,
-            ),
-            height: 220,
-            width: 150,
-          ),
-        );
-      },
-    );
+    await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
+
+    // await showDialog(
+    //   context: context,
+    //   barrierDismissible: false,
+    //   builder: (context) {
+    //     return Center(
+    //       child: Container(
+    //         child: GCWAsyncExecuter(
+    //           isolatedFunction: analyseVideoMorseCodeAsync,
+    //           parameter: _buildJobDataDecode(),
+    //           onReady: (data) => _saveOutputDecode(data),
+    //           isOverlay: true,
+    //         ),
+    //         height: 220,
+    //         width: 150,
+    //       ),
+    //     );
+    //   },
+    // );
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
@@ -286,15 +307,15 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     // restore image references (problem with sendPort, lose references)
     if (_outData != null) {
       List<Uint8List> images = _outData["images"];
-      List<int> linkList = _outData["linkList"];
-      for (int i = 0; i < images.length; i++) {
-        images[i] = images[linkList[i]];
-      }
+      // List<int> linkList = _outData["linkList"];
+      // for (int i = 0; i < images.length; i++) {
+      //   images[i] = images[linkList[i]];
+      // }
     } else {
       showToast(i18n(context, 'common_loadfile_exception_notloaded'));
       return;
     }
-
+    setState(() {});
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {});
     });

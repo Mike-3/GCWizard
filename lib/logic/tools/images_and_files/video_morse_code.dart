@@ -18,7 +18,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   return output;
 }
 
-Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int intervall = 100, SendPort sendAsyncPort}) async {
+Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int intervall = 20, SendPort sendAsyncPort}) async {
   try {
     // var out = animated_image.analyseImage(bytes, sendAsyncPort: sendAsyncPort, filterImages: (outMap, frames) {
     //   List<Uint8List> imageList = outMap["images"];
@@ -31,7 +31,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int interv
     // });
 
     return await _createThumbnailImages(videoPath, intervall);
-  } on Exception {
+  } catch (e){ // on Exception
     return null;
   }
 }
@@ -43,7 +43,7 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   List<int> durationList = [];
   List<double> brightnessList = [];
 
-
+  try {
   do {
     thumbnail = await _createThumbnailImage(videoPath, timeStamp);
     timeStamp += intervall;
@@ -52,9 +52,14 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
       durationList.add(intervall);
       brightnessList.add(await _imageBrightness(thumbnail));
     }
-  } while (thumbnail != null);
+    print(timeStamp);
+  } while (thumbnail != null && timeStamp < 38000);
+} catch (e){ // on Exception
+return null;
+}
 
   var out = Map<String, dynamic>();
+  try {
   out.addAll({"images": imageList});
   out.addAll({"durations": durationList});
   out.addAll({"brightnesses": brightnessList});
@@ -63,7 +68,9 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   out.addAll({"minBrightness": minMax.item1});
   out.addAll({"maxBrightness": minMax.item2});
   out.addAll({"threshold": _findThreshold (brightnessList, minMax.item1, minMax.item2 )});
-
+} catch (e){ // on Exception
+return null;
+}
   return out;
 }
 
@@ -84,12 +91,14 @@ Future<double> _imageBrightness(Uint8List image) async {
 Tuple2 <double, double> _minMaxBrightness(List<double> brightnessList) {
   var _min = 99999.9;
   var _max = -99999.9;
-
+  try {
   brightnessList.forEach((brightness) {
     _min = min(_min, brightness);
     _max = max(_max, brightness);
   });
-
+} catch (e){ // on Exception
+return null;
+}
   return Tuple2 <double, double>(_min, _max);
 }
 
@@ -104,14 +113,18 @@ double _findThreshold(List<double> brightnessList, double min, double max) {
   var tolerance = 1;
   var threshold = min + ((max - min) / 2);
 
+  return 100.0;
+
   // # Guarantee the while loop gets entered at least once.
   var last_threshold = threshold + tolerance + 1;
 
   // # Find the "best" threshold.
   while ((threshold - last_threshold).abs() > tolerance) {
     var lowList = brightnessList.where((signal) => signal < threshold);
+    if (lowList.length  == 0) return last_threshold;
     var low = (lowList.reduce((a, b) => a + b))/ lowList.length;  //signal[signal < threshold].mean();
     var highList = brightnessList.where((signal) => signal >= threshold);
+    if (highList.length  == 0) return last_threshold;
     var high = (lowList.reduce((a, b) => a + b))/ highList.length; //signal[signal >= threshold].mean();
     last_threshold = threshold;
     threshold = low + ((high - low) / 2);
