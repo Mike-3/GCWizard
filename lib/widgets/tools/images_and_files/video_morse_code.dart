@@ -274,26 +274,26 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
 
   _analysePlatformFileAsync() async {
-    await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
+    // await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
 
-    // await showDialog(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (context) {
-    //     return Center(
-    //       child: Container(
-    //         child: GCWAsyncExecuter(
-    //           isolatedFunction: analyseVideoMorseCodeAsync,
-    //           parameter: _buildJobDataDecode(),
-    //           onReady: (data) => _saveOutputDecode(data),
-    //           isOverlay: true,
-    //         ),
-    //         height: 220,
-    //         width: 150,
-    //       ),
-    //     );
-    //   },
-    // );
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Center(
+          child: Container(
+            child: GCWAsyncExecuter(
+              isolatedFunction: analyseVideoMorseCodeAsync,
+              parameter: _buildJobDataDecode(),
+              onReady: (data) => _saveOutputDecode(data),
+              isOverlay: true,
+            ),
+            height: 220,
+            width: 150,
+          ),
+        );
+      },
+    );
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {

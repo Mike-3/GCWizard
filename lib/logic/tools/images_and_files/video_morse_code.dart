@@ -6,7 +6,7 @@ import 'package:gc_wizard/logic/tools/crypto_and_encodings/morse.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/animated_image.dart' as animated_image;
 import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:video_compress/video_compress.dart';
 
 Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   if (jobData == null) return null;
@@ -42,8 +42,8 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   List<Uint8List> imageList = [];
   List<int> durationList = [];
   List<double> brightnessList = [];
+  var videoInfo = await VideoCompress.getMediaInfo(videoPath);
 
-  try {
   do {
     thumbnail = await _createThumbnailImage(videoPath, timeStamp);
     timeStamp += intervall;
@@ -53,10 +53,8 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
       brightnessList.add(await _imageBrightness(thumbnail));
     }
     print(timeStamp);
-  } while (thumbnail != null && timeStamp < 38000);
-} catch (e){ // on Exception
-return null;
-}
+  } while (thumbnail != null && timeStamp < videoInfo.duration*1000);
+
 
   var out = Map<String, dynamic>();
   try {
@@ -75,11 +73,11 @@ return null;
 }
 
 Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async {
-  return VideoThumbnail.thumbnailData(
-    video: videoPath,
+  return VideoCompress.getByteThumbnail(
+    videoPath,
     //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
     quality: 75,
-    timeMs: timeStampMs
+    position: timeStampMs
   );
 }
 
