@@ -18,7 +18,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   return output;
 }
 
-Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int intervall = 20, SendPort sendAsyncPort}) async {
+Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int intervall = 50, SendPort sendAsyncPort}) async {
 
     // var out = animated_image.analyseImage(bytes, sendAsyncPort: sendAsyncPort, filterImages: (outMap, frames) {
     //   List<Uint8List> imageList = outMap["images"];
@@ -30,16 +30,19 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int interv
     //   // outMap.addAll({"imagesFiltered": filteredList});
     // });
 
-    return await _createThumbnailImages(videoPath, intervall);
+    return await _createThumbnailImages(videoPath, intervall, sendAsyncPort: sendAsyncPort);
 }
 
-Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall) async {
+Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall, {SendPort sendAsyncPort}) async {
   var timeStamp = 0;
   Uint8List thumbnail;
   List<Uint8List> imageList = [];
   List<int> durationList = [];
   List<double> brightnessList = [];
   var videoInfo = await VideoCompress.getMediaInfo(videoPath);
+  var _total =  videoInfo.duration / intervall;
+  int _progressStep = max((_total / 100).toInt(), 1);
+  int _progress = 0;
 
   do {
     thumbnail = await _createThumbnailImage(videoPath, timeStamp);
@@ -49,8 +52,13 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
       durationList.add(intervall);
       brightnessList.add(await _imageBrightness(thumbnail));
     }
+    _progress++;
     print(timeStamp);
-  } while (thumbnail != null && timeStamp < videoInfo.duration*1000);
+    if (_total != 0 && sendAsyncPort != null &&
+        (_progress % _progressStep == 0)) {
+      sendAsyncPort.send({'progress': _progress / _total});
+    }
+} while (thumbnail != null && timeStamp < videoInfo.duration);
 
 
   var out = Map<String, dynamic>();
@@ -67,12 +75,12 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
 }
 
 Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async {
-  // return VideoCompress.getByteThumbnail(
-  //   videoPath,
-  //   //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-  //   quality: 75,
-  //   position: timeStampMs
-  // );
+  return VideoCompress.getByteThumbnail(
+    videoPath,
+    //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+    quality: 75,
+    position: timeStampMs
+  );
 }
 
 Future<double> _imageBrightness(Uint8List image) async {
