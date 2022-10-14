@@ -6,7 +6,9 @@ import 'package:gc_wizard/logic/tools/crypto_and_encodings/morse.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/animated_image.dart' as animated_image;
 import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_session.dart' as ffkit;
 import 'package:video_thumbnail/video_thumbnail.dart';
+
 
 Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   if (jobData == null) return null;
@@ -75,6 +77,26 @@ return null;
 }
 
 Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async {
+  // FFmpegSession
+  // https://pub.dev/documentation/ffmpeg_kit_flutter/latest/ffmpeg_session/FFmpegSession-class.html
+  // flutter_video_compress
+  // var arguments = ["-i", videoPath, "-ss", "00:00:01","-t","00:00:03","-vf","fps=3,scale=120:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", "-loop","0",thumb.path];
+  // _flutterFFmpeg.executeWithArguments(arguments).then((rc) {
+  //   print("FFmpeg process exited with rc $rc");
+  //   setState(() {
+  //     _thumbReady = true;
+  //   });
+  // }
+  // );
+  ffkit.Duration..
+  VideoPlayerController controller;
+  ThumbnailUtils.createVideoThumbnail
+  controller = VideoPlayerController.asset('asset_path');
+  controller = VideoPlayerController();
+  controller.initialize().then((value){
+    // setState(() {});
+  });
+  controller.dataSourceType =
   return VideoThumbnail.thumbnailData(
     video: videoPath,
     //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
