@@ -67,12 +67,12 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
 }
 
 Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async {
-  // return VideoCompress.getByteThumbnail(
-  //   videoPath,
-  //   //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-  //   quality: 75,
-  //   position: timeStampMs
-  // );
+  return VideoCompress.getByteThumbnail(
+    videoPath,
+    //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+    quality: 75,
+    position: timeStampMs
+  );
 }
 
 Future<double> _imageBrightness(Uint8List image) async {
