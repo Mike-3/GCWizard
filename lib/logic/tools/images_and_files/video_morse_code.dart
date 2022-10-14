@@ -19,7 +19,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
 }
 
 Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int intervall = 20, SendPort sendAsyncPort}) async {
-  try {
+
     // var out = animated_image.analyseImage(bytes, sendAsyncPort: sendAsyncPort, filterImages: (outMap, frames) {
     //   List<Uint8List> imageList = outMap["images"];
     //   var filteredList = <List<int>>[];
@@ -31,9 +31,6 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int interv
     // });
 
     return await _createThumbnailImages(videoPath, intervall);
-  } catch (e){ // on Exception
-    return null;
-  }
 }
 
 Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall) async {
@@ -57,7 +54,6 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
 
 
   var out = Map<String, dynamic>();
-  try {
   out.addAll({"images": imageList});
   out.addAll({"durations": durationList});
   out.addAll({"brightnesses": brightnessList});
@@ -66,19 +62,17 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   out.addAll({"minBrightness": minMax.item1});
   out.addAll({"maxBrightness": minMax.item2});
   out.addAll({"threshold": _findThreshold (brightnessList, minMax.item1, minMax.item2 )});
-} catch (e){ // on Exception
-return null;
-}
+
   return out;
 }
 
 Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async {
-  return VideoCompress.getByteThumbnail(
-    videoPath,
-    //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-    quality: 75,
-    position: timeStampMs
-  );
+  // return VideoCompress.getByteThumbnail(
+  //   videoPath,
+  //   //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+  //   quality: 75,
+  //   position: timeStampMs
+  // );
 }
 
 Future<double> _imageBrightness(Uint8List image) async {
@@ -89,14 +83,11 @@ Future<double> _imageBrightness(Uint8List image) async {
 Tuple2 <double, double> _minMaxBrightness(List<double> brightnessList) {
   var _min = 99999.9;
   var _max = -99999.9;
-  try {
   brightnessList.forEach((brightness) {
     _min = min(_min, brightness);
     _max = max(_max, brightness);
   });
-} catch (e){ // on Exception
-return null;
-}
+
   return Tuple2 <double, double>(_min, _max);
 }
 
