@@ -8,6 +8,7 @@ import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_session.dart' as ffkit;
 import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:video_compress/video_compress.dart' as compr;
 
 
 Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
@@ -88,7 +89,16 @@ Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async
   //   });
   // }
   // );
-  ffkit.Duration..
+
+  final video = await compr.VideoCompress.compressVideo(
+  videoPath,
+  quality: compr.VideoQuality.MediumQuality,
+  deleteOrigin: false,
+  includeAudio: true,
+  );
+  video.
+  var info1 = await compr.VideoCompress.getMediaInfo(videoPath);
+  compr.VideoCompress.
   VideoPlayerController controller;
   ThumbnailUtils.createVideoThumbnail
   controller = VideoPlayerController.asset('asset_path');
