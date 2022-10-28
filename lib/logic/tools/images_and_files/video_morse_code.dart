@@ -34,7 +34,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int interv
 }
 
 Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall, {SendPort sendAsyncPort}) async {
-  var timeStamp = 0;
+  var timeStamp = 35000;
   Uint8List thumbnail;
   List<Uint8List> imageList = [];
   List<int> durationList = [];
@@ -54,8 +54,7 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     }
     _progress++;
     print(timeStamp);
-    if (_total != 0 && sendAsyncPort != null &&
-        (_progress % _progressStep == 0)) {
+    if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
       sendAsyncPort.send({'progress': _progress / _total});
     }
 } while (thumbnail != null && timeStamp < videoInfo.duration);
@@ -78,13 +77,14 @@ Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs) async
   return VideoCompress.getByteThumbnail(
     videoPath,
     //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-    quality: 75,
+    quality: 100,
     position: timeStampMs
   );
 }
 
 Future<double> _imageBrightness(Uint8List image) async {
   var _image = Image.decodeImage(image);
+  var dec = Image.findDecoderForData(image);
   return _imageLuminance(_image);
 }
 
