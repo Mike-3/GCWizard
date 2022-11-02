@@ -52,6 +52,7 @@ dependencies:
   url_launcher: ^6.1.5
   utility: ^1.0.2
   video_compress: ^3.0.0
+  video_thumbnail: ^0.5.3
   #xmp: ^1.0.2 # xml:4  :(
 
 dev_dependencies:

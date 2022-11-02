@@ -7,25 +7,39 @@ import 'package:gc_wizard/logic/tools/images_and_files/animated_image.dart' as a
 import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
 import 'package:video_compress/video_compress.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoMorseCodeJobData {
   final String videoPath;
   final IVideoCompress videoCompress;
+  ///coordinates of top-left area to examine (0.0-1.0)
+  final Point<double> topLeft;
+  /// coordinates of bottom-right area to examine (0.0-1.0)
+  final Point<double> bottomRight;
 
-  VideoMorseCodeJobData(this.videoPath, {this.videoCompress = null});
+  VideoMorseCodeJobData(this.videoPath,
+      {this.topLeft = null, this.bottomRight = null, this.videoCompress = null});
 }
 
 Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   if (jobData == null) return null;
 
-  var output = await analyseVideoMorseCode(jobData.parameters.videoPath, videoCompress: jobData.parameters.videoCompress, sendAsyncPort: jobData.sendAsyncPort);
+  var output = await analyseVideoMorseCode(jobData.parameters.videoPath,
+      topLeft: jobData.parameters.topLeft,
+      bottomRight: jobData.parameters.bottomRight,
+      videoCompress: jobData.parameters.videoCompress,
+      sendAsyncPort: jobData.sendAsyncPort);
 
   if (jobData.sendAsyncPort != null) jobData.sendAsyncPort.send(output);
 
   return output;
 }
 
-Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int intervall = 50, IVideoCompress videoCompress, SendPort sendAsyncPort}) async {
+Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath,
+    {int intervall = 50,
+      Point<double> topLeft,
+      Point<double> bottomRight,
+      IVideoCompress videoCompress, SendPort sendAsyncPort}) async {
 
     // var out = animated_image.analyseImage(bytes, sendAsyncPort: sendAsyncPort, filterImages: (outMap, frames) {
     //   List<Uint8List> imageList = outMap["images"];
@@ -37,15 +51,29 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, {int interv
     //   // outMap.addAll({"imagesFiltered": filteredList});
     // });
 
-  if (videoCompress == null);
-    videoCompress = VideoCompress;
+  if (videoCompress == null) videoCompress = VideoCompress;
+  if (topLeft == null)
+    topLeft = Point<double>(0.0, 0.0);
+  else
+    topLeft = Point<double>(topLeft.x.clamp(0.0, 1.0), topLeft.y.clamp(0.0, 1.0));
 
-    return await _createThumbnailImages(videoPath, intervall, videoCompress, sendAsyncPort: sendAsyncPort);
+  if (bottomRight == null)
+    bottomRight = Point<double>(1.0, 1.0);
+  else
+    bottomRight = Point<double>(bottomRight.x.clamp(topLeft.x, 1.0), bottomRight.y.clamp(topLeft.y, 1.0));
+
+
+    return await _createThumbnailImages(videoPath, intervall, videoCompress,
+        topLeft, bottomRight,
+        sendAsyncPort: sendAsyncPort);
 }
 
-Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall, IVideoCompress videoCompress,
+Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall,
+    IVideoCompress videoCompress,
+    Point<double> topLeft,
+    Point<double> bottomRight,
     { SendPort sendAsyncPort}) async {
-  var timeStamp = 000;
+  var timeStamp = 30000;
   Uint8List thumbnail;
   List<Uint8List> imageList = [];
   List<int> durationList = [];
@@ -63,7 +91,7 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     if (thumbnail != null) {
       imageList.add(thumbnail);
       durationList.add(intervall);
-      brightnessList.add(await _imageBrightness(thumbnail));
+      brightnessList.add(await _imageBrightness(thumbnail, topLeft, bottomRight));
     }
     _progress++;
     print(timeStamp.toString() + ' ' + brightnessList.last.toString());
@@ -87,18 +115,34 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
 }
 
 Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs, IVideoCompress videoCompress ) async {
-  return videoCompress.getByteThumbnail(
-    videoPath,
-    //maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+  return VideoThumbnail.thumbnailData(
+    video: videoPath,
+    maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
     quality: 100,
-    position: timeStampMs
+    timeMs: timeStampMs
   );
 }
 
-Future<double> _imageBrightness(Uint8List image) async {
+Future<double> _imageBrightness(Uint8List image,
+    Point<double> topLeft,
+    Point<double> bottomRight) async {
   var _image = Image.decodeImage(image);
-  var dec = Image.findDecoderForData(image);
-  return _imageLuminance(_image);
+
+  if (_changeImageSize(topLeft, bottomRight)) {
+    _image = _cropImage(_image, topLeft, bottomRight);
+    //image = Image.encodePng(_image);
+  }
+  return _imageLuminance(_image, topLeft, bottomRight);
+}
+
+Image.Image _cropImage(Image.Image image, Point<double> topLeft, Point<double> bottomRight ) {
+  if (!_changeImageSize(topLeft, bottomRight)) return image;
+  return Image.copyCrop(image, (image.width * topLeft.x).toInt(), (image.height * topLeft.y).toInt(),
+      (image.width * (bottomRight.x- topLeft.x)).toInt(), (image.height * (bottomRight.y- topLeft.y)).toInt());
+}
+
+bool _changeImageSize(Point<double> topLeft, Point<double> bottomRight) {
+  return !(topLeft == Point<double>(0.0, 0.0) && bottomRight == Point<double>(1.0, 1.0));
 }
 
 Tuple2 <double, double> _minMaxBrightness(List<double> brightnessList) {
@@ -143,7 +187,7 @@ double _findThreshold(List<double> brightnessList, double min, double max) {
 }
 
 
-double _imageLuminance(Image.Image image) {
+double _imageLuminance(Image.Image image, Point<double> topLeft, Point<double> bottomRight) {
   var sum = -9999;
   for (var x = 0; x < image.width; x++) {
     for (var y = 0; y < image.height; y++) {
