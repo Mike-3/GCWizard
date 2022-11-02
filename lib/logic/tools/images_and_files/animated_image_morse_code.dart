@@ -175,6 +175,8 @@ List<Tuple2<bool, int>> _buildTimeList(List<int> durations, List<bool> onSignal)
   return timeList;
 }
 
+/// calculate threshold level
+/// return: item1 ./-; item2 ''; item3 ' '
 Tuple3<int, int, int> foundSignalTimes(List<Tuple2<bool, int>> timeList) {
   if (timeList == null || timeList.length == 0) return null;
 
