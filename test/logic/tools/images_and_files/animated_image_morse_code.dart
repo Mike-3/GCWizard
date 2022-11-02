@@ -63,6 +63,46 @@ void main() {
       Tuple2<bool, int>(false, 400),
       Tuple2<bool, int>(false, 600)];
 
+  var signal6 = <Tuple2<bool, int>>[
+    Tuple2<bool, int>(false,15200),
+    Tuple2<bool, int>(true , 1900),
+    Tuple2<bool, int>(false,  600),
+    Tuple2<bool, int>(true ,  250),
+    Tuple2<bool, int>(false,  100),
+    Tuple2<bool, int>(true ,  400),
+    Tuple2<bool, int>(false,  500),
+    Tuple2<bool, int>(true , 1400),
+    Tuple2<bool, int>(false,   50),
+    Tuple2<bool, int>(true , 1300),
+    Tuple2<bool, int>(false,  200),
+    Tuple2<bool, int>(true ,  300),
+    Tuple2<bool, int>(false,  450),
+    Tuple2<bool, int>(true ,  300),
+    Tuple2<bool, int>(false,  200),
+    Tuple2<bool, int>(true ,  300),
+    Tuple2<bool, int>(false,  100),
+    Tuple2<bool, int>(true ,  250),
+    Tuple2<bool, int>(false,  250),
+    Tuple2<bool, int>(true ,  250),
+    Tuple2<bool, int>(false,  450),
+    Tuple2<bool, int>(true , 1400),
+    Tuple2<bool, int>(false,  500),
+    Tuple2<bool, int>(true , 1250),
+    Tuple2<bool, int>(false,  250),
+    Tuple2<bool, int>(true , 1250),
+    Tuple2<bool, int>(false,  700),
+    Tuple2<bool, int>(true ,  250),
+    Tuple2<bool, int>(false,  100),
+    Tuple2<bool, int>(true , 1400),
+    Tuple2<bool, int>(false,  600),
+    Tuple2<bool, int>(true ,  400),
+    Tuple2<bool, int>(false,  100),
+    Tuple2<bool, int>(true , 1300),
+    Tuple2<bool, int>(false,  200),
+    Tuple2<bool, int>(true ,  300),
+    Tuple2<bool, int>(false,  600),
+    Tuple2<bool, int>(true ,  250),
+    Tuple2<bool, int>(false, 4400)];
 
   group("animated_image_morse_code.foundSignalTimes:", () {
     List<Map<String, dynamic>> _inputsToExpected = [
@@ -71,6 +111,7 @@ void main() {
       {'input' : signal3, 'expectedOutput' : Tuple3<int, int, int>(685, 685, 1260 )},
       {'input' : signal4, 'expectedOutput' : Tuple3<int, int, int>(400, 400, 400 )},
       {'input' : signal5, 'expectedOutput' : Tuple3<int, int, int>(400, 500, 500 )},
+      {'input' : signal6, 'expectedOutput' : Tuple3<int, int, int>(350,  75, 150 )}, // not ok
     ];
 
     _inputsToExpected.forEach((elem) {
