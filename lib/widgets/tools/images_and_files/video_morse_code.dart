@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/i18n/app_localizations.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/animated_image_morse_code.dart';
-// import 'package:gc_wizard/logic/tools/images_and_files/animated_image_morse_code.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/video_morse_code.dart';
 import 'package:gc_wizard/theme/theme_colors.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_iconbutton.dart';
@@ -27,6 +26,7 @@ import 'package:gc_wizard/widgets/utils/file_utils.dart';
 import 'package:gc_wizard/widgets/utils/gcw_file.dart' as local;
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
+import 'package:video_compress/video_compress.dart';
 
 class VideoMorseCode extends StatefulWidget {
   final local.GCWFile platformFile;
@@ -274,7 +274,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
 
   _analysePlatformFileAsync() async {
-     await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
+    await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
 
     // await showDialog(
     //   context: context,
@@ -297,7 +297,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
-    return GCWAsyncExecuterParameters(_platformFile.path);
+    return GCWAsyncExecuterParameters(VideoMorseCodeJobData(_platformFile.path, videoCompress: VideoCompress));
   }
 
   _saveOutputDecode(Map<String, dynamic> output) {
