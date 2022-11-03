@@ -21,8 +21,8 @@ class VideoMorseCodeJobData {
       {this.topLeft = null, this.bottomRight = null, this.videoCompress = null});
 }
 
-Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
-  if (jobData == null) return null;
+Stream<Future<Map<String, dynamic>>> analyseVideoMorseCodeAsync(dynamic jobData) async* {
+  if (jobData == null) return;
 
   var output = await analyseVideoMorseCode(jobData.parameters.videoPath,
       topLeft: jobData.parameters.topLeft,
@@ -32,7 +32,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
 
   if (jobData.sendAsyncPort != null) jobData.sendAsyncPort.send(output);
 
-  return output;
+  yield Future.value(output);
 }
 
 Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath,
@@ -73,13 +73,13 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     Point<double> topLeft,
     Point<double> bottomRight,
     { SendPort sendAsyncPort}) async {
-  var timeStamp = 30000;
+  var timeStamp = 39500;
   Uint8List thumbnail;
   List<Uint8List> imageList = [];
   List<int> durationList = [];
   List<double> brightnessList = [];
   var videoInfo = await VideoCompress.getMediaInfo(videoPath);
-  var _total =  videoInfo.duration / intervall;
+  var _total =  (videoInfo.duration - timeStamp) / intervall;
   int _progressStep = max((_total / 100).toInt(), 1);
   int _progress = 0;
 

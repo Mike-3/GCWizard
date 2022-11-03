@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:math';
 
@@ -276,36 +277,93 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
 
   _analysePlatformFileAsync() async {
-    await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
+    // await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
 
-    // await showDialog(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (context) {
-    //     return Center(
-    //       child: Container(
-    //         child: GCWAsyncExecuter(
-    //           isolatedFunction: analyseVideoMorseCodeAsync,
-    //           parameter: _buildJobDataDecode(),
-    //           onReady: (data) => _saveOutputDecode(data),
-    //           isOverlay: true,
-    //         ),
-    //         height: 220,
-    //         width: 150,
-    //       ),
-    //     );
-    //   },
-    // );
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Center(
+          child: Container(
+            child: GCWAsyncExecuter(
+              isolatedFunction: dummyAsync, //analyseVideoMorseCodeAsync,
+              parameter: _buildJobDataDecode(),
+              onReady: (data) => _saveOutputDecode(data),
+              isOverlay: true,
+            ),
+            height: 220,
+            width: 150,
+          ),
+        );
+      },
+    );
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
-    return GCWAsyncExecuterParameters(
-        VideoMorseCodeJobData(_platformFile.path,
-          topLeft: Point<double>(0.2,0.2),
+    _receivePort = ReceivePort();
+    //parameters.sendAsyncPort = receivePort.sendPort;
 
-          bottomRight: Point<double>(0.8,0.8),
+    var jobpara = GCWAsyncExecuterParameters(
+        VideoMorseCodeJobData(_platformFile.path,
+          topLeft: Point<double>(0.0, 0.0), //(0.2, 0.2)
+
+          bottomRight: Point<double>(1.0, 1.0), //(0.8, 0.8)
         ));
+
+    jobpara.sendAsyncPort = _receivePort.sendPort;
+    //await _dummyAsync
+
+
+
+    analyseVideoMorseCodeAsync(jobpara).forEach((element) async {
+      await for (var event in _receivePort) {
+        if (event is Map<String, dynamic> && event['progress'] != null) {
+          if (sendPort != null) sendPort.send(event);
+          //yield event['progress'];
+        } else {
+          //_result = event;
+          _receivePort.close();
+          return event;
+        }
+      }
+    });
+
+    //analyseVideoMorseCodeAsync(jobpara).then((data) => _saveOutputDecode(data));
+    // if (sendPort != null) sendPort.send({'progress': 0.5});
+
+
+    return jobpara;
   }
+
+  ReceivePort _receivePort;
+SendPort sendPort;
+
+  Future<Map<String, dynamic>> dummyAsync(dynamic jobData) async {
+    try {
+    print(' start _dummyAsync');
+    sendPort = jobData.sendAsyncPort;
+    if (sendPort != null) sendPort.send({'progress': 0.5});
+    do {
+      await for (var event in _receivePort) {
+        if (event is Map<String, dynamic> && event['progress'] != null) {
+          if (sendPort != null) sendPort.send(event);
+          //yield event['progress'];
+        } else {
+          //_result = event;
+          _receivePort.close();
+          return event;
+        }
+      }
+    } while (true);
+    } catch (e) {
+      return null;
+    }
+
+  }
+Future<void> _transfer() async {
+  //if (sendPort != null) sendPort.send(output);
+
+}
 
   _saveOutputDecode(Map<String, dynamic> output) {
     _outData = output;
