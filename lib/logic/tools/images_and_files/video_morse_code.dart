@@ -21,8 +21,8 @@ class VideoMorseCodeJobData {
       {this.topLeft = null, this.bottomRight = null, this.videoCompress = null});
 }
 
-Stream<Future<Map<String, dynamic>>> analyseVideoMorseCodeAsync(dynamic jobData) async* {
-  if (jobData == null) return;
+Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
+  if (jobData == null) return null;
 
   var output = await analyseVideoMorseCode(jobData.parameters.videoPath,
       topLeft: jobData.parameters.topLeft,
@@ -32,7 +32,7 @@ Stream<Future<Map<String, dynamic>>> analyseVideoMorseCodeAsync(dynamic jobData)
 
   if (jobData.sendAsyncPort != null) jobData.sendAsyncPort.send(output);
 
-  yield Future.value(output);
+  return output;
 }
 
 Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath,

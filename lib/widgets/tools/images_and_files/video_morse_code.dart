@@ -315,20 +315,20 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
 
 
-    analyseVideoMorseCodeAsync(jobpara).forEach((element) async {
-      await for (var event in _receivePort) {
-        if (event is Map<String, dynamic> && event['progress'] != null) {
-          if (sendPort != null) sendPort.send(event);
-          //yield event['progress'];
-        } else {
-          //_result = event;
-          _receivePort.close();
-          return event;
-        }
-      }
-    });
+    // analyseVideoMorseCodeAsync(jobpara).forEach((element) async {
+    //   await for (var event in _receivePort) {
+    //     if (event is Map<String, dynamic> && event['progress'] != null) {
+    //       if (sendPort != null) sendPort.send(event);
+    //       //yield event['progress'];
+    //     } else {
+    //       //_result = event;
+    //       _receivePort.close();
+    //       return event;
+    //     }
+    //   }
+    // });
 
-    //analyseVideoMorseCodeAsync(jobpara).then((data) => _saveOutputDecode(data));
+    analyseVideoMorseCodeAsync(jobpara).then((data) => _saveOutputDecode(data));
     // if (sendPort != null) sendPort.send({'progress': 0.5});
 
 
@@ -342,7 +342,7 @@ SendPort sendPort;
     try {
     print(' start _dummyAsync');
     sendPort = jobData.sendAsyncPort;
-    if (sendPort != null) sendPort.send({'progress': 0.5});
+    // if (sendPort != null) sendPort.send({'progress': 0.5});
     do {
       await for (var event in _receivePort) {
         if (event is Map<String, dynamic> && event['progress'] != null) {
