@@ -725,7 +725,7 @@ void main() {
       {'input' : signal6, 'expectedOutput' : ' N5057.116E01118184 C'},
       {'input' : signal7, 'expectedOutput' : ' FUENFDREIDREIACHTNEUNNULLNEUN NULNULLACHTZWEINEUNSECHSNEI NVIER'},
       {'input' : signal8, 'expectedOutput' : ' BUECHERWURM'},
-      {'input' : signal9, 'expectedOutput' : ' ANDY'},
+      {'input' : signal9, 'expectedOutput' : ' ANDY'}, // ' A N D Y '
       {'input' : signal10, 'expectedOutput' : ' NIGHTMARE '}, // ' N IGHTM A R E '
     ];
 
