@@ -630,7 +630,32 @@ void main() {
     Tuple2<bool, int>(true ,1500),
     Tuple2<bool, int>(false ,2000)];
 
-  var signal9 = <Tuple2<bool, int>>[
+  var signal9 = <Tuple2<bool, int>>[  // video
+    Tuple2<bool, int>(false ,2950),
+    Tuple2<bool, int>(true ,450),
+    Tuple2<bool, int>(false ,550),
+    Tuple2<bool, int>(true ,1150),
+    Tuple2<bool, int>(false ,1900),
+    Tuple2<bool, int>(true ,1000),
+    Tuple2<bool, int>(false ,550),
+    Tuple2<bool, int>(true ,450),
+    Tuple2<bool, int>(false ,2000),
+    Tuple2<bool, int>(true ,1150),
+    Tuple2<bool, int>(false ,500),
+    Tuple2<bool, int>(true ,300),
+    Tuple2<bool, int>(false ,550),
+    Tuple2<bool, int>(true ,350),
+    Tuple2<bool, int>(false ,1800),
+    Tuple2<bool, int>(true ,1100),
+    Tuple2<bool, int>(false ,650),
+    Tuple2<bool, int>(true ,400),
+    Tuple2<bool, int>(false ,850),
+    Tuple2<bool, int>(true ,1200),
+    Tuple2<bool, int>(false ,700),
+    Tuple2<bool, int>(true ,1300),
+    Tuple2<bool, int>(false ,3600)];
+
+  var signal10 = <Tuple2<bool, int>>[ // video
     Tuple2<bool, int>(false,15200),
     Tuple2<bool, int>(true , 1300),
     Tuple2<bool, int>(false,  100),
@@ -683,7 +708,8 @@ void main() {
       {'input' : signal6, 'expectedOutput' : Tuple3<int, int, int>(600, 650, 1150 )},
       {'input' : signal7, 'expectedOutput' : Tuple3<int, int, int>(550, 700, 1500 )},
       {'input' : signal8, 'expectedOutput' : Tuple3<int, int, int>(1000, 1100, 11000 )},
-      {'input' : signal9, 'expectedOutput' : Tuple3<int, int, int>(350,  75, 150 )}, // not ok (600, 300, 500) ok ??
+      {'input' : signal9, 'expectedOutput' : Tuple3<int, int, int>(725, 775, 1325 )}, // not ok
+      {'input' : signal10, 'expectedOutput' : Tuple3<int, int, int>(350,  75, 150 )}, // not ok (600, 300, 500) ok ??
     ];
 
     _inputsToExpected.forEach((elem) {
@@ -696,10 +722,11 @@ void main() {
 
   group("animated_image_morse_code.decodeMorseCode:", () {
     List<Map<String, dynamic>> _inputsToExpected = [
-      // {'input' : signal6, 'expectedOutput' : ' N5057.116E01118184 C'},
-      // {'input' : signal7, 'expectedOutput' : ' FUENFDREIDREIACHTNEUNNULLNEUN NULNULLACHTZWEINEUNSECHSNEI NVIER'},
-      // {'input' : signal8, 'expectedOutput' : ' BUECHERWURM'},
-      {'input' : signal9, 'expectedOutput' : ' NIGHTMARE '}, // ' N IGHTM A R E '
+      {'input' : signal6, 'expectedOutput' : ' N5057.116E01118184 C'},
+      {'input' : signal7, 'expectedOutput' : ' FUENFDREIDREIACHTNEUNNULLNEUN NULNULLACHTZWEINEUNSECHSNEI NVIER'},
+      {'input' : signal8, 'expectedOutput' : ' BUECHERWURM'},
+      {'input' : signal9, 'expectedOutput' : ' ANDY'},
+      {'input' : signal10, 'expectedOutput' : ' NIGHTMARE '}, // ' N IGHTM A R E '
     ];
 
     _inputsToExpected.forEach((elem) {
