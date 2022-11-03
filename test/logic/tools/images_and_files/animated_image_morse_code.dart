@@ -628,69 +628,6 @@ void main() {
       Tuple2<bool, int>(true ,1500),
       Tuple2<bool, int>(false ,200),
       Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(false ,20000),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,500),
-      Tuple2<bool, int>(false ,2000),
-      Tuple2<bool, int>(true ,1500),
-      Tuple2<bool, int>(false ,200),
-      Tuple2<bool, int>(true ,1500),
       Tuple2<bool, int>(false ,2000)];
 
   var signal9 = <Tuple2<bool, int>>[
@@ -755,4 +692,27 @@ void main() {
     });
   });
 
+  group("animated_image_morse_code.decodeMorseCode:", () {
+      List<Map<String, dynamic>> _inputsToExpected = [
+          {'input' : signal6, 'expectedOutput' : ' N5057.116E01118184 C'},
+          {'input' : signal7, 'expectedOutput' : ' FUENFDREIDREIACHTNEUNNULLNEUN NULNULLACHTZWEINEUNSECHSNEI NVIER'},
+          {'input' : signal8, 'expectedOutput' : ' BUECHERWURM'},
+          {'input' : signal9, 'expectedOutput' : 'NIGHTMARE'}, // not ok
+      ];
+
+      _inputsToExpected.forEach((elem) {
+          test('input: ${elem['input']}', () {
+              var durations = <int>[];
+              var onSignal = <bool>[];
+
+              elem['input'].forEach((item) {
+                  onSignal.add(item.item1);
+                  durations.add(item.item2);
+              });
+
+              var _actual = decodeMorseCode(durations, onSignal);
+              expect(_actual["text"], elem['expectedOutput']);
+          });
+      });
+  });
 }
