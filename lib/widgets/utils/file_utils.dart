@@ -34,6 +34,7 @@ enum FileType {
   WAV,
   MP3,
   MP4,
+  WEBM,
   OGG,
   SND,
   FDL,
@@ -203,6 +204,14 @@ const Map<FileType, Map<String, dynamic>> _FILE_TYPES = {
       [0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D]
     ],
     'mime_types': ['video/mp4', 'audio/mp4'],
+    'file_class': FileClass.VIDEO
+  },
+  FileType.WEBM: {
+    'extensions': ['webm'],
+    'magic_bytes': <List<int>>[
+      [0x1A, 0x45, 0xDF, 0xA3]
+    ],
+    'mime_types': ['video/webm'],
     'file_class': FileClass.VIDEO
   },
   FileType.OGG: {

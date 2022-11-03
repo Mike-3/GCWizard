@@ -48,7 +48,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   // GCWSwitchPosition _currentMode = GCWSwitchPosition.right;
   bool _play = false;
   bool _filtered = true;
-  static var allowedExtensions = [FileType.MP4];
+  static var allowedExtensions = [FileType.MP4, FileType.WEBM];
 
   Uint8List _highImage;
   Uint8List _lowImage;

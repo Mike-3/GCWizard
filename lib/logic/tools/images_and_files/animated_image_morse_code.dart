@@ -136,7 +136,8 @@ List<List<int>> _filterImages(List<List<int>> filteredList, int imageIndex, List
 Map<String, dynamic> decodeMorseCode(List<int> durations, List<bool> onSignal) {
   var timeList = _buildTimeList(durations, onSignal);
   var signalTimes = foundSignalTimes(timeList);
-
+  timeList.forEach((element) {print('Tuple2<bool, int>(' + element.item1.toString() + ' ,' + element.item2.toString() + '),');});
+  print(signalTimes);
   if (signalTimes == null) return null;
 
   var out = '';
