@@ -655,7 +655,28 @@ void main() {
     Tuple2<bool, int>(true ,1300),
     Tuple2<bool, int>(false ,3600)];
 
-  var signal10 = <Tuple2<bool, int>>[ // video
+  var signal10 = <Tuple2<bool, int>>[  // SOS video
+    Tuple2<bool, int>(false ,1050),
+    Tuple2<bool, int>(true ,200),
+    Tuple2<bool, int>(false ,200),
+    Tuple2<bool, int>(true ,200),
+    Tuple2<bool, int>(false ,200),
+    Tuple2<bool, int>(true ,200),
+    Tuple2<bool, int>(false ,600),
+    Tuple2<bool, int>(true ,2750),
+    Tuple2<bool, int>(false ,100),
+    Tuple2<bool, int>(true ,250),
+    Tuple2<bool, int>(false ,400),
+    Tuple2<bool, int>(true ,700),
+    Tuple2<bool, int>(false ,2250),
+    Tuple2<bool, int>(true ,250),
+    Tuple2<bool, int>(false ,1600),
+    Tuple2<bool, int>(true ,2500),
+    Tuple2<bool, int>(false ,400),
+    Tuple2<bool, int>(true ,600),
+    Tuple2<bool, int>(false ,1000)];
+
+  var signal11 = <Tuple2<bool, int>>[ // video
     Tuple2<bool, int>(false,15200),
     Tuple2<bool, int>(true , 1300),
     Tuple2<bool, int>(false,  100),
@@ -698,6 +719,8 @@ void main() {
     Tuple2<bool, int>(true ,  250),
     Tuple2<bool, int>(false, 4400)];
 
+
+
   group("animated_image_morse_code.foundSignalTimes:", () {
     List<Map<String, dynamic>> _inputsToExpected = [
       {'input' : signal1, 'expectedOutput' : Tuple3<int, int, int>(700, 700, 1250 )},
@@ -709,7 +732,8 @@ void main() {
       {'input' : signal7, 'expectedOutput' : Tuple3<int, int, int>(550, 700, 1500 )},
       {'input' : signal8, 'expectedOutput' : Tuple3<int, int, int>(1000, 1100, 11000 )},
       {'input' : signal9, 'expectedOutput' : Tuple3<int, int, int>(725, 775, 1325 )}, // not ok
-      {'input' : signal10, 'expectedOutput' : Tuple3<int, int, int>(350,  75, 150 )}, // not ok (600, 300, 500) ok ??
+      {'input' : signal10, 'expectedOutput' : Tuple3<int, int, int>(225, 150, 300 )}, // not ok
+      {'input' : signal11, 'expectedOutput' : Tuple3<int, int, int>(350,  75, 150 )}, // not ok (600, 300, 500) ok ??
     ];
 
     _inputsToExpected.forEach((elem) {
@@ -726,7 +750,8 @@ void main() {
       {'input' : signal7, 'expectedOutput' : ' FUENFDREIDREIACHTNEUNNULLNEUN NULNULLACHTZWEINEUNSECHSNEI NVIER'},
       {'input' : signal8, 'expectedOutput' : ' BUECHERWURM'},
       {'input' : signal9, 'expectedOutput' : ' ANDY'}, // ' A N D Y '
-      {'input' : signal10, 'expectedOutput' : ' NIGHTMARE '}, // ' N IGHTM A R E '
+      {'input' : signal10, 'expectedOutput' : 'SOS'},
+      {'input' : signal11, 'expectedOutput' : ' NIGHTMARE '}, // ' N IGHTM A R E '
     ];
 
     _inputsToExpected.forEach((elem) {
