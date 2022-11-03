@@ -180,7 +180,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           //       )
           //     :
       GCWGallery(
-                  imageData: _convertImageData(_outData["images"], _outData["durations"], _outData["brightnesses"], _outData),
+                  imageData: _convertImageData(_outData["images"], _outData["durations"], _outData["luminance"], _outData),
                   onDoubleTap: (index) {
                     setState(() {
                       // if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
@@ -205,10 +205,11 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     if (_marked == null || _marked.length != images.length) {
       _marked = List.filled(images.length, false);
 
-      List<double> brightnesses = _outData["brightnesses"];
+      List<double> luminance = _outData["luminance"];
       double treshold = _outData["threshold"];
-      for (var i = 0; i < brightnesses.length; i++) {
-        _marked[i] = brightnesses[i] > treshold;
+
+      for (var i = 0; i < luminance.length; i++) {
+        _marked[i] = luminance[i] > treshold;
       };
 
       // // first image default as high signal
@@ -247,7 +248,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   }
 
   List<GCWImageViewData> _convertImageData(
-      List<Uint8List> images, List<int> durations, List<double> brightnesses, Map<String, dynamic> _outData) {
+      List<Uint8List> images, List<int> durations, List<double> luminances, Map<String, dynamic> _outData) {
     var list = <GCWImageViewData>[];
 
     if (images != null) {
@@ -259,7 +260,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
         String description = (i + 1).toString() + '/$imageCount';
         if ((durations != null) && (i < durations.length)) {
           _duration += durations[i];
-          description += ': ' + _duration.toString() + ' ms ' + brightnesses[i].toString();
+          description += ': ' + _duration.toString() + ' ms ' + luminances[i].toString();
         }
         if (i == images.length-1 || _marked[i] != _marked[i+1]) {
           list.add(GCWImageViewData(local.GCWFile(bytes: images[i]), description: description, marked: _marked[i]));
@@ -339,25 +340,20 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 SendPort sendPort;
 
   Future<Map<String, dynamic>> dummyAsync(dynamic jobData) async {
-    try {
-    print(' start _dummyAsync');
     sendPort = jobData.sendAsyncPort;
     // if (sendPort != null) sendPort.send({'progress': 0.5});
-    do {
-      await for (var event in _receivePort) {
-        if (event is Map<String, dynamic> && event['progress'] != null) {
-          if (sendPort != null) sendPort.send(event);
-          //yield event['progress'];
-        } else {
-          //_result = event;
-          _receivePort.close();
-          return event;
-        }
-      }
-    } while (true);
-    } catch (e) {
-      return null;
-    }
+    // do {
+    //   await for (var event in _receivePort) {
+    //     if (event is Map<String, dynamic> && event['progress'] != null) {
+    //       if (sendPort != null) sendPort.send(event);
+    //       //yield event['progress'];
+    //     } else {
+    //       //_result = event;
+    //       _receivePort.close();
+    //       return event;
+    //     }
+    //   }
+    // } while (true);
 
   }
 Future<void> _transfer() async {

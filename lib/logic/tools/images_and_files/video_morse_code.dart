@@ -63,7 +63,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath,
     bottomRight = Point<double>(bottomRight.x.clamp(topLeft.x, 1.0), bottomRight.y.clamp(topLeft.y, 1.0));
 
 
-    return await _createThumbnailImages(videoPath, intervall, videoCompress,
+  return await _createThumbnailImages(videoPath, intervall, videoCompress,
         topLeft, bottomRight,
         sendAsyncPort: sendAsyncPort);
 }
@@ -73,11 +73,11 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     Point<double> topLeft,
     Point<double> bottomRight,
     { SendPort sendAsyncPort}) async {
-  var timeStamp = 39500;
+  var timeStamp = 000; //39500;
   Uint8List thumbnail;
   List<Uint8List> imageList = [];
   List<int> durationList = [];
-  List<double> brightnessList = [];
+  List<double> luminanceList = [];
   var videoInfo = await VideoCompress.getMediaInfo(videoPath);
   var _total =  (videoInfo.duration - timeStamp) / intervall;
   int _progressStep = max((_total / 100).toInt(), 1);
@@ -91,25 +91,25 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     if (thumbnail != null) {
       imageList.add(thumbnail);
       durationList.add(intervall);
-      brightnessList.add(await _imageBrightness(thumbnail, topLeft, bottomRight));
+      luminanceList.add(await _imageLuminance_(thumbnail, topLeft, bottomRight));
     }
     _progress++;
-    print(timeStamp.toString() + ' ' + brightnessList.last.toString());
+    print(timeStamp.toString() + ' ' + luminanceList.last.toString());
     if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
       sendAsyncPort.send({'progress': _progress / _total});
     }
-} while (thumbnail != null && timeStamp < videoInfo.duration);
+  } while (thumbnail != null && timeStamp < videoInfo.duration);
 
 
   var out = Map<String, dynamic>();
   out.addAll({"images": imageList});
   out.addAll({"durations": durationList});
-  out.addAll({"brightnesses": brightnessList});
+  out.addAll({"luminance": luminanceList});
 
-  var minMax = _minMaxBrightness(brightnessList);
-  out.addAll({"minBrightness": minMax.item1});
-  out.addAll({"maxBrightness": minMax.item2});
-  out.addAll({"threshold": _findThreshold (brightnessList, minMax.item1, minMax.item2 )});
+  var minMax = _minMaxLuminance(luminanceList);
+  out.addAll({"minLuminance": minMax.item1});
+  out.addAll({"maxLuminance": minMax.item2});
+  out.addAll({"threshold": _findThreshold (luminanceList, minMax.item1, minMax.item2 )});
 
   return out;
 }
@@ -123,7 +123,7 @@ Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs, IVide
   );
 }
 
-Future<double> _imageBrightness(Uint8List image,
+Future<double> _imageLuminance_(Uint8List image,
     Point<double> topLeft,
     Point<double> bottomRight) async {
   var _image = Image.decodeImage(image);
@@ -145,12 +145,12 @@ bool _changeImageSize(Point<double> topLeft, Point<double> bottomRight) {
   return !(topLeft == Point<double>(0.0, 0.0) && bottomRight == Point<double>(1.0, 1.0));
 }
 
-Tuple2 <double, double> _minMaxBrightness(List<double> brightnessList) {
+Tuple2 <double, double> _minMaxLuminance(List<double> LuminanceList) {
   var _min = 99999.9;
   var _max = -99999.9;
-  brightnessList.forEach((brightness) {
-    _min = min(_min, brightness);
-    _max = max(_max, brightness);
+  LuminanceList.forEach((luminance) {
+    _min = min(_min, luminance);
+    _max = max(_max, luminance);
   });
 
   return Tuple2 <double, double>(_min, _max);
