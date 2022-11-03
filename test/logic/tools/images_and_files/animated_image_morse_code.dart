@@ -655,7 +655,7 @@ void main() {
     Tuple2<bool, int>(true ,1300),
     Tuple2<bool, int>(false ,3600)];
 
-  var signal10 = <Tuple2<bool, int>>[  // SOS video
+  var signal10 = <Tuple2<bool, int>>[  // SOS video (https://www.shutterstock.com/video/clip-13469573-4k-footage-sos-morse-code-signalization-led)
     Tuple2<bool, int>(false ,1050),
     Tuple2<bool, int>(true ,200),
     Tuple2<bool, int>(false ,200),
