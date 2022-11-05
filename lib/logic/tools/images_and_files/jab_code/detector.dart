@@ -242,7 +242,7 @@ Tuple6<int, int, int, double, double, int> _seekPatternHorizontal(Uint8List row,
           if(result.item1 == JAB_SUCCESS) {
             module_size = result.item2;
             endx = j+1;
-            if(skip != 0) skip = state_count[0];
+            skip = state_count[0]; //if(skip != 0)
             int end;
             if(j == (max - 1) && row[j] == row[j-1]) end = j + 1;
             else end = j;
