@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/i18n/app_localizations.dart';
 import 'package:gc_wizard/logic/tools/crypto_and_encodings/numeral_words.dart';
@@ -115,27 +114,29 @@ class NumeralWordsConverterState extends State<NumeralWordsConverter> {
 
     return GCWDefaultOutput(
         child: Column(children: <Widget>[
-      if (output.title != '')
-        Column(
-          children: <Widget>[
-            GCWTextDivider(text: i18n(context, output.title)),
-            GCWOutputText(
-              text: output.numbersystem,
-            )
-          ],
-        ),
-      if (_currentMode == GCWSwitchPosition.right) // decode
-        GCWTextDivider(text: i18n(context, 'common_numeralbase_denary'))
-      else
-        GCWTextDivider(text: i18n(context, 'numeralwords_converter_numeralword')),
-      if (_currentMode == GCWSwitchPosition.right) // decode
-        GCWOutputText(
-          text: output.number.toString(),
-        )
-      else
-        GCWOutputText(
-          text: output.numeralWord,
-        ),
-    ]));
+            if (output.title != '')
+                  Column(
+                    children: <Widget>[
+                      GCWTextDivider(text: i18n(context, output.title)),
+                      GCWOutputText(
+                        text: output.numbersystem,
+                      )
+                    ],
+                  ),
+
+            if (_currentMode == GCWSwitchPosition.right) // decode
+                  GCWTextDivider(text: i18n(context, 'common_numeralbase_denary'))
+            else
+                  GCWTextDivider(text: i18n(context, 'numeralwords_converter_numeralword')),
+
+            if (_currentMode == GCWSwitchPosition.right) // decode
+                  GCWOutputText(
+                    text: output.number.toString(),
+              )
+            else
+                  GCWOutputText(
+                    text: output.numeralWord,
+              ),
+          ]));
   }
 }

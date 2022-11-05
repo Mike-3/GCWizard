@@ -1,16 +1,18 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/i18n/app_localizations.dart';
+import 'package:gc_wizard/i18n/supported_locales.dart';
 import 'package:gc_wizard/logic/tools/crypto_and_encodings/numeral_words.dart';
 import 'package:gc_wizard/utils/common_utils.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_dropdownbutton.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_output_text.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_textfield.dart';
 import 'package:gc_wizard/widgets/common/gcw_default_output.dart';
-import 'package:gc_wizard/widgets/common/gcw_output.dart';
 import 'package:gc_wizard/widgets/common/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/widgets/utils/common_widget_utils.dart';
+import 'package:gc_wizard/widgets/common/gcw_expandable.dart';
+import 'package:gc_wizard/widgets/common/gcw_code_textfield.dart';
+import 'package:gc_wizard/widgets/utils/AppBuilder.dart';
 
 class NumeralWordsTextSearch extends StatefulWidget {
   @override
@@ -19,10 +21,12 @@ class NumeralWordsTextSearch extends StatefulWidget {
 
 class NumeralWordsTextSearchState extends State<NumeralWordsTextSearch> {
   TextEditingController _decodeController;
+  TextEditingController _codeControllerHighlighted;
 
   var _currentDecodeInput = '';
   GCWSwitchPosition _currentDecodeMode = GCWSwitchPosition.left;
-  var _currentLanguage = NumeralWordsLanguage.ALL;
+  var _currentLanguage;
+  bool _setDefaultLanguage = false;
 
   Map<String, NumeralWordsLanguage> _languageList;
 
@@ -30,21 +34,27 @@ class NumeralWordsTextSearchState extends State<NumeralWordsTextSearch> {
   void initState() {
     super.initState();
     _decodeController = TextEditingController(text: _currentDecodeInput);
+    _codeControllerHighlighted = TextEditingController(text: '');
   }
 
   @override
   void dispose() {
     _decodeController.dispose();
+    _codeControllerHighlighted.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_setDefaultLanguage) {
+      _currentLanguage = _defaultLanguage(context);
+      _setDefaultLanguage = true;
+    }
     if (_languageList == null) {
       var sorted = SplayTreeMap<String, NumeralWordsLanguage>.from(
           switchMapKeyValue(NUMERALWORDS_LANGUAGES).map((key, value) => MapEntry(i18n(context, key), value)));
 
-      _languageList = {i18n(context, 'numeralwords_language_all'): NumeralWordsLanguage.ALL};
+      _languageList = {};
       _languageList.addAll(sorted);
     }
 
@@ -55,6 +65,8 @@ class NumeralWordsTextSearchState extends State<NumeralWordsTextSearch> {
           onChanged: (value) {
             setState(() {
               _currentLanguage = value;
+
+              AppBuilder.of(context).rebuild();
             });
           },
           items: _languageList.entries.map((mode) {
@@ -92,8 +104,10 @@ class NumeralWordsTextSearchState extends State<NumeralWordsTextSearch> {
   Widget _buildOutput(BuildContext context) {
     List<NumeralWordsDecodeOutput> detailedOutput;
     String output = '';
-    detailedOutput = decodeNumeralwords(removeAccents(_currentDecodeInput.toLowerCase()), _currentLanguage,
-        (_currentDecodeMode == GCWSwitchPosition.left));
+    detailedOutput = decodeNumeralwords(
+        input: removeAccents(_currentDecodeInput.toLowerCase()),
+        language: _currentLanguage,
+        decodeModeWholeWords: (_currentDecodeMode == GCWSwitchPosition.left));
     for (int i = 0; i < detailedOutput.length; i++) {
       if (detailedOutput[i].number != '') if (detailedOutput[i].number.startsWith('numeralwords_'))
         output = output + ' ' + i18n(context, detailedOutput[i].number);
@@ -143,19 +157,62 @@ class NumeralWordsTextSearchState extends State<NumeralWordsTextSearch> {
       flexData = [1, 2];
     }
 
+    if (_currentDecodeMode == GCWSwitchPosition.left) {
+      _codeControllerHighlighted.text = _currentDecodeInput.toLowerCase();
+    } else {
+      _codeControllerHighlighted.text = _currentDecodeInput.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    }
+
     return Column(
       children: <Widget>[
         GCWOutputText(
           text: output,
         ),
+        _currentLanguage == NumeralWordsLanguage.ALL ? Container () : GCWExpandableTextDivider (
+            text: i18n(context, 'numeralwords_syntax_highlight'),
+            suppressTopSpace: false,
+            child: GCWCodeTextField(
+              controller: _codeControllerHighlighted,
+              patternMap: _numeralWordsHiglightMap(),
+            )
+        ),
         output.length == 0
-            ? Container()
-            : GCWOutput(
-                title: i18n(context, 'common_outputdetail'),
-                child:
-                    Column(children: columnedMultiLineOutput(context, columnData, flexValues: flexData, copyColumn: 1)),
-              ),
+          ? Container()
+          : GCWExpandableTextDivider(
+              text: i18n(context, 'common_outputdetail'),
+              suppressTopSpace: false,
+              expanded: false,
+              child:
+                  Column(children: columnedMultiLineOutput(context, columnData, flexValues: flexData, copyColumn: 1)),
+            ),
       ],
     );
+  }
+
+  Map<String, TextStyle> _numeralWordsHiglightMap(){
+    Map<String, TextStyle> result = {};
+    NumWords[_currentLanguage].forEach((key, value) {
+      if (int.tryParse(value) == null)
+        if (value.startsWith('numeral'))
+          result[r'' + key + ''] = TextStyle(color: Colors.blue);
+        else
+          result[r'' + key + ''] = TextStyle(color: Colors.green);
+      else
+        if (int.parse(value) < 10)
+          result[r'' + key + ''] = TextStyle(color: Colors.red);
+        else
+          result[r'' + key + ''] = TextStyle(color: Colors.orange);
+    });
+    return result;
+  }
+
+  NumeralWordsLanguage _defaultLanguage(BuildContext context){
+    final Locale appLocale = Localizations.localeOf(context);
+    if (isLocaleSupported(appLocale)) {
+      return SUPPORTED_LANGUAGES_LOCALES[appLocale];
+    }
+    else {
+      return SUPPORTED_LANGUAGES_LOCALES[DEFAULT_LOCALE];
+    }
   }
 }
