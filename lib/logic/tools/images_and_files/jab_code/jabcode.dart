@@ -22,11 +22,11 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 	//find and decode JABCode in the image
 	int decode_status;
 	var result = decodeJABCode(bitmap, NORMAL_DECODE);
-	var decoded_data = result.item1;
-	decode_status = result.item2;
+	var decoded_data = result?.item1;
+	decode_status = result?.item2;
 	if(decoded_data == null) {
 		// reportError("Decoding JABCode failed");
-		if(decode_status > 0)
+		if(decode_status != null)
 			return Future.value(Tuple2<String, String> (null, 0.toString())); //(symbols[0].module_size + 0.5).toInt();
 		else
 			return Future.value(Tuple2<String, String> (null, 255.toString()));;
