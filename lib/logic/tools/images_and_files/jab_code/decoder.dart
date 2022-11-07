@@ -646,7 +646,7 @@ int _decodeSlaveMetadata(jab_decoded_symbol host_symbol, int docked_position, ja
  @param module2_color the color of the second module
  @return the decoded bits
 */
-int _decodeNcModuleColor(Int8 module1_color, Int8 module2_color) {
+int _decodeNcModuleColor(int module1_color, int module2_color) {
 	for(int i=0; i<8; i++) {
 		if(module1_color == nc_color_encode_table[i][0] && module2_color == nc_color_encode_table[i][1])
 			return i;
@@ -693,8 +693,8 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 
 	//decode encoded Nc
 	var bits = List<int>.filled(2, null);
-	bits[0] = _decodeNcModuleColor(module_color[0] as Int8, module_color[1] as Int8);	//the first 3 bits
-	bits[1] = _decodeNcModuleColor(module_color[2] as Int8, module_color[3] as Int8);	//the last 3 bits
+	bits[0] = _decodeNcModuleColor(module_color[0], module_color[1]);	//the first 3 bits
+	bits[1] = _decodeNcModuleColor(module_color[2], module_color[3]);	//the last 3 bits
 	if(bits[0] > 7 || bits[1] > 7) {
 		return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 	}
