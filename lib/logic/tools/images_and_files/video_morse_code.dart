@@ -82,24 +82,52 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   var _total =  (videoInfo.duration - timeStamp) / intervall;
   int _progressStep = max((_total / 100).toInt(), 1);
   int _progress = 0;
+var time = DateTime.now();
 
 
+  // do {
+  //   thumbnail = await _createThumbnailImage(videoPath, timeStamp, videoCompress);
+  //   timeStamp += intervall;
+  //   if (thumbnail != null) {
+  //     imageList.add(thumbnail);
+  //     durationList.add(intervall);
+  //     luminanceList.add(await _imageLuminance_(thumbnail, topLeft, bottomRight));
+  //   }
+  //   _progress++;
+  //   print(timeStamp.toString() + ' ' + luminanceList.last.toString());
+  //   if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
+  //     sendAsyncPort.send({'progress': _progress / _total});
+  //   }
+  // } while (thumbnail != null && timeStamp < videoInfo.duration);
 
   do {
-    thumbnail = await _createThumbnailImage(videoPath, timeStamp, videoCompress);
+    await _createThumbnailImage(videoPath, timeStamp, videoCompress).then((thumbnail) async {
+      if (thumbnail != null) {
+        imageList.add(thumbnail);
+        durationList.add(intervall);
+        luminanceList.add(await _imageLuminance_(thumbnail, topLeft, bottomRight));
+      }
+    });
     timeStamp += intervall;
-    if (thumbnail != null) {
-      imageList.add(thumbnail);
-      durationList.add(intervall);
-      luminanceList.add(await _imageLuminance_(thumbnail, topLeft, bottomRight));
-    }
+
     _progress++;
     print(timeStamp.toString() + ' ' + luminanceList.last.toString());
     if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
       sendAsyncPort.send({'progress': _progress / _total});
     }
-  } while (thumbnail != null && timeStamp < videoInfo.duration);
+  } while ( timeStamp < videoInfo.duration); //thumbnail != null &&
 
+// Future.wait(
+// __createThumbnailImages(videoPath, intervall,
+//       imageList,
+//       durationList,
+//       luminanceList,
+//       videoCompress,
+//       topLeft, bottomRight,
+//       sendAsyncPort: sendAsyncPort
+//   )
+// );
+  print("Duration: " + DateTime.now().difference(time).inSeconds.toString());
 
   var out = Map<String, dynamic>();
   out.addAll({"images": imageList});
@@ -112,6 +140,43 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   out.addAll({"threshold": _findThreshold (luminanceList, minMax.item1, minMax.item2 )});
 
   return out;
+}
+
+__createThumbnailImages(String videoPath, int intervall,
+    List<Uint8List> imageList,
+    List<int> durationList,
+    List<double> luminanceList,
+
+    IVideoCompress videoCompress,
+    Point<double> topLeft,
+    Point<double> bottomRight,
+    { SendPort sendAsyncPort}) async {
+
+  var timeStamp = 000; //39500;
+
+  var videoInfo = await VideoCompress.getMediaInfo(videoPath);
+  var _total =  (videoInfo.duration - timeStamp) / intervall;
+  int _progressStep = max((_total / 100).toInt(), 1);
+  int _progress = 0;
+
+  var counter = 0;
+  do {
+    _createThumbnailImage(videoPath, timeStamp, videoCompress).then((thumbnail) async {
+      timeStamp += intervall;
+      if (thumbnail != null) {
+        imageList.add(thumbnail);
+        durationList.add(intervall);
+        luminanceList.add(await _imageLuminance_(thumbnail, topLeft, bottomRight));
+      }
+      _progress++;
+      print(timeStamp.toString() + ' ' + luminanceList.last.toString());
+      if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
+        sendAsyncPort.send({'progress': _progress / _total});
+      }
+    });
+    counter++;
+  } while ((counter < 6) && (timeStamp < videoInfo.duration)); //thumbnail != null &&
+
 }
 
 Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs, IVideoCompress videoCompress ) async {

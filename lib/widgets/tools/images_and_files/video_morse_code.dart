@@ -329,7 +329,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     //   }
     // });
 
-    analyseVideoMorseCodeAsync(jobpara).then((data) => _saveOutputDecode(data));
+    await analyseVideoMorseCodeAsync(jobpara).then((data) => _saveOutputDecode(data));
     // if (sendPort != null) sendPort.send({'progress': 0.5});
 
 
