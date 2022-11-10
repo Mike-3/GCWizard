@@ -36,7 +36,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
 }
 
 Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath,
-    {int intervall = 50,
+    {int intervall = 20,
       Point<double> topLeft,
       Point<double> bottomRight,
       IVideoCompress videoCompress, SendPort sendAsyncPort}) async {

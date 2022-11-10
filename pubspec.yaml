@@ -33,7 +33,7 @@ dependencies:
   location: ^4.4.0
   mask_text_input_formatter: ^2.4.0
   math_expressions: ^2.3.1
-  package_info_plus: ^1.4.3+1
+  package_info_plus: ^3.0.1
   path: ^1.8.1
   path_provider: ^2.0.11
   permission_handler: ^10.0.0
