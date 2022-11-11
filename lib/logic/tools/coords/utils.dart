@@ -4,8 +4,6 @@ import 'package:gc_wizard/logic/tools/coords/data/ellipsoid.dart';
 import 'package:gc_wizard/utils/common_utils.dart';
 import 'package:latlong2/latlong.dart';
 
-import 'converter/gauss_krueger.dart';
-
 const DefaultLambertType = LambertType.LAMBERT_93;
 const DefaultGaussKruegerType = 1;
 const DefaultSlippyZoom = 10.0;
@@ -68,7 +66,9 @@ String formatCoordOutput(LatLng _coords, Map<String, String> _outputFormat, Elli
     case keyCoordsMakaney:
       return Makaney.fromLatLon(_coords).toString();
     case keyCoordsReverseWherigoWaldmeister:
-      return Waldmeister.fromLatLon(_coords).toString();
+      return ReverseWherigoWaldmeister.fromLatLon(_coords).toString();
+    case keyCoordsReverseWherigoDay1976:
+      return ReverseWherigoDay1976.fromLatLon(_coords).toString();
     default:
       return DEC.fromLatLon(_coords).toString();
   }
