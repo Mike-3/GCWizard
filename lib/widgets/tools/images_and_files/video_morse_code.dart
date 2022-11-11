@@ -59,7 +59,6 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   int _currentDotDuration = 400;
   TextEditingController _currentDotDurationController;
   TextEditingController _currentInputController;
-  Uint8List _encodeOutputImage;
 
   @override
   void initState() {
@@ -115,6 +114,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
             setState(() {
               _platformFile = _file;
               _outData = null;
+              _marked = null;
               _blackLevel = 50.0;
               _blackLevelNext = null;
               _analysePlatformFileAsync();
@@ -196,6 +196,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           min: 1,
           max: 100,
           onChangeEnd: (value) {
+            _marked = null;
             _blackLevel = value;
             _blackLevelNext = value;
             _convertImageData(_outData);
