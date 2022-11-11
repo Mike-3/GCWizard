@@ -45,7 +45,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   Map<String, dynamic> _outData;
   var _marked = <bool>[];
   int _intervall = 50;
-  double _blackLevel = 50.0;
+  double _blackLevel = 50;
   double _blackLevelNext;
   var _currentSimpleMode = GCWSwitchPosition.left;
   Map<String, dynamic> _outText;
@@ -115,7 +115,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               _platformFile = _file;
               _outData = null;
               _marked = null;
-              _blackLevel = 50.0;
+              _blackLevel = 50;
               _blackLevelNext = null;
               _analysePlatformFileAsync();
             });
@@ -186,7 +186,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
         onChanged: (value) {
           setState(() {
             _intervall = value;
-            _analysePlatformFileAsync();
+            //if (_platformFile != null) _analysePlatformFileAsync();
           });
         },
       ),
@@ -196,11 +196,16 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           min: 1,
           max: 100,
           onChangeEnd: (value) {
-            _marked = null;
-            _blackLevel = value;
-            _blackLevelNext = value;
-            _convertImageData(_outData);
-          }),
+            setState(() {
+              _marked = null;
+              _blackLevel = value;
+              _blackLevelNext = value;
+              _convertImageData(_outData);
+            });
+          },
+          onChanged: (value) {
+    _marked = null;
+    }),
     ]);
   }
 
