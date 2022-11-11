@@ -11,20 +11,23 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoMorseCodeJobData {
   final String videoPath;
-  final IVideoCompress videoCompress;
+  final int intervall;
   ///coordinates of top-left area to examine (0.0-1.0)
   final Point<double> topLeft;
   /// coordinates of bottom-right area to examine (0.0-1.0)
   final Point<double> bottomRight;
+  final IVideoCompress videoCompress;
 
-  VideoMorseCodeJobData(this.videoPath,
-      {this.topLeft = null, this.bottomRight = null, this.videoCompress = null});
+  VideoMorseCodeJobData(this.videoPath, this.intervall,
+        { this.topLeft = null,
+          this.bottomRight = null,
+          this.videoCompress = null});
 }
 
 Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   if (jobData == null) return null;
 
-  var output = await analyseVideoMorseCode(jobData.parameters.videoPath,
+  var output = await analyseVideoMorseCode(jobData.parameters.videoPath, jobData.parameters.intervall,
       topLeft: jobData.parameters.topLeft,
       bottomRight: jobData.parameters.bottomRight,
       videoCompress: jobData.parameters.videoCompress,
@@ -35,9 +38,8 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   return output;
 }
 
-Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath,
-    {int intervall = 20,
-      Point<double> topLeft,
+Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, int intervall,
+    { Point<double> topLeft,
       Point<double> bottomRight,
       IVideoCompress videoCompress, SendPort sendAsyncPort}) async {
 
@@ -137,7 +139,7 @@ var time = DateTime.now();
   var minMax = _minMaxLuminance(luminanceList);
   out.addAll({"minLuminance": minMax.item1});
   out.addAll({"maxLuminance": minMax.item2});
-  out.addAll({"threshold": _findThreshold (luminanceList, minMax.item1, minMax.item2 )});
+  out.addAll({"blackLevel": _findThreshold (luminanceList, minMax.item1, minMax.item2 )});
 
   return out;
 }
@@ -221,7 +223,7 @@ Tuple2 <double, double> _minMaxLuminance(List<double> LuminanceList) {
   return Tuple2 <double, double>(_min, _max);
 }
 
-double _findThreshold(List<double> brightnessList, double min, double max) {
+double _findThreshold(List<double> luminanceList, double min, double max) {
   // """Return threshold value to split `signal` into two bins.
   //       Assumes `signal` is bimodal.
   //       :param signal: signal to threshold.
@@ -232,17 +234,17 @@ double _findThreshold(List<double> brightnessList, double min, double max) {
   var tolerance = 1;
   var threshold = min + ((max - min) / 2);
 
-  return 100.0;
+  return threshold;
 
   // # Guarantee the while loop gets entered at least once.
   var last_threshold = threshold + tolerance + 1;
 
   // # Find the "best" threshold.
   while ((threshold - last_threshold).abs() > tolerance) {
-    var lowList = brightnessList.where((signal) => signal < threshold);
+    var lowList = luminanceList.where((signal) => signal < threshold);
     if (lowList.length  == 0) return last_threshold;
     var low = (lowList.reduce((a, b) => a + b))/ lowList.length;  //signal[signal < threshold].mean();
-    var highList = brightnessList.where((signal) => signal >= threshold);
+    var highList = luminanceList.where((signal) => signal >= threshold);
     if (highList.length  == 0) return last_threshold;
     var high = (lowList.reduce((a, b) => a + b))/ highList.length; //signal[signal >= threshold].mean();
     last_threshold = threshold;
@@ -261,5 +263,5 @@ double _imageLuminance(Image.Image image, Point<double> topLeft, Point<double> b
     }
   }
 
-  return sum.toDouble(); // sum / (image.width * image.height);
+  return (sum * 100.0/ 255.0).toDouble(); // sum / (image.width * image.height);
 }
