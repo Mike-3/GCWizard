@@ -12,14 +12,19 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 class VideoMorseCodeJobData {
   final String videoPath;
   final int intervall;
+  final int startTime;
+  final int endTime;
   ///coordinates of top-left area to examine (0.0-1.0)
   final Point<double> topLeft;
   /// coordinates of bottom-right area to examine (0.0-1.0)
   final Point<double> bottomRight;
+
   final IVideoCompress videoCompress;
 
   VideoMorseCodeJobData(this.videoPath, this.intervall,
-        { this.topLeft = null,
+        { this.startTime,
+          this.endTime,
+          this.topLeft = null,
           this.bottomRight = null,
           this.videoCompress = null});
 }
@@ -28,9 +33,12 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   if (jobData == null) return null;
 
   var output = await analyseVideoMorseCode(jobData.parameters.videoPath, jobData.parameters.intervall,
+      startTime: jobData.parameters.startTime,
+      endTime:  jobData.parameters.endTime,
       topLeft: jobData.parameters.topLeft,
       bottomRight: jobData.parameters.bottomRight,
       videoCompress: jobData.parameters.videoCompress,
+      isCancelled: jobData.isCancelled,
       sendAsyncPort: jobData.sendAsyncPort);
 
   if (jobData.sendAsyncPort != null) jobData.sendAsyncPort.send(output);
@@ -38,10 +46,15 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
   return output;
 }
 
+
 Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, int intervall,
-    { Point<double> topLeft,
+    { int startTime,
+      int endTime,
+      Point<double> topLeft,
       Point<double> bottomRight,
-      IVideoCompress videoCompress, SendPort sendAsyncPort}) async {
+      IVideoCompress videoCompress,
+      Function isCancelled,
+      SendPort sendAsyncPort}) async {
 
     // var out = animated_image.analyseImage(bytes, sendAsyncPort: sendAsyncPort, filterImages: (outMap, frames) {
     //   List<Uint8List> imageList = outMap["images"];
@@ -65,23 +78,27 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, int interva
     bottomRight = Point<double>(bottomRight.x.clamp(topLeft.x, 1.0), bottomRight.y.clamp(topLeft.y, 1.0));
 
 
-  return await _createThumbnailImages(videoPath, intervall, videoCompress,
-        topLeft, bottomRight,
+  return await _createThumbnailImages(videoPath, intervall, startTime, endTime, videoCompress,
+        topLeft, bottomRight, isCancelled,
         sendAsyncPort: sendAsyncPort);
 }
 
 Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall,
+    int startTime,
+    int endTime,
     IVideoCompress videoCompress,
     Point<double> topLeft,
     Point<double> bottomRight,
+    Function isCancelled,
     { SendPort sendAsyncPort}) async {
-  var timeStamp = 14000; //39500;
   Uint8List thumbnail;
   List<Uint8List> imageList = [];
   List<int> durationList = [];
   List<double> luminanceList = [];
   var videoInfo = await VideoCompress.getMediaInfo(videoPath);
-  var _total =  (videoInfo.duration - timeStamp) / intervall;
+  endTime = (endTime == null ? videoInfo.duration.toInt() : min(endTime, videoInfo.duration.toInt()));
+  var timeStamp = (startTime == null ? 0 : min(startTime, endTime));
+  var _total =  (endTime - timeStamp) / intervall;
   int _progressStep = max((_total / 100).toInt(), 1);
   int _progress = 0;
 var time = DateTime.now();
@@ -117,7 +134,7 @@ var time = DateTime.now();
     if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
       sendAsyncPort.send({'progress': _progress / _total});
     }
-  } while ( timeStamp < videoInfo.duration); //thumbnail != null &&
+  } while ( timeStamp < endTime && (isCancelled == null || !isCancelled())); //thumbnail != null &&
 
 // Future.wait(
 // __createThumbnailImages(videoPath, intervall,

@@ -11,6 +11,7 @@ CancelableOperation _cancelableOperation;
 
 class GCWAsyncExecuterParameters {
   SendPort sendAsyncPort;
+  Function isCancelled;
   final dynamic parameters;
 
   GCWAsyncExecuterParameters(this.parameters);
@@ -34,30 +35,31 @@ class GCWAsyncExecuter extends StatefulWidget {
   _GCWAsyncExecuterState createState() => _GCWAsyncExecuterState(isOverlay);
 }
 
-Future<ReceivePort> _makeIsolate(Function isolatedFunction, GCWAsyncExecuterParameters parameters) async {
+Future<ReceivePort> _makeIsolate(Function isolatedFunction, GCWAsyncExecuterParameters parameters,
+    Function isCancelled) async {
   ReceivePort receivePort = ReceivePort();
   parameters.sendAsyncPort = receivePort.sendPort;
+  parameters.isCancelled = isCancelled;
 
   _isolate = await Isolate.spawn(isolatedFunction, parameters);
 
   return receivePort;
 }
 
-Future<ReceivePort> _makeAsync(Function isolatedFunction, GCWAsyncExecuterParameters parameters) async {
+Future<ReceivePort> _makeAsync(Function isolatedFunction, GCWAsyncExecuterParameters parameters,
+    Function isCancelled) async {
   ReceivePort receivePort = ReceivePort();
   ReceivePort asyncReceivePort = ReceivePort();
 
   parameters.sendAsyncPort = asyncReceivePort.sendPort;
+  parameters.isCancelled = isCancelled;
   _asyncPortBridge(asyncReceivePort, receivePort.sendPort);
 
-  _cancelableOperation = CancelableOperation.fromFuture(
-    //Future.value('future result'),
-      isolatedFunction(parameters),
-    onCancel: () => {debugPrint('onCancel')},
-  );
-
-  //var xx= isolatedFunction(parameters);
-  //_isolate = await Isolate.spawn(isolatedFunction, parameters);
+  isolatedFunction(parameters);
+  // _cancelableOperation = CancelableOperation.fromFuture(
+  //     isolatedFunction(parameters),
+  //     onCancel: () => {debugPrint('onCancel')},
+  // );
 
   return receivePort;
 }
@@ -88,7 +90,7 @@ class _GCWAsyncExecuterState extends State<GCWAsyncExecuter> {
           _result = await widget.isolatedFunction(parameter);
           return;
         } else {
-          _receivePort = await _makeAsync(widget.isolatedFunction, parameter);
+          _receivePort = await _makeAsync(widget.isolatedFunction, parameter, isCancelled);
         }
         if (_cancel) _cancelProcess();
 
@@ -156,5 +158,9 @@ class _GCWAsyncExecuterState extends State<GCWAsyncExecuter> {
   _cancelProcess() {
     if (_isolate != null) _isolate.kill(priority: Isolate.immediate);
     if (_receivePort != null) _receivePort.close();
+  }
+
+  bool isCancelled() {
+    return _cancel;
   }
 }

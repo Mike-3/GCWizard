@@ -353,65 +353,15 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
-    _receivePort = ReceivePort();
-    //parameters.sendAsyncPort = receivePort.sendPort;
-
-    var jobpara = GCWAsyncExecuterParameters(
+    return GCWAsyncExecuterParameters(
         VideoMorseCodeJobData(_platformFile.path, _intervall,
+          startTime: 14000,
           topLeft: Point<double>(0.0, 0.0), //(0.2, 0.2)
 
           bottomRight: Point<double>(1.0, 1.0), //(0.8, 0.8)
         ));
-
-    jobpara.sendAsyncPort = _receivePort.sendPort;
-    //await _dummyAsync
-
-
-
-    // analyseVideoMorseCodeAsync(jobpara).forEach((element) async {
-    //   await for (var event in _receivePort) {
-    //     if (event is Map<String, dynamic> && event['progress'] != null) {
-    //       if (sendPort != null) sendPort.send(event);
-    //       //yield event['progress'];
-    //     } else {
-    //       //_result = event;
-    //       _receivePort.close();
-    //       return event;
-    //     }
-    //   }
-    // });
-
-    //await analyseVideoMorseCodeAsync(jobpara).then((data) => _saveOutputDecode(data));
-    // if (sendPort != null) sendPort.send({'progress': 0.5});
-
-
-    return jobpara;
   }
 
-  ReceivePort _receivePort;
-SendPort sendPort;
-
-  Future<Map<String, dynamic>> dummyAsync(dynamic jobData) async {
-    sendPort = jobData.sendAsyncPort;
-    // if (sendPort != null) sendPort.send({'progress': 0.5});
-    // do {
-    //   await for (var event in _receivePort) {
-    //     if (event is Map<String, dynamic> && event['progress'] != null) {
-    //       if (sendPort != null) sendPort.send(event);
-    //       //yield event['progress'];
-    //     } else {
-    //       //_result = event;
-    //       _receivePort.close();
-    //       return event;
-    //     }
-    //   }
-    // } while (true);
-
-  }
-Future<void> _transfer() async {
-  //if (sendPort != null) sendPort.send(output);
-
-}
 
   _saveOutputDecode(Map<String, dynamic> output) {
     _outData = output;
