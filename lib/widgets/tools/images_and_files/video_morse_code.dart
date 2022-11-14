@@ -13,7 +13,7 @@ import 'package:gc_wizard/widgets/common/base/gcw_slider.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_text.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_textfield.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_toast.dart';
-import 'package:gc_wizard/widgets/common/gcw_async_executer.dart';
+import 'package:gc_wizard/widgets/common/gcw_async_executer1.dart';
 import 'package:gc_wizard/widgets/common/gcw_default_output.dart';
 import 'package:gc_wizard/widgets/common/gcw_exported_file_dialog.dart';
 import 'package:gc_wizard/widgets/common/gcw_gallery.dart';
@@ -325,26 +325,26 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
 
   _analysePlatformFileAsync() async {
-    await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
+    //await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
 
-    // await showDialog(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (context) {
-    //     return Center(
-    //       child: Container(
-    //         child: GCWAsyncExecuter(
-    //           isolatedFunction: dummyAsync, //analyseVideoMorseCodeAsync,
-    //           parameter: _buildJobDataDecode(),
-    //           onReady: (data) => _saveOutputDecode(data),
-    //           isOverlay: true,
-    //         ),
-    //         height: 220,
-    //         width: 150,
-    //       ),
-    //     );
-    //   },
-    // );
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return Center(
+          child: Container(
+            child: GCWAsyncExecuter(
+              isolatedFunction: analyseVideoMorseCodeAsync,
+              parameter: _buildJobDataDecode(),
+              onReady: (data) => _saveOutputDecode(data),
+              isOverlay: true,
+            ),
+            height: 220,
+            width: 150,
+          ),
+        );
+      },
+    );
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
@@ -426,7 +426,7 @@ Future<void> _transfer() async {
       showToast(i18n(context, 'common_loadfile_exception_notloaded'));
       return;
     }
-    setState(() {});
+    //setState(() {});
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {});
     });

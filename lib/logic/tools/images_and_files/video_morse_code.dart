@@ -75,7 +75,7 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     Point<double> topLeft,
     Point<double> bottomRight,
     { SendPort sendAsyncPort}) async {
-  var timeStamp = 000; //39500;
+  var timeStamp = 14000; //39500;
   Uint8List thumbnail;
   List<Uint8List> imageList = [];
   List<int> durationList = [];
