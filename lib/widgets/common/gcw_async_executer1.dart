@@ -1,4 +1,5 @@
 import 'dart:isolate';
+import 'package:async/async.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:gc_wizard/i18n/app_localizations.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_button.dart';
 
 Isolate _isolate;
+CancelableOperation _cancelableOperation;
 
 class GCWAsyncExecuterParameters {
   SendPort sendAsyncPort;
@@ -48,7 +50,13 @@ Future<ReceivePort> _makeAsync(Function isolatedFunction, GCWAsyncExecuterParame
   parameters.sendAsyncPort = asyncReceivePort.sendPort;
   _asyncPortBridge(asyncReceivePort, receivePort.sendPort);
 
-  isolatedFunction(parameters);
+  _cancelableOperation = CancelableOperation.fromFuture(
+    //Future.value('future result'),
+      isolatedFunction(parameters),
+    onCancel: () => {debugPrint('onCancel')},
+  );
+
+  //var xx= isolatedFunction(parameters);
   //_isolate = await Isolate.spawn(isolatedFunction, parameters);
 
   return receivePort;
@@ -136,6 +144,7 @@ class _GCWAsyncExecuterState extends State<GCWAsyncExecuter> {
             GCWButton(
               text: i18n(context, 'common_cancel'),
               onPressed: () {
+                if (_cancelableOperation != null) _cancelableOperation.cancel();
                 _cancelProcess();
                 _cancel = true;
               },
