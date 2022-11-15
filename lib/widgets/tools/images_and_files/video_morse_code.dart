@@ -103,7 +103,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               _blackLevelOverride = true;
               _startTime = null;
               _endTime = null;
-              VideoPlayerController.asset(null);
+              _videoController = null;
               _analysePlatformFileAsync();
             });
           }
@@ -139,11 +139,11 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               iconColor: _outData != null && !_play ? null : themeColors().inActive(),
               onPressed: () {
                 setState(() {
-                  _play = (!_play && widget.platformFile != null);
+                  _play = (_platformFile != null);
                   if (_play) {
-                    if (_videoController.dataSource == null)
-                      VideoPlayerController.asset(widget.platformFile.path);
-                    _videoController.play();
+                    if (_videoController == null)
+                      _videoController = VideoPlayerController.asset(_platformFile.path);
+                    if (_videoController != null) _videoController.play();
                   }
                 });
               },
@@ -155,7 +155,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               onPressed: () {
                 setState(() {
                   _play = false;
-                  _videoController.pause();
+                  if (_videoController != null) _videoController.pause();
                 });
               },
             ),
@@ -268,6 +268,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     List<Uint8List> images = _outData["images"];
     List<int> durations = _outData["durations"];
     List<double> luminances = _outData["luminance"];
+    if (_endTime == null) _endTime = _outData["duration"];
 
     if (images != null) {
       var imageCount = images.length;
@@ -296,7 +297,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
 
   _analysePlatformFileAsync() async {
-    if (_platformFile != null) return;
+    if (_platformFile == null) return;
     if (_intervallLast == null || _intervallLast != _intervall)
       await showDialog(
         context: context,

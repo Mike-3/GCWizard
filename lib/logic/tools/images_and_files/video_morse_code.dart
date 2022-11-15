@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
 import 'package:video_compress/video_compress.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoMorseCodeJobData {
@@ -16,7 +17,7 @@ class VideoMorseCodeJobData {
   final Point<double> topLeft;
   /// coordinates of bottom-right area to examine (0.0-1.0)
   final Point<double> bottomRight;
-  late VideoPlayerController _controller;
+  VideoPlayerController _controller;
 
 
 
@@ -111,6 +112,7 @@ var time = DateTime.now();
   print("Duration: " + DateTime.now().difference(time).inSeconds.toString());
 
   var out = Map<String, dynamic>();
+  out.addAll({"duration": videoInfo.duration.toInt()});
   out.addAll({"images": imageList});
   out.addAll({"durations": durationList});
   out.addAll({"luminance": luminanceList});
