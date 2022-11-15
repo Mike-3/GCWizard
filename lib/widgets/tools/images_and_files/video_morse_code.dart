@@ -43,6 +43,8 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   Map<String, dynamic> _outData;
   var _marked = <bool>[];
   int _intervall = 50;
+  int _startTime = 3;
+  int _endTime = 4;
   int _intervallLast;
   double _blackLevel = 50;
   bool _blackLevelOverride = true;
@@ -99,6 +101,9 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               _marked = null;
               _blackLevel = 50;
               _blackLevelOverride = true;
+              _startTime = null;
+              _endTime = null;
+              VideoPlayerController.asset(null);
               _analysePlatformFileAsync();
             });
           }
@@ -174,6 +179,24 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
         onChanged: (value) {
           setState(() {
             _intervall = value;
+          });
+        },
+      ),
+      GCWIntegerSpinner(
+        title: 'Start time (s)', //i18n(context, 'visual_cryptography_offset') + ' X',
+        value: _startTime == null ? 0 : 0,
+        onChanged: (value) {
+          setState(() {
+            _startTime = value;
+          });
+        },
+      ),
+      GCWIntegerSpinner(
+        title: 'End time (s)', //i18n(context, 'visual_cryptography_offset') + ' X',
+        value: _endTime == null ? 0 : 0,
+        onChanged: (value) {
+          setState(() {
+            _endTime = value;
           });
         },
       ),
@@ -300,7 +323,8 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
     return GCWAsyncExecuterParameters(
         VideoMorseCodeJobData(_platformFile.path, _intervall,
-          startTime: 14000,
+          startTime: _startTime == null ? null : _startTime * 1000,
+          endTime: _endTime == null ? null : _endTime * 1000,
           topLeft: Point<double>(0.0, 0.0), //(0.2, 0.2)
 
           bottomRight: Point<double>(1.0, 1.0), //(0.8, 0.8)
