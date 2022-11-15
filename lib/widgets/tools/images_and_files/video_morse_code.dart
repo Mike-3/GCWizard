@@ -45,7 +45,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   Map<String, dynamic> _outData;
   var _marked = <bool>[];
   int _intervall = 50;
-  double _blackLevel = 50.0;
+  double _blackLevel = 50;
   double _blackLevelNext;
   var _currentSimpleMode = GCWSwitchPosition.left;
   Map<String, dynamic> _outText;
@@ -115,7 +115,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               _platformFile = _file;
               _outData = null;
               _marked = null;
-              _blackLevel = 50.0;
+              _blackLevel = 50;
               _blackLevelNext = null;
               _analysePlatformFileAsync();
             });
@@ -186,7 +186,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
         onChanged: (value) {
           setState(() {
             _intervall = value;
-            _analysePlatformFileAsync();
+            //if (_platformFile != null) _analysePlatformFileAsync();
           });
         },
       ),
@@ -196,11 +196,16 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           min: 1,
           max: 100,
           onChangeEnd: (value) {
-            _marked = null;
-            _blackLevel = value;
-            _blackLevelNext = value;
-            _convertImageData(_outData);
-          }),
+            setState(() {
+              _marked = null;
+              _blackLevel = value;
+              _blackLevelNext = value;
+              _convertImageData(_outData);
+            });
+          },
+          onChanged: (value) {
+    _marked = null;
+    }),
     ]);
   }
 
@@ -348,65 +353,15 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
-    _receivePort = ReceivePort();
-    //parameters.sendAsyncPort = receivePort.sendPort;
-
-    var jobpara = GCWAsyncExecuterParameters(
+    return GCWAsyncExecuterParameters(
         VideoMorseCodeJobData(_platformFile.path, _intervall,
+          startTime: 14000,
           topLeft: Point<double>(0.0, 0.0), //(0.2, 0.2)
 
           bottomRight: Point<double>(1.0, 1.0), //(0.8, 0.8)
         ));
-
-    jobpara.sendAsyncPort = _receivePort.sendPort;
-    //await _dummyAsync
-
-
-
-    // analyseVideoMorseCodeAsync(jobpara).forEach((element) async {
-    //   await for (var event in _receivePort) {
-    //     if (event is Map<String, dynamic> && event['progress'] != null) {
-    //       if (sendPort != null) sendPort.send(event);
-    //       //yield event['progress'];
-    //     } else {
-    //       //_result = event;
-    //       _receivePort.close();
-    //       return event;
-    //     }
-    //   }
-    // });
-
-    //await analyseVideoMorseCodeAsync(jobpara).then((data) => _saveOutputDecode(data));
-    // if (sendPort != null) sendPort.send({'progress': 0.5});
-
-
-    return jobpara;
   }
 
-  ReceivePort _receivePort;
-SendPort sendPort;
-
-  Future<Map<String, dynamic>> dummyAsync(dynamic jobData) async {
-    sendPort = jobData.sendAsyncPort;
-    // if (sendPort != null) sendPort.send({'progress': 0.5});
-    // do {
-    //   await for (var event in _receivePort) {
-    //     if (event is Map<String, dynamic> && event['progress'] != null) {
-    //       if (sendPort != null) sendPort.send(event);
-    //       //yield event['progress'];
-    //     } else {
-    //       //_result = event;
-    //       _receivePort.close();
-    //       return event;
-    //     }
-    //   }
-    // } while (true);
-
-  }
-Future<void> _transfer() async {
-  //if (sendPort != null) sendPort.send(output);
-
-}
 
   _saveOutputDecode(Map<String, dynamic> output) {
     _outData = output;
