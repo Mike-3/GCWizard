@@ -1,7 +1,6 @@
-import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:math';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/i18n/app_localizations.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/animated_image_morse_code.dart';
@@ -25,13 +24,11 @@ import 'package:gc_wizard/widgets/common/gcw_output.dart';
 import 'package:gc_wizard/widgets/common/gcw_submit_button.dart';
 import 'package:gc_wizard/widgets/common/gcw_text_divider.dart';
 import 'package:gc_wizard/widgets/common/gcw_twooptions_switch.dart';
-import 'package:gc_wizard/widgets/tools/images_and_files/animated_image.dart';
 import 'package:gc_wizard/widgets/utils/file_utils.dart';
 import 'package:gc_wizard/widgets/utils/gcw_file.dart' as local;
-import 'package:intl/intl.dart';
-import 'package:tuple/tuple.dart';
-import 'package:video_compress/video_compress.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:video_player/video_player.dart';
+
+
 
 class VideoMorseCode extends StatefulWidget {
   final local.GCWFile platformFile;
@@ -52,9 +49,10 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   var _currentSimpleMode = GCWSwitchPosition.left;
   Map<String, dynamic> _outText;
   local.GCWFile _platformFile;
-  // GCWSwitchPosition _currentMode = GCWSwitchPosition.right;
   bool _play = false;
   bool _filtered = true;
+  VideoPlayerController _videoController;
+
   static var allowedExtensions = [FileType.MP4, FileType.WEBM];
 
   String _currentInput = '';
@@ -85,24 +83,6 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
       _analysePlatformFileAsync();
     }
 
-    return Column(children: <Widget>[
-      // GCWTwoOptionsSwitch(
-      //   value: _currentMode,
-      //   onChanged: (value) {
-      //     setState(() {
-      //       _currentMode = value;
-      //     });
-      //   },
-      // ),
-      // _currentMode == GCWSwitchPosition.right ? _decodeWidgets() : _encodeWidgets()
-      _decodeWidgets(),
-    ]);
-  }
-
-
-
-
-  Widget _decodeWidgets() {
     return Column(children: <Widget>[
       GCWOpenFile(
         supportedFileTypes: allowedExtensions,
@@ -154,7 +134,12 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               iconColor: _outData != null && !_play ? null : themeColors().inActive(),
               onPressed: () {
                 setState(() {
-                  _play = (_outData != null);
+                  _play = (!_play && widget.platformFile != null);
+                  if (_play) {
+                    if (_videoController.dataSource == null)
+                      VideoPlayerController.asset(widget.platformFile.path);
+                    _videoController.play();
+                  }
                 });
               },
             ),
@@ -165,6 +150,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               onPressed: () {
                 setState(() {
                   _play = false;
+                  _videoController.pause();
                 });
               },
             ),
@@ -218,32 +204,17 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     if (_outData == null) return null;
 
     return Column(children: <Widget>[
-      // _play
-      //     ? Image.memory(_platformFile.bytes)
-          // : _filtered
-          //     ? GCWGallery(
-          //         imageData:
-          //           _convertImageData(_outData["images"], null, null), //_convertImageDataFiltered _outData["durations"], _outData["imagesFiltered"]
-          //         onDoubleTap: (index) {
-          //           setState(() {
-          //             // List<List<int>> imagesFiltered = _outData["imagesFiltered"];
-          //
-          //             // _marked[imagesFiltered[index].first] = !_marked[imagesFiltered[index].first];
-          //             // _markedListSetColumn(imagesFiltered[index], _marked[imagesFiltered[index].first]);
-          //             // _outText = decodeMorseCode(_outData["durations"], _marked);
-          //           });
-          //         },
-          //       )
-          //     :
-      GCWGallery(
-          imageData: _convertImageData(_outData),
-          onDoubleTap: (index) {
-            setState(() {
-              if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
-              _outText = decodeMorseCode(_outData["durations"], _marked);
-            });
-          },
-        ),
+      _play
+          ? VideoPlayer(_videoController)
+          :  GCWGallery(
+                imageData: _convertImageData(_outData),
+                onDoubleTap: (index) {
+                  setState(() {
+                    if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
+                    _outText = decodeMorseCode(_outData["durations"], _marked);
+                  });
+                },
+              ),
       _buildDecodeOutput(),
     ]);
   }
@@ -266,13 +237,6 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
       };
     }
   }
-
-  _markedListSetColumn(List<int> imagesFiltered, bool value) {
-    imagesFiltered.forEach((idx) {
-      _marked[idx] = value;
-    });
-  }
-
 
   List<GCWImageViewData> _convertImageData(Map<String, dynamic> _outData) {
     var list = <GCWImageViewData>[];

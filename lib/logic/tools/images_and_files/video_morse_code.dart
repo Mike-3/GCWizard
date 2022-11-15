@@ -2,8 +2,6 @@ import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:gc_wizard/logic/tools/crypto_and_encodings/morse.dart';
-import 'package:gc_wizard/logic/tools/images_and_files/animated_image.dart' as animated_image;
 import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
 import 'package:video_compress/video_compress.dart';
@@ -18,15 +16,15 @@ class VideoMorseCodeJobData {
   final Point<double> topLeft;
   /// coordinates of bottom-right area to examine (0.0-1.0)
   final Point<double> bottomRight;
+  late VideoPlayerController _controller;
 
-  final IVideoCompress videoCompress;
+
 
   VideoMorseCodeJobData(this.videoPath, this.intervall,
         { this.startTime,
           this.endTime,
           this.topLeft = null,
-          this.bottomRight = null,
-          this.videoCompress = null});
+          this.bottomRight = null});
 }
 
 Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
@@ -37,7 +35,6 @@ Future<Map<String, dynamic>> analyseVideoMorseCodeAsync(dynamic jobData) async {
       endTime:  jobData.parameters.endTime,
       topLeft: jobData.parameters.topLeft,
       bottomRight: jobData.parameters.bottomRight,
-      videoCompress: jobData.parameters.videoCompress,
       isCancelled: jobData.isCancelled,
       sendAsyncPort: jobData.sendAsyncPort);
 
@@ -52,21 +49,10 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, int interva
       int endTime,
       Point<double> topLeft,
       Point<double> bottomRight,
-      IVideoCompress videoCompress,
       Function isCancelled,
       SendPort sendAsyncPort}) async {
 
-    // var out = animated_image.analyseImage(bytes, sendAsyncPort: sendAsyncPort, filterImages: (outMap, frames) {
-    //   List<Uint8List> imageList = outMap["images"];
-    //   var filteredList = <List<int>>[];
-    //
-    //   // for (var i = 0; i < imageList.length; i++) filteredList = _filterImages(filteredList, i, imageList);
-    //
-    //   // filteredList = _searchHighSignalImage(frames, filteredList);
-    //   // outMap.addAll({"imagesFiltered": filteredList});
-    // });
-
-  if (videoCompress == null) videoCompress = VideoCompress;
+  var videoCompress = VideoCompress;
   if (topLeft == null)
     topLeft = Point<double>(0.0, 0.0);
   else
@@ -91,7 +77,7 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     Point<double> bottomRight,
     Function isCancelled,
     { SendPort sendAsyncPort}) async {
-  Uint8List thumbnail;
+
   List<Uint8List> imageList = [];
   List<int> durationList = [];
   List<double> luminanceList = [];
@@ -104,21 +90,6 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
 var time = DateTime.now();
 
 
-  // do {
-  //   thumbnail = await _createThumbnailImage(videoPath, timeStamp, videoCompress);
-  //   timeStamp += intervall;
-  //   if (thumbnail != null) {
-  //     imageList.add(thumbnail);
-  //     durationList.add(intervall);
-  //     luminanceList.add(await _imageLuminance_(thumbnail, topLeft, bottomRight));
-  //   }
-  //   _progress++;
-  //   print(timeStamp.toString() + ' ' + luminanceList.last.toString());
-  //   if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
-  //     sendAsyncPort.send({'progress': _progress / _total});
-  //   }
-  // } while (thumbnail != null && timeStamp < videoInfo.duration);
-
   do {
     await _createThumbnailImage(videoPath, timeStamp, videoCompress).then((thumbnail) async {
       if (thumbnail != null) {
@@ -130,22 +101,13 @@ var time = DateTime.now();
     timeStamp += intervall;
 
     _progress++;
+    // ToDo remove
     print(timeStamp.toString() + ' ' + luminanceList.last.toString());
     if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
       sendAsyncPort.send({'progress': _progress / _total});
     }
-  } while ( timeStamp < endTime && (isCancelled == null || !isCancelled())); //thumbnail != null &&
+  } while ( timeStamp < endTime && (isCancelled == null || !isCancelled()));
 
-// Future.wait(
-// __createThumbnailImages(videoPath, intervall,
-//       imageList,
-//       durationList,
-//       luminanceList,
-//       videoCompress,
-//       topLeft, bottomRight,
-//       sendAsyncPort: sendAsyncPort
-//   )
-// );
   print("Duration: " + DateTime.now().difference(time).inSeconds.toString());
 
   var out = Map<String, dynamic>();
@@ -161,42 +123,6 @@ var time = DateTime.now();
   return out;
 }
 
-__createThumbnailImages(String videoPath, int intervall,
-    List<Uint8List> imageList,
-    List<int> durationList,
-    List<double> luminanceList,
-
-    IVideoCompress videoCompress,
-    Point<double> topLeft,
-    Point<double> bottomRight,
-    { SendPort sendAsyncPort}) async {
-
-  var timeStamp = 000; //39500;
-
-  var videoInfo = await VideoCompress.getMediaInfo(videoPath);
-  var _total =  (videoInfo.duration - timeStamp) / intervall;
-  int _progressStep = max((_total / 100).toInt(), 1);
-  int _progress = 0;
-
-  var counter = 0;
-  do {
-    _createThumbnailImage(videoPath, timeStamp, videoCompress).then((thumbnail) async {
-      timeStamp += intervall;
-      if (thumbnail != null) {
-        imageList.add(thumbnail);
-        durationList.add(intervall);
-        luminanceList.add(await _imageLuminance_(thumbnail, topLeft, bottomRight));
-      }
-      _progress++;
-      print(timeStamp.toString() + ' ' + luminanceList.last.toString());
-      if (_total != 0 && sendAsyncPort != null && (_progress % _progressStep == 0)) {
-        sendAsyncPort.send({'progress': _progress / _total});
-      }
-    });
-    counter++;
-  } while ((counter < 6) && (timeStamp < videoInfo.duration)); //thumbnail != null &&
-
-}
 
 Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs, IVideoCompress videoCompress ) async {
   return VideoThumbnail.thumbnailData(
