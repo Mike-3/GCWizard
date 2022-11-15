@@ -7,6 +7,7 @@ import 'package:gc_wizard/i18n/app_localizations.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/animated_image_morse_code.dart';
 import 'package:gc_wizard/logic/tools/images_and_files/video_morse_code.dart';
 import 'package:gc_wizard/theme/theme_colors.dart';
+import 'package:gc_wizard/widgets/common/base/gcw_button.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_iconbutton.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_output_text.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_slider.dart';
@@ -45,8 +46,9 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
   Map<String, dynamic> _outData;
   var _marked = <bool>[];
   int _intervall = 50;
+  int _intervallLast;
   double _blackLevel = 50;
-  double _blackLevelNext;
+  bool _blackLevelOverride = true;
   var _currentSimpleMode = GCWSwitchPosition.left;
   Map<String, dynamic> _outText;
   local.GCWFile _platformFile;
@@ -116,7 +118,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
               _outData = null;
               _marked = null;
               _blackLevel = 50;
-              _blackLevelNext = null;
+              _blackLevelOverride = true;
               _analysePlatformFileAsync();
             });
           }
@@ -186,7 +188,6 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
         onChanged: (value) {
           setState(() {
             _intervall = value;
-            //if (_platformFile != null) _analysePlatformFileAsync();
           });
         },
       ),
@@ -195,17 +196,21 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           value: _blackLevel,
           min: 1,
           max: 100,
-          onChangeEnd: (value) {
-            setState(() {
-              _marked = null;
-              _blackLevel = value;
-              _blackLevelNext = value;
-              _convertImageData(_outData);
-            });
-          },
           onChanged: (value) {
-    _marked = null;
-    }),
+            _marked = null;
+            _blackLevel = value;
+            _blackLevelOverride = false;
+            _analysePlatformFileAsync();
+          }
+      ),
+      GCWButton(
+        text: i18n(context, 'common_start'),
+        onPressed: () {
+          setState(() {
+            _analysePlatformFileAsync();
+          });
+        },
+      ),
     ]);
   }
 
@@ -231,14 +236,14 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           //       )
           //     :
       GCWGallery(
-                  imageData: _convertImageData(_outData),
-                  onDoubleTap: (index) {
-                    setState(() {
-                      // if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
-                      // _outText = decodeMorseCode(_outData["durations"], _marked);
-                    });
-                  },
-                ),
+          imageData: _convertImageData(_outData),
+          onDoubleTap: (index) {
+            setState(() {
+              if (_marked != null && index < _marked.length) _marked[index] = !_marked[index];
+              _outText = decodeMorseCode(_outData["durations"], _marked);
+            });
+          },
+        ),
       _buildDecodeOutput(),
     ]);
   }
@@ -259,11 +264,6 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
       for (var i = 0; i < luminances.length; i++) {
         _marked[i] = luminances[i] > _blackLevel;
       };
-
-      // // first image default as high signal
-      // if (imagesFiltered.length == 2) {
-      //   _markedListSetColumn(imagesFiltered[0], true);
-      // }
     }
   }
 
@@ -273,27 +273,6 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     });
   }
 
-  List<GCWImageViewData> _convertImageDataFiltered(
-      List<Uint8List> images, List<int> durations, List<List<int>> imagesFiltered) {
-    var list = <GCWImageViewData>[];
-
-    if (images != null) {
-      var imageCount = images.length;
-      // _initMarkedList(images, imagesFiltered);
-
-      for (var i = 0; i < imagesFiltered.length; i++) {
-        String description = imagesFiltered[i].length.toString() + '/$imageCount';
-
-        var image = images[imagesFiltered[i].first];
-        list.add(GCWImageViewData(local.GCWFile(bytes: image),
-            description: description, marked: _marked[imagesFiltered[i].first]));
-      }
-      //_outText = decodeMorseCode(durations, _marked);
-
-
-    }
-    return list;
-  }
 
   List<GCWImageViewData> _convertImageData(Map<String, dynamic> _outData) {
     var list = <GCWImageViewData>[];
@@ -314,7 +293,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
           _duration += durations[i];
           description += ': ' + _duration.toString() + ' ms ' + luminances[i].toString();
         }
-        if (i == images.length-1 || _marked[i] != _marked[i+1]) {
+        if (!_filtered || i == images.length-1 || _marked[i] != _marked[i+1]) {
           list.add(GCWImageViewData(local.GCWFile(bytes: images[i]), description: description, marked: _marked[i]));
           _duration = 0;
         }
@@ -330,26 +309,28 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
 
 
   _analysePlatformFileAsync() async {
-    //await analyseVideoMorseCodeAsync(await _buildJobDataDecode()) .then((data) => _saveOutputDecode(data));
-
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return Center(
-          child: Container(
-            child: GCWAsyncExecuter(
-              isolatedFunction: analyseVideoMorseCodeAsync,
-              parameter: _buildJobDataDecode(),
-              onReady: (data) => _saveOutputDecode(data),
-              isOverlay: true,
+    if (_platformFile != null) return;
+    if (_intervallLast == null || _intervallLast != _intervall)
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return Center(
+            child: Container(
+              child: GCWAsyncExecuter(
+                isolatedFunction: analyseVideoMorseCodeAsync,
+                parameter: _buildJobDataDecode(),
+                onReady: (data) => _saveOutputDecode(data),
+                isOverlay: true,
+              ),
+              height: 220,
+              width: 150,
             ),
-            height: 220,
-            width: 150,
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    else if (_marked == null)
+      _convertImageData(_outData);
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataDecode() async {
@@ -367,21 +348,14 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
     _outData = output;
     _marked = null;
 
-    // restore image references (problem with sendPort, lose references)
     if (_outData != null) {
-      if (_blackLevelNext == null)
+      if (_blackLevelOverride)
         _blackLevel = _outData["blackLevel"];
-
-      //List<Uint8List> images = _outData["images"];
-      // List<int> linkList = _outData["linkList"];
-      // for (int i = 0; i < images.length; i++) {
-      //   images[i] = images[linkList[i]];
-      // }
     } else {
       showToast(i18n(context, 'common_loadfile_exception_notloaded'));
       return;
     }
-    //setState(() {});
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {});
     });

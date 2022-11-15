@@ -7,7 +7,6 @@ import 'package:gc_wizard/i18n/app_localizations.dart';
 import 'package:gc_wizard/widgets/common/base/gcw_button.dart';
 
 Isolate _isolate;
-CancelableOperation _cancelableOperation;
 
 class GCWAsyncExecuterParameters {
   SendPort sendAsyncPort;
@@ -56,10 +55,6 @@ Future<ReceivePort> _makeAsync(Function isolatedFunction, GCWAsyncExecuterParame
   _asyncPortBridge(asyncReceivePort, receivePort.sendPort);
 
   isolatedFunction(parameters);
-  // _cancelableOperation = CancelableOperation.fromFuture(
-  //     isolatedFunction(parameters),
-  //     onCancel: () => {debugPrint('onCancel')},
-  // );
 
   return receivePort;
 }
@@ -155,7 +150,6 @@ class _GCWAsyncExecuterState extends State<GCWAsyncExecuter> {
   }
 
   _cancelProcess() {
-    if (_cancelableOperation != null) _cancelableOperation.cancel();
     if (_isolate != null) _isolate.kill(priority: Isolate.immediate);
     if (_receivePort != null) _receivePort.close();
   }
