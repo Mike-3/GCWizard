@@ -144,7 +144,6 @@ class _GCWAsyncExecuterState extends State<GCWAsyncExecuter> {
             GCWButton(
               text: i18n(context, 'common_cancel'),
               onPressed: () {
-                if (_cancelableOperation != null) _cancelableOperation.cancel();
                 _cancelProcess();
                 _cancel = true;
               },
@@ -154,6 +153,7 @@ class _GCWAsyncExecuterState extends State<GCWAsyncExecuter> {
   }
 
   _cancelProcess() {
+    if (_cancelableOperation != null) _cancelableOperation.cancel();
     if (_isolate != null) _isolate.kill(priority: Isolate.immediate);
     if (_receivePort != null) _receivePort.close();
   }
