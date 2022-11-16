@@ -184,7 +184,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
       ),
       GCWIntegerSpinner(
         title: 'Start time (s)', //i18n(context, 'visual_cryptography_offset') + ' X',
-        value: _startTime == null ? 0 : 0,
+        value: _startTime == null ? 0 : _startTime,
         onChanged: (value) {
           setState(() {
             _startTime = value;
@@ -193,7 +193,7 @@ class VideoMorseCodeState extends State<VideoMorseCode> {
       ),
       GCWIntegerSpinner(
         title: 'End time (s)', //i18n(context, 'visual_cryptography_offset') + ' X',
-        value: _endTime == null ? 0 : 0,
+        value: _endTime == null ? 0 : _endTime,
         onChanged: (value) {
           setState(() {
             _endTime = value;
