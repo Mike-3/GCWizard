@@ -7,6 +7,8 @@ import 'package:tuple/tuple.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+// import 'package:ffmpeg_kit_flutter_min_gpl/ media_information.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 
 class VideoMorseCodeJobData {
   final String videoPath;
@@ -78,6 +80,11 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     Point<double> bottomRight,
     Function isCancelled,
     { SendPort sendAsyncPort}) async {
+
+/// https://stackoverflow.com/questions/73783637/how-to-extract-all-video-frames-using-ffmpeg-kit-with-flutter
+  FFmpegKit.execute('-i ${videoPath}').then((session) async {
+    print(await session.getDuration().toString());
+  });
 
   List<Uint8List> imageList = [];
   List<int> durationList = [];

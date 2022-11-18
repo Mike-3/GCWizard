@@ -54,6 +54,7 @@ dependencies:
   video_compress: ^3.0.0
   video_player: ^2.4.7
   video_thumbnail: ^0.5.3
+  ffmpeg_kit_flutter: ^5.1.0-LTS
   #xmp: ^1.0.2 # xml:4  :(
 
 dev_dependencies:
