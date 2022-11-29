@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:gc_wizard/widgets/utils/file_utils.dart';
 import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
@@ -90,8 +91,24 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
 
 
 /// https://stackoverflow.com/questions/73783637/how-to-extract-all-video-frames-using-ffmpeg-kit-with-flutter
-  FFmpegKit.execute('-i ${videoPath} -vf  fps=1/60 scale=-1:170 out%04d.png').then((session) async {
-    print(await session.getDuration().toString());
+  FFmpegKit.executeAsync('-i ${videoPath} -vf  fps=1/60 scale=-1:170 ${videoDir}/out%04d.png').then((session) async {
+    // final state = FFmpegKitConfig.sessionStateToString(
+    //     await session.getState());
+    final returnCode = await session.getReturnCode();
+    final failStackTrace = await session.getFailStackTrace();
+    final duration = await session.getDuration();
+
+    if (ReturnCode.isSuccess(returnCode)) {
+      print(
+          "Encode completed successfully in ${duration} milliseconds; playing video.");
+      //this.playVideo();
+    } else {
+      print(
+          "Encode failed. Please check log for the details.");
+      print(
+          " rc ${returnCode}" );//${(failStackTrace)} ? "" + "\\n"");
+    }
+    return null;
   });
 
   List<Uint8List> imageList = [];
