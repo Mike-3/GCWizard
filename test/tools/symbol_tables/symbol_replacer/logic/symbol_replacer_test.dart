@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import "package:flutter_test/flutter_test.dart";
 import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/logic/symbol_replacer.dart';
 import 'package:path/path.dart' as path;
+import 'package:image/image.dart' as Image;
 
 var testDirPath = 'test/tools/symbol_tables/symbol_replacer/resources/';
 
@@ -29,4 +30,17 @@ void main() {
     }
   });
 
+  group("ImageHashing.AverageHash:", () {
+    List<Map<String, Object?>> _inputsToExpected = [
+      {'input' : 'adlam_0.png', 'expectedOutput' : 4},
+    ];
+
+
+    for (var elem in _inputsToExpected) {
+      test('input: ${elem['input']}', () async {
+        var _actual = ImageHashing.AverageHash(Image.decodeImage(_getFileData(elem['input'] as String))!);
+        expect(_actual, elem['expectedOutput']);
+      });
+    }
+  });
 }

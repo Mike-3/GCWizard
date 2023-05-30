@@ -1036,6 +1036,7 @@ class ImageHashing {
     // Reduce colors to 6-bit grayscale and calculate average color value
     var grayscale = Uint8List(64);
     int averageValue = 0;
+    print(squeezed.data.toString());
     for (int y = 0; y < 8; y++) {
       for (int x = 0; x < 8; x++) {
         var pixel = squeezed.getPixel(x, y); //..ToArgb();
