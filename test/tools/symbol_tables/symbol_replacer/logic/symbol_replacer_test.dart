@@ -32,13 +32,15 @@ void main() {
 
   group("ImageHashing.AverageHash:", () {
     List<Map<String, Object?>> _inputsToExpected = [
-      {'input' : 'adlam_0.png', 'expectedOutput' : 4},
+      {'input' : 'adlam_0.png', 'expectedOutput' : 9151301127931913215},
     ];
 
 
     for (var elem in _inputsToExpected) {
       test('input: ${elem['input']}', () async {
-        var _actual = ImageHashing.AverageHash(Image.decodeImage(_getFileData(elem['input'] as String))!);
+        var image = Image.decodeImage(_getFileData(elem['input'] as String))!;
+        image = image.convert(format: Image.Format.uint8, numChannels: 4);
+        var _actual = ImageHashing.AverageHash(image);
         expect(_actual, elem['expectedOutput']);
       });
     }
