@@ -28,6 +28,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/general_codebreakers/substi
 import 'package:gc_wizard/tools/crypto_and_encodings/general_codebreakers/substitution_breaker/widget/quadgram_loader.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/general_codebreakers/substitution_breaker/widget/substitution_breaker_items.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_container.dart';
+import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/logic/hash_config_file.dart';
 import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/logic/symbol_replacer.dart';
 import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/widget/symbol_replacer_manual_control.dart';
 import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/widget/symbol_replacer_symboldata.dart';
@@ -66,6 +67,7 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
   final _isLoading = <bool>[false];
   double? _currentMergeDistance;
   var init = true;
+  Future<HashConfigFile?>? hashConfigFile;
 
   @override
   void initState() {
@@ -77,8 +79,10 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
   @override
   Widget build(BuildContext context) {
     if (init) {
+      hashConfigFile = HashConfigFile().loadConfigFile(context);
       _initDropDownLists();
       _selectSymbolTableDataItem(widget.symbolKey);
+
       init = false;
 
       if (widget.platformFile != null) {
@@ -167,7 +171,7 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
   }
 
   Future<GCWAsyncExecuterParameters?> _buildJobDataReplacer() async {
-    if (_currentSymbolTableViewData.data == null) await _currentSymbolTableViewData.initialize(context);
+    if (_currentSymbolTableViewData.data == null) await _currentSymbolTableViewData.initialize(context, hashConfigFile);
 
     if (_platformFile?.bytes == null) return null;
 
@@ -183,10 +187,10 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
 
   void _showOutput(SymbolReplacerImage? output) {
     _symbolImage = output;
-    setState(() {});
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   setState(() {});
-    // });
+    //setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+    });
   }
 
   Widget _buildAdvancedModeControl(BuildContext context) {
@@ -277,7 +281,7 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
               });
               if (_symbolImage != null) {
                 if (_currentSymbolTableViewData.data == null && _currentSymbolTableViewData != no_symbol_table) {
-                      _currentSymbolTableViewData.initialize(context).then((_) {
+                      _currentSymbolTableViewData.initialize(context, hashConfigFile).then((_) {
                         _symbolImage!.compareSymbols = _currentSymbolTableViewData.data?.images;
                       });
                 } else {
@@ -518,7 +522,7 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
 
     list = await Future.wait(_compareSymbolItems.map((_symbolTableViewData) async {
       var symbolTableViewData = _symbolTableViewData.value;
-      if (symbolTableViewData.data == null) await symbolTableViewData.initialize(context);
+      if (symbolTableViewData.data == null) await symbolTableViewData.initialize(context, hashConfigFile);
 
       return symbolTableViewData.data?.images ?? [];
     }));

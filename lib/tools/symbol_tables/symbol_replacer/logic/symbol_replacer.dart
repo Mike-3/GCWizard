@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
 import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/widget/symbol_replacer_symboldata.dart';
+import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/logic/hash_config_file.dart';
 import 'package:gc_wizard/utils/complex_return_types.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/image_utils.dart';
@@ -230,7 +231,7 @@ class SymbolReplacerImage {
       if (this.compareSymbols != _usedCompareSymbols || _usedCompareSymbolsImage == null) {
         _usedCompareSymbolsImage = _buildCompareSymbols(compareSymbols!);
       }
-      _useCompareSymbols(_usedCompareSymbolsImage);
+      _useCompareSymbols(_usedCompareSymbolsImage, null);
       _usedCompareSymbols = compareSymbols;
       this.compareSymbols = compareSymbols;
       mergeSymbolGroups();
@@ -337,6 +338,7 @@ class SymbolReplacerImage {
     for (var element in compareSymbols) {
       element.forEach((text, symbolData) {
         if (symbolData.bytes != null) {
+          print(symbolData.displayName ?? '' + ' ' + symbolData.hash.toString());
           var symbolImage = SymbolReplacerImage(symbolData.bytes!);
           symbolImage.splitAndGroupSymbols(_blackLevel!, _similarityLevel!, gap: _gap!, groupSymbols: false);
           // merge all symbols parts
@@ -371,13 +373,14 @@ class SymbolReplacerImage {
   /// then assign the text to the groups
   /// return: Sum of percent match for all symbols
   /// </summary>
-  double _useCompareSymbols(SymbolReplacerImage? compareSymbolImage) {
+  double _useCompareSymbols(SymbolReplacerImage? compareSymbolImage, HashConfigFile? hashConfigFile) {
     var percentSum = 0.0;
     if (compareSymbolImage == null || _similarityCompareLevel == null) return 0;
 
     // build hash for compare
     for (int i = 0; i < compareSymbolImage.symbols.length; i++) {
       compareSymbolImage.symbols[i].hash = ImageHashing.AverageHash(compareSymbolImage.symbols[i].bmp);
+      
     }
 
     // found the best compare symbols
@@ -926,10 +929,13 @@ class SymbolGroup {
 }
 
 Future<List<Map<String, SymbolReplacerSymbolData>>?> searchSymbolTableAsync(GCWAsyncExecuterParameters? jobData) async {
-  if (jobData?.parameters is! Tuple2<SymbolReplacerImage, List<List<Map<String, SymbolReplacerSymbolData>>>>) return null;
+  if (jobData?.parameters is! Tuple3<SymbolReplacerImage,
+      List<List<Map<String, SymbolReplacerSymbolData>>>, HashConfigFile?>) return null;
 
-  var data = jobData!.parameters as Tuple2<SymbolReplacerImage, List<List<Map<String, SymbolReplacerSymbolData>>>>;
-  var output = await searchSymbolTable(data.item1, data.item2, sendAsyncPort: jobData.sendAsyncPort);
+  var data = jobData!.parameters as Tuple3<SymbolReplacerImage,
+                List<List<Map<String, SymbolReplacerSymbolData>>>,
+                HashConfigFile?>;
+  var output = await searchSymbolTable(data.item1, data.item2, data.item3, sendAsyncPort: jobData.sendAsyncPort);
 
   jobData.sendAsyncPort?.send(output);
 
@@ -938,6 +944,7 @@ Future<List<Map<String, SymbolReplacerSymbolData>>?> searchSymbolTableAsync(GCWA
 
 Future<List<Map<String, SymbolReplacerSymbolData>>?> searchSymbolTable(
     SymbolReplacerImage? image, List<List<Map<String, SymbolReplacerSymbolData>>>? compareSymbols,
+    HashConfigFile? hashConfigFile,
     {SendPort? sendAsyncPort}) {
   if (image == null) return Future.value(null);
   if (compareSymbols == null) return Future.value(null);
@@ -959,7 +966,7 @@ Future<List<Map<String, SymbolReplacerSymbolData>>?> searchSymbolTable(
     imageTmp.resetGroupText();
     var compareSymbolImage = imageTmp._buildCompareSymbols(symbolTable);
     if (compareSymbolImage != null) {
-      var percent = imageTmp._useCompareSymbols(compareSymbolImage);
+      var percent = imageTmp._useCompareSymbols(compareSymbolImage, null);
       if (maxPercentSum < percent) {
         maxPercentSum = percent;
         maxPercentSymbolTable = symbolTable;

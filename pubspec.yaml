@@ -82,6 +82,7 @@ flutter:
     - assets/icons/coords/
     - assets/icons/science_and_technology/
     - assets/quadgrams/
+    - assets/symbol_replacer/
     - assets/tokens/
     - assets/searchstrings/
     - assets/symbol_tables/adlam/
