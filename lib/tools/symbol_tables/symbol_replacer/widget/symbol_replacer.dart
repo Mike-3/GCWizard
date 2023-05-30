@@ -528,7 +528,8 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
     }));
 
     return GCWAsyncExecuterParameters(
-        Tuple2<SymbolReplacerImage, List<List<Map<String, SymbolReplacerSymbolData>>>>(_symbolImage!, list));
+        Tuple2<SymbolReplacerImage, List<List<Map<String, SymbolReplacerSymbolData>>>>
+          (_symbolImage!, list));
   }
 
   void _showJobDataSearchSymbolTableOutput(List<Map<String, SymbolReplacerSymbolData>>? output) {

@@ -338,13 +338,13 @@ class SymbolReplacerImage {
     for (var element in compareSymbols) {
       element.forEach((text, symbolData) {
         if (symbolData.bytes != null) {
-          print(symbolData.displayName ?? '' + ' ' + symbolData.hash.toString());
           var symbolImage = SymbolReplacerImage(symbolData.bytes!);
           symbolImage.splitAndGroupSymbols(_blackLevel!, _similarityLevel!, gap: _gap!, groupSymbols: false);
           // merge all symbols parts
           for (var i = symbolImage.symbols.length - 2; i >= 0; i--) {
             symbolImage.mergeSymbol(symbolImage.symbols[i], symbolImage.symbols[i + 1], null);
           }
+          if (symbolImage.symbols.isNotEmpty) symbolImage.symbols.first.hash = symbolData.hash;
 
           // create SymbolGroups with text for the symbols
           // ignore: unused_local_variable
@@ -379,8 +379,9 @@ class SymbolReplacerImage {
 
     // build hash for compare
     for (int i = 0; i < compareSymbolImage.symbols.length; i++) {
+      var oldHash = compareSymbolImage.symbols[i].hash;
       compareSymbolImage.symbols[i].hash = ImageHashing.AverageHash(compareSymbolImage.symbols[i].bmp);
-      
+      print((compareSymbolImage.symbols[i].hash == oldHash).toString() + ' ' + compareSymbolImage.symbols[i].hash.toString() + ' ' + oldHash.toString());
     }
 
     // found the best compare symbols
@@ -929,13 +930,12 @@ class SymbolGroup {
 }
 
 Future<List<Map<String, SymbolReplacerSymbolData>>?> searchSymbolTableAsync(GCWAsyncExecuterParameters? jobData) async {
-  if (jobData?.parameters is! Tuple3<SymbolReplacerImage,
-      List<List<Map<String, SymbolReplacerSymbolData>>>, HashConfigFile?>) return null;
+  if (jobData?.parameters is! Tuple2<SymbolReplacerImage,
+      List<List<Map<String, SymbolReplacerSymbolData>>>>) return null;
 
-  var data = jobData!.parameters as Tuple3<SymbolReplacerImage,
-                List<List<Map<String, SymbolReplacerSymbolData>>>,
-                HashConfigFile?>;
-  var output = await searchSymbolTable(data.item1, data.item2, data.item3, sendAsyncPort: jobData.sendAsyncPort);
+  var data = jobData!.parameters as Tuple2<SymbolReplacerImage,
+                List<List<Map<String, SymbolReplacerSymbolData>>>>;
+  var output = await searchSymbolTable(data.item1, data.item2, sendAsyncPort: jobData.sendAsyncPort);
 
   jobData.sendAsyncPort?.send(output);
 
@@ -944,7 +944,6 @@ Future<List<Map<String, SymbolReplacerSymbolData>>?> searchSymbolTableAsync(GCWA
 
 Future<List<Map<String, SymbolReplacerSymbolData>>?> searchSymbolTable(
     SymbolReplacerImage? image, List<List<Map<String, SymbolReplacerSymbolData>>>? compareSymbols,
-    HashConfigFile? hashConfigFile,
     {SendPort? sendAsyncPort}) {
   if (image == null) return Future.value(null);
   if (compareSymbols == null) return Future.value(null);
