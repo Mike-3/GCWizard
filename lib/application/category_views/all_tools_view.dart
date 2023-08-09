@@ -168,6 +168,7 @@ import 'package:gc_wizard/tools/images_and_files/hexstring2file/widget/hexstring
 import 'package:gc_wizard/tools/images_and_files/hidden_data/widget/hidden_data.dart';
 import 'package:gc_wizard/tools/images_and_files/image_colorcorrections/widget/image_colorcorrections.dart';
 import 'package:gc_wizard/tools/images_and_files/image_flip_rotate/widget/image_flip_rotate.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/widget/jab_code.dart';
 import 'package:gc_wizard/tools/images_and_files/magic_eye_solver/widget/magic_eye_solver.dart';
 import 'package:gc_wizard/tools/images_and_files/qr_code/widget/qr_code.dart';
 import 'package:gc_wizard/tools/images_and_files/stegano/widget/stegano.dart';
@@ -609,6 +610,7 @@ void _initStaticToolList() {
       className(const IPCodes()),
       className(const IteratedCrossSumRange()),
       className(const IteratedCrossSumRangeFrequency()),
+      className(JabCode()),
       className(const Kamasutra()),
       className(const KarolRobot()),
       className(const Kenny()),

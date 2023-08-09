@@ -16,7 +16,7 @@ import 'dart:typed_data';
 import 'package:tuple/tuple.dart';
 
 import 'pseudo_random.dart';
-import 'jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 const LPDC_METADATA_SEED =	38545;
 const LPDC_MESSAGE_SEED =	785465;

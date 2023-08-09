@@ -13,7 +13,7 @@ import 'package:gc_wizard/logic/tools/images_and_files/qr_code.dart';
 import 'package:gc_wizard/widgets/utils/file_utils.dart';
 import 'package:image/image.dart' as Image;
 
-import 'jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 /*
  Read image into code bitmap

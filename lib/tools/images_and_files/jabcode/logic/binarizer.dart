@@ -13,9 +13,9 @@
 import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 import 'package:tuple/tuple.dart';
 
-import 'jabcode_h.dart';
 
 const BLOCK_SIZE_POWER = 5;
 const BLOCK_SIZE =			(1 << BLOCK_SIZE_POWER);

@@ -14,14 +14,14 @@ import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:tuple/tuple.dart';
-import 'sample.dart';
-import 'transform.dart';
-import 'binarizer.dart';
-import 'decoder.dart';
-import 'encoder_h.dart';
-import 'jabcode_h.dart';
-import 'decoder_h.dart';
-import 'detector_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/sample.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/transform.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/binarizer.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/decoder.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/encoder_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/decoder_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/detector_h.dart';
 
 /*
  Check the proportion of layer sizes in finder pattern
@@ -3045,17 +3045,19 @@ Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, Lis
  @return item1 the decoded data | NULL if failed
  @return item2 status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
 */
-Tuple2<jab_data, int> _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol> symbols) {
+Tuple2<jab_data?, int>? _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol>? symbols) {
 	int status;
 	if(status != 0) status = 0;
-	if(symbols == null)
-		return null;
+	if(symbols == null) {
+	  return null;
+	}
 
 	//binarize r, g, b channels
 	var ch = List<jab_bitmap>.filled(3, null);
 	balanceRGB(bitmap);
-  if(binarizerRGB(bitmap, ch, null) == 0)
-		return null;
+  if (binarizerRGB(bitmap, ch, null) == 0) {
+    return null;
+  }
 
   int total = 0;	//total number of decoded symbols
   bool res = true;
@@ -3128,12 +3130,12 @@ Tuple2<jab_data, int> _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_dec
   //   symbols[i].data= null;
   // }
 	if(!res)
-    return Tuple2<jab_data, int>(null, status);;
+    return Tuple2<jab_data?, int>(null, status);;
 	if(status != 0) {
 		if(status != 2)
 			status = 3;
 	}
-  return Tuple2<jab_data, int>(decoded_data, status);
+  return Tuple2<jab_data?, int>(decoded_data, status);
 }
 
 /*
@@ -3144,7 +3146,7 @@ Tuple2<jab_data, int> _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_dec
  @return item1 the decoded data | NULL if failed
  @return item2 status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
 */
-Tuple2<jab_data, int> decodeJABCode(jab_bitmap bitmap, int mode) {
+Tuple2<jab_data, int>? decodeJABCode(jab_bitmap bitmap, int mode) {
   var symbols = List<jab_decoded_symbol>.filled(MAX_SYMBOL_NUMBER, null);
 	return _decodeJABCodeEx(bitmap, mode, symbols);
 }

@@ -10,8 +10,8 @@
  Matrix transform
 */
 
-import 'detector_h.dart';
-import 'jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/detector_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 /*
  Calculate transformation matrix of square to quadrilateral

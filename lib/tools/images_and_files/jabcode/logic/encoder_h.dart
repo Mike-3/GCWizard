@@ -14,7 +14,7 @@
 //#define JABCODE_ENCODER_H
 
 import 'dart:typed_data';
-import 'jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 /*
  Default color palette in RGB format

@@ -12,8 +12,8 @@
 */
 
 import 'transform.dart';
-import 'detector_h.dart';
-import 'jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/detector_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 
 final SAMPLE_AREA_WIDTH	= (CROSS_AREA_WIDTH / 2 - 2).toInt(); //width of the columns where the metadata and palette in slave symbol are located

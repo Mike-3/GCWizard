@@ -11,7 +11,7 @@
 
 import 'dart:math';
 
-import 'jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 const MAX_MODULES 		= 145;	//the number of modules in side-version 32
 const MAX_SYMBOL_ROWS		= 3;

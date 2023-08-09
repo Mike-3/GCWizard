@@ -12,7 +12,7 @@
 
 import 'dart:typed_data';
 
-import 'jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 const DECODE_METADATA_FAILED = -1;
 const FATAL_ERROR = -2;	//e.g. out of memory

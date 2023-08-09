@@ -15,13 +15,13 @@ import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'decoder.dart';
-import 'decoder_h.dart';
-import 'encoder_h.dart';
-import 'interleave.dart';
-import 'jabcode_h.dart';
-import 'ldpc.dart';
-import 'mask.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/decoder.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/decoder_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/encoder_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/interleave.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/ldpc.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/mask.dart';
 
 /*
  Generate color palettes with more than 8 colors

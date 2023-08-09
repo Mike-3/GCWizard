@@ -1,23 +1,23 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/detector.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/encoder.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/image.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 import 'package:tuple/tuple.dart';
-
-import 'detector.dart';
-import 'encoder.dart';
-import 'image.dart';
-import 'jabcode_h.dart';
 
 /*
  JABCode reader main function
  @return item1 decoded data
  @return item2 0: success | 255: not detectable | other non-zero: decoding failed
 */
-Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
+Future<Tuple2<String?, String>?> scanBytes(Uint8List bytes) async {
 	//load image
 	var bitmap = readImage(bytes);
 
-	if(bitmap == null)
-		return null;
+	if(bitmap == null) {
+	  return null;
+	}
 
 	//find and decode JABCode in the image
 	int decode_status;
@@ -26,15 +26,17 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 	decode_status = result?.item2;
 	if(decoded_data == null) {
 		// reportError("Decoding JABCode failed");
-		if(decode_status != null)
-			return Future.value(Tuple2<String, String> (null, 0.toString())); //(symbols[0].module_size + 0.5).toInt();
-		else
-			return Future.value(Tuple2<String, String> (null, 255.toString()));;
+		if(decode_status != null) {
+			return Future.value(Tuple2<String?, String>(
+					null, 0.toString())); //(symbols[0].module_size + 0.5).toInt();
+		} else {
+			return Future.value(Tuple2<String?, String>(null, 255.toString()));
+		}
 	}
 
 	//output warning if the code is only partly decoded with COMPATIBLE_DECODE mode
 	if(decode_status == 2) {
-		return Future.value(Tuple2<String, String> (null,
+		return Future.value(const Tuple2<String?, String> (null,
 				"The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
 		// JAB_REPORT_INFO(("The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
 	}
@@ -43,7 +45,7 @@ Future<Tuple2<String, String>> scanBytes(Uint8List bytes) async {
 }
 
 /// Generating Jab Code
-Future<Uint8List> generateJabCode(String code,
+Future<Uint8List?> generateJabCode(String? code,
 		{int color_number = 8,
 			int moduleSize = 12,
 			int symbol_number = 1,

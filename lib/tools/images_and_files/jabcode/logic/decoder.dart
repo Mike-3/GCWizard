@@ -16,13 +16,13 @@ import 'dart:ffi';
 import 'dart:math';
 import 'dart:typed_data';
 import 'binarizer.dart';
-import 'decoder_h.dart';
-import 'detector_h.dart';
-import 'encoder_h.dart';
-import 'interleave.dart';
-import 'jabcode_h.dart';
-import 'ldpc.dart';
-import 'mask.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/decoder_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/detector_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/encoder_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/interleave.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/ldpc.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/mask.dart';
 
 
 

@@ -1,26 +1,25 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:gc_wizard/i18n/app_localizations.dart';
-import 'package:gc_wizard/logic/tools/images_and_files/jab_code/jabcode.dart';
-import 'package:gc_wizard/theme/theme_colors.dart';
-import 'package:gc_wizard/widgets/common/base/gcw_iconbutton.dart';
-import 'package:gc_wizard/widgets/common/base/gcw_textfield.dart';
-import 'package:gc_wizard/widgets/common/base/gcw_toast.dart';
-import 'package:gc_wizard/widgets/common/gcw_default_output.dart';
-import 'package:gc_wizard/widgets/common/gcw_exported_file_dialog.dart';
-import 'package:gc_wizard/widgets/common/gcw_integer_spinner.dart';
-import 'package:gc_wizard/widgets/common/gcw_openfile.dart';
-import 'package:gc_wizard/widgets/common/gcw_twooptions_switch.dart';
-import 'package:gc_wizard/widgets/utils/file_picker.dart';
-import 'package:gc_wizard/widgets/utils/file_utils.dart';
-import 'package:gc_wizard/widgets/utils/gcw_file.dart';
+import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
+import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
+import 'package:gc_wizard/common_widgets/dialogs/gcw_exported_file_dialog.dart';
+import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
+import 'package:gc_wizard/common_widgets/gcw_toast.dart';
+import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
+import 'package:gc_wizard/common_widgets/spinners/gcw_integer_spinner.dart';
+import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
+import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode.dart';
+import 'package:gc_wizard/utils/file_utils/file_utils.dart';
+import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
+import 'package:gc_wizard/utils/ui_dependent_utils/file_widget_utils.dart';
 import 'package:intl/intl.dart';
 
 class JabCode extends StatefulWidget {
-  final GCWFile platformFile;
+  final GCWFile? platformFile;
 
-  const JabCode({Key key, this.platformFile}) : super(key: key);
+  const JabCode({Key? key, this.platformFile}) : super(key: key);
 
   @override
   JabCodeState createState() => JabCodeState();
@@ -29,10 +28,10 @@ class JabCode extends StatefulWidget {
 class JabCodeState extends State<JabCode> {
   var _currentInput = '';
   var _currentModulSize = 5;
-  Uint8List _outData;
-  Uint8List _outDataEncrypt;
-  String _outDataDecrypt;
-  TextEditingController _inputController;
+  Uint8List? _outData;
+  Uint8List? _outDataEncrypt;
+  String? _outDataDecrypt;
+  late TextEditingController _inputController;
   GCWSwitchPosition _currentMode = GCWSwitchPosition.right;
   var lastCurrentInputLength = 0;
 
@@ -42,7 +41,7 @@ class JabCodeState extends State<JabCode> {
     _inputController = TextEditingController(text: _currentInput);
     if (widget.platformFile != null) {
       _currentMode = GCWSwitchPosition.right;
-      _outData = widget.platformFile.bytes;
+      _outData = widget.platformFile?.bytes;
       _updateOutput();
     }
   }
@@ -85,8 +84,8 @@ class JabCodeState extends State<JabCode> {
               ),
         ((_currentMode == GCWSwitchPosition.right) && (_outData != null))
             ? Container(
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Image.memory(_outData),
-                padding: EdgeInsets.symmetric(vertical: 20),
               )
             : Container(),
         _currentMode == GCWSwitchPosition.right
@@ -125,7 +124,7 @@ class JabCodeState extends State<JabCode> {
     );
   }
 
-  _buildOutput() {
+  void _buildOutput() {
     if (_currentMode == GCWSwitchPosition.left) {
       if (_outDataEncrypt == null) return null;
       return Image.memory(_outDataEncrypt);
@@ -133,7 +132,7 @@ class JabCodeState extends State<JabCode> {
       return _outDataDecrypt;
   }
 
-  _updateOutput() {
+  void _updateOutput() {
     try {
       if (_currentMode == GCWSwitchPosition.left) {
         var currentInput = _currentInput;
@@ -151,7 +150,7 @@ class JabCodeState extends State<JabCode> {
       } else {
         if (_outData == null) return;
 
-        scanBytes(_outData).then((data) {
+        scanBytes(_outData!).then((data) {
           setState(() {
             String text;
             if (data == null || data.item1.isEmpty) {
@@ -167,11 +166,11 @@ class JabCodeState extends State<JabCode> {
     }
   }
 
-  _exportFile(BuildContext context, Uint8List data) async {
+  Future<void> _exportFile(BuildContext context, Uint8List data) async {
     var fileType = getFileType(data);
-    var value = await saveByteDataToFile(
-        context, data, "img_" + DateFormat('yyyyMMdd_HHmmss').format(DateTime.now()) + '.' + fileExtension(fileType));
-
-    if (value != null) showExportedFileDialog(context, fileType: fileType);
+    await saveByteDataToFile(context, data, buildFileNameWithDate('hex_', fileType)).then((value) {
+      var content = fileClass(fileType) == FileClass.IMAGE ? imageContent(context, data) : null;
+      if (value) showExportedFileDialog(context, contentWidget: content);
+    });
   }
 }
