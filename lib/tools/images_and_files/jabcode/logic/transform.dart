@@ -149,17 +149,17 @@ jab_perspective_transform perspectiveTransform(double x0, double y0,
 												double x2p, double y2p,
 												double x3p, double y3p) {
 	var q2s = _quad2Square(x0, y0, x1, y1, x2, y2, x3, y3);
-	if(q2s == null) {
-		return null;
-	}
+	// if(q2s == null) {
+	// 	return null;
+	// }
 	var s2q = _square2Quad(x0p, y0p, x1p, y1p, x2p, y2p, x3p, y3p);
-	if(s2q == null) {
-		return null;
-	}
+	// if(s2q == null) {
+	// 	return null;
+	// }
 	var pt = _multiply(q2s, s2q);
-	if(pt == null) {
-		return null;
-	}
+	// if(pt == null) {
+	// 	return null;
+	// }
 
 	return pt;
 }

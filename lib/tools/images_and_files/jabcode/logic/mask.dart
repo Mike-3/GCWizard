@@ -35,12 +35,12 @@ int applyRule1(List<int> matrix, int width, int height, int color_number) {
 		fp1_c1 = 1;	fp1_c2 = 0;
 		fp2_c1 = 1;	fp2_c2 = 0;
 		fp3_c1 = 1;	fp3_c2 = 0;
-	}else if(color_number == 4) {
+	} else if(color_number == 4) {
 		fp0_c1 = 0;	fp0_c2 = 3;
 		fp1_c1 = 1;	fp1_c2 = 2;
 		fp2_c1 = 2;	fp2_c2 = 1;
 		fp3_c1 = 3;	fp3_c2 = 0;
-	}else {
+	} else {
 		fp0_c1 = FP0_CORE_COLOR;	fp0_c2 = 7 - FP0_CORE_COLOR;
 		fp1_c1 = FP1_CORE_COLOR;	fp1_c2 = 7 - FP1_CORE_COLOR;
 		fp2_c1 = FP2_CORE_COLOR;	fp2_c2 = 7 - FP2_CORE_COLOR;
@@ -51,53 +51,54 @@ int applyRule1(List<int> matrix, int width, int height, int color_number) {
 	for(int i=0; i<height; i++) {
 		for(int j=0; j<width; j++) {
 			if(j >= 2 && j <= width - 3 && i >= 2 && i <= height - 3) {
-				if(matrix[i * width + j - 2] == fp0_c1 &&	//finder pattern 0
-					 matrix[i * width + j - 1] == fp0_c2 &&
-					 matrix[i * width + j    ] == fp0_c1 &&
-					 matrix[i * width + j + 1] == fp0_c2 &&
-					 matrix[i * width + j + 2] == fp0_c1 &&
-					 matrix[(i - 2) * width + j] == fp0_c1 &&
-					 matrix[(i - 1) * width + j] == fp0_c2 &&
-					 matrix[(i    ) * width + j] == fp0_c1 &&
-					 matrix[(i + 1) * width + j] == fp0_c2 &&
-					 matrix[(i + 2) * width + j] == fp0_c1)
-				   score++;
-				else if(
-				   matrix[i * width + j - 2] == fp1_c1 &&	//finder pattern 1
-				   matrix[i * width + j - 1] == fp1_c2 &&
-				   matrix[i * width + j    ] == fp1_c1 &&
-				   matrix[i * width + j + 1] == fp1_c2 &&
-				   matrix[i * width + j + 2] == fp1_c1 &&
-				   matrix[(i - 2) * width + j] == fp1_c1 &&
-				   matrix[(i - 1) * width + j] == fp1_c2 &&
-				   matrix[(i    ) * width + j] == fp1_c1 &&
-				   matrix[(i + 1) * width + j] == fp1_c2 &&
-				   matrix[(i + 2) * width + j] == fp1_c1)
-				   score++;
-				else if(
-					 matrix[i * width + j - 2] == fp2_c1 &&	//finder pattern 2
-					 matrix[i * width + j - 1] == fp2_c2 &&
-					 matrix[i * width + j    ] == fp2_c1 &&
-					 matrix[i * width + j + 1] == fp2_c2 &&
-					 matrix[i * width + j + 2] == fp2_c1 &&
-					 matrix[(i - 2) * width + j] == fp2_c1 &&
-					 matrix[(i - 1) * width + j] == fp2_c2 &&
-					 matrix[(i    ) * width + j] == fp2_c1 &&
-					 matrix[(i + 1) * width + j] == fp2_c2 &&
-					 matrix[(i + 2) * width + j] == fp2_c1)
-				   score++;
-				else if(
-				   matrix[i * width + j - 2] == fp3_c1 &&	//finder pattern 3
-				   matrix[i * width + j - 1] == fp3_c2 &&
-				   matrix[i * width + j    ] == fp3_c1 &&
-				   matrix[i * width + j + 1] == fp3_c2 &&
-				   matrix[i * width + j + 2] == fp3_c1 &&
-				   matrix[(i - 2) * width + j] == fp3_c1 &&
-				   matrix[(i - 1) * width + j] == fp3_c2 &&
-				   matrix[(i    ) * width + j] == fp3_c1 &&
-				   matrix[(i + 1) * width + j] == fp3_c2 &&
-				   matrix[(i + 2) * width + j] == fp3_c1)
-				   score++;
+				if (matrix[i * width + j - 2] == fp0_c1 && //finder pattern 0
+					matrix[i * width + j - 1] == fp0_c2 &&
+					matrix[i * width + j ] == fp0_c1 &&
+					matrix[i * width + j + 1] == fp0_c2 &&
+					matrix[i * width + j + 2] == fp0_c1 &&
+					matrix[(i - 2) * width + j] == fp0_c1 &&
+					matrix[(i - 1) * width + j] == fp0_c2 &&
+					matrix[(i) * width + j] == fp0_c1 &&
+					matrix[(i + 1) * width + j] == fp0_c2 &&
+					matrix[(i + 2) * width + j] == fp0_c1) {
+					score++;
+				} else if (
+					matrix[i * width + j - 2] == fp1_c1 && //finder pattern 1
+					matrix[i * width + j - 1] == fp1_c2 &&
+					matrix[i * width + j ] == fp1_c1 &&
+					matrix[i * width + j + 1] == fp1_c2 &&
+					matrix[i * width + j + 2] == fp1_c1 &&
+					matrix[(i - 2) * width + j] == fp1_c1 &&
+					matrix[(i - 1) * width + j] == fp1_c2 &&
+					matrix[(i) * width + j] == fp1_c1 &&
+					matrix[(i + 1) * width + j] == fp1_c2 &&
+					matrix[(i + 2) * width + j] == fp1_c1) {
+					score++;
+				} else if (
+					matrix[i * width + j - 2] == fp2_c1 && //finder pattern 2
+					matrix[i * width + j - 1] == fp2_c2 &&
+					matrix[i * width + j ] == fp2_c1 &&
+					matrix[i * width + j + 1] == fp2_c2 &&
+					matrix[i * width + j + 2] == fp2_c1 &&
+					matrix[(i - 2) * width + j] == fp2_c1 &&
+					matrix[(i - 1) * width + j] == fp2_c2 &&
+					matrix[(i) * width + j] == fp2_c1 &&
+					matrix[(i + 1) * width + j] == fp2_c2 &&
+					matrix[(i + 2) * width + j] == fp2_c1) {
+					score++;
+				} else if(
+					matrix[i * width + j - 2] == fp3_c1 &&	//finder pattern 3
+					matrix[i * width + j - 1] == fp3_c2 &&
+					matrix[i * width + j    ] == fp3_c1 &&
+					matrix[i * width + j + 1] == fp3_c2 &&
+					matrix[i * width + j + 2] == fp3_c1 &&
+					matrix[(i - 2) * width + j] == fp3_c1 &&
+					matrix[(i - 1) * width + j] == fp3_c2 &&
+					matrix[(i    ) * width + j] == fp3_c1 &&
+					matrix[(i + 1) * width + j] == fp3_c2 &&
+					matrix[(i + 2) * width + j] == fp3_c1) {
+					score++;
+				}
 			}
 		}
 	}
@@ -120,8 +121,9 @@ int applyRule2(List<int> matrix, int width, int height) {
 			{
 				if(matrix[i * width + j] == matrix[i * width + (j + 1)] &&
 				   matrix[i * width + j] == matrix[(i + 1) * width + j] &&
-				   matrix[i * width + j] == matrix[(i + 1) * width + (j + 1)])
-				   	score++;
+				   matrix[i * width + j] == matrix[(i + 1) * width + (j + 1)]) {
+				  score++;
+				}
 			}
 		}
 	}
@@ -152,23 +154,26 @@ int applyRule3(List<int> matrix, int width, int height) {
 			for(int j=0; j<maxj; j++) {
 				int cur_color = ( k == 0 ? matrix[i * width + j] : matrix[j * width + i] );
 				if(cur_color != -1) {
-					if(cur_color == pre_color)
-						same_color_count++;
-					else {
-						if(same_color_count >= 5)
-							score += _w3 + (same_color_count - 5);
+					if(cur_color == pre_color) {
+					  same_color_count++;
+					} else {
+						if(same_color_count >= 5) {
+						  score += _w3 + (same_color_count - 5);
+						}
 						same_color_count = 1;
 						pre_color = cur_color;
 					}
 				} else {
-					if(same_color_count >= 5)
-						score += _w3 + (same_color_count - 5);
+					if(same_color_count >= 5) {
+					  score += _w3 + (same_color_count - 5);
+					}
 					same_color_count = 0;
 					pre_color = -1;
 				}
 			}
-			if(same_color_count >= 5)
-				score += _w3 + (same_color_count - 5);
+			if(same_color_count >= 5) {
+			  score += _w3 + (same_color_count - 5);
+			}
 		}
 	}
 	return score;
@@ -193,17 +198,19 @@ int evaluateMask(List<int> matrix, int width, int height, int color_number) {
  @param masked the masked symbol matrix
  @param cp the code parameters
 */
-void maskSymbols(jab_encode enc, int mask_type, List<int> masked, jab_code cp){
+void maskSymbols(jab_encode enc, int mask_type, List<int>? masked, jab_code? cp){
 	for(int k=0; k<enc.symbol_number; k++) {
 		int startx = 0, starty = 0;
 		if(masked != null && cp != null) {
 			//calculate the starting coordinates of the symbol matrix
 			int col = jab_symbol_pos[enc.symbol_positions[k]].x - cp.min_x;
 			int row = jab_symbol_pos[enc.symbol_positions[k]].y - cp.min_y;
-			for(int c=0; c<col; c++)
-				startx += cp.col_width[c];
-			for(int r=0; r<row; r++)
-				starty += cp.row_height[r];
+			for(int c=0; c<col; c++) {
+			  startx += cp.col_width[c];
+			}
+			for(int r=0; r<row; r++) {
+			  starty += cp.row_height[r];
+			}
 		}
 		int symbol_width = enc.symbols[k].side_size.x;
 		int symbol_height= enc.symbols[k].side_size.y;
@@ -239,14 +246,16 @@ void maskSymbols(jab_encode enc, int mask_type, List<int> masked, jab_code cp){
 							index ^= ((x * y*y) % 5 + (2*x + y*y) % 13) % enc.color_number;
 							break;
 					}
-					if(masked != null && cp != null)
-						masked[((y + starty) * cp.code_size.x + (x + startx)).toInt()] = index;
-					else
-						enc.symbols[k].matrix[y * symbol_width + x] = index;
+					if(masked != null && cp != null) {
+					  masked[((y + starty) * cp.code_size.x + (x + startx)).toInt()] = index;
+					} else {
+					  enc.symbols[k].matrix[y * symbol_width + x] = index;
+					}
 				}
 				else {
-					if(masked != null && cp != null)
-						masked[(y + starty) * cp.code_size.x + (x + startx)] = index; //copy non-data module
+					if(masked != null && cp != null) {
+					  masked[(y + starty) * cp.code_size.x + (x + startx)] = index; //copy non-data module
+					}
 				}
 			}
 		}

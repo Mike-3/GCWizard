@@ -1,3 +1,5 @@
+// ignore_for_file: equal_elements_in_set
+
 /*
  libjabcode - JABCode Encoding/Decoding Library
 
@@ -91,14 +93,14 @@ const APX	= 4;
  Code parameters
 */
 class jab_code {
-	int 		dimension;				///<Module size in pixel
-	jab_vector2d	code_size;				///<Code size in symbol
-	int 		min_x;
-  int 		min_y;
-  int		rows;
-  int 		cols;
-	List<int>		row_height;
-  List<int>		col_width;
+	int 		dimension = 0;				///<Module size in pixel
+	jab_vector2d	code_size = jab_vector2d(0, 0);				///<Code size in symbol
+	int 		min_x = 0;
+  int 		min_y = 0;
+  int		rows = 0;
+  int 		cols = 0;
+	List<int>		row_height = [];
+  List<int>		col_width = [];
 }
 
 /*

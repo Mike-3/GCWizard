@@ -33,7 +33,7 @@ void _filterBinary(jab_bitmap binary) {
 	int height= binary.height;
 
 	int filter_size = 5;
-	int half_size = ((filter_size - 1)/2).toInt();
+	int half_size = (filter_size - 1)~/2;
 
 	//horizontal filtering
 	var tmp = binary.clone(); // memcpy(tmp, binary, sizeof(jab_bitmap) + width*height*sizeof(jab_byte));
@@ -110,7 +110,7 @@ Tuple2<int, int> _getHistMaxMin(List<int> hist, int ths) {
  @param bitmap the image
 */
 void balanceRGB(jab_bitmap bitmap) {
-	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+	int bytes_per_pixel = bitmap.bits_per_pixel ~/ 8;
 	int bytes_per_row = bitmap.width * bytes_per_pixel;
 
 	var hist_r = List<int>.filled(256, 0);
@@ -133,17 +133,29 @@ void balanceRGB(jab_bitmap bitmap) {
 		for(int j=0; j<bitmap.width; j++) {
 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 			//R channel
-			if		(bitmap.pixel[offset + 0] < r.item1)	bitmap.pixel[offset + 0] = 0;
-			else if (bitmap.pixel[offset + 0] > r.item2)	bitmap.pixel[offset + 0] = 255;
-			else 	 bitmap.pixel[offset + 0] = ((bitmap.pixel[offset + 0] - r.item1) / (r.item2 - r.item1) * 255.0).toInt();
+			if		(bitmap.pixel[offset + 0] < r.item1) {
+			  bitmap.pixel[offset + 0] = 0;
+			} else if (bitmap.pixel[offset + 0] > r.item2) {
+			  bitmap.pixel[offset + 0] = 255;
+			} else {
+			  bitmap.pixel[offset + 0] = ((bitmap.pixel[offset + 0] - r.item1) / (r.item2 - r.item1) * 255.0).toInt();
+			}
 			//G channel
-			if		(bitmap.pixel[offset + 1] < g.item1)	bitmap.pixel[offset + 1] = 0;
-			else if (bitmap.pixel[offset + 1] > g.item2)	bitmap.pixel[offset + 1] = 255;
-			else 	 bitmap.pixel[offset + 1] = ((bitmap.pixel[offset + 1] - g.item1) / (g.item2 - g.item1) * 255.0).toInt();
+			if		(bitmap.pixel[offset + 1] < g.item1) {
+			  bitmap.pixel[offset + 1] = 0;
+			} else if (bitmap.pixel[offset + 1] > g.item2) {
+			  bitmap.pixel[offset + 1] = 255;
+			} else {
+			  bitmap.pixel[offset + 1] = ((bitmap.pixel[offset + 1] - g.item1) / (g.item2 - g.item1) * 255.0).toInt();
+			}
 			//B channel
-			if		(bitmap.pixel[offset + 2] < b.item1) bitmap.pixel[offset + 2] = 0;
-			else if	(bitmap.pixel[offset + 2] > b.item2)	bitmap.pixel[offset + 2] = 255;
-			else 	 bitmap.pixel[offset + 2] = ((bitmap.pixel[offset + 2] - b.item1) / (b.item2 - b.item1) * 255.0).toInt();
+			if		(bitmap.pixel[offset + 2] < b.item1) {
+			  bitmap.pixel[offset + 2] = 0;
+			} else if	(bitmap.pixel[offset + 2] > b.item2) {
+			  bitmap.pixel[offset + 2] = 255;
+			} else {
+			  bitmap.pixel[offset + 2] = ((bitmap.pixel[offset + 2] - b.item1) / (b.item2 - b.item1) * 255.0).toInt();
+			}
 		}
 	}
 }
@@ -186,12 +198,15 @@ Tuple3<int, int, int> getMinMax(Uint8List rgb) {
 	const index_mid = 1;
 	const index_max = 2;
 	var index = [index_min, index_mid, index_max];
-	if(rgb[index_min] > rgb[index_max])
-		_swap(index_min, index_max, index);
-	if(rgb[index_min] > rgb[index_mid])
-		_swap(index_min, index_mid, index);
-	if(rgb[index_mid] > rgb[index_max])
-		_swap(index_mid, index_max, index);
+	if(rgb[index_min] > rgb[index_max]) {
+	  _swap(index_min, index_max, index);
+	}
+	if(rgb[index_min] > rgb[index_mid]) {
+	  _swap(index_min, index_mid, index);
+	}
+	if(rgb[index_mid] > rgb[index_max]) {
+	  _swap(index_mid, index_max, index);
+	}
 
 	return Tuple3<int, int, int>(index[index_min], index[index_mid], index[index_max]);
 }
@@ -219,11 +234,11 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths) 
 	int bytes_per_row = bitmap.width * bytes_per_pixel;
 
 	//calculate the average pixel value, block-wise
-	int max_block_size = (max(bitmap.width, bitmap.height) / 2).toInt();
+	int max_block_size = max(bitmap.width, bitmap.height) ~/ 2;
 	int block_num_x = ((bitmap.width % max_block_size) != 0 ? (bitmap.width / max_block_size) + 1 : (bitmap.width / max_block_size)).toInt();
 	int block_num_y = ((bitmap.height% max_block_size) != 0 ? (bitmap.height/ max_block_size) + 1 : (bitmap.height/ max_block_size)).toInt();
-	int block_size_x = (bitmap.width / block_num_x).toInt();
-	int block_size_y = (bitmap.height/ block_num_y).toInt();
+	int block_size_x = bitmap.width ~/ block_num_x;
+	int block_size_y = bitmap.height~/ block_num_y;
 	var pixel_ave = <List<double>>[]; //.filled(3, 0)>.filled(block_num_x*block_num_y, 0); //double pixel_ave[block_num_x*block_num_y][3];
 
 	for(int i=0; i<block_num_x*block_num_y; i++) {
@@ -295,10 +310,11 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths) 
 				rgb[result1.item1].pixel[i*bitmap.width + j] = 0; //index_min
 				double r1 = bitmap.pixel[offset + result1.item2] / bitmap.pixel[offset + result1.item1];
 				double r2 = bitmap.pixel[offset + result1.item3] / bitmap.pixel[offset + result1.item2];
-				if(r1 > r2)
-					rgb[result1.item2].pixel[i*bitmap.width + j] = 255; //index_mid
-				else
-					rgb[result1.item2].pixel[i*bitmap.width + j] = 0; //index_mid
+				if(r1 > r2) {
+				  rgb[result1.item2].pixel[i*bitmap.width + j] = 255; //index_mid
+				} else {
+				  rgb[result1.item2].pixel[i*bitmap.width + j] = 0; //index_mid
+				}
 			}
 		}
 	}

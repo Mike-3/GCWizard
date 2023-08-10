@@ -29,8 +29,9 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/mask.dart';
  @param palette the color palette
 */
 void _genColorPalette(int color_number, Int8List palette){
-	if(color_number < 8)
-		return ;
+	if(color_number < 8) {
+	  return;
+	}
 
 	int vr, vg, vb;	//the number of variable colors for r, g, b channels
 	switch(color_number) {
@@ -159,7 +160,7 @@ void _convert_dec_to_bin(int dec, Uint8List bin, int start_position, int length)
   for (int j=0; j<length; j++) {
     int t = dec % 2;
     bin[start_position+length-1-j] = t;
-    dec = (dec/2).toInt();
+    dec = dec~/2;
   }
 }
 
@@ -169,18 +170,20 @@ void _convert_dec_to_bin(int dec, Uint8List bin, int start_position, int length)
  @param symbol_number the number of symbols
  @return the created encode parameter object | null: fatal error (out of memory)
 */
-jab_encode createEncode(int color_number, int symbol_number) {
+jab_encode? createEncode(int color_number, int symbol_number) {
   var enc = jab_encode();
-  if(enc == null)
+  if(enc == null) {
     return null;
+  }
 
   if(color_number != 4  && color_number != 8   && color_number != 16 &&
      color_number != 32 && color_number != 64 && color_number != 128 && color_number != 256)
   {
     color_number = DEFAULT_COLOR_NUMBER;
   }
-  if(symbol_number < 1 || symbol_number > MAX_SYMBOL_NUMBER)
+  if(symbol_number < 1 || symbol_number > MAX_SYMBOL_NUMBER) {
     symbol_number = DEFAULT_SYMBOL_NUMBER;
+  }
 
   enc.color_number 		 = color_number;
   enc.symbol_number 		 = symbol_number;
@@ -229,23 +232,26 @@ jab_encode createEncode(int color_number, int symbol_number) {
  @param encoded_length the shortest encoding length
  @return the optimal encoding sequence | null: fatal error (out of memory)
 */
-List<int> _analyzeInputData(jab_data input, int encoded_length) {
+List<int>? _analyzeInputData(jab_data input, int encoded_length) {
   int encode_seq_length=ENC_MAX;
   var seq = Uint8List(input.length); //(jab_char *)malloc(sizeof(jab_char)*input.length);
   var curr_seq_len= List<int>.filled((input.length+2)*14, 0);
   var prev_mode=List<int>.filled(((2*input.length+2)*14), 0);
 
-  for (int i=0; i < (2*input.length+2)*14; i++)
-    prev_mode[i] = (ENC_MAX/2).toInt();
+  for (int i=0; i < (2*input.length+2)*14; i++) {
+    prev_mode[i] = ENC_MAX~/2;
+  }
 
   var switch_mode = List<int>.filled(28, 0);
 
-  for (int i=0; i < 28; i++)
-    switch_mode[i] = (ENC_MAX/2).toInt();
+  for (int i=0; i < 28; i++) {
+    switch_mode[i] = ENC_MAX~/2;
+  }
   var temp_switch_mode = List<int>.filled(28, 0);
 
-  for (int i=0; i < 28; i++)
-    temp_switch_mode[i] = (ENC_MAX/2).toInt();
+  for (int i=0; i < 28; i++) {
+    temp_switch_mode[i] = ENC_MAX~/2;
+  }
 
   //calculate the shortest encoding sequence
   //initialize start in upper case mode; no previous mode available
@@ -264,21 +270,27 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
   for (int i=0;i<end_of_loop;i++) {
     int tmp=input.data[nb_char];
     int tmp1=0;
-    if(nb_char+1 < input.length)
+    if(nb_char+1 < input.length) {
       tmp1=input.data[nb_char+1];
-    if(tmp<0)
+    }
+    if(tmp<0) {
       tmp=256+tmp;
-    if(tmp1<0)
+    }
+    if(tmp1<0) {
       tmp1=256+tmp1;
+    }
     curr_seq_counter++;
     for (int j=0;j<JAB_ENCODING_MODES;j++) {
-      if (jab_enconing_table[tmp][j]>-1 && jab_enconing_table[tmp][j]<64) //check if character is in encoding table
+      if (jab_enconing_table[tmp][j]>-1 && jab_enconing_table[tmp][j]<64) {
+        //check if character is in encoding table
         curr_seq_len[(i+1)*14+j]=curr_seq_len[(i+1)*14+j+7]=character_size[j];
-      else if((jab_enconing_table[tmp][j]==-18 && tmp1==10) || (jab_enconing_table[tmp][j]<-18 && tmp1==32)) { //read next character to decide if encodalbe in current mode
+      } else if((jab_enconing_table[tmp][j]==-18 && tmp1==10) || (jab_enconing_table[tmp][j]<-18 && tmp1==32)) { //read next character to decide if encodalbe in current mode
         curr_seq_len[(i+1)*14+j]=curr_seq_len[(i+1)*14+j+7]=character_size[j];
         jp_to_nxt_char=1; //jump to next character
-      } else //not encodable in this mode
+      } else {
+        //not encodable in this mode
         curr_seq_len[(i+1)*14+j]=curr_seq_len[(i+1)*14+j+7]=ENC_MAX;
+      }
     }
     curr_seq_len[(i+1)*14+6]=curr_seq_len[(i+1)*14+13]=character_size[6]; //input sequence can always be encoded by byte mode
     is_shift=false;
@@ -289,12 +301,14 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
       for (int k=0;k<14;k++) {
         if((len>=curr_seq_len[(i+1)*14+j]+curr_seq_len[i*14+k]+latch_shift_to[k][j] && k<13) || (k==13 && prev==j)) {
           len=curr_seq_len[(i+1)*14+j]+curr_seq_len[i*14+k]+latch_shift_to[k][j];
-          if (temp_switch_mode[2*k]==k)
+          if (temp_switch_mode[2*k]==k) {
             prev_mode[curr_seq_counter*14+j]=temp_switch_mode[2*k+1];
-          else
+          } else {
             prev_mode[curr_seq_counter*14+j]=k;
-          if (k==13 && prev==j)
+          }
+          if (k==13 && prev==j) {
             prev=-1;
+          }
         }
       }
       curr_seq_len[(i+1)*14+j]=len;
@@ -328,21 +342,23 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
           switch_mode[2*prev_mode[curr_seq_counter*14+j]+1]=j;
           is_shift=true;
         }
-        if(j!=13)
+        if(j!=13) {
           curr_seq_len[(i+1)*14+j]=ENC_MAX;
-        else
+        } else {
           prev=prev_mode[curr_seq_counter*14+j];
+        }
       }
     }
     for (int j=0;j<28;j++) {
       temp_switch_mode[j]=switch_mode[j];
-      switch_mode[j]=(ENC_MAX/2).toInt();
+      switch_mode[j]=ENC_MAX~/2;
     }
 
     if(jp_to_nxt_char==1 && confirm==1) {
       for (int j=0;j<=2*JAB_ENCODING_MODES+1;j++) {
-        if(j != prev_mode_index)
+        if(j != prev_mode_index) {
           curr_seq_len[(i+1)*14+j]=ENC_MAX;
+        }
       }
       nb_char++;
       end_of_loop--;
@@ -360,10 +376,12 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
       current_mode=j;
     }
   }
-  if(current_mode>6)
+  if(current_mode>6) {
     is_shift=true;
-  if (is_shift && temp_switch_mode[2*current_mode+1]<14)
+  }
+  if (is_shift && temp_switch_mode[2*current_mode+1]<14) {
     current_mode=temp_switch_mode[2*current_mode+1];
+  }
 
   var encode_seq = List<int>.filled((curr_seq_counter+1+ (is_shift ? 1: 0)), 0);
   if(encode_seq == null) {
@@ -379,22 +397,25 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
   encode_seq[curr_seq_counter]=current_mode;//prev_mode[(curr_seq_counter)*14+current_mode];//prev_mode[(curr_seq_counter+is_shift-1)*14+current_mode];
   seq_len+=character_size[encode_seq[curr_seq_counter]%7];
   for (int i=curr_seq_counter;i>0;i--) {
-    if (encode_seq[i]==13 || encode_seq[i]==6)
+    if (encode_seq[i]==13 || encode_seq[i]==6) {
       counter++;
-    else {
+    } else {
       if(counter>15) {
         encode_seq_length+=13;
         seq_len+=13;
 
         //--------------------------------
         if(counter>8207) {//2^13+15
-          if (encode_seq[i]==0 || encode_seq[i]==1 || encode_seq[i]==7 || encode_seq[i]==8)
+          if (encode_seq[i]==0 || encode_seq[i]==1 || encode_seq[i]==7 || encode_seq[i]==8) {
             modeswitch=11;
-          if (encode_seq[i]==2 || encode_seq[i]==9)
+          }
+          if (encode_seq[i]==2 || encode_seq[i]==9) {
             modeswitch=10;
-          if (encode_seq[i]==5 || encode_seq[i]==12)
+          }
+          if (encode_seq[i]==5 || encode_seq[i]==12) {
             modeswitch=12;
-          int remain_in_byte_mode=(counter/8207).toInt();
+          }
+          int remain_in_byte_mode=counter~/8207;
           int remain_in_byte_mode_residual=counter%8207;
           encode_seq_length+=(remain_in_byte_mode) * modeswitch;
           seq_len+=(remain_in_byte_mode) * modeswitch;
@@ -417,12 +438,14 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
     if (encode_seq[i]<14 && i-1!=0) {
       encode_seq[i-1]=prev_mode[i*14+encode_seq[i]];
       seq_len+=character_size[encode_seq[i-1]%7];
-      if(encode_seq[i-1]!=encode_seq[i])
+      if(encode_seq[i-1]!=encode_seq[i]) {
         seq_len+=latch_shift_to[encode_seq[i-1]][encode_seq[i]];
+      }
     } else if (i-1==0) {
       encode_seq[i-1]=0;
-      if(encode_seq[i-1]!=encode_seq[i])
+      if(encode_seq[i-1]!=encode_seq[i]) {
         seq_len+=latch_shift_to[encode_seq[i-1]][encode_seq[i]];
+      }
       if(counter>15) {
         encode_seq_length+=13;
         seq_len+=13;
@@ -431,7 +454,7 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
         if(counter>8207) { //2^13+15
 
           modeswitch=11;
-          int remain_in_byte_mode=(counter/8207).toInt();
+          int remain_in_byte_mode=counter~/8207;
           int remain_in_byte_mode_residual=counter%8207;
           encode_seq_length+=remain_in_byte_mode * modeswitch;
           seq_len+=remain_in_byte_mode * modeswitch;
@@ -451,8 +474,9 @@ List<int> _analyzeInputData(jab_data input, int encoded_length) {
         //--------------------------------
         counter=0;
       }
-    } else
+    } else {
       return null;
+    }
   }
   encoded_length=encode_seq_length;
   return encode_seq;
@@ -495,8 +519,9 @@ int _getMetadataLength(jab_encode enc, int index){
     //Part II
     int host_index = enc.symbols[index].host;
     //V in Part II, compare symbol shape and size with host symbol
-    if (enc.symbol_versions[index].x != enc.symbol_versions[host_index].x || enc.symbol_versions[index].y != enc.symbol_versions[host_index].y)
+    if (enc.symbol_versions[index].x != enc.symbol_versions[host_index].x || enc.symbol_versions[index].y != enc.symbol_versions[host_index].y) {
       length += 5;
+    }
 
     //E in Part II
     if (enc.symbol_ecc_levels[index] != enc.symbol_ecc_levels[host_index]) {
@@ -529,12 +554,12 @@ int _getSymbolCapacity(jab_encode enc, int index) {
 	int number_of_aps_y = jab_ap_num[enc.symbol_versions[index].y - 1];
 	int nb_modules_ap = (number_of_aps_x * number_of_aps_y - 4) * 7;
 	//number of modules for metadata
-	int nb_of_bpm = (log(enc.color_number) / log(2)).toInt();
+	int nb_of_bpm = log(enc.color_number) ~/ log(2);
 	int nb_modules_metadata = 0;
 	if(index == 0) {	//master symbol
 		int nb_metadata_bits = _getMetadataLength(enc, index);
 		if(nb_metadata_bits > 0) {
-			nb_modules_metadata = ((nb_metadata_bits - MASTER_METADATA_PART1_LENGTH) / nb_of_bpm).toInt(); //only modules for PartII
+			nb_modules_metadata = (nb_metadata_bits - MASTER_METADATA_PART1_LENGTH) ~/ nb_of_bpm; //only modules for PartII
 			if((nb_metadata_bits - MASTER_METADATA_PART1_LENGTH) % nb_of_bpm != 0) {
 				nb_modules_metadata++;
 			}
@@ -572,7 +597,7 @@ void _getOptimalECC(int capacity, int net_data_length, List<int> wcwr) {
  @param encode_seq the optimal encoding sequence
  @return the encoded data | null if failed
 */
-jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
+jab_data? _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
   var encoded_data = jab_data();//List<jab_data>.filled ()jab_data *)malloc(sizeof(jab_data) + encoded_length*sizeof(jab_char));
   encoded_data.data = Uint8List(encoded_length);
   if(encoded_data == null) {
@@ -592,27 +617,31 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
   //encoding starts in upper case mode
   for (int i=0;i<end_of_loop;i++) {
     int tmp=data.data[current_encoded_length];
-    if (tmp < 0)
-      tmp+=256;
+    if (tmp < 0) {
+      tmp += 256;
+    }
     if (position<encoded_length) {
       int decimal_value;
       //check if mode is switched
       if (encode_seq[counter] != encode_seq[counter+1]) {
         //encode mode switch
         int length=latch_shift_to[encode_seq[counter]][encode_seq[counter+1]];
-        if(encode_seq[counter+1] == 6 || encode_seq[counter+1] == 13)
-          length-=4;
-        if(length < ENC_MAX)
+        if(encode_seq[counter+1] == 6 || encode_seq[counter+1] == 13) {
+          length -= 4;
+        }
+        if(length < ENC_MAX) {
           _convert_dec_to_bin(mode_switch[encode_seq[counter]][encode_seq[counter+1]],encoded_data.data,position,length);
-        else {
+        } else {
           return null; //Encoding data failed
         }
         position+=latch_shift_to[encode_seq[counter]][encode_seq[counter+1]];
-        if(encode_seq[counter+1] == 6 || encode_seq[counter+1] == 13)
-          position-=4;
+        if(encode_seq[counter+1] == 6 || encode_seq[counter+1] == 13) {
+          position -= 4;
+        }
         //check if latch or shift
-        if((encode_seq[counter+1]>6 && encode_seq[counter+1]<=13) || (encode_seq[counter+1]==13 && encode_seq[counter+2]!=13))
-          shift_back=true;//remember to shift back to mode from which was invoked
+        if((encode_seq[counter+1]>6 && encode_seq[counter+1]<=13) || (encode_seq[counter+1]==13 && encode_seq[counter+2]!=13)) {
+          shift_back = true;//remember to shift back to mode from which was invoked
+        }
       }
       //if not byte mode
       if (encode_seq[counter+1]%7 != 6) { // || end_of_loop-1 == i)
@@ -623,18 +652,20 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
           counter++;
         } else if (jab_enconing_table[tmp][encode_seq[counter+1]%7]<-1) {
           int tmp1=data.data[current_encoded_length+1];
-          if (tmp1 < 0)
-            tmp1+=256;
+          if (tmp1 < 0) {
+            tmp1 += 256;
+          }
           //read next character to see if more efficient encoding possible
-          if (((tmp==44 || tmp== 46 || tmp==58) && tmp1==32) || (tmp==13 && tmp1==10))
+          if (((tmp==44 || tmp== 46 || tmp==58) && tmp1==32) || (tmp==13 && tmp1==10)) {
             decimal_value=(jab_enconing_table[tmp][encode_seq[counter+1]%7]).abs();
-          else if (tmp==13 && tmp1!=10)
-            decimal_value=18;
-          else {
+          } else if (tmp==13 && tmp1!=10) {
+            decimal_value = 18;
+          } else {
             return null; //Encoding data failed
           }
-          if (character_size[encode_seq[counter+1]%7] < ENC_MAX)
-          _convert_dec_to_bin(decimal_value,encoded_data.data,position,character_size[encode_seq[counter+1]%7]);
+          if (character_size[encode_seq[counter+1]%7] < ENC_MAX) {
+            _convert_dec_to_bin(decimal_value,encoded_data.data,position,character_size[encode_seq[counter+1]%7]);
+          }
           position+=character_size[encode_seq[counter+1]%7];
           counter++;
           end_of_loop--;
@@ -648,10 +679,11 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
           //loop over sequence to check how many characters in byte mode follow
           byte_counter=0;
           for(int byte_loop=counter+1;byte_loop<=end_of_loop;byte_loop++) {
-            if(encode_seq[byte_loop]==6 || encode_seq[byte_loop]==13)
+            if(encode_seq[byte_loop]==6 || encode_seq[byte_loop]==13) {
               byte_counter++;
-            else
+            } else {
               break;
+            }
           }
           _convert_dec_to_bin(byte_counter > 15 ? 0 : byte_counter,encoded_data.data,position,4);
           position+=4;
@@ -690,9 +722,9 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
           }
           factor++;
         }
-        if (character_size[encode_seq[counter+1]%7] < ENC_MAX)
+        if (character_size[encode_seq[counter+1]%7] < ENC_MAX) {
           _convert_dec_to_bin(tmp,encoded_data.data,position,character_size[encode_seq[counter+1]%7]);
-        else {
+        } else {
           return null; //Encoding data failed
         }
         position+=character_size[encode_seq[counter+1]%7];
@@ -701,10 +733,11 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
       }
       //shift back to mode from which mode was invoked
       if (shift_back && byte_counter==0) {
-        if(byte_offset==0)
+        if(byte_offset==0) {
           encode_seq[counter]=encode_seq[counter-1];
-        else
+        } else {
           encode_seq[counter]=encode_seq[counter-byte_offset];
+        }
         shift_back=false;
         byte_offset=0;
       }
@@ -723,8 +756,8 @@ jab_data _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
  @return JAB_SUCCESS | JAB_FAILURE
 */
 int _encodeMasterMetadata(jab_encode enc) {
-	int partI_length 	= (MASTER_METADATA_PART1_LENGTH/2).toInt();	//partI net length
-	int partII_length	= (MASTER_METADATA_PART2_LENGTH/2).toInt();	//partII net length
+	int partI_length 	= MASTER_METADATA_PART1_LENGTH~/2;	//partI net length
+	int partII_length	= MASTER_METADATA_PART2_LENGTH~/2;	//partII net length
 	int V_length = 10;
 	int E_length = 6;
 	int MSK_length = 3;
@@ -779,7 +812,7 @@ int _encodeMasterMetadata(jab_encode enc) {
  @return JAB_SUCCESS | JAB_FAILURE
 */
 int _updateMasterMetadataPartII(jab_encode enc, int mask_ref) {
-	int partII_length	= (MASTER_METADATA_PART2_LENGTH/2).toInt();	//partII net length
+	int partII_length	= MASTER_METADATA_PART2_LENGTH~/2;	//partII net length
 	var partII = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + partII_length*sizeof(jab_char));
   partII.data=Uint8List(partII_length);
 	partII.length = partII_length;
@@ -816,7 +849,7 @@ int _updateMasterMetadataPartII(jab_encode enc, int mask_ref) {
 */
 void _placeMasterMetadataPartII(jab_encode enc) {
   //rewrite metadata in master with mask information
-  int nb_of_bits_per_mod = (log(enc.color_number)/log(2)).toInt();
+  int nb_of_bits_per_mod = log(enc.color_number)~/log(2);
   int x = MASTER_METADATA_X;
   int y = MASTER_METADATA_Y;
   int module_count = 0;
@@ -838,13 +871,15 @@ void _placeMasterMetadataPartII(jab_encode enc) {
 		for(int j=0; j<nb_of_bits_per_mod; j++) {
 			if(metadata_index <= partII_bit_end) {
 				var bit = enc.symbols[0].metadata.data[metadata_index];
-				if(bit == 0)
-					color_index &= ~(1 << (nb_of_bits_per_mod-1-j));
-				else
-					color_index |= 1 << (nb_of_bits_per_mod-1-j);
+				if(bit == 0) {
+				  color_index &= ~(1 << (nb_of_bits_per_mod-1-j));
+				} else {
+				  color_index |= 1 << (nb_of_bits_per_mod-1-j);
+				}
 				metadata_index++;
-			} else
-				break;
+			} else {
+			  break;
+			}
 		}
     enc.symbols[0].matrix[y*enc.symbols[0].side_size.x + x] = color_index;
     module_count++;
@@ -854,7 +889,7 @@ void _placeMasterMetadataPartII(jab_encode enc) {
   }
 }
 
-_memcpy(Uint8List dst, int dst_offset, Uint8List src, int src_offset, int length) {
+void _memcpy(Uint8List dst, int dst_offset, Uint8List src, int src_offset, int length) {
   dst.replaceRange(dst_offset, dst_offset + length, src.getRange(src_offset, src_offset + length));
 }
 
@@ -869,8 +904,9 @@ void _getColorPaletteIndex(Uint8List index, int index_size, int color_number){
 		index[i] = i;
 	}
 
-	if(color_number < 128)
-		return;
+	if(color_number < 128) {
+	  return;
+	}
 
 	var tmp = Uint8List(color_number);
 	for(int i=0; i<color_number; i++) {
@@ -928,10 +964,11 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
   var side_ver_y_index = SIZE2VERSION(enc.symbols[index].side_size.y) - 1;
   for(int x=0; x<jab_ap_num[side_ver_x_index]; x++) {
     int left;
-      if (x%2 == 1)
+      if (x%2 == 1) {
         left=0;
-      else
+      } else {
         left=1;
+      }
       for(int y=0; y<jab_ap_num[side_ver_y_index]; y++) {
         int x_offset = jab_ap_pos[side_ver_x_index][x] - 1;
         int y_offset = jab_ap_pos[side_ver_y_index][y] - 1;
@@ -981,10 +1018,11 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
             enc.symbols[index].data_map[(y_offset+1)*enc.symbols[index].side_size.x + x_offset-1]=
             enc.symbols[index].data_map[(y_offset  )*enc.symbols[index].side_size.x + x_offset  ]=0;
           }
-          if (left==0)
+          if (left==0) {
             left=1;
-          else
+          } else {
             left=0;
+          }
       }
   }
 
@@ -1063,7 +1101,7 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
   }
 
   //Metadata and color palette placement
-  int nb_of_bits_per_mod = (log(enc.color_number) / log(2)).toInt();
+  int nb_of_bits_per_mod = log(enc.color_number) ~/ log(2);
   int color_index;
   int module_count = 0;
   int x;
@@ -1137,8 +1175,9 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
           if(metadata_index < enc.symbols[index].metadata.length) {
             color_index += (enc.symbols[index].metadata.data[metadata_index]) << (nb_of_bits_per_mod-1-j);
             metadata_index++;
-          } else
+          } else {
             break;
+          }
         }
         enc.symbols[index].matrix  [y*enc.symbols[index].side_size.x + x] = color_index;
         enc.symbols[index].data_map[y*enc.symbols[index].side_size.x + x] = 0;
@@ -1176,14 +1215,15 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
       if (enc.symbols[index].data_map[i]!=0 && written_mess_part<ecc_encoded_data.length) {
         color_index=0;
         for(int j=0;j<nb_of_bits_per_mod;j++) {
-          if(written_mess_part<ecc_encoded_data.length)
+          if(written_mess_part<ecc_encoded_data.length) {
             color_index+=(ecc_encoded_data.data[written_mess_part]) << (nb_of_bits_per_mod-1-j);//*pow(2,nb_of_bits_per_mod-1-j);
-          else {
+          } else {
             color_index+=padding << (nb_of_bits_per_mod-1-j);//*pow(2,nb_of_bits_per_mod-1-j);
-            if (padding==0)
+            if (padding==0) {
               padding=1;
-            else
+            } else {
               padding=0;
+            }
           }
           written_mess_part++;
         }
@@ -1193,10 +1233,11 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
         color_index=0;
         for(int j=0;j<nb_of_bits_per_mod;j++) {
           color_index+=padding << (nb_of_bits_per_mod-1-j);//*pow(2,nb_of_bits_per_mod-1-j);
-          if (padding==0)
+          if (padding==0) {
             padding=1;
-          else
+          } else {
             padding=0;
+          }
         }
         enc.symbols[index].matrix[i]=color_index;//i % enc.color_number;
       }
@@ -1232,8 +1273,9 @@ int _assignDockedSymbols(jab_encode enc) {
 		//initialize symbol host index
 		enc.symbols[i].host = -1;
 		//initialize symbol's slave index
-		for(int j=0; j<4; j++)
-			enc.symbols[i].slaves[j] = 0;	//0:no slave
+		for(int j=0; j<4; j++) {
+		  enc.symbols[i].slaves[j] = 0;	//0:no slave
+		}
 	}
 	//assign docked symbols
 	int assigned_slave_index = 1;
@@ -1303,11 +1345,12 @@ jab_code _getCodePara(jab_encode enc) {
 
   //calculate the module size in pixel
   if(enc.master_symbol_width != 0 || enc.master_symbol_height != 0) {
-    int dimension_x = (enc.master_symbol_width/enc.symbols[0].side_size.x).toInt();
-    int dimension_y = (enc.master_symbol_height/enc.symbols[0].side_size.y).toInt();
+    int dimension_x = enc.master_symbol_width~/enc.symbols[0].side_size.x;
+    int dimension_y = enc.master_symbol_height~/enc.symbols[0].side_size.y;
     cp.dimension = dimension_x > dimension_y ? dimension_x : dimension_y;
-    if(cp.dimension < 1)
+    if(cp.dimension < 1) {
       cp.dimension = 1;
+    }
   } else {
     cp.dimension = enc.module_size;
   }
@@ -1318,15 +1361,19 @@ jab_code _getCodePara(jab_encode enc) {
   int max_x=0, max_y=0;
   for(int i=0; i<enc.symbol_number; i++) {
     //find the mininal x and y
-    if(jab_symbol_pos[enc.symbol_positions[i]].x < cp.min_x)
-        cp.min_x = jab_symbol_pos[enc.symbol_positions[i]].x;
-    if(jab_symbol_pos[enc.symbol_positions[i]].y < cp.min_y)
-        cp.min_y = jab_symbol_pos[enc.symbol_positions[i]].y;
+    if (jab_symbol_pos[enc.symbol_positions[i]].x < cp.min_x) {
+      cp.min_x = jab_symbol_pos[enc.symbol_positions[i]].x;
+    }
+    if (jab_symbol_pos[enc.symbol_positions[i]].y < cp.min_y) {
+      cp.min_y = jab_symbol_pos[enc.symbol_positions[i]].y;
+    }
     //find the maximal x and y
-    if(jab_symbol_pos[enc.symbol_positions[i]].x > max_x)
-        max_x = jab_symbol_pos[enc.symbol_positions[i]].x;
-    if(jab_symbol_pos[enc.symbol_positions[i]].y > max_y)
-        max_y = jab_symbol_pos[enc.symbol_positions[i]].y;
+    if (jab_symbol_pos[enc.symbol_positions[i]].x > max_x) {
+      max_x = jab_symbol_pos[enc.symbol_positions[i]].x;
+    }
+    if (jab_symbol_pos[enc.symbol_positions[i]].y > max_y) {
+      max_y = jab_symbol_pos[enc.symbol_positions[i]].y;
+    }
   }
 
   //calculate the code size
@@ -1391,10 +1438,12 @@ int _createBitmap(jab_encode enc, jab_code cp) {
     int startx = 0, starty = 0;
     int col = jab_symbol_pos[enc.symbol_positions[k]].x - cp.min_x;
     int row = jab_symbol_pos[enc.symbol_positions[k]].y - cp.min_y;
-    for(int c=0; c<col; c++)
+    for(int c=0; c<col; c++) {
       startx += cp.col_width[c];
-    for(int r=0; r<row; r++)
+    }
+    for(int r=0; r<row; r++) {
       starty += cp.row_height[r];
+    }
 
     //place symbol in the code
     int symbol_width = enc.symbols[k].side_size.x;
@@ -1476,8 +1525,9 @@ int _setMasterSymbolVersion(jab_encode enc, jab_data encoded_data) {
 		int level = -1;
 		for (int j=enc.symbol_ecc_levels[0]-1; j>0; j--) {
 			net_capacity = ((capacity/ecclevel2wcwr[j][1])*ecclevel2wcwr[j][1] - (capacity/ecclevel2wcwr[j][1])*ecclevel2wcwr[j][0]).toInt();
-			if(net_capacity >= payload_length)
-				level = j;
+			if(net_capacity >= payload_length) {
+			  level = j;
+			}
 		}
 		if(level > 0) {
 			return JAB_FAILURE; //Message does not fit into one symbol with the given ECC level. Please use an ECC level lower than %d with '--ecc-level %d'", level, level
@@ -1537,22 +1587,25 @@ void _updateSlaveMetadataE(jab_encode enc, int host_index, int slave_index) {
 	//skip host metadata S
 	if(host_index == 0)
 		offset -= 4;
-	else
-		offset -= 3;
+	else {
+	  offset -= 3;
+	}
 	//skip other slave symbol's metadata
 	for(int i=0; i<4; i++) {
-		if(host.slaves[i] == slave_index)
-			break;
-		else if(host.slaves[i] <= 0)
-			continue;
-		else
-			offset -= enc.symbols[host.slaves[i]].metadata.length;
+		if(host.slaves[i] == slave_index) {
+		  break;
+		} else if(host.slaves[i] <= 0) {
+		  continue;
+		} else {
+		  offset -= enc.symbols[host.slaves[i]].metadata.length;
+		}
 	}
 	//skip SS, SE and possibly V
-  if(slave.metadata.data[0] == 1)
-		offset -= 7;
-	else
-		offset -= 2;
+  if(slave.metadata.data[0] == 1) {
+    offset -= 7;
+  } else {
+    offset -= 2;
+  }
 	//update E
 	var E = Uint8List(6);
 	int E1 = slave.wcwr[0] - 3;
@@ -1598,8 +1651,11 @@ int _fitDataIntoSymbols(jab_encode enc, jab_data encoded_data) {
 		//add flag bit
 		s_payload_length++;
 		//add host metadata S length (master metadata Part III or slave metadata Part III)
-		if(i == 0) s_payload_length += 4;
-		else	s_payload_length += 3;
+		if(i == 0) {
+		  s_payload_length += 4;
+		} else {
+		  s_payload_length += 3;
+		}
 		//add slave metadata length
 		for(int j=0; j<4; j++) {
 			if(enc.symbols[i].slaves[j] > 0) {
@@ -1618,8 +1674,9 @@ int _fitDataIntoSymbols(jab_encode enc, jab_data encoded_data) {
 		while(net_capacity[i] - s_payload_length >= 6 && j < 4) {
 			if(enc.symbols[i].slaves[j] > 0) {
 				if(enc.symbols[enc.symbols[i].slaves[j]].metadata.data[1] == 0) { //check SE
-					if(_addE2SlaveMetadata(enc.symbols[enc.symbols[i].slaves[j]]) == JAB_FAILURE)
-						return JAB_FAILURE;
+					if(_addE2SlaveMetadata(enc.symbols[enc.symbols[i].slaves[j]]) == JAB_FAILURE) {
+					  return JAB_FAILURE;
+					}
 					s_payload_length += 6;	//add E length
 				}
 			}
@@ -1633,16 +1690,18 @@ int _fitDataIntoSymbols(jab_encode enc, jab_data encoded_data) {
 				_getOptimalECC(capacity[i], s_payload_length, enc.symbols[i].wcwr);
 				pn_length = ((capacity[i]/enc.symbols[i].wcwr[1])*enc.symbols[i].wcwr[1] - (capacity[i]/enc.symbols[i].wcwr[1])*enc.symbols[i].wcwr[0]).toInt();
 			}
-			else
-				pn_length = net_capacity[i];
+			else {
+			  pn_length = net_capacity[i];
+			}
 		} else {
 			if(enc.symbols[i].metadata.data[1] == 1) {	//SE = 1
 				_getOptimalECC(capacity[i], pn_length, enc.symbols[i].wcwr);
 				pn_length = ((capacity[i]/enc.symbols[i].wcwr[1])*enc.symbols[i].wcwr[1] - (capacity[i]/enc.symbols[i].wcwr[1])*enc.symbols[i].wcwr[0]).toInt();
 				_updateSlaveMetadataE(enc, enc.symbols[i].host, i);
 			}
-			else
-				pn_length = net_capacity[i];
+			else {
+			  pn_length = net_capacity[i];
+			}
 		}
 
 		//start to set full payload
@@ -1713,8 +1772,9 @@ int _initSymbols(jab_encode enc){
   return JAB_FAILURE; //Master symbol missing
   }
   //if only one symbol but its position is not 0 - set to zero. Everything else makes no sense.
-  if(enc.symbol_number == 1 && enc.symbol_positions[0] != 0)
+  if(enc.symbol_number == 1 && enc.symbol_positions[0] != 0) {
     enc.symbol_positions[0] = 0;
+  }
   //check if a symbol position is used twice
   for(int i=0; i<enc.symbol_number-1; i++) {
     for(int j=i+1; j<enc.symbol_number; j++) {
@@ -1724,11 +1784,13 @@ int _initSymbols(jab_encode enc){
     }
   }
 	//assign docked symbols to their hosts
-  if(_assignDockedSymbols(enc) == JAB_FAILURE)
+  if(_assignDockedSymbols(enc) == JAB_FAILURE) {
     return JAB_FAILURE;
+  }
   //check if the docked symbol size matches the docked side of its host
-  if(_checkDockedSymbolSize(enc) == JAB_FAILURE)
+  if(_checkDockedSymbolSize(enc) == JAB_FAILURE) {
     return JAB_FAILURE;
+  }
   //set symbol index and symbol side size
   for(int i=0; i<enc.symbol_number; i++) {
     //set symbol index
@@ -1812,8 +1874,9 @@ int generateJABCode(jab_encode enc, jab_data data) {
   }
 
   //initialize symbols and set metadata in symbols
-  if(_initSymbols(enc) != JAB_SUCCESS)
+  if(_initSymbols(enc) != JAB_SUCCESS) {
     return 3;
+  }
 
   //get the optimal encoded length and encoding sequence
   int encoded_length;

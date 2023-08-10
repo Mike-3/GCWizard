@@ -43,7 +43,7 @@ Future<Uint8List> saveImage(jab_bitmap bitmap, double border) async {
 	if (bitmap == null) return null;
 
 	var _image = Image.Image(bitmap.width, bitmap.height);
-	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+	int bytes_per_pixel = bitmap.bits_per_pixel ~/ 8;
 	int bytes_per_row = bitmap.width * bytes_per_pixel;
 
 	for (int y=0; y<bitmap.height;y++) {

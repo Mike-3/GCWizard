@@ -44,7 +44,7 @@ const NORMAL_DECODE		= 0;
 const COMPATIBLE_DECODE	= 1;
 
 int VERSION2SIZE(int x) {return (x * 4 + 17);}
-int SIZE2VERSION(int x) { return ((x - 17) / 4).toInt();}
+int SIZE2VERSION(int x) { return (x - 17) ~/ 4;}
 
 /*
  2-dimensional integer vector

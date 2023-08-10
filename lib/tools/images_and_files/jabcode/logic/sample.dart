@@ -26,7 +26,7 @@ const SAMPLE_AREA_HEIGHT =	20;	//height of the metadata rows including the first
  @param side_size the symbol size in module
  @return the sampled symbol matrix
 */
-jab_bitmap sampleSymbol(jab_bitmap bitmap, jab_perspective_transform pt, jab_vector2d side_size) {
+jab_bitmap? sampleSymbol(jab_bitmap bitmap, jab_perspective_transform pt, jab_vector2d side_size) {
 	int mtx_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
 	int mtx_bytes_per_row = side_size.x * mtx_bytes_per_pixel;
 	var matrix = jab_bitmap(); //(jab_bitmap*)malloc(sizeof(jab_bitmap) + side_size.x*side_size.y*mtx_bytes_per_pixel*sizeof(jab_byte));
@@ -51,14 +51,22 @@ jab_bitmap sampleSymbol(jab_bitmap bitmap, jab_perspective_transform pt, jab_vec
 			int mapped_x = points[j].x.toInt();
 			int mapped_y = points[j].y.toInt();
 			if(mapped_x < 0 || mapped_x > bitmap.width-1) {
-				if(mapped_x == -1) mapped_x = 0;
-				else if(mapped_x ==  bitmap.width) mapped_x = bitmap.width - 1;
-				else return null;
+				if(mapped_x == -1) {
+				  mapped_x = 0;
+				} else if(mapped_x ==  bitmap.width) {
+				  mapped_x = bitmap.width - 1;
+				} else {
+				  return null;
+				}
 			}
 			if(mapped_y < 0 || mapped_y > bitmap.height-1) {
-				if(mapped_y == -1) mapped_y = 0;
-				else if(mapped_y ==  bitmap.height) mapped_y = bitmap.height - 1;
-				else return null;
+				if(mapped_y == -1) {
+				  mapped_y = 0;
+				} else if(mapped_y ==  bitmap.height) {
+				  mapped_y = bitmap.height - 1;
+				} else {
+				  return null;
+				}
 			}
 			for(int c=0; c<matrix.channel_count; c++) {
 				//get the average of pixel values in 3x3 neighborhood as the sampled value

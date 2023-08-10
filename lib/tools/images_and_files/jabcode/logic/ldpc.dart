@@ -30,10 +30,11 @@ const LPDC_MESSAGE_SEED =	785465;
 */
 List<int> _createMatrixA(int wc, int wr, int capacity) {
   int nb_pcb;
-  if(wr<4)
-    nb_pcb=(capacity/2).toInt();
-  else
+  if(wr<4) {
+    nb_pcb=capacity~/2;
+  } else {
     nb_pcb=(capacity/wr*wc).toInt();
+  }
 
   int effwidth=(capacity/32.0).ceil()*32;
   int offset=(capacity/32.0).ceil();
@@ -41,13 +42,15 @@ List<int> _createMatrixA(int wc, int wr, int capacity) {
   var matrixA=List<int>.filled(((capacity/32.0).ceil())*nb_pcb, 0);
   var permutation=List<int>.filled(capacity, 0); //calloc(, sizeof(int)); //(int *)calloc
 
-  for (int i=0;i<capacity;i++)
+  for (int i=0;i<capacity;i++) {
     permutation[i]=i;
+  }
 
   //Fill the first set with consecutive ones in each row
   for (int i=0;i<capacity/wr;i++) {
-    for (int j=0;j<wr;j++)
-      matrixA[((i*(effwidth+wr)+j)/32).toInt()] |= 1 << (31 - ((i*(effwidth+wr)+j)%32));
+    for (int j=0;j<wr;j++) {
+      matrixA[(i*(effwidth+wr)+j)~/32] |= 1 << (31 - ((i*(effwidth+wr)+j)%32));
+    }
   }
   //Permutate the columns and fill the remaining matrix
   //generate matrixA by following Gallagers algorithm
@@ -56,8 +59,9 @@ List<int> _createMatrixA(int wc, int wr, int capacity) {
     int off_index=i*(capacity/wr).toInt();
     for (int j=0;j<capacity;j++) {
       int pos = ( lcg64_temper() / UINT32_MAX * (capacity - j) ).toInt();
-      for (int k=0;k<capacity/wr;k++)
+      for (int k=0;k<capacity/wr;k++) {
         matrixA[((off_index+k)*offset+j/32).toInt()] |= ((matrixA[(permutation[pos]/32+k*offset).toInt()] >> (31-permutation[pos]%32)) & 1) << (31-j%32);
+      }
       int  tmp = permutation[capacity - 1 -j];
       permutation[capacity - 1 - j] = permutation[pos];
       permutation[pos] = tmp;
@@ -80,10 +84,11 @@ List<int> _createMatrixA(int wc, int wr, int capacity) {
 Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank, int capacity, bool encode) {
   int loop=0;
   int nb_pcb;
-  if(wr<4)
-    nb_pcb=(capacity/2).toInt();
-  else
+  if(wr<4) {
+    nb_pcb=capacity~/2;
+  } else {
     nb_pcb=(capacity/wr*wc).toInt();
+  }
 
   int offset=(capacity/ 32.0).ceil();
 
@@ -120,8 +125,9 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
         // ((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) -> ungerade 1, gerade 0
         if (((((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1)!=0) && (j!=0) ) != i) {
           //subtract pivot row GF(2)
-          for (int k=0;k<offset;k++)
+          for (int k=0;k<offset;k++) {
             matrixH[k+offset*j] ^= matrixH[k+offset*i];
+          }
         }
       }
     } else { //zero line
@@ -153,7 +159,7 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
 
   int loop1=0;
   for (int kl=0;kl< nb_pcb;kl++) {
-    if(processed_column[kl] == 0 && loop1 < loop-loop2) {
+    if((processed_column[kl] == 0) && (loop1 < loop-loop2)) {
       column_arrangement[kl]=column_arrangement[swap_col[2*loop1]];
       processed_column[kl] = true;
       swap_col[2*loop1+1] = kl;
@@ -171,8 +177,9 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
   //rearrange matrixH if encoder and store it in matrixA
   //rearrange matrixA if decoder
   if(encode) {
-    for(int i=0;i< nb_pcb;i++)
+    for(int i=0;i< nb_pcb;i++) {
       matrixA.setRange(i*offset, i*offset+offset, matrixH.sublist(column_arrangement[i]*offset)); //memcpy(matrixA+i*offset,matrixH+column_arrangement[i]*offset,offset*sizeof(int));
+    }
 
     //swap columns
     int tmp=0;
@@ -185,8 +192,9 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
     }
   } else {
     //    memcpy(matrixH,matrixA,offset*nb_pcb*sizeof(int));
-    for (int i=0;i< nb_pcb;i++)
+    for (int i=0;i< nb_pcb;i++) {
       matrixH.setRange(i*offset, i*offset+offset, matrixA.sublist(column_arrangement[i]*offset));  //memcpy(matrixH+i*offset,matrixA+column_arrangement[i]*offset,offset*sizeof(int));
+    }
 
     //swap columns
     int tmp=0;
@@ -216,8 +224,9 @@ List<int> _createMetadataMatrixA(int wc, int capacity) {
   var matrixA = List<int>.filled(offset*nb_pcb, 0); //(int *)calloc(offset*nb_pcb,sizeof(int));
   var permutation = List<int>.filled(capacity, 0); //calloc(, sizeof(int));
 
-  for (int i=0;i<capacity;i++)
+  for (int i=0;i<capacity;i++) {
     permutation[i]=i;
+  }
   setSeed(LPDC_METADATA_SEED);
   int nb_once=(capacity*nb_pcb/wc+3.0).toInt();
   nb_once=(nb_once/nb_pcb).toInt();
@@ -250,8 +259,9 @@ List<int> _createGeneratorMatrix(List<int> matrixA, int capacity, int Pn) {
   var G= List<int>.filled(offset*capacity, 0); // int *)calloc(offset*capacity, sizeof(int));
 
   //fill identity matrix
-  for (int i=0; i< Pn; i++)
+  for (int i=0; i< Pn; i++) {
     G[((capacity-Pn+i) * offset+i/32).toInt()] |= 1 << (31-i%32);
+  }
 
   //copy CT matrix from A to G
   int matrix_index=capacity-Pn;
@@ -276,7 +286,7 @@ List<int> _createGeneratorMatrix(List<int> matrixA, int capacity, int Pn) {
  @param coderate_params the two code rate parameter wc and wr indicating how many '1' in a column (Wc) and how many '1' in a row of the parity check matrix
  @return the encoded data | null if failed
 */
-jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
+jab_data? encodeLDPC(jab_data data, List<int> coderate_params) {
   int matrix_rank=0;
   int wc, wr, Pg, Pn;       //number of '1' in column //number of '1' in row //gross message length //number of parity check symbols //calculate required parameters
   wc=coderate_params[0];
@@ -285,8 +295,9 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
   if(wr > 0){
     Pg = ((Pn*wr)/(wr-wc)).ceil();
     Pg = wr * ((Pg / wr).ceil());
-  } else
+  } else {
     Pg=Pn*2;
+  }
 
   //in order to speed up the ldpc encoding, sub blocks are established
   int nb_sub_blocks=0;
@@ -307,16 +318,19 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
   }
   nb_sub_blocks=(Pg / Pg_sub_block).toInt();//nb_sub_blocks;
   int encoding_iterations=nb_sub_blocks;
-  if(Pn_sub_block * nb_sub_blocks < Pn)
-      encoding_iterations--;
+  if(Pn_sub_block * nb_sub_blocks < Pn) {
+    encoding_iterations--;
+  }
   List<int> matrixA;
   //Matrix A
-  if(wr > 0)
+  if(wr > 0) {
     matrixA = _createMatrixA(wc, wr, Pg_sub_block);
-  else
+  } else {
     matrixA = _createMetadataMatrixA(wc, Pg_sub_block);
-  if(matrixA == null)
+  }
+  if(matrixA == null) {
     return null;
+  }
 
   bool encode=true;
   var result = _GaussJordan(matrixA, wc, wr, Pg_sub_block, matrix_rank,encode);
@@ -326,8 +340,9 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
 
   //Generator Matrix
   var G = _createGeneratorMatrix(matrixA, Pg_sub_block, Pg_sub_block - matrix_rank);
-  if(G == null)
+  if(G == null) {
     return null;
+  }
 
   var ecc_encoded_data = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + Pg*sizeof(jab_char));
   ecc_encoded_data.data = Uint8List(Pg);
@@ -361,12 +376,14 @@ jab_data encodeLDPC(jab_data data, List<int> coderate_params) {
 
     var result = _GaussJordan(matrixA, wc, wr, Pg_sub_block, matrix_rank,encode);
     matrix_rank = result.item2;
-    if(result.item1 == 1)
+    if(result.item1 == 1) {
       return null;
+    }
 
     var G = _createGeneratorMatrix(matrixA, Pg_sub_block, Pg_sub_block - matrix_rank);
-    if(G == null)
+    if(G == null) {
       return null;
+    }
 
     offset=((Pg_sub_block - matrix_rank)/32.0).ceil();
     for (int i=0;i<Pg_sub_block;i++){
@@ -411,14 +428,16 @@ Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, i
     for(int j=0;j<height;j++) {
       check=0;
       for (int i=0;i<length;i++) {
-        if((((matrix[(j*offset+i/32).toInt()] >> (31-i%32)) & 1) & ((data[start_pos+i] >> 0) & 1))!=0)
+        if((((matrix[(j*offset+i/32).toInt()] >> (31-i%32)) & 1) & ((data[start_pos+i] >> 0) & 1))!=0) {
           check+=1;
+        }
       }
       check=check%2;
       if(check == 0) {
         for(int k=0;k<length;k++) {
-          if(((matrix[(j*offset+k/32).toInt()] >> (31-k%32)) & 1)!= 0)
+          if(((matrix[(j*offset+k/32).toInt()] >> (31-k%32)) & 1)!= 0) {
             max_val[k]++;
+          }
         }
       }
     }
@@ -427,12 +446,14 @@ Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, i
     for (int j=0;j<length;j++) {
       is_used=false;
       for(int i=0;i< prev_count;i++) {
-        if(prev_index[i]==j)
+        if(prev_index[i]==j) {
           is_used=true;
+        }
       }
       if(max_val[j]>=max && !is_used) {
-        if(max_val[j]!=max)
+        if(max_val[j]!=max) {
           counter=0;
+        }
         max=max_val[j];
         equal_max[counter]=j;
         counter++;
@@ -454,13 +475,15 @@ Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, i
       }
       prev_count=counter;
       counter=0;
-    } else
+    } else {
       is_correct=true;
+    }
 
-    if(is_correct == false && kl+1 < max_iter)
+    if(is_correct == false && kl+1 < max_iter) {
       is_correct=true;
-    else
+    } else {
       break;
+    }
   }
 
   return Tuple2<bool, int>(is_correct, 1);
@@ -487,8 +510,9 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
     Pg=length;
     Pn=(length/2).toInt();
     wc=2;
-    if(Pn>36)
+    if(Pn>36) {
       wc=3;
+    }
   }
   decoded_data_len=Pn;
 
@@ -510,15 +534,17 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
     Pn_sub_block=Pn;
   }
   int decoding_iterations=nb_sub_blocks=(Pg / Pg_sub_block).toInt();//nb_sub_blocks;
-  if(Pn_sub_block * nb_sub_blocks < Pn)
+  if(Pn_sub_block * nb_sub_blocks < Pn) {
     decoding_iterations--;
+  }
 
   //parity check matrix
   List<int> matrixA;
-  if(wr > 0)
+  if(wr > 0) {
     matrixA = _createMatrixA(wc, wr,Pg_sub_block);
-  else
+  } else {
     matrixA = _createMetadataMatrixA(wc, Pg_sub_block);
+  }
   if(matrixA == null) {
     return 0; //LDPC matrix could not be created in decoder.
   }
@@ -600,8 +626,9 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
         int start_pos=iter*old_Pg_sub;
         var result =_decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, start_pos);
         is_correct=result.item1;
-        if(result.item2 == 0)
+        if(result.item2 == 0) {
           return 0;
+        }
 
         is_correct=true;
         for (int i=0;i< matrix_rank; i++) {
@@ -613,8 +640,9 @@ int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
             break;
           }
         }
-        if(is_correct==0)
+        if(is_correct==0) {
           return 0;
+        }
       }
     }
     int loop=0;

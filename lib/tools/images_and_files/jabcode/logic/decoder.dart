@@ -12,7 +12,6 @@
 
 import 'package:tuple/tuple.dart';
 import 'dart:core';
-import 'dart:ffi';
 import 'dart:math';
 import 'dart:typed_data';
 import 'binarizer.dart';
@@ -26,7 +25,7 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/mask.dart';
 
 
 
-_memcpy(Int8List dst, int dst_offset, int src_offset, int length) {
+void _memcpy(Int8List dst, int dst_offset, int src_offset, int length) {
 	dst.replaceRange(dst_offset, dst_offset + length, dst.getRange(src_offset, src_offset + length));
 }
 
@@ -119,8 +118,9 @@ void _interpolatePalette(Int8List palette, int color_number) {
 				int sum = palette[offset + 480 + j] + palette[offset + 672 + j];
 				palette[offset + 576 + j] = (sum / 2) as int;
 			}
-		} else
-			return;
+		} else {
+		  return;
+		}
 	}
 }
 
@@ -135,7 +135,7 @@ void _interpolatePalette(Int8List palette, int color_number) {
 */
 void _writeColorPalette(jab_bitmap matrix, jab_decoded_symbol symbol, int p_index, int color_index, int x, int y) {
 	int color_number = pow(2, symbol.metadata.Nc + 1);
-	int mtx_bytes_per_pixel = (matrix.bits_per_pixel / 8).toInt();
+	int mtx_bytes_per_pixel = matrix.bits_per_pixel ~/ 8;
   int mtx_bytes_per_row = matrix.width * mtx_bytes_per_pixel;
 
 	int palette_offset = color_number * 3 * p_index;
@@ -154,8 +154,8 @@ void _writeColorPalette(jab_bitmap matrix, jab_decoded_symbol symbol, int p_inde
  @return item2 p2 the coordinate of the second module
 */
 Tuple2<jab_vector2d, jab_vector2d> _getColorPalettePosInFP(int p_index, int matrix_width, int matrix_height) {
-	jab_vector2d p1;
-	jab_vector2d p2;
+	var p1 = jab_vector2d(0, 0);
+	var p2 = jab_vector2d(0, 0);
 
 	switch(p_index) {
 	case 0:
@@ -285,7 +285,7 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
 */
 int _readColorPaletteInSlave(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map) {
 	int color_number = pow(2, symbol.metadata.Nc + 1);
-	symbol.palette?.clear();
+	symbol.palette.clear();
 
 	//read colors from alignment patterns
 	int color_index;			//the color index number in color palette
@@ -490,10 +490,11 @@ int _decodeModuleNc(Uint8List rgb) {
 		bits[result1.item1] = 0;
 		double r1 = rgb[result1.item2] / rgb[result1.item1];
 		double r2 = rgb[result1.item3] / rgb[result1.item2];
-		if(r1 > r2)
-			bits[result1.item2] = 1;
-		else
-			bits[result1.item2] = 0;
+		if(r1 > r2) {
+		  bits[result1.item2] = 1;
+		} else {
+		  bits[result1.item2] = 0;
+		}
 	} else {
 		return 7;//111
 	}
@@ -648,8 +649,9 @@ int _decodeSlaveMetadata(jab_decoded_symbol host_symbol, int docked_position, ja
 */
 int _decodeNcModuleColor(int module1_color, int module2_color) {
 	for(int i=0; i<8; i++) {
-		if(module1_color == nc_color_encode_table[i][0] && module2_color == nc_color_encode_table[i][1])
-			return i;
+		if(module1_color == nc_color_encode_table[i][0] && module2_color == nc_color_encode_table[i][1]) {
+		  return i;
+		}
 	}
 	return 8; //if no match, return an invalid value
 }
@@ -740,7 +742,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 	int V, E;
 	int V_length = 10, E_length = 6;
 
-	int color_number = pow(2, symbol.metadata.Nc + 1);
+	num color_number = pow(2, symbol.metadata.Nc + 1);
 	int bits_per_module = (log(color_number) / log(2)).toInt();
 
 	//read part2
@@ -1182,7 +1184,7 @@ Tuple2<int, int> _readData(jab_data data, int start, int length) {
  @param bits the input bits
  @return the data message
 */
-jab_data decodeData(jab_data bits) {
+jab_data? decodeData(jab_data bits) {
 	var decoded_bytes = Uint8List(bits.length); //Int8 *)malloc(bits.length * sizeof(Int8));
 	var mode = jab_encode_mode.Upper;
 	var pre_mode = jab_encode_mode.None;
@@ -1198,8 +1200,10 @@ jab_data decodeData(jab_data bits) {
 			var result = _readData(bits, index, character_size[mode]);
 			n = result.item1;
 			value = result.item2;
-			if(n < character_size[mode])	//did not read enough bits
+			if(n < character_size[mode]) {
+			  //did not read enough bits
 				break;
+			}
 			//update index
 			index += character_size[mode];
 		}
@@ -1209,10 +1213,11 @@ jab_data decodeData(jab_data bits) {
 			case jab_encode_mode.Upper:
 				if(value <= 26) {
 					decoded_bytes[count++] = jab_decoding_table_upper[value];
-					if(pre_mode != jab_encode_mode.None)
-						mode = pre_mode;
+					if(pre_mode != jab_encode_mode.None) {
+					  mode = pre_mode;
+					}
 				} else {
-					switch(value as int) {
+					switch(value) {
 						case 27:
 							mode = jab_encode_mode.Punct;
 							pre_mode = jab_encode_mode.Upper;
@@ -1268,8 +1273,9 @@ jab_data decodeData(jab_data bits) {
 			case jab_encode_mode.Lower:
 				if(value <= 26) {
 					decoded_bytes[count++] = jab_decoding_table_lower[value];
-					if(pre_mode != jab_encode_mode.None)
-						mode = pre_mode;
+					if(pre_mode != jab_encode_mode.None) {
+					  mode = pre_mode;
+					}
 				} else {
 					switch(value) {
 						case 27:
@@ -1326,8 +1332,9 @@ jab_data decodeData(jab_data bits) {
 			case jab_encode_mode.Numeric:
 				if(value <= 12) {
 					decoded_bytes[count++] = jab_decoding_table_numeric[value];
-					if(pre_mode != jab_encode_mode.None)
-						mode = pre_mode;
+					if(pre_mode != jab_encode_mode.None) {
+					  mode = pre_mode;
+					}
 				} else {
 					switch(value) {
 						case 13:
@@ -1406,8 +1413,9 @@ jab_data decodeData(jab_data bits) {
 			case jab_encode_mode.Alphanumeric:
 				if(value <= 62) {
 					decoded_bytes[count++] = jab_decoding_table_alphanumeric[value];
-					if(pre_mode != jab_encode_mode.None)
-						mode = pre_mode;}
+					if(pre_mode != jab_encode_mode.None) {
+					  mode = pre_mode;
+					}}
 				else if(value == 63) {
 					//read 2 bits more
 					var result = _readData(bits, index, 2);
