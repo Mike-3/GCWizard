@@ -10,6 +10,7 @@
 import 'dart:typed_data';
 
 import 'package:gc_wizard/logic/tools/images_and_files/qr_code.dart';
+import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/widgets/utils/file_utils.dart';
 import 'package:image/image.dart' as Image;
 
@@ -20,15 +21,18 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
  @param filename the image filename
  @return Pointer to the code bitmap read from image | NULL
 */
-jab_bitmap readImage(Uint8List image) {
+jab_bitmap? readImage(Uint8List image) {
 	var bitmap = jab_bitmap();
 	var _image = Image.decodeImage(image);
+	if (_image == null) {
+		return null;
+	}
 
 	bitmap.pixel = _image.getBytes();
 	bitmap.width = _image.width;
 	bitmap.height = _image.height;
 	bitmap.bits_per_channel = BITMAP_BITS_PER_CHANNEL;
-	bitmap.channel_count = _image.numberOfChannels; //BITMAP_CHANNEL_COUNT;
+	bitmap.channel_count = _image.numChannels; //BITMAP_CHANNEL_COUNT;
 	bitmap.bits_per_pixel = bitmap.bits_per_channel * bitmap.channel_count;
 
 	return bitmap;
@@ -39,17 +43,17 @@ jab_bitmap readImage(Uint8List image) {
  @param bitmap the image data
  @return image | NULL
 */
-Future<Uint8List> saveImage(jab_bitmap bitmap, double border) async {
-	if (bitmap == null) return null;
+Future<Uint8List?> saveImage(jab_bitmap bitmap, double border) async {
+	// if (bitmap == null) return null;
 
-	var _image = Image.Image(bitmap.width, bitmap.height);
+	var _image = Image.Image(width: bitmap.width, height: bitmap.height);
 	int bytes_per_pixel = bitmap.bits_per_pixel ~/ 8;
 	int bytes_per_row = bitmap.width * bytes_per_pixel;
 
 	for (int y=0; y<bitmap.height;y++) {
 		for (int x=0; x<bitmap.width;x++) {
 			var offset = y*bytes_per_row + x*bytes_per_pixel;
-			var pixel = Image.Color.fromRgb(bitmap.pixel[offset+0],
+			var pixel = Image.Color.fromRGB(bitmap.pixel[offset+0],
 																			bitmap.pixel[offset+1],
 																			bitmap.pixel[offset+2]);
 

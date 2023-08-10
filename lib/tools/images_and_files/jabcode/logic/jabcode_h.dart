@@ -53,10 +53,7 @@ class jab_vector2d {
 	int	x;
 	int	y;
 
-	jab_vector2d(intx, inty) {
-		this.x = x;
-		this.y = y;
-	}
+	jab_vector2d(this.x, this.y) {}
 }
 
 /*
@@ -66,30 +63,27 @@ class jab_point {
 	double	x;
 	double	y;
 
-	jab_point(double x, double y) {
-		this.x = x;
-		this.y = y;
-	}
+	jab_point(this.x, this.y) {}
 }
 
 /*
  Data structure
 */
 class jab_data {
-	int	length;
-	Uint8List data;
+	int	length = 0;
+	Uint8List data = Uint8List(0);
 }
 
 /*
  Code bitmap
 */
 class jab_bitmap {
-	int	width;
-	int	height;
-	int	bits_per_pixel;
-	int	bits_per_channel;
-	int	channel_count;
-	Uint8List		pixel;
+	int	width = 0;
+	int	height = 0;
+	int	bits_per_pixel = 0;
+	int	bits_per_channel = 0;
+	int	channel_count = 0;
+	Uint8List	pixel = Uint8List(0);
 
 	jab_bitmap clone() {
 		var _clone = jab_bitmap();
@@ -108,32 +102,32 @@ class jab_bitmap {
  Symbol parameters
 */
 class jab_symbol {
-	int		index;
-	jab_vector2d	side_size;
-	int		host;
-	var		slaves = List<int>.filled(4,0);
-	var 		wcwr =  List<int>.filled(2,0);
-	jab_data		data;
-	Int8List		data_map;
-	jab_data		metadata;
-	Int8List		matrix;
+	int	index = 0;
+	jab_vector2d	side_size = jab_vector2d(0, 0);
+	int	host = 0;
+	var	slaves = List<int>.filled(4,0);
+	var wcwr =  List<int>.filled(2,0);
+	jab_data		data = jab_data();
+	Int8List		data_map = Int8List(0);
+	jab_data		metadata= jab_data();
+	Int8List		matrix = Int8List(0);
 }
 
 /*
  Encode parameters
 */
 class jab_encode {
-	int		color_number;
-	int		symbol_number;
-	int		module_size;
-	int		master_symbol_width;
-	int		master_symbol_height;
-	Int8List		palette;				///< Palette holding used module colors in format RGB
-	List<jab_vector2d>	symbol_versions;
-	Int8List 		symbol_ecc_levels;
-	Int32List		symbol_positions;
-	List<jab_symbol>		symbols;				///< Pointer to internal representation of JAB Code symbols
-	jab_bitmap		bitmap;
+	int	color_number = 0;
+	int	symbol_number = 0;
+	int	module_size = 0;
+	int	master_symbol_width = 0;
+	int	master_symbol_height = 0;
+	Int8List?	palette;				///< Palette holding used module colors in format RGB
+	List<jab_vector2d> symbol_versions = [];
+	Int8List symbol_ecc_levels = Int8List(0);
+	Int32List symbol_positions = Int32List(0);
+	List<jab_symbol>	symbols = [];				///< Pointer to internal representation of JAB Code symbols
+	jab_bitmap?	bitmap;
 }
 
 /*

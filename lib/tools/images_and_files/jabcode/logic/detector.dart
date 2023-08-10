@@ -440,7 +440,7 @@ Tuple3<int, double, double> _crossCheckPatternDiagonal(jab_bitmap image, int typ
 */
 Tuple3<int, double, double> _crossCheckPatternVertical(jab_bitmap image, double module_size_max, double centerx, double centery) {
 	int state_number = 5;
-	int state_middle = ((state_number - 1) / 2).toInt();
+	int state_middle = (state_number - 1) ~/ 2;
   var state_count = List<int>.filled(5, 0);
 
   int centerx_int = centerx.toInt();
@@ -1295,7 +1295,7 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
     int skip = 0;
 
     do {
-      jab_finder_pattern fp;
+      var fp = jab_finder_pattern();
 
       int type_r, type_g, type_b;
       double centerx_r, centerx_g, centerx_b;
@@ -1412,7 +1412,7 @@ void _seekMissingFinderPattern(jab_bitmap bitmap, List<jab_finder_pattern> fps, 
 Tuple2<int, List<jab_finder_pattern>>? _findMasterSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_detect_mode mode) {
 	int status;
   //suppose the code size is minimally 1/4 image size
-  int min_module_size = (ch[0].height / (2 * MAX_SYMBOL_ROWS * MAX_MODULES)).toInt();
+  int min_module_size = ch[0].height ~/ (2 * MAX_SYMBOL_ROWS * MAX_MODULES);
   if(min_module_size < 1 || mode == jab_detect_mode.INTENSIVE_DETECT) min_module_size = 1;
 
   var fps = List<jab_finder_pattern>.filled (MAX_FINDER_PATTERNS, null); //calloc(MAX_FINDER_PATTERNS, sizeof(jab_finder_pattern));
@@ -1436,7 +1436,7 @@ Tuple2<int, List<jab_finder_pattern>>? _findMasterSymbol(jab_bitmap bitmap, List
     int skip = 0;
 
     do {
-      int type_r, type_g, type_b;
+      int type_r = 0, type_g = 0, type_b = 0;
       double centerx_r, centerx_g, centerx_b;
       double module_size_r, module_size_g, module_size_b;
       var finder_pattern1_found = JAB_FAILURE;
@@ -2190,10 +2190,10 @@ jab_alignment_pattern _findAlignmentPattern(List<jab_bitmap> ch, double x, doubl
 */
 int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol host_symbol, jab_decoded_symbol slave_symbol, int docked_position) {
   var aps = List<jab_alignment_pattern>.filled (4, null); //calloc(4, sizeof(jab_alignment_pattern));
-  if(aps == null) {
-    // reportError("Memory allocation for alignment patterns failed");
-    return JAB_FAILURE;
-  }
+  // if(aps == null) {
+  //   // reportError("Memory allocation for alignment patterns failed");
+  //   return JAB_FAILURE;
+  // }
 
   //get slave symbol side size from its metadata
   slave_symbol.side_size.x = VERSION2SIZE(slave_symbol.metadata.side_version.x);
@@ -2924,14 +2924,14 @@ List<double> _getAveragePixelValue(jab_bitmap bitmap, List<jab_finder_pattern> f
     if(fps[i].found_count <= 0) continue;
 
     double radius = fps[i].module_size * 4;
-    int start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius) : 0;
-    int start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius) : 0;
-    int end_x	  = (fps[i].center.x + radius) <= (bitmap.width - 1) ? (fps[i].center.x + radius) : (bitmap.width - 1);
-    int end_y   = (fps[i].center.y + radius) <= (bitmap.height- 1) ? (fps[i].center.y + radius) : (bitmap.height- 1);
+    int start_x = (fps[i].center.x - radius) >= 0 ? (fps[i].center.x - radius).toInt() : 0;
+    int start_y = (fps[i].center.y - radius) >= 0 ? (fps[i].center.y - radius).toInt() : 0;
+    int end_x	  = (fps[i].center.x + radius) <= (bitmap.width - 1) ? (fps[i].center.x + radius).toInt() : (bitmap.width - 1);
+    int end_y   = (fps[i].center.y + radius) <= (bitmap.height- 1) ? (fps[i].center.y + radius).toInt() : (bitmap.height- 1);
     int area_width = end_x - start_x;
     int area_height= end_y - start_y;
 
-    int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+    int bytes_per_pixel = bitmap.bits_per_pixel ~/ 8;
     int bytes_per_row = bitmap.width * bytes_per_pixel;
     for(int y=start_y; y<end_y; y++) {
       for(int x=start_x; x<end_x; x++) {
@@ -3149,8 +3149,7 @@ Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, Lis
  @return item2 status the decoding status code (0: not detectable, 1: not decodable, 2: partly decoded with COMPATIBLE_DECODE mode, 3: fully decoded)
 */
 Tuple2<jab_data?, int>? _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_decoded_symbol>? symbols) {
-	int status;
-	if(status != 0) status = 0;
+	int status = 0;
 	if(symbols == null) {
 	  return null;
 	}
@@ -3184,7 +3183,7 @@ Tuple2<jab_data?, int>? _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_d
 
     //check result
 	if(total == 0 || (mode == NORMAL_DECODE && !res)) {
-		if(symbols[0].module_size != null && symbols[0].module_size > 0 && status != 0) {
+		if(symbols[0].module_size > 0 && status != 0) {
 		  status = 1;
 		}
 		// //clean memory
@@ -3210,7 +3209,7 @@ Tuple2<jab_data?, int>? _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_d
 	decoded_bits.data = Uint8List(total_data_length);
   if(decoded_bits == null) {
     if(status!=0) status = 1;
-    return Tuple2<jab_data, int>(null, status);
+    return Tuple2<jab_data?, int>(null, status);
   }
   int offset = 0;
   for(int i=0; i<total; i++) {
@@ -3236,7 +3235,7 @@ Tuple2<jab_data?, int>? _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_d
   // }
 	if(!res) {
 	  return Tuple2<jab_data?, int>(null, status);
-	};
+	}
 	if(status != 0) {
 		if(status != 2) {
 		  status = 3;

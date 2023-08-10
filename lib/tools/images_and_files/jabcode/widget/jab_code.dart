@@ -2,9 +2,11 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
+import 'package:gc_wizard/application/theme/theme_colors.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
 import 'package:gc_wizard/common_widgets/dialogs/gcw_exported_file_dialog.dart';
 import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
+import 'package:gc_wizard/common_widgets/gcw_text.dart';
 import 'package:gc_wizard/common_widgets/gcw_toast.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/spinners/gcw_integer_spinner.dart';
@@ -65,12 +67,10 @@ class JabCodeState extends State<JabCode> {
                     return;
                   }
 
-                  if (_file != null) {
-                    setState(() {
-                      _outData = _file.bytes;
-                      _updateOutput();
-                    });
-                  }
+                  setState(() {
+                    _outData = _file.bytes;
+                    _updateOutput();
+                  });
                 },
               )
             : GCWTextField(
@@ -85,7 +85,7 @@ class JabCodeState extends State<JabCode> {
         ((_currentMode == GCWSwitchPosition.right) && (_outData != null))
             ? Container(
                 padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Image.memory(_outData),
+                child: Image.memory(_outData!),
               )
             : Container(),
         _currentMode == GCWSwitchPosition.right
@@ -109,7 +109,6 @@ class JabCodeState extends State<JabCode> {
           },
         ),
         GCWDefaultOutput(
-            child: _buildOutput(),
             trailing: (_currentMode == GCWSwitchPosition.right)
                 ? null
                 : GCWIconButton(
@@ -117,25 +116,27 @@ class JabCodeState extends State<JabCode> {
                     size: IconButtonSize.SMALL,
                     iconColor: _outDataEncrypt == null ? themeColors().inActive() : null,
                     onPressed: () {
-                      _outDataEncrypt == null ? null : _exportFile(context, _outDataEncrypt);
+                      _outDataEncrypt == null ? null : _exportFile(context, _outDataEncrypt!);
                     },
-                  ))
+                  ),
+            child: _buildOutput())
       ],
     );
   }
 
-  void _buildOutput() {
+  Widget _buildOutput() {
     if (_currentMode == GCWSwitchPosition.left) {
-      if (_outDataEncrypt == null) return null;
-      return Image.memory(_outDataEncrypt);
-    } else
-      return _outDataDecrypt;
+      if (_outDataEncrypt == null) return Container();
+      return Image.memory(_outDataEncrypt!);
+    } else {
+      return GCWText(text: _outDataDecrypt ?? '');
+    }
   }
 
   void _updateOutput() {
     try {
       if (_currentMode == GCWSwitchPosition.left) {
-        var currentInput = _currentInput;
+        // var currentInput = _currentInput;
         // if ((currentInput != null) && (currentInput.length > maxLength) && (lastCurrentInputLength <= maxLength)) {
         //   currentInput = currentInput.substring(0, maxLength);
         //   showToast(i18n(context, 'qr_code_length_limited', parameters: [maxLength.toString()]));

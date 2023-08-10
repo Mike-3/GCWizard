@@ -399,7 +399,7 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<
 
 	//read the RGB values
 	var rgb = Int8List(3);
-	int mtx_bytes_per_pixel = (matrix.bits_per_pixel / 8).toInt();
+	int mtx_bytes_per_pixel = matrix.bits_per_pixel ~/ 8;
 	int mtx_bytes_per_row = matrix.width * mtx_bytes_per_pixel;
 	int mtx_offset = y * mtx_bytes_per_row + x * mtx_bytes_per_pixel;
 	rgb[0] = matrix.pixel[mtx_offset + 0];
@@ -673,7 +673,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 
 	//decode Nc module color
 	var module_color = Int8List(MASTER_METADATA_PART1_MODULE_NUMBER);
-	int mtx_bytes_per_pixel = (matrix.bits_per_pixel / 8).toInt();
+	int mtx_bytes_per_pixel = matrix.bits_per_pixel ~/ 8;
 	int mtx_bytes_per_row = matrix.width * mtx_bytes_per_pixel;
 	int mtx_offset;
 	while(module_count < MASTER_METADATA_PART1_MODULE_NUMBER) {
@@ -743,7 +743,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 	int V_length = 10, E_length = 6;
 
 	num color_number = pow(2, symbol.metadata.Nc + 1);
-	int bits_per_module = (log(color_number) / log(2)).toInt();
+	int bits_per_module = log(color_number) ~/ log(2);
 
 	//read part2
 	while(part2_bit_count < MASTER_METADATA_PART2_LENGTH) {
@@ -769,7 +769,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 	}
 
 	//decode ldpc for part2
-	if( decodeLDPChd(part2, MASTER_METADATA_PART2_LENGTH, MASTER_METADATA_PART2_LENGTH > 36 ? 4 : 3, 0) == 0) {
+	if(decodeLDPChd(part2, MASTER_METADATA_PART2_LENGTH, MASTER_METADATA_PART2_LENGTH > 36 ? 4 : 3, 0) == 0) {
 		return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 	}
 
@@ -995,7 +995,7 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	int wc = symbol.metadata.ecl.x;
 	int wr = symbol.metadata.ecl.y;
 	int Pg = ((raw_data.length / wr) * wr).toInt();	//max_gross_payload = floor(capacity / wr) * wr
-	int Pn = (Pg * (wr - wc) / wr).toInt();				//code_rate = 1 - wc/wr = (wr - wc)/wr, max_net_payload = max_gross_payload * code_rate
+	int Pn = Pg * (wr - wc) ~/ wr;				//code_rate = 1 - wc/wr = (wr - wc)/wr, max_net_payload = max_gross_payload * code_rate
 
 	//deinterleave data
 	raw_data.length = Pg;	//drop the padding bits

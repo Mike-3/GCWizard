@@ -43,7 +43,7 @@ class jab_finder_pattern {
 	int		found_count = 0;
 	int 	direction = 0;
 
-	import(jab_alignment_pattern alignment_pattern) {
+	void import(jab_alignment_pattern alignment_pattern) {
 		type= alignment_pattern.type;
 		module_size= alignment_pattern.module_size;
 		center= alignment_pattern.center;
@@ -58,11 +58,11 @@ class jab_finder_pattern {
 class jab_alignment_pattern {
 	int		type = 0;
 	double		module_size = 0.0;
-	var		center = jab_point(0.0,0.0);			//coordinates of the center
+	var		center = jab_point(0.0, 0.0);			//coordinates of the center
 	int		found_count = 0;
 	int 	direction = 0;
 
-	import(jab_finder_pattern finder_pattern) {
+	void import(jab_finder_pattern finder_pattern) {
 		type= finder_pattern.type;
 		module_size= finder_pattern.module_size;
 		center= finder_pattern.center;

@@ -27,7 +27,7 @@ const SAMPLE_AREA_HEIGHT =	20;	//height of the metadata rows including the first
  @return the sampled symbol matrix
 */
 jab_bitmap? sampleSymbol(jab_bitmap bitmap, jab_perspective_transform pt, jab_vector2d side_size) {
-	int mtx_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+	int mtx_bytes_per_pixel = bitmap.bits_per_pixel ~/ 8;
 	int mtx_bytes_per_row = side_size.x * mtx_bytes_per_pixel;
 	var matrix = jab_bitmap(); //(jab_bitmap*)malloc(sizeof(jab_bitmap) + side_size.x*side_size.y*mtx_bytes_per_pixel*sizeof(jab_byte));
 
@@ -37,7 +37,7 @@ jab_bitmap? sampleSymbol(jab_bitmap bitmap, jab_perspective_transform pt, jab_ve
 	matrix.width = side_size.x;
 	matrix.height= side_size.y;
 
-	int bmp_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+	int bmp_bytes_per_pixel = bitmap.bits_per_pixel ~/ 8;
 	int bmp_bytes_per_row = bitmap.width * bmp_bytes_per_pixel;
 
 	var points = List<jab_point>.filled(side_size.x, null);

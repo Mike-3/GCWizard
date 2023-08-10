@@ -72,7 +72,7 @@ void _filterBinary(jab_bitmap binary) {
 */
 void _getHistogram(jab_bitmap bitmap, int channel, List<int> hist) {
 	// memset(hist, 0, 256*sizeof(int));
-	int bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
+	int bytes_per_pixel = bitmap.bits_per_pixel ~/ 8;
 	for(int i=0; i<bitmap.width*bitmap.height; i++) {
 		hist[bitmap.pixel[i*bytes_per_pixel + channel]]++;
 	}
