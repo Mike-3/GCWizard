@@ -12,7 +12,7 @@
 // import java.io.OutputStream;
 // import java.util.LinkedList;
 
-import 'dart:core';
+import 'dart:isolate';
 import 'dart:math';
 
 
@@ -29,8 +29,8 @@ class TetrisPuzzleSolverMT {
 
   late final List<String> _blocks; //blocks to add
 
-  var queue = <BoardState>[]; //this contains all the work units. work units are added and removed by SlaveThreads
-  int iterations = 0; //number of processed work units
+  final _queue = <BoardState>[]; //this contains all the work units. work units are added and removed by SlaveThreads
+  //int iterations = 0; //number of processed work units
 
   bool stopASAP = false; //set to true to cancel computation
   bool paused = false, masterPaused = true; //used by save/load methods. setting paused to true causes all threads to stop as soon as possible in a safe state. masterPaused is set to true by the master thread when it's paused in a safe state
@@ -64,7 +64,7 @@ class TetrisPuzzleSolverMT {
     _h = height;
     int nBlocks = iBlocks + oBlocks + tBlocks + jBlocks + lBlocks + sBlocks + zBlocks;
     _blocks = List<String>.filled(nBlocks, '');
-    _slaves = List<SlaveThread>.filled(4, SlaveThread(_blocks, queue));
+    _slaves = List<SlaveThread>.generate(4, (i) => SlaveThread(_blocks, _queue, i)); //
 
     int p = 0;
     for (int i = 0; i < iBlocks; i++) {
@@ -90,11 +90,11 @@ class TetrisPuzzleSolverMT {
     }
     //scramble blocks. seems to lead to a solution faster
     for(int i = 0; i < nBlocks; i++){
-      int r=(Random().nextDouble()*nBlocks).toInt();
-      int r2=(Random().nextDouble()*nBlocks).toInt();
-      var temp=_blocks[r];
-      _blocks[r]=_blocks[r2];
-      _blocks[r2]=temp;
+      int r = (Random().nextDouble()*nBlocks).toInt();
+      int r2 = (Random().nextDouble()*nBlocks).toInt();
+      var temp = _blocks[r];
+      _blocks[r] = _blocks[r2];
+      _blocks[r2] = temp;
     }
     if (nBlocks * 4 != width * height) {
       solved = true;
@@ -102,8 +102,8 @@ class TetrisPuzzleSolverMT {
       return;
     }
     //create and add the first work unit, initially empty.
-    BoardState s = BoardState._create(width, height);
-    queue.add(s);
+    var s = BoardState._create(width, height);
+    _queue.add(s);
   }
 
   /**
@@ -149,7 +149,7 @@ class TetrisPuzzleSolverMT {
    * @return an instance of Solution if the puzzle has a solution, null if it
    * doesn't (or if cancel() was called)
    */
-  _Solution? solve() {
+  Future<_Solution?> solve() async {
     if (solved) { //already solved
       return cachedResult!;
     }
@@ -162,7 +162,10 @@ class TetrisPuzzleSolverMT {
     _Solution? ret; //this will contain the return value (Solution or null)
     //start slaves
     for (SlaveThread s in _slaves) {
-      s.run();
+      s.run(); //Isolate.run( s.run);
+      // if (sol != null) {
+      //   sol =sol;
+      // }
     }
     //force a context switch so they actually start. cheap, I know.
     // try {
@@ -204,7 +207,7 @@ class TetrisPuzzleSolverMT {
       }
       //check if all slaves are waiting and the queue is empty (puzzle has no solution)
       //synchronized (queue) {
-        int qLen = queue.length;
+        int qLen = _queue.length;
         if (qLen == 0) {
           bool allWaiting = true;
           for (SlaveThread s in _slaves) {
@@ -266,7 +269,7 @@ class TetrisPuzzleSolverMT {
           //     System.arraycopy(board[y], 0, bcopy[y], 0, board[0].length);
           // }
           ret[i] = bcopy;
-        } catch (Throwable t) {
+        } catch (e) {
           ret[i] = null;
         }
       }
@@ -274,13 +277,13 @@ class TetrisPuzzleSolverMT {
     }
   }
 
-  /**
-   *
-   * @return number of processed work units
-   */
-  int getIterations() {
-    return iterations;
-  }
+  // /**
+  //  *
+  //  * @return number of processed work units
+  //  */
+  // int getIterations() {
+  //   return iterations;
+  // }
 
   /**
    * @return number of O blocks
@@ -369,6 +372,7 @@ class BoardState {
   late List<List<int>> board; //board state
 
   int _p = 1; //pointer to next block to add (starts from 1, ends at blocks.length). this means that the higher p is, the closer we are to completing the puzzle
+int threadIndex = -1; //ToDo wieder raus
 
   /**
    * creates a new work unit
@@ -397,7 +401,7 @@ class BoardState {
    *
    * @param s BoardState to clone
    */
-  static BoardState _clone(BoardState s) {
+  static BoardState _clone(BoardState s, int threadIndex) { //ToDo threadIndex wieder raus
     var newBoardstate = BoardState();
     newBoardstate.board =  List<List<int>>.generate(s.board.length, (i) => List<int>.generate(s.board[i].length, (index) => s.board[i][index], growable: false), growable: false);
 
@@ -406,6 +410,7 @@ class BoardState {
       //     System.arraycopy(s.board[y], 0, board[y], 0, board[0].length);
       // }
     newBoardstate._p = s._p + 1;
+    newBoardstate.threadIndex = threadIndex;
     return newBoardstate;
   }
 
@@ -534,15 +539,17 @@ class _Solution {
 class SlaveThread  { //extends Thread
 
   bool _waiting = false; //set to true when no work units are available. if all threads are waiting and the work queue is empty, the puzzle has no solution and the master thread will stop processing
-  late _Solution? solution; //set to an instance of Solution if this threads finds a solution
+  _Solution? solution; //set to an instance of Solution if this threads finds a solution
   late List<List<int>> __board; //board that it's currently working on. a reference is kept here so a copy can be passed to the gui to show the animation. ignore.
   bool _slavePaused = true; //set to true when it's paused in a safe state
   final List<String> _blocks;
   final List<BoardState> _queue;
+  final int threadIndex; //ToDo wieder raus
+  int loopCounter = 0; //ToDo wieder raus
   
-  SlaveThread(this._blocks, this._queue);
+  SlaveThread(this._blocks, this._queue, this.threadIndex);  //ToDo threadIndex wieder raus
 
-  void run() {
+  Future<_Solution?> run() async {
     _slavePaused = false;
     // setPriority(MAX_PRIORITY);
     // setName("TPS_SLAVE");
@@ -564,7 +571,7 @@ class SlaveThread  { //extends Thread
         // //safe state to interrupt processing
         // if (stopASAP) {
         //   slavePaused = true;
-        //   return;
+        //   return solution;
         // }
         // //get a work unit
         //synchronized (queue) {
@@ -573,7 +580,7 @@ class SlaveThread  { //extends Thread
             _waiting = false;
             workunit = _queue.last;
             _queue.removeLast();
-            iterations++;
+            //iterations++;
             // if (waiting) {
             //   setPriority(MAX_PRIORITY);
             // }
@@ -584,17 +591,24 @@ class SlaveThread  { //extends Thread
               // setPriority(MIN_PRIORITY);
               _waiting = true;
             }
+            return null;
           }
         //}
       }
+
+
+      loopCounter++;
+      if (loopCounter % 1000 == 0) {
+print(threadIndex.toString() + " " + _queue.length.toString() + " " + loopCounter.toString());
+      }
       //at this point we surely have a work unit to process
-      final List<List<int>> board = workunit.board; //extract board
-      __board = board; //copy reference (for gui). ignore.
-      final p = workunit._p;
-      final block = _blocks[p - 1]; //which block do we have to place? (p-1 because p starts from 1)
+      final List<List<int>> _board = workunit.board; //extract board
+      __board = _board; //copy reference (for gui). ignore.
+      final _p = workunit._p;
+      final _block = _blocks[_p - 1]; //which block do we have to place? (p-1 because p starts from 1)
       var toAdd = <BoardState>[]; //this list will contain all the newly created work units
       //find ALL places where we can place this block. for each place, a new work unit is created with the block in that location
-      if (block == TetrisPuzzleSolverMT.I) {
+      if (_block == TetrisPuzzleSolverMT.I) {
         //I shaped block can have 2 rotations.
         /*
          #
@@ -602,238 +616,238 @@ class SlaveThread  { //extends Thread
          #
          #
          */
-        for (int y = 0; y <= board.length - 4; y++) {
-          for (int x = 0; x <= board[0].length - 1; x++) {
-            if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 2][x] == 0 && board[y + 3][x] == 0) {
+        for (int y = 0; y <= _board.length - 4; y++) {
+          for (int x = 0; x <= _board[0].length - 1; x++) {
+            if (_board[y][x] == 0 && _board[y + 1][x] == 0 && _board[y + 2][x] == 0 && _board[y + 3][x] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y + 1][x] = p;
-              board[y + 2][x] = p;
-              board[y + 3][x] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y + 1][x] = _p;
+              _board[y + 2][x] = _p;
+              _board[y + 3][x] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y + 1][x] = 0;
-              board[y + 2][x] = 0;
-              board[y + 3][x] = 0;
+              _board[y][x] = 0;
+              _board[y + 1][x] = 0;
+              _board[y + 2][x] = 0;
+              _board[y + 3][x] = 0;
             }
           }
         }
         // ####
-        for (int y = 0; y <= board.length - 1; y++) {
-          for (int x = 0; x <= board[0].length - 4; x++) {
-            if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y][x + 2] == 0 && board[y][x + 3] == 0) {
+        for (int y = 0; y <= _board.length - 1; y++) {
+          for (int x = 0; x <= _board[0].length - 4; x++) {
+            if (_board[y][x] == 0 && _board[y][x + 1] == 0 && _board[y][x + 2] == 0 && _board[y][x + 3] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y][x + 1] = p;
-              board[y][x + 2] = p;
-              board[y][x + 3] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y][x + 1] = _p;
+              _board[y][x + 2] = _p;
+              _board[y][x + 3] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y][x + 1] = 0;
-              board[y][x + 2] = 0;
-              board[y][x + 3] = 0;
+              _board[y][x] = 0;
+              _board[y][x + 1] = 0;
+              _board[y][x + 2] = 0;
+              _board[y][x + 3] = 0;
             }
           }
         }
       }
       
-      if (block == TetrisPuzzleSolverMT.O) {
+      if (_block == TetrisPuzzleSolverMT.O) {
         //2x2 square block can have only 1 rotation
-        for (int y = 0; y <= board.length - 2; y++) {
-          for (int x = 0; x <= board[0].length - 2; x++) {
-            if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0) {
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x] == 0 && _board[y + 1][x] == 0 && _board[y][x + 1] == 0 && _board[y + 1][x + 1] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y + 1][x] = p;
-              board[y][x + 1] = p;
-              board[y + 1][x + 1] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y + 1][x] = _p;
+              _board[y][x + 1] = _p;
+              _board[y + 1][x + 1] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y + 1][x] = 0;
-              board[y][x + 1] = 0;
-              board[y + 1][x + 1] = 0;
+              _board[y][x] = 0;
+              _board[y + 1][x] = 0;
+              _board[y][x + 1] = 0;
+              _board[y + 1][x + 1] = 0;
             }
           }
         }
       }
   
-      if (block == TetrisPuzzleSolverMT.T) {
-      //T shaped block can have 4 rotations
-      /*
-       ###
-       _#
-       */
-      for (int y = 0; y <= board.length - 2; y++) {
-        for (int x = 0; x <= board[0].length - 3; x++) {
-          if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0 && board[y][x + 2] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y][x] = p;
-            board[y][x + 1] = p;
-            board[y + 1][x + 1] = p;
-            board[y][x + 2] = p;
-            if (p == _blocks.length) { //solution found!
+      if (_block == TetrisPuzzleSolverMT.T) {
+        //T shaped block can have 4 rotations
+        /*
+         ###
+         _#
+         */
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 3; x++) {
+            if (_board[y][x] == 0 && _board[y][x + 1] == 0 && _board[y + 1][x + 1] == 0 && _board[y][x + 2] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              _board[y][x] = _p;
+              _board[y][x + 1] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y][x + 2] = _p;
+              if (_p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return solution;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
+                }
+              }
+              //remove changes, keep looking
+              _board[y][x] = 0;
+              _board[y][x + 1] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y][x + 2] = 0;
+            }
+          }
+        }
+        /*
+         #
+         ##
+         #
+         */
+        for (int y = 0; y <= _board.length - 3; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x] == 0 && _board[y + 1][x] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 2][x] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              _board[y][x] = _p;
+              _board[y + 1][x] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 2][x] = _p;
+              if (_p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return solution;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+              if (!workunit.isStupid()) {
+                toAdd.add(BoardState._clone(workunit, threadIndex));
+              }
+              }
+              //remove changes, keep looking
+              _board[y][x] = 0;
+              _board[y + 1][x] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 2][x] = 0;
+            }
+          }
+        }
+        /*
+         _#
+         ##
+         _#
+         */
+        for (int y = 0; y <= _board.length - 3; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x + 1] == 0 && _board[y + 1][x] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 2][x + 1] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              _board[y][x + 1] = _p;
+              _board[y + 1][x] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 2][x + 1] = _p;
+              if (_p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return solution;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
+                }
+              }
+              //remove changes, keep looking
+              _board[y][x + 1] = 0;
+              _board[y + 1][x] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 2][x + 1] = 0;
+            }
+          }
+        }
+        /*
+         _#
+         ###
+         */
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 3; x++) {
+            if (_board[y + 1][x] == 0 && _board[y][x + 1] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 1][x + 2] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              _board[y + 1][x] = _p;
+              _board[y][x + 1] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 1][x + 2] = _p;
+              if (_p == _blocks.length) { //solution found!
               solution = _Solution.copy(workunit);
               _slavePaused = true;
-              return;
+              return solution;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
               if (!workunit.isStupid()) {
-                toAdd.add(BoardState._clone(workunit));
+                toAdd.add(BoardState._clone(workunit, threadIndex));
               }
             }
             //remove changes, keep looking
-            board[y][x] = 0;
-            board[y][x + 1] = 0;
-            board[y + 1][x + 1] = 0;
-            board[y][x + 2] = 0;
-          }
-        }
-      }
-      /*
-       #
-       ##
-       #
-       */
-      for (int y = 0; y <= board.length - 3; y++) {
-        for (int x = 0; x <= board[0].length - 2; x++) {
-          if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y][x] = p;
-            board[y + 1][x] = p;
-            board[y + 1][x + 1] = p;
-            board[y + 2][x] = p;
-            if (p == _blocks.length) { //solution found!
-              solution = _Solution.copy(workunit);
-              _slavePaused = true;
-              return;
-            } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-            if (!workunit.isStupid()) {
-              toAdd.add(BoardState._clone(workunit));
-            }
-            }
-            //remove changes, keep looking
-            board[y][x] = 0;
-            board[y + 1][x] = 0;
-            board[y + 1][x + 1] = 0;
-            board[y + 2][x] = 0;
-          }
-        }
-      }
-      /*
-       _#
-       ##
-       _#
-       */
-      for (int y = 0; y <= board.length - 3; y++) {
-        for (int x = 0; x <= board[0].length - 2; x++) {
-          if (board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y][x + 1] = p;
-            board[y + 1][x] = p;
-            board[y + 1][x + 1] = p;
-            board[y + 2][x + 1] = p;
-            if (p == _blocks.length) { //solution found!
-              solution = _Solution.copy(workunit);
-              _slavePaused = true;
-              return;
-            } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit.isStupid()) {
-                toAdd.add(BoardState._clone(workunit));
-              }
-            }
-            //remove changes, keep looking
-            board[y][x + 1] = 0;
-            board[y + 1][x] = 0;
-            board[y + 1][x + 1] = 0;
-            board[y + 2][x + 1] = 0;
-          }
-        }
-      }
-      /*
-       _#
-       ###
-       */
-      for (int y = 0; y <= board.length - 2; y++) {
-        for (int x = 0; x <= board[0].length - 3; x++) {
-          if (board[y + 1][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y + 1][x] = p;
-            board[y][x + 1] = p;
-            board[y + 1][x + 1] = p;
-            board[y + 1][x + 2] = p;
-            if (p == _blocks.length) { //solution found!
-            solution = _Solution.copy(workunit);
-            _slavePaused = true;
-            return;
-          } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-            if (!workunit.isStupid()) {
-              toAdd.add(BoardState._clone(workunit));
+            _board[y + 1][x] = 0;
+            _board[y][x + 1] = 0;
+            _board[y + 1][x + 1] = 0;
+            _board[y + 1][x + 2] = 0;
             }
           }
-          //remove changes, keep looking
-          board[y + 1][x] = 0;
-          board[y][x + 1] = 0;
-          board[y + 1][x + 1] = 0;
-          board[y + 1][x + 2] = 0;
-          }
         }
-      }
       }
   
-      if (block == TetrisPuzzleSolverMT.J) {
+      if (_block == TetrisPuzzleSolverMT.J) {
         //J shaped block can have 4 rotations
         /*
          ###
          __#
          */
-        for (int y = 0; y <= board.length - 2; y++) {
-          for (int x = 0; x <= board[0].length - 3; x++) {
-            if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 2] == 0 && board[y][x + 2] == 0) {
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 3; x++) {
+            if (_board[y][x] == 0 && _board[y][x + 1] == 0 && _board[y + 1][x + 2] == 0 && _board[y][x + 2] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y][x + 1] = p;
-              board[y + 1][x + 2] = p;
-              board[y][x + 2] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y][x + 1] = _p;
+              _board[y + 1][x + 2] = _p;
+              _board[y][x + 2] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y][x + 1] = 0;
-              board[y + 1][x + 2] = 0;
-              board[y][x + 2] = 0;
+              _board[y][x] = 0;
+              _board[y][x + 1] = 0;
+              _board[y + 1][x + 2] = 0;
+              _board[y][x + 2] = 0;
             }
           }
         }
@@ -841,28 +855,28 @@ class SlaveThread  { //extends Thread
          #
          ###
          */
-        for (int y = 0; y <= board.length - 2; y++) {
-          for (int x = 0; x <= board[0].length - 3; x++) {
-            if (board[y + 1][x] == 0 && board[y][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 3; x++) {
+            if (_board[y + 1][x] == 0 && _board[y][x] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 1][x + 2] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y + 1][x] = p;
-              board[y][x] = p;
-              board[y + 1][x + 1] = p;
-              board[y + 1][x + 2] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y + 1][x] = _p;
+              _board[y][x] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 1][x + 2] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y + 1][x] = 0;
-              board[y][x] = 0;
-              board[y + 1][x + 1] = 0;
-              board[y + 1][x + 2] = 0;
+              _board[y + 1][x] = 0;
+              _board[y][x] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 1][x + 2] = 0;
             }
           }
         }
@@ -871,28 +885,28 @@ class SlaveThread  { //extends Thread
          #
          #
          */
-        for (int y = 0; y <= board.length - 3; y++) {
-          for (int x = 0; x <= board[0].length - 2; x++) {
-            if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y][x + 1] == 0 && board[y + 2][x] == 0) {
+        for (int y = 0; y <= _board.length - 3; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x] == 0 && _board[y + 1][x] == 0 && _board[y][x + 1] == 0 && _board[y + 2][x] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y + 1][x] = p;
-              board[y][x + 1] = p;
-              board[y + 2][x] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y + 1][x] = _p;
+              _board[y][x + 1] = _p;
+              _board[y + 2][x] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y + 1][x] = 0;
-              board[y][x + 1] = 0;
-              board[y + 2][x] = 0;
+              _board[y][x] = 0;
+              _board[y + 1][x] = 0;
+              _board[y][x + 1] = 0;
+              _board[y + 2][x] = 0;
             }
           }
         }
@@ -901,61 +915,61 @@ class SlaveThread  { //extends Thread
          _#
          ##
          */
-        for (int y = 0; y <= board.length - 3; y++) {
-          for (int x = 0; x <= board[0].length - 2; x++) {
-            if (board[y][x + 1] == 0 && board[y + 2][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
+        for (int y = 0; y <= _board.length - 3; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x + 1] == 0 && _board[y + 2][x] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 2][x + 1] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x + 1] = p;
-              board[y + 2][x] = p;
-              board[y + 1][x + 1] = p;
-              board[y + 2][x + 1] = p;
-              if (p == _blocks.length) { //solution found!
-              solution = _Solution.copy(workunit);
-              _slavePaused = true;
-              return;
+              _board[y][x + 1] = _p;
+              _board[y + 2][x] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 2][x + 1] = _p;
+              if (_p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x + 1] = 0;
-              board[y + 2][x] = 0;
-              board[y + 1][x + 1] = 0;
-              board[y + 2][x + 1] = 0;
+              _board[y][x + 1] = 0;
+              _board[y + 2][x] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 2][x + 1] = 0;
             }
           }
         }
       }
   
-      if (block == TetrisPuzzleSolverMT.L) {
+      if (_block == TetrisPuzzleSolverMT.L) {
         //L shaped block can have 4 rotations
         /*
          ###
          #
          */
-        for (int y = 0; y <= board.length - 2; y++) {
-          for (int x = 0; x <= board[0].length - 3; x++) {
-            if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y][x + 2] == 0) {
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 3; x++) {
+            if (_board[y][x] == 0 && _board[y][x + 1] == 0 && _board[y + 1][x] == 0 && _board[y][x + 2] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y][x + 1] = p;
-              board[y + 1][x] = p;
-              board[y][x + 2] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y][x + 1] = _p;
+              _board[y + 1][x] = _p;
+              _board[y][x + 2] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y][x + 1] = 0;
-              board[y + 1][x] = 0;
-              board[y][x + 2] = 0;
+              _board[y][x] = 0;
+              _board[y][x + 1] = 0;
+              _board[y + 1][x] = 0;
+              _board[y][x + 2] = 0;
             }
           }
         }
@@ -964,28 +978,28 @@ class SlaveThread  { //extends Thread
          #
          ##
          */
-        for (int y = 0; y <= board.length - 3; y++) {
-          for (int x = 0; x <= board[0].length - 2; x++) {
-            if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 2][x + 1] == 0 && board[y + 2][x] == 0) {
+        for (int y = 0; y <= _board.length - 3; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x] == 0 && _board[y + 1][x] == 0 && _board[y + 2][x + 1] == 0 && _board[y + 2][x] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y + 1][x] = p;
-              board[y + 2][x + 1] = p;
-              board[y + 2][x] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y + 1][x] = _p;
+              _board[y + 2][x + 1] = _p;
+              _board[y + 2][x] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y + 1][x] = 0;
-              board[y + 2][x + 1] = 0;
-              board[y + 2][x] = 0;
+              _board[y][x] = 0;
+              _board[y + 1][x] = 0;
+              _board[y + 2][x + 1] = 0;
+              _board[y + 2][x] = 0;
             }
           }
         }
@@ -994,28 +1008,28 @@ class SlaveThread  { //extends Thread
          _#
          _#
          */
-        for (int y = 0; y <= board.length - 3; y++) {
-          for (int x = 0; x <= board[0].length - 2; x++) {
-            if (board[y][x + 1] == 0 && board[y][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
+        for (int y = 0; y <= _board.length - 3; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x + 1] == 0 && _board[y][x] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 2][x + 1] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x + 1] = p;
-              board[y][x] = p;
-              board[y + 1][x + 1] = p;
-              board[y + 2][x + 1] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x + 1] = _p;
+              _board[y][x] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 2][x + 1] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
               if (!workunit.isStupid()) {
-                toAdd.add(BoardState._clone(workunit));
+                toAdd.add(BoardState._clone(workunit, threadIndex));
               }
               }
               //remove changes, keep looking
-              board[y][x + 1] = 0;
-              board[y][x] = 0;
-              board[y + 1][x + 1] = 0;
-              board[y + 2][x + 1] = 0;
+              _board[y][x + 1] = 0;
+              _board[y][x] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 2][x + 1] = 0;
             }
           }
         }
@@ -1023,62 +1037,62 @@ class SlaveThread  { //extends Thread
          __#
          ###
          */
-        for (int y = 0; y <= board.length - 2; y++) {
-          for (int x = 0; x <= board[0].length - 3; x++) {
-            if (board[y + 1][x] == 0 && board[y][x + 2] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 3; x++) {
+            if (_board[y + 1][x] == 0 && _board[y][x + 2] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 1][x + 2] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y + 1][x] = p;
-              board[y][x + 2] = p;
-              board[y + 1][x + 1] = p;
-              board[y + 1][x + 2] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y + 1][x] = _p;
+              _board[y][x + 2] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 1][x + 2] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y + 1][x] = 0;
-              board[y][x + 2] = 0;
-              board[y + 1][x + 1] = 0;
-              board[y + 1][x + 2] = 0;
+              _board[y + 1][x] = 0;
+              _board[y][x + 2] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 1][x + 2] = 0;
             }
           }
         }
       }
   
-      if (block == TetrisPuzzleSolverMT.S) {
+      if (_block == TetrisPuzzleSolverMT.S) {
         //S shaped block can have 2 rotations
         /*
          #
          ##
          _#
          */
-        for (int y = 0; y <= board.length - 3; y++) {
-          for (int x = 0; x <= board[0].length - 2; x++) {
-            if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
+        for (int y = 0; y <= _board.length - 3; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x] == 0 && _board[y + 1][x] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 2][x + 1] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y + 1][x] = p;
-              board[y + 1][x + 1] = p;
-              board[y + 2][x + 1] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y + 1][x] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 2][x + 1] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y + 1][x] = 0;
-              board[y + 1][x + 1] = 0;
-              board[y + 2][x + 1] = 0;
+              _board[y][x] = 0;
+              _board[y + 1][x] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 2][x + 1] = 0;
             }
           }
         }
@@ -1086,61 +1100,61 @@ class SlaveThread  { //extends Thread
          _##
          ##
          */
-        for (int y = 0; y <= board.length - 2; y++) {
-          for (int x = 0; x <= board[0].length - 3; x++) {
-            if (board[y][x + 1] == 0 && board[y][x + 2] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0) {
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 3; x++) {
+            if (_board[y][x + 1] == 0 && _board[y][x + 2] == 0 && _board[y + 1][x] == 0 && _board[y + 1][x + 1] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x + 1] = p;
-              board[y][x + 2] = p;
-              board[y + 1][x] = p;
-              board[y + 1][x + 1] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x + 1] = _p;
+              _board[y][x + 2] = _p;
+              _board[y + 1][x] = _p;
+              _board[y + 1][x + 1] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x + 1] = 0;
-              board[y][x + 2] = 0;
-              board[y + 1][x] = 0;
-              board[y + 1][x + 1] = 0;
+              _board[y][x + 1] = 0;
+              _board[y][x + 2] = 0;
+              _board[y + 1][x] = 0;
+              _board[y + 1][x + 1] = 0;
             }
           }
         }
       }
 
-      if (block == TetrisPuzzleSolverMT.Z) {
+      if (_block == TetrisPuzzleSolverMT.Z) {
         //Z shaped block can have 2 rotations
         /*
          **
          _**
          */
-        for (int y = 0; y <= board.length - 2; y++) {
-          for (int x = 0; x <= board[0].length - 3; x++) {
-            if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
+        for (int y = 0; y <= _board.length - 2; y++) {
+          for (int x = 0; x <= _board[0].length - 3; x++) {
+            if (_board[y][x] == 0 && _board[y][x + 1] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 1][x + 2] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x] = p;
-              board[y][x + 1] = p;
-              board[y + 1][x + 1] = p;
-              board[y + 1][x + 2] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x] = _p;
+              _board[y][x + 1] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 1][x + 2] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x] = 0;
-              board[y][x + 1] = 0;
-              board[y + 1][x + 1] = 0;
-              board[y + 1][x + 2] = 0;
+              _board[y][x] = 0;
+              _board[y][x + 1] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 1][x + 2] = 0;
             }
           }
         }
@@ -1149,28 +1163,28 @@ class SlaveThread  { //extends Thread
          ##
          #
          */
-        for (int y = 0; y <= board.length - 3; y++) {
-          for (int x = 0; x <= board[0].length - 2; x++) {
-            if (board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x] == 0) {
+        for (int y = 0; y <= _board.length - 3; y++) {
+          for (int x = 0; x <= _board[0].length - 2; x++) {
+            if (_board[y][x + 1] == 0 && _board[y + 1][x] == 0 && _board[y + 1][x + 1] == 0 && _board[y + 2][x] == 0) {
               //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-              board[y][x + 1] = p;
-              board[y + 1][x] = p;
-              board[y + 1][x + 1] = p;
-              board[y + 2][x] = p;
-              if (p == _blocks.length) { //solution found!
+              _board[y][x + 1] = _p;
+              _board[y + 1][x] = _p;
+              _board[y + 1][x + 1] = _p;
+              _board[y + 2][x] = _p;
+              if (_p == _blocks.length) { //solution found!
                 solution = _Solution.copy(workunit);
                 _slavePaused = true;
-                return;
+                return solution;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState._clone(workunit));
+                  toAdd.add(BoardState._clone(workunit, threadIndex));
                 }
               }
               //remove changes, keep looking
-              board[y][x + 1] = 0;
-              board[y + 1][x] = 0;
-              board[y + 1][x + 1] = 0;
-              board[y + 2][x] = 0;
+              _board[y][x + 1] = 0;
+              _board[y + 1][x] = 0;
+              _board[y + 1][x + 1] = 0;
+              _board[y + 2][x] = 0;
             }
           }
         }

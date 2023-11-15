@@ -5,7 +5,6 @@
  */
 //package com.dosse.tetrisPuzzleSolver;
 
-import 'dart:core';
 
 /**
  * Fills a box with tetris shapes (tetraminos). Implemented to solve annoying
@@ -140,11 +139,11 @@ class TetrisPuzzleSolver {
     if (block == I) {
       //I shaped block can have 2 rotations.
       /*
-             #
-             #
-             #
-             #
-             */
+       #
+       #
+       #
+       #
+       */
       for (int y = 0; y <= board.length - 4; y++) {
         for (int x = 0; x <= board[0].length - 1; x++) {
           if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 2][x] == 0 && board[y + 3][x] == 0) {
@@ -217,9 +216,9 @@ class TetrisPuzzleSolver {
     if (block == T) {
       //T shaped block can have 4 rotations
       /*
-             ###
-             _#
-             */
+      ###
+      _#
+      */
       for (int y = 0; y <= board.length - 2; y++) {
         for (int x = 0; x <= board[0].length - 3; x++) {
           if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0 && board[y][x + 2] == 0) {
@@ -239,10 +238,10 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             #
-             ##
-             #
-             */
+      #
+      ##
+      #
+      */
       for (int y = 0; y <= board.length - 3; y++) {
         for (int x = 0; x <= board[0].length - 2; x++) {
           if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x] == 0) {
@@ -262,10 +261,10 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             _#
-             ##
-             _#
-             */
+      _#
+      ##
+      _#
+      */
       for (int y = 0; y <= board.length - 3; y++) {
         for (int x = 0; x <= board[0].length - 2; x++) {
           if (board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
@@ -285,9 +284,9 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             _#
-             ###
-             */
+      _#
+      ###
+      */
       for (int y = 0; y <= board.length - 2; y++) {
         for (int x = 0; x <= board[0].length - 3; x++) {
           if (board[y + 1][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
@@ -315,9 +314,9 @@ class TetrisPuzzleSolver {
     if (block == J) {
       //J shaped block can have 4 rotations
       /*
-             ###
-             __#
-             */
+      ###
+      __#
+      */
       for (int y = 0; y <= board.length - 2; y++) {
         for (int x = 0; x <= board[0].length - 3; x++) {
           if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 2] == 0 && board[y][x + 2] == 0) {
@@ -337,9 +336,9 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             #
-             ###
-             */
+      #
+      ###
+      */
       for (int y = 0; y <= board.length - 2; y++) {
         for (int x = 0; x <= board[0].length - 3; x++) {
           if (board[y + 1][x] == 0 && board[y][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
@@ -359,10 +358,10 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             ##
-             #
-             #
-             */
+      ##
+      #
+      #
+      */
       for (int y = 0; y <= board.length - 3; y++) {
         for (int x = 0; x <= board[0].length - 2; x++) {
           if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y][x + 1] == 0 && board[y + 2][x] == 0) {
@@ -382,10 +381,10 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             _#
-             _#
-             ##
-             */
+      _#
+      _#
+      ##
+      */
       for (int y = 0; y <= board.length - 3; y++) {
         for (int x = 0; x <= board[0].length - 2; x++) {
           if (board[y][x + 1] == 0 && board[y + 2][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
@@ -413,9 +412,9 @@ class TetrisPuzzleSolver {
     if (block == L) {
       //L shaped block can have 4 rotations
       /*
-             ###
-             #
-             */
+      ###
+      #
+      */
       for (int y = 0; y <= board.length - 2; y++) {
         for (int x = 0; x <= board[0].length - 3; x++) {
           if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y][x + 2] == 0) {
@@ -435,10 +434,10 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             #
-             #
-             ##
-             */
+      #
+      #
+      ##
+      */
       for (int y = 0; y <= board.length - 3; y++) {
         for (int x = 0; x <= board[0].length - 2; x++) {
           if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 2][x + 1] == 0 && board[y + 2][x] == 0) {
@@ -458,10 +457,10 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             ##
-             _#
-             _#
-             */
+      ##
+      _#
+      _#
+      */
       for (int y = 0; y <= board.length - 3; y++) {
         for (int x = 0; x <= board[0].length - 2; x++) {
           if (board[y][x + 1] == 0 && board[y][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
@@ -481,9 +480,9 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             __#
-             ###
-             */
+      __#
+      ###
+      */
       for (int y = 0; y <= board.length - 2; y++) {
         for (int x = 0; x <= board[0].length - 3; x++) {
           if (board[y + 1][x] == 0 && board[y][x + 2] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
@@ -511,10 +510,10 @@ class TetrisPuzzleSolver {
     if (block == S) {
       //S shaped block can have 2 rotations
       /*
-             #
-             ##
-             _#
-             */
+      #
+      ##
+      _#
+      */
       for (int y = 0; y <= board.length - 3; y++) {
         for (int x = 0; x <= board[0].length - 2; x++) {
           if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
@@ -534,9 +533,9 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             _##
-             ##
-             */
+      _##
+      ##
+      */
       for (int y = 0; y <= board.length - 2; y++) {
         for (int x = 0; x <= board[0].length - 3; x++) {
           if (board[y][x + 1] == 0 && board[y][x + 2] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0) {
@@ -564,9 +563,9 @@ class TetrisPuzzleSolver {
     if (block == Z) {
       //Z shaped block can have 2 rotations
       /*
-             **
-             _**
-             */
+      **
+      _**
+      */
       for (int y = 0; y <= board.length - 2; y++) {
         for (int x = 0; x <= board[0].length - 3; x++) {
           if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
@@ -586,10 +585,10 @@ class TetrisPuzzleSolver {
         }
       }
       /*
-             _#
-             ##
-             #
-             */
+      _#
+      ##
+      #
+      */
       for (int y = 0; y <= board.length - 3; y++) {
         for (int x = 0; x <= board[0].length - 2; x++) {
           if (board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x] == 0) {
@@ -706,7 +705,6 @@ class TetrisPuzzleSolver {
   }
 
   /**
-   *
    * @return number of T blocks
    */
   int getTBlocks() {
@@ -720,7 +718,6 @@ class TetrisPuzzleSolver {
   }
 
   /**
-   *
    * @return number of J blocks
    */
   int getJBlocks() {
@@ -734,7 +731,6 @@ class TetrisPuzzleSolver {
   }
 
   /**
-   *
    * @return number of L blocks
    */
   int getLBlocks() {
@@ -748,7 +744,6 @@ class TetrisPuzzleSolver {
   }
 
   /**
-   *
    * @return number of S blocks
    */
   int getSBlocks() {
@@ -762,7 +757,6 @@ class TetrisPuzzleSolver {
   }
 
   /**
-   *
    * @return number of Z blocks
    */
   int getZBlocks() {
