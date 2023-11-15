@@ -89,7 +89,7 @@ class TetrisPuzzleSolverMT {
       blocks[p++] = Z;
     }
     //scramble blocks. seems to lead to a solution faster
-    for(int i=0;i<nBlocks;i++){
+    for(int i = 0; i < nBlocks; i++){
       int r=(Random().nextDouble()*nBlocks).toInt();
       int r2=(Random().nextDouble()*nBlocks).toInt();
       var temp=blocks[r];
@@ -248,7 +248,7 @@ class TetrisPuzzleSolverMT {
    * @return array of nCores int[rows][cols]. only 1 if puzzle is solved. some
    * may be null. null if puzzle has no solution.
    */
-  List<List<List<int>>>? __status() {
+  List<List<List<int>>?>? __status() {
     if (solved) {
       if (cachedResult != null) {
         //int[][][] ret = new int[1][cachedResult.board.length][cachedResult.board[0].length];
@@ -562,7 +562,6 @@ class TetrisPuzzleSolverMT {
   // }
 
   /**
-   *
    * @return number of O blocks
    */
   int getOBlocks() {
@@ -576,7 +575,6 @@ class TetrisPuzzleSolverMT {
   }
 
   /**
-   *
    * @return number of T blocks
    */
   int getTBlocks() {
@@ -590,7 +588,6 @@ class TetrisPuzzleSolverMT {
   }
 
   /**
-   *
    * @return number of J blocks
    */
   int getJBlocks() {
@@ -604,7 +601,6 @@ class TetrisPuzzleSolverMT {
   }
 
   /**
-   *
    * @return number of L blocks
    */
   int getLBlocks() {
@@ -618,7 +614,6 @@ class TetrisPuzzleSolverMT {
   }
 
   /**
-   *
    * @return number of S blocks
    */
   int getSBlocks() {
@@ -632,7 +627,6 @@ class TetrisPuzzleSolverMT {
   }
 
   /**
-   *
    * @return number of Z blocks
    */
   int getZBlocks() {
