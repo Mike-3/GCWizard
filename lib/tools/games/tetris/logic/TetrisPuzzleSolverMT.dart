@@ -27,7 +27,7 @@ class TetrisPuzzleSolverMT {
 
   static const String I = 'i', O = 'o', T = 't', J = 'j', L = 'l', S = 's', Z = 'z';
 
-  late final List<String> blocks; //blocks to add
+  late final List<String> _blocks; //blocks to add
 
   var queue = <BoardState>[]; //this contains all the work units. work units are added and removed by SlaveThreads
   int iterations = 0; //number of processed work units
@@ -35,7 +35,7 @@ class TetrisPuzzleSolverMT {
   bool stopASAP = false; //set to true to cancel computation
   bool paused = false, masterPaused = true; //used by save/load methods. setting paused to true causes all threads to stop as soon as possible in a safe state. masterPaused is set to true by the master thread when it's paused in a safe state
 
-  late List<SlaveThread> slaves; //[Runtime.getRuntime().availableProcessors()]; //1 slave thread per core (+1 master thread)
+  late List<SlaveThread> _slaves; //[Runtime.getRuntime().availableProcessors()]; //1 slave thread per core (+1 master thread)
 
   //initialize slaves (without actually starting them)
   // {
@@ -44,7 +44,7 @@ class TetrisPuzzleSolverMT {
   //     }
   // }
 
-  late int w, h; //cols and rows of the board
+  late int _w, _h; //cols and rows of the board
 
   /**
    * create a new solver. call solve() to actually start solving.
@@ -60,41 +60,41 @@ class TetrisPuzzleSolverMT {
    * @param zBlocks number of Z blocks
    */
   TetrisPuzzleSolverMT(int width, int height, int iBlocks, int oBlocks, int tBlocks, int jBlocks, int lBlocks, int sBlocks, int zBlocks) {
-    w = width;
-    h = height;
+    _w = width;
+    _h = height;
     int nBlocks = iBlocks + oBlocks + tBlocks + jBlocks + lBlocks + sBlocks + zBlocks;
-    blocks = List<String>.filled(nBlocks, '');
-    slaves = List<SlaveThread>.filled(4, SlaveThread(blocks, queue));
+    _blocks = List<String>.filled(nBlocks, '');
+    _slaves = List<SlaveThread>.filled(4, SlaveThread(_blocks, queue));
 
     int p = 0;
     for (int i = 0; i < iBlocks; i++) {
-      blocks[p++] = I;
+      _blocks[p++] = I;
     }
     for (int i = 0; i < oBlocks; i++) {
-      blocks[p++] = O;
+      _blocks[p++] = O;
     }
     for (int i = 0; i < tBlocks; i++) {
-      blocks[p++] = T;
+      _blocks[p++] = T;
     }
     for (int i = 0; i < jBlocks; i++) {
-      blocks[p++] = J;
+      _blocks[p++] = J;
     }
     for (int i = 0; i < lBlocks; i++) {
-      blocks[p++] = L;
+      _blocks[p++] = L;
     }
     for (int i = 0; i < sBlocks; i++) {
-      blocks[p++] = S;
+      _blocks[p++] = S;
     }
     for (int i = 0; i < zBlocks; i++) {
-      blocks[p++] = Z;
+      _blocks[p++] = Z;
     }
     //scramble blocks. seems to lead to a solution faster
     for(int i = 0; i < nBlocks; i++){
       int r=(Random().nextDouble()*nBlocks).toInt();
       int r2=(Random().nextDouble()*nBlocks).toInt();
-      var temp=blocks[r];
-      blocks[r]=blocks[r2];
-      blocks[r2]=temp;
+      var temp=_blocks[r];
+      _blocks[r]=_blocks[r2];
+      _blocks[r2]=temp;
     }
     if (nBlocks * 4 != width * height) {
       solved = true;
@@ -102,7 +102,7 @@ class TetrisPuzzleSolverMT {
       return;
     }
     //create and add the first work unit, initially empty.
-    BoardState s = BoardState.create(width, height);
+    BoardState s = BoardState._create(width, height);
     queue.add(s);
   }
 
@@ -111,7 +111,7 @@ class TetrisPuzzleSolverMT {
    * @return columns
    */
   int getWidth() {
-    return w;
+    return _w;
   }
 
   /**
@@ -119,7 +119,7 @@ class TetrisPuzzleSolverMT {
    * @return rows
    */
   int getHeight() {
-    return h;
+    return _h;
   }
 
   /**
@@ -127,7 +127,7 @@ class TetrisPuzzleSolverMT {
    * @return number of pieces
    */
   int getNumberOfPieces() {
-    return blocks.length;
+    return _blocks.length;
   }
 
   /**
@@ -139,17 +139,9 @@ class TetrisPuzzleSolverMT {
   bool isSolved() {
     return solved;
   }
-
-  /**
-   *
-   * @return number of slave threads
-   */
-  int getNCores() {
-    return slaves.length;
-  }
-
+  
   bool solved = false; //set to indicate that the solve() method has been called and has finished processing (or was canceled)
-  Solution? cachedResult; //the result of the solve() method so it doesn't need to be calculated again. null if no solution was found (or solve() was canceled)
+  _Solution? cachedResult; //the result of the solve() method so it doesn't need to be calculated again. null if no solution was found (or solve() was canceled)
 
   /**
    * solve the puzzle. blocking. use cancel() to stop solving
@@ -157,7 +149,7 @@ class TetrisPuzzleSolverMT {
    * @return an instance of Solution if the puzzle has a solution, null if it
    * doesn't (or if cancel() was called)
    */
-  Solution? solve() {
+  _Solution? solve() {
     if (solved) { //already solved
       return cachedResult!;
     }
@@ -167,9 +159,9 @@ class TetrisPuzzleSolverMT {
     // Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
     // String oldName = Thread.currentThread().getName();
     // Thread.currentThread().setName("TPS_MASTER");
-    Solution? ret; //this will contain the return value (Solution or null)
+    _Solution? ret; //this will contain the return value (Solution or null)
     //start slaves
-    for (SlaveThread s in slaves) {
+    for (SlaveThread s in _slaves) {
       s.run();
     }
     //force a context switch so they actually start. cheap, I know.
@@ -200,7 +192,7 @@ class TetrisPuzzleSolverMT {
       // }
       //check if a slave has solved the puzzle
       bool done = false;
-      for (SlaveThread s in slaves) {
+      for (SlaveThread s in _slaves) {
         if (s.solution != null) {
           ret = s.solution;
           done = true;
@@ -215,8 +207,8 @@ class TetrisPuzzleSolverMT {
         int qLen = queue.length;
         if (qLen == 0) {
           bool allWaiting = true;
-          for (SlaveThread s in slaves) {
-            if (!s.waiting) {
+          for (SlaveThread s in _slaves) {
+            if (!s._waiting) {
               allWaiting = false;
               break;
             }
@@ -253,8 +245,8 @@ class TetrisPuzzleSolverMT {
       if (cachedResult != null) {
         //int[][][] ret = new int[1][cachedResult.board.length][cachedResult.board[0].length];
         var ret = List<List<List<int>>>.generate(1, (y) =>
-                        List<List<int>>.generate(cachedResult!.board.length, (i) =>
-                              List<int>.generate(cachedResult!.board[0].length, (index) => cachedResult!.board[y][index], growable: false), growable: false));
+                        List<List<int>>.generate(cachedResult!._board.length, (i) =>
+                              List<int>.generate(cachedResult!._board[0].length, (index) => cachedResult!._board[y][index], growable: false), growable: false));
         // for (int y = 0; y < cachedResult.board.length; y++) {
         //     System.arraycopy(cachedResult.board[y], 0, ret[0][y], 0, cachedResult.board[0].length);
         // }
@@ -264,10 +256,10 @@ class TetrisPuzzleSolverMT {
       }
     } else {
       // List<List<List<int>>> ret = new int[slaves.length][][];
-      var ret = List<List<List<int>>?>.generate(slaves.length, (i) => [[]]);
-      for (int i = 0; i < slaves.length; i++) {
+      var ret = List<List<List<int>>?>.generate(_slaves.length, (i) => [[]]);
+      for (int i = 0; i < _slaves.length; i++) {
         try {
-          var board = slaves[i].__board;
+          var board = _slaves[i].__board;
           // int[][] bcopy = new int[board.length][board[0].length];
           var bcopy = List<List<int>>.generate(board.length, (i) => List<int>.generate(board[i].length, (index) => board[i][index], growable: false), growable: false);
           // for (int y = 0; y < board.length; y++) {
@@ -291,282 +283,11 @@ class TetrisPuzzleSolverMT {
   }
 
   /**
-   * cancels processing. use to stop solve() method while processing. waits
-   * for threads to actually stop.
-   */
-  void cancel() {
-    stopASAP = true;
-    while (!masterPaused) {
-      // try {
-      //   Thread.sleep(1);
-      // } catch (InterruptedException ex) {
-      // }
-    }
-    // for (SlaveThread s in slaves) {
-    //   while (s.isAlive()) {
-    //     // try {
-    //     //   Thread.sleep(1);
-    //     // } catch (InterruptedException ex) {
-    //     // }
-    //   }
-    // }
-  }
-
-  // /**
-  //  * the following methods contain code for saving and loading the state.
-  //  *
-  //  * java serialization is not used because it produced heeeeeug files, so
-  //  * here's the file format instead:
-  //  *
-  //  * 4 bytes: magic number, which spells >muh in ascii<br>
-  //  * 4 bytes: rows (as int)<br>
-  //  * 4 bytes: cols (as int)<br>
-  //  * 4 bytes: length of blocks array (number of pieces)<br>
-  //  * 2*blocks.length bytes: contents of blocks array (as chars, so it's
-  //  * unicode)<br>
-  //  * 1 byte: solved status: 2=solved, has no solution, 1=solved, solution
-  //  * follows, 0=not solved yet, saved state follows<br>
-  //  * *** if 1: 4*rows*cols bytes contain the solution board as a sequence of
-  //  * ints, serialized "c style". see serializeBoard and deserializeBoard for
-  //  * details<br>
-  //  * *** if 0: 4 bytes contain the number of work units that follow (as int).
-  //  * for each unit: 4*rows*cols bytes for the board (see row above) + 4 bytes
-  //  * for the value of p for that unit (as int)<br>
-  //  * 4 bytes: magic number again, indicating proper end of file
-  //  */
-  // static final MAGIC = {0x3e, 0x6d, 0x75, 0x68};
-  //
-  // /**
-  //  * write board to specified DataOutputStream. it dumps the contents "c
-  //  * style" (row per row, element by element for each row). size is not
-  //  * written!
-  //  *
-  //  * @param board board to serialize
-  //  * @param dos stream
-  //  * @throws IOException if writing fails
-  //  */
-  // void serializeBoard(List<List<int>> board, Int8List dos) { //throws IOException
-  //     for (int y = 0; y < board.length; y++) {
-  //         for (int x = 0; x < board[0].length; x++) {
-  //             dos.writeInt(board[y][x]);
-  //         }
-  //     }
-  // }
-
-  // /**
-  //  * deserialize a bunch of ints from the given DataInputStream into a board,
-  //  * and stores it into the given board. rows and cols are taken from board
-  //  * size.
-  //  *
-  //  * @param board target
-  //  * @param is stream
-  //  * @throws IOException if read fails
-  //  */
-  // static void deserializeBoard(List<List<int>> board, Int8List data) { //throws IOException
-  //     for (int y = 0; y < board.length; y++) {
-  //         for (int x = 0; x < board[0].length; x++) {
-  //             board[y][x] = data.readInt();
-  //         }
-  //     }
-  // }
-  //
-  // var saveLock = Object(); //used to prevent concurrent calls of saveState method
-  //
-  // /**
-  //  * save current state to specified OutputStream
-  //  *
-  //  * @param os target stream
-  //  * @throws IOException if write fails
-  //  */
-  // void saveState(Int8List os) { //throws IOException
-  //     synchronized (saveLock) {
-  //         try {
-  //             //DataOutputStream dos = new DataOutputStream(os);
-  //             //write magic number
-  //             dos.write(MAGIC);
-  //             //write config (rows,cols,blocks)
-  //             dos.writeInt(h);
-  //             dos.writeInt(w);
-  //             dos.writeInt(blocks.length);
-  //             for (String c in blocks) {
-  //                 dos.writeChar(c);
-  //             }
-  //             //pause all computation
-  //             paused = true;
-  //             //wait for threads to actually pause
-  //             while (!masterPaused) {
-  //                 try {
-  //                     Thread.sleep(1);
-  //                 } catch (InterruptedException ex) {
-  //                 }
-  //             }
-  //             for (SlaveThread s : slaves) {
-  //                 while (!s.slavePaused) {
-  //                     try {
-  //                         Thread.sleep(1);
-  //                     } catch (InterruptedException ex) {
-  //                     }
-  //                 }
-  //             }
-  //             //we're now in a safe state
-  //             if (solved) { //already solved
-  //                 if (cachedResult == null) {
-  //                     //puzzle is impossible
-  //                     dos.writeByte(2);
-  //                 } else {
-  //                     //solution found
-  //                     dos.writeByte(1);
-  //                     serializeBoard(cachedResult.board, dos);
-  //                 }
-  //             } else {
-  //                 //not solved yet
-  //                 //check to see if the puzzle is actually solved but the master hasn't noticed yet
-  //                 if (queue.isEmpty()) {
-  //                     //puzzle is impossible
-  //                     dos.writeByte(2);
-  //                 } else {
-  //                     Solution sol = null;
-  //                     for (SlaveThread s : slaves) {
-  //                         if (s.solution != null) {
-  //                             sol = s.solution;
-  //                             break;
-  //                         }
-  //                     }
-  //                     if (sol != null) {
-  //                         //a thread found the solution
-  //                         dos.writeByte(1);
-  //                         serializeBoard(sol.board, dos);
-  //                     } else {
-  //                         //actually solving: save state
-  //                         dos.writeByte(0);
-  //                         dos.writeInt(queue.size());
-  //                         for (BoardState s : queue) {
-  //                             serializeBoard(s.board, dos);
-  //                             dos.writeInt(s.p);
-  //                         }
-  //                     }
-  //                 }
-  //
-  //             }
-  //             //write magic number again to indicate end of saved state
-  //             dos.write(MAGIC);
-  //             dos.flush();
-  //             paused = false;
-  //         } catch (Throwable t) {
-  //             //System.out.println(t);
-  //             paused = false;
-  //             if (t instanceof IOException) {
-  //                 //throw (IOException) t;
-  //             } else {
-  //                 //throw new IOException(t);
-  //             }
-  //         }
-  //     }
-  // }
-
-  // /**
-  //  * load state from specified InputStream. solve() needs to be called to
-  //  * resume computation
-  //  *
-  //  * @param is stream
-  //  * @return instance of solver. call solve() on it.
-  //  * @throws IOException if read error occurs
-  //  */
-  // static TetrisPuzzleSolverMT loadState(Int8List data)  { //throws IOException
-  //     //DataInputStream dis = new DataInputStream(is);
-  //     var ret = TetrisPuzzleSolverMT(1, 1, 1, 1, 1, 1, 1, 1, 1); //initial dummy state
-  //     //check magic bytes at beginning
-  //     var magic = List<int>.filled(MAGIC.length, 0, growable: false);
-  // MAGIC.ListEquality(data.sublist(0, MAGIC.length));
-  //     dis.read(magic);
-  //     for (int i = 0; i < MAGIC.length; i++) {
-  //         if (magic[i] != MAGIC[i]) {
-  //             //throw new IOException("Not a valid saved state");
-  //         }
-  //     }
-  //     //read rows and cols
-  //     int rows = dis.readInt(), cols = dis.readInt();
-  //     if (rows < 1 || cols < 1) {
-  //         //throw new IOException("Not a valid saved state");
-  //     }
-  //     //read blocks array
-  //     int nBlocks = dis.readInt();
-  //     if (nBlocks < 1) {
-  //         //throw new IOException("Not a valid saved state");
-  //     }
-  //     var blocks = <String>[nBlocks];
-  //     for (int i = 0; i < nBlocks; i++) {
-  //         blocks[i] = dis.readChar();
-  //         if (blocks[i] != I && blocks[i] != O && blocks[i] != T && blocks[i] != J && blocks[i] != L && blocks[i] != S && blocks[i] != Z) {
-  //             //throw new IOException("Not a valid saved state");
-  //         }
-  //     }
-  //     //setup solver instance
-  //     ret.h = rows;
-  //     ret.w = cols;
-  //     ret.blocks = blocks;
-  //     //read solved status
-  //     int status = dis.readByte();
-  //     if (status == 2) {
-  //         //solved, impossible
-  //         ret.queue.clear();
-  //         ret.solved = true;
-  //         ret.cachedResult = null;
-  //     } else if (status == 1) {
-  //         //solved, solution found
-  //         var board = List<List<int>>.generate(rows, (i) => List<int>.generate(cols, (index) => 0, growable: false), growable: false);
-  //         //int[][] board = new int[rows][cols];
-  //         deserializeBoard(board, dis);
-  //         var s = Solution(board);
-  //         ret.queue.clear();
-  //         ret.solved = true;
-  //         ret.cachedResult = s;
-  //     } else if (status == 0) {
-  //         //not solved yet, load state
-  //         ret.queue.clear();
-  //         ret.solved = false;
-  //         int nStates = dis.readInt();
-  //         for (int i = 0; i < nStates; i++) {
-  //             BoardState s = BoardState(cols, rows);
-  //             deserializeBoard(s.board, dis);
-  //             s.p = dis.readInt();
-  //             ret.queue.add(s);
-  //         }
-  //     } else {
-  //         //throw new IOException("Not a valid saved state");
-  //     }
-  //     //check magic bytes at end of file
-  //     // magic = new byte[MAGIC.length]; ToDO
-  //     // dis.read(magic);
-  //     for (int i = 0; i < MAGIC.length; i++) {
-  //         if (magic[i] != MAGIC[i]) {
-  //             //throw new IOException("Not a valid saved state");
-  //         }
-  //     }
-  //     //done, return solver instance
-  //     return ret;
-  // }
-  //
-  // /**
-  //  *
-  //  * @return number of I blocks
-  //  */
-  // int getIBlocks() {
-  //     int ret = 0;
-  //     for (String c in blocks) {
-  //         if (c == I) {
-  //             ret++;
-  //         }
-  //     }
-  //     return ret;
-  // }
-
-  /**
    * @return number of O blocks
    */
   int getOBlocks() {
     int ret = 0;
-    for (String c in blocks) {
+    for (String c in _blocks) {
       if (c == O) {
         ret++;
       }
@@ -579,7 +300,7 @@ class TetrisPuzzleSolverMT {
    */
   int getTBlocks() {
     int ret = 0;
-    for (String c in blocks) {
+    for (String c in _blocks) {
       if (c == T) {
         ret++;
       }
@@ -592,7 +313,7 @@ class TetrisPuzzleSolverMT {
    */
   int getJBlocks() {
     int ret = 0;
-    for (String c in blocks) {
+    for (String c in _blocks) {
       if (c == J) {
         ret++;
       }
@@ -605,7 +326,7 @@ class TetrisPuzzleSolverMT {
    */
   int getLBlocks() {
     int ret = 0;
-    for (String c in blocks) {
+    for (String c in _blocks) {
       if (c == L) {
         ret++;
       }
@@ -618,7 +339,7 @@ class TetrisPuzzleSolverMT {
    */
   int getSBlocks() {
     int ret = 0;
-    for (String c in blocks) {
+    for (String c in _blocks) {
       if (c == S) {
         ret++;
       }
@@ -631,7 +352,7 @@ class TetrisPuzzleSolverMT {
    */
   int getZBlocks() {
     int ret = 0;
-    for (String c in blocks) {
+    for (String c in _blocks) {
       if (c == Z) {
         ret++;
       }
@@ -647,17 +368,15 @@ class BoardState {
 
   late List<List<int>> board; //board state
 
-  int p = 1; //pointer to next block to add (starts from 1, ends at blocks.length). this means that the higher p is, the closer we are to completing the puzzle
+  int _p = 1; //pointer to next block to add (starts from 1, ends at blocks.length). this means that the higher p is, the closer we are to completing the puzzle
 
-  BoardState();
-  
   /**
    * creates a new work unit
    *
    * @param width columns
    * @param height rows
    */
-  static BoardState create(int width, int height) {
+  static BoardState _create(int width, int height) {
     if (width <= 0 || height <= 0) {
       //throw new IllegalArgumentException("Width and height must be >0");
     }
@@ -678,7 +397,7 @@ class BoardState {
    *
    * @param s BoardState to clone
    */
-  static BoardState clone(BoardState s) {
+  static BoardState _clone(BoardState s) {
     var newBoardstate = BoardState();
     newBoardstate.board =  List<List<int>>.generate(s.board.length, (i) => List<int>.generate(s.board[i].length, (index) => s.board[i][index], growable: false), growable: false);
 
@@ -686,21 +405,21 @@ class BoardState {
       // for (int y = 0; y < board.length; y++) {
       //     System.arraycopy(s.board[y], 0, board[y], 0, board[0].length);
       // }
-    newBoardstate.p = s.p + 1;
+    newBoardstate._p = s._p + 1;
     return newBoardstate;
   }
 
   //used by isStupid
-  int group(int y, int x) {
+  int _group(int y, int x) {
     if (y >= 0 && y < board.length && x >= 0 && x < board[0].length && board[y][x] == 0) {
       board[y][x] = -1;
-      return 1 + group(y, x + 1) + group(y, x - 1) + group(y + 1, x) + group(y - 1, x);
+      return 1 + _group(y, x + 1) + _group(y, x - 1) + _group(y + 1, x) + _group(y - 1, x);
     }
     return 0;
   }
 
   //used by isStupid
-  void clearGroups() {
+  void _clearGroups() {
     for (int y = 0; y < board.length; y++) {
       for (int x = 0; x < board[0].length; x++) {
         if (board[y][x] == -1) {
@@ -722,14 +441,14 @@ class BoardState {
     for (int y = 0; y < board.length; y++) {
       for (int x = 0; x < board[0].length; x++) {
         if (board[y][x] == 0) {
-          if (group(y, x) % 4 != 0) {
-            clearGroups();
+          if (_group(y, x) % 4 != 0) {
+            _clearGroups();
             return true;
           }
         }
       }
     }
-    clearGroups();
+    _clearGroups();
     return false;
   }
 }
@@ -737,20 +456,18 @@ class BoardState {
 /**
  * a board that solves the puzzle
  */
-class Solution {
+class _Solution {
 
-  late List<List<int>> board;
+  late List<List<int>> _board;
 
-  Solution();
-  
   /**
    * copies the solution from a BoardState
    *
    * @param s work unit
    */
-  static Solution copy(BoardState s) {
-    var newSolution = Solution();
-    newSolution.board = List<List<int>>.generate(s.board.length, (i) => List<int>.generate(s.board[i].length, (index) => s.board[i][index], growable: false), growable: false);
+  static _Solution copy(BoardState s) {
+    var newSolution = _Solution();
+    newSolution._board = List<List<int>>.generate(s.board.length, (i) => List<int>.generate(s.board[i].length, (index) => s.board[i][index], growable: false), growable: false);
 
     // board = new int[s.board.length][s.board[0].length];
     // for (int y = 0; y < board.length; y++) {
@@ -765,9 +482,9 @@ class Solution {
    *
    * @param board reference
    */
-  static Solution clone(List<List<int>> board) {
-    var newSolution = Solution();
-    newSolution.board = board;
+  static _Solution clone(List<List<int>> board) {
+    var newSolution = _Solution();
+    newSolution._board = board;
     return newSolution;
   }
 
@@ -776,7 +493,7 @@ class Solution {
    * @return number of rows
    */
   int getRows() {
-    return board.length;
+    return _board.length;
   }
 
   /**
@@ -784,7 +501,7 @@ class Solution {
    * @return number of columns
    */
   int getColumns() {
-    return board[0].length;
+    return _board[0].length;
   }
 
   /**
@@ -795,7 +512,7 @@ class Solution {
    * @return content
    */
   int get(int row, int col) {
-    return board[row][col];
+    return _board[row][col];
   }
 
   /**
@@ -803,8 +520,8 @@ class Solution {
    *
    * @return
    */
-  List<List<int>> getCopy() {
-    var copy = List<List<int>>.generate(board.length, (i) => List<int>.generate(board[i].length, (index) => board[i][index], growable: false), growable: false);
+  List<List<int>> getCopy() { //ToDo get ???
+    var copy = List<List<int>>.generate(_board.length, (i) => List<int>.generate(_board[i].length, (index) => _board[i][index], growable: false), growable: false);
 
     //     int[][] copy = new int[board.length][board[0].length];
     // for (int y = 0; y < board.length; y++) {
@@ -816,20 +533,20 @@ class Solution {
 
 class SlaveThread  { //extends Thread
 
-  bool waiting = false; //set to true when no work units are available. if all threads are waiting and the work queue is empty, the puzzle has no solution and the master thread will stop processing
-  late Solution? solution; //set to an instance of Solution if this threads finds a solution
+  bool _waiting = false; //set to true when no work units are available. if all threads are waiting and the work queue is empty, the puzzle has no solution and the master thread will stop processing
+  late _Solution? solution; //set to an instance of Solution if this threads finds a solution
   late List<List<int>> __board; //board that it's currently working on. a reference is kept here so a copy can be passed to the gui to show the animation. ignore.
-  bool slavePaused = true; //set to true when it's paused in a safe state
-  List<String> blocks;
-  List<BoardState> queue;
+  bool _slavePaused = true; //set to true when it's paused in a safe state
+  final List<String> _blocks;
+  final List<BoardState> _queue;
   
-  SlaveThread(this.blocks, this.queue);
+  SlaveThread(this._blocks, this._queue);
 
   void run() {
-    slavePaused = false;
+    _slavePaused = false;
     // setPriority(MAX_PRIORITY);
     // setName("TPS_SLAVE");
-    BoardState? workunit;// = null;
+    BoardState? workunit;
     for (;;) {
       workunit = null;
       while (true) {
@@ -851,11 +568,11 @@ class SlaveThread  { //extends Thread
         // }
         // //get a work unit
         //synchronized (queue) {
-          if (queue.isNotEmpty) {
+          if (_queue.isNotEmpty) {
             //a work unit is available. fetch and remove from queue (actually a stack so work units with higher p (closer to solution) are processed first)
-            waiting = false;
-            workunit = queue.last;
-            queue.removeLast();
+            _waiting = false;
+            workunit = _queue.last;
+            _queue.removeLast();
             iterations++;
             // if (waiting) {
             //   setPriority(MAX_PRIORITY);
@@ -863,9 +580,9 @@ class SlaveThread  { //extends Thread
             break;
           } else {
             //a work unit is not available. check back later
-            if (!waiting) {
+            if (!_waiting) {
               // setPriority(MIN_PRIORITY);
-              waiting = true;
+              _waiting = true;
             }
           }
         //}
@@ -873,8 +590,8 @@ class SlaveThread  { //extends Thread
       //at this point we surely have a work unit to process
       final List<List<int>> board = workunit.board; //extract board
       __board = board; //copy reference (for gui). ignore.
-      final p = workunit.p;
-      final block = blocks[p - 1]; //which block do we have to place? (p-1 because p starts from 1)
+      final p = workunit._p;
+      final block = _blocks[p - 1]; //which block do we have to place? (p-1 because p starts from 1)
       var toAdd = <BoardState>[]; //this list will contain all the newly created work units
       //find ALL places where we can place this block. for each place, a new work unit is created with the block in that location
       if (block == TetrisPuzzleSolverMT.I) {
@@ -893,13 +610,13 @@ class SlaveThread  { //extends Thread
               board[y + 1][x] = p;
               board[y + 2][x] = p;
               board[y + 3][x] = p;
-              if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit);
-                slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -919,13 +636,13 @@ class SlaveThread  { //extends Thread
               board[y][x + 1] = p;
               board[y][x + 2] = p;
               board[y][x + 3] = p;
-              if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit);
-                slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -948,13 +665,13 @@ class SlaveThread  { //extends Thread
               board[y + 1][x] = p;
               board[y][x + 1] = p;
               board[y + 1][x + 1] = p;
-              if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit);
-                slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -981,13 +698,13 @@ class SlaveThread  { //extends Thread
             board[y][x + 1] = p;
             board[y + 1][x + 1] = p;
             board[y][x + 2] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
+            if (p == _blocks.length) { //solution found!
+              solution = _Solution.copy(workunit);
+              _slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
               if (!workunit.isStupid()) {
-                toAdd.add(BoardState.clone(workunit));
+                toAdd.add(BoardState._clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1011,13 +728,13 @@ class SlaveThread  { //extends Thread
             board[y + 1][x] = p;
             board[y + 1][x + 1] = p;
             board[y + 2][x] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
+            if (p == _blocks.length) { //solution found!
+              solution = _Solution.copy(workunit);
+              _slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
             if (!workunit.isStupid()) {
-              toAdd.add(BoardState.clone(workunit));
+              toAdd.add(BoardState._clone(workunit));
             }
             }
             //remove changes, keep looking
@@ -1041,13 +758,13 @@ class SlaveThread  { //extends Thread
             board[y + 1][x] = p;
             board[y + 1][x + 1] = p;
             board[y + 2][x + 1] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
+            if (p == _blocks.length) { //solution found!
+              solution = _Solution.copy(workunit);
+              _slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
               if (!workunit.isStupid()) {
-                toAdd.add(BoardState.clone(workunit));
+                toAdd.add(BoardState._clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1070,13 +787,13 @@ class SlaveThread  { //extends Thread
             board[y][x + 1] = p;
             board[y + 1][x + 1] = p;
             board[y + 1][x + 2] = p;
-            if (p == blocks.length) { //solution found!
-            solution = Solution.copy(workunit);
-            slavePaused = true;
+            if (p == _blocks.length) { //solution found!
+            solution = _Solution.copy(workunit);
+            _slavePaused = true;
             return;
           } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
             if (!workunit.isStupid()) {
-              toAdd.add(BoardState.clone(workunit));
+              toAdd.add(BoardState._clone(workunit));
             }
           }
           //remove changes, keep looking
@@ -1103,13 +820,13 @@ class SlaveThread  { //extends Thread
               board[y][x + 1] = p;
               board[y + 1][x + 2] = p;
               board[y][x + 2] = p;
-              if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit);
-                slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1132,13 +849,13 @@ class SlaveThread  { //extends Thread
               board[y][x] = p;
               board[y + 1][x + 1] = p;
               board[y + 1][x + 2] = p;
-              if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit);
-                slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1162,13 +879,13 @@ class SlaveThread  { //extends Thread
               board[y + 1][x] = p;
               board[y][x + 1] = p;
               board[y + 2][x] = p;
-              if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit);
-                slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1192,13 +909,13 @@ class SlaveThread  { //extends Thread
               board[y + 2][x] = p;
               board[y + 1][x + 1] = p;
               board[y + 2][x + 1] = p;
-              if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+              solution = _Solution.copy(workunit);
+              _slavePaused = true;
               return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1212,125 +929,125 @@ class SlaveThread  { //extends Thread
       }
   
       if (block == TetrisPuzzleSolverMT.L) {
-      //L shaped block can have 4 rotations
-      /*
-       ###
-       #
-       */
-      for (int y = 0; y <= board.length - 2; y++) {
-        for (int x = 0; x <= board[0].length - 3; x++) {
-          if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y][x + 2] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y][x] = p;
-            board[y][x + 1] = p;
-            board[y + 1][x] = p;
-            board[y][x + 2] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
-              return;
-            } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit.isStupid()) {
-                toAdd.add(BoardState.clone(workunit));
+        //L shaped block can have 4 rotations
+        /*
+         ###
+         #
+         */
+        for (int y = 0; y <= board.length - 2; y++) {
+          for (int x = 0; x <= board[0].length - 3; x++) {
+            if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y][x + 2] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              board[y][x] = p;
+              board[y][x + 1] = p;
+              board[y + 1][x] = p;
+              board[y][x + 2] = p;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState._clone(workunit));
+                }
               }
+              //remove changes, keep looking
+              board[y][x] = 0;
+              board[y][x + 1] = 0;
+              board[y + 1][x] = 0;
+              board[y][x + 2] = 0;
             }
-            //remove changes, keep looking
-            board[y][x] = 0;
-            board[y][x + 1] = 0;
-            board[y + 1][x] = 0;
-            board[y][x + 2] = 0;
           }
         }
-      }
-      /*
-       #
-       #
-       ##
-       */
-      for (int y = 0; y <= board.length - 3; y++) {
-        for (int x = 0; x <= board[0].length - 2; x++) {
-          if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 2][x + 1] == 0 && board[y + 2][x] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y][x] = p;
-            board[y + 1][x] = p;
-            board[y + 2][x + 1] = p;
-            board[y + 2][x] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
-              return;
-            } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit.isStupid()) {
-                toAdd.add(BoardState.clone(workunit));
+        /*
+         #
+         #
+         ##
+         */
+        for (int y = 0; y <= board.length - 3; y++) {
+          for (int x = 0; x <= board[0].length - 2; x++) {
+            if (board[y][x] == 0 && board[y + 1][x] == 0 && board[y + 2][x + 1] == 0 && board[y + 2][x] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              board[y][x] = p;
+              board[y + 1][x] = p;
+              board[y + 2][x + 1] = p;
+              board[y + 2][x] = p;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState._clone(workunit));
+                }
               }
+              //remove changes, keep looking
+              board[y][x] = 0;
+              board[y + 1][x] = 0;
+              board[y + 2][x + 1] = 0;
+              board[y + 2][x] = 0;
             }
-            //remove changes, keep looking
-            board[y][x] = 0;
-            board[y + 1][x] = 0;
-            board[y + 2][x + 1] = 0;
-            board[y + 2][x] = 0;
           }
         }
-      }
-      /*
-       ##
-       _#
-       _#
-       */
-      for (int y = 0; y <= board.length - 3; y++) {
-        for (int x = 0; x <= board[0].length - 2; x++) {
-          if (board[y][x + 1] == 0 && board[y][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y][x + 1] = p;
-            board[y][x] = p;
-            board[y + 1][x + 1] = p;
-            board[y + 2][x + 1] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
-              return;
-            } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-            if (!workunit.isStupid()) {
-              toAdd.add(BoardState.clone(workunit));
-            }
-            }
-            //remove changes, keep looking
-            board[y][x + 1] = 0;
-            board[y][x] = 0;
-            board[y + 1][x + 1] = 0;
-            board[y + 2][x + 1] = 0;
-          }
-        }
-      }
-      /*
-       __#
-       ###
-       */
-      for (int y = 0; y <= board.length - 2; y++) {
-        for (int x = 0; x <= board[0].length - 3; x++) {
-          if (board[y + 1][x] == 0 && board[y][x + 2] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y + 1][x] = p;
-            board[y][x + 2] = p;
-            board[y + 1][x + 1] = p;
-            board[y + 1][x + 2] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
-              return;
-            } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+        /*
+         ##
+         _#
+         _#
+         */
+        for (int y = 0; y <= board.length - 3; y++) {
+          for (int x = 0; x <= board[0].length - 2; x++) {
+            if (board[y][x + 1] == 0 && board[y][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x + 1] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              board[y][x + 1] = p;
+              board[y][x] = p;
+              board[y + 1][x + 1] = p;
+              board[y + 2][x + 1] = p;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
               if (!workunit.isStupid()) {
-                toAdd.add(BoardState.clone(workunit));
+                toAdd.add(BoardState._clone(workunit));
               }
+              }
+              //remove changes, keep looking
+              board[y][x + 1] = 0;
+              board[y][x] = 0;
+              board[y + 1][x + 1] = 0;
+              board[y + 2][x + 1] = 0;
             }
-            //remove changes, keep looking
-            board[y + 1][x] = 0;
-            board[y][x + 2] = 0;
-            board[y + 1][x + 1] = 0;
-            board[y + 1][x + 2] = 0;
           }
         }
-      }
+        /*
+         __#
+         ###
+         */
+        for (int y = 0; y <= board.length - 2; y++) {
+          for (int x = 0; x <= board[0].length - 3; x++) {
+            if (board[y + 1][x] == 0 && board[y][x + 2] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              board[y + 1][x] = p;
+              board[y][x + 2] = p;
+              board[y + 1][x + 1] = p;
+              board[y + 1][x + 2] = p;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState._clone(workunit));
+                }
+              }
+              //remove changes, keep looking
+              board[y + 1][x] = 0;
+              board[y][x + 2] = 0;
+              board[y + 1][x + 1] = 0;
+              board[y + 1][x + 2] = 0;
+            }
+          }
+        }
       }
   
       if (block == TetrisPuzzleSolverMT.S) {
@@ -1348,13 +1065,13 @@ class SlaveThread  { //extends Thread
               board[y + 1][x] = p;
               board[y + 1][x + 1] = p;
               board[y + 2][x + 1] = p;
-              if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit);
-                slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1377,13 +1094,13 @@ class SlaveThread  { //extends Thread
               board[y][x + 2] = p;
               board[y + 1][x] = p;
               board[y + 1][x + 1] = p;
-              if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit);
-                slavePaused = true;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
                 if (!workunit.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit));
+                  toAdd.add(BoardState._clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1402,66 +1119,66 @@ class SlaveThread  { //extends Thread
          **
          _**
          */
-      for (int y = 0; y <= board.length - 2; y++) {
-        for (int x = 0; x <= board[0].length - 3; x++) {
-          if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y][x] = p;
-            board[y][x + 1] = p;
-            board[y + 1][x + 1] = p;
-            board[y + 1][x + 2] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
-              return;
-            } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit.isStupid()) {
-                toAdd.add(BoardState.clone(workunit));
+        for (int y = 0; y <= board.length - 2; y++) {
+          for (int x = 0; x <= board[0].length - 3; x++) {
+            if (board[y][x] == 0 && board[y][x + 1] == 0 && board[y + 1][x + 1] == 0 && board[y + 1][x + 2] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              board[y][x] = p;
+              board[y][x + 1] = p;
+              board[y + 1][x + 1] = p;
+              board[y + 1][x + 2] = p;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState._clone(workunit));
+                }
               }
+              //remove changes, keep looking
+              board[y][x] = 0;
+              board[y][x + 1] = 0;
+              board[y + 1][x + 1] = 0;
+              board[y + 1][x + 2] = 0;
             }
-            //remove changes, keep looking
-            board[y][x] = 0;
-            board[y][x + 1] = 0;
-            board[y + 1][x + 1] = 0;
-            board[y + 1][x + 2] = 0;
+          }
+        }
+        /*
+         _#
+         ##
+         #
+         */
+        for (int y = 0; y <= board.length - 3; y++) {
+          for (int x = 0; x <= board[0].length - 2; x++) {
+            if (board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x] == 0) {
+              //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
+              board[y][x + 1] = p;
+              board[y + 1][x] = p;
+              board[y + 1][x + 1] = p;
+              board[y + 2][x] = p;
+              if (p == _blocks.length) { //solution found!
+                solution = _Solution.copy(workunit);
+                _slavePaused = true;
+                return;
+              } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState._clone(workunit));
+                }
+              }
+              //remove changes, keep looking
+              board[y][x + 1] = 0;
+              board[y + 1][x] = 0;
+              board[y + 1][x + 1] = 0;
+              board[y + 2][x] = 0;
+            }
           }
         }
       }
-      /*
-       _#
-       ##
-       #
-       */
-      for (int y = 0; y <= board.length - 3; y++) {
-        for (int x = 0; x <= board[0].length - 2; x++) {
-          if (board[y][x + 1] == 0 && board[y + 1][x] == 0 && board[y + 1][x + 1] == 0 && board[y + 2][x] == 0) {
-            //we found a hole that fits this block, we'll place it here and see if the puzzle can be solved
-            board[y][x + 1] = p;
-            board[y + 1][x] = p;
-            board[y + 1][x + 1] = p;
-            board[y + 2][x] = p;
-            if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit);
-              slavePaused = true;
-              return;
-            } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit.isStupid()) {
-                toAdd.add(BoardState.clone(workunit));
-              }
-            }
-            //remove changes, keep looking
-            board[y][x + 1] = 0;
-            board[y + 1][x] = 0;
-            board[y + 1][x + 1] = 0;
-            board[y + 2][x] = 0;
-          }
-        }
-      }
-    }
 
       if (toAdd.isNotEmpty) { //we got work to add to the main queue
         //synchronized (queue) {
-          queue.addAll(toAdd);
+          _queue.addAll(toAdd);
         //}
       }
     }
