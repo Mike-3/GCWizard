@@ -34,8 +34,8 @@ class TetrisPuzzleSolverMT {
 
   bool stopASAP = false; //set to true to cancel computation
   bool paused = false, masterPaused = true; //used by save/load methods. setting paused to true causes all threads to stop as soon as possible in a safe state. masterPaused is set to true by the master thread when it's paused in a safe state
-  
-  late List<SlaveThread?> slaves; //[Runtime.getRuntime().availableProcessors()]; //1 slave thread per core (+1 master thread)
+
+  late List<SlaveThread> slaves; //[Runtime.getRuntime().availableProcessors()]; //1 slave thread per core (+1 master thread)
 
   //initialize slaves (without actually starting them)
   // {
@@ -64,7 +64,7 @@ class TetrisPuzzleSolverMT {
     h = height;
     int nBlocks = iBlocks + oBlocks + tBlocks + jBlocks + lBlocks + sBlocks + zBlocks;
     blocks = List<String>.filled(nBlocks, '');
-    slaves = List<SlaveThread?>.filled(4, SlaveThread(blocks));
+    slaves = List<SlaveThread>.filled(4, SlaveThread(blocks, queue));
 
     int p = 0;
     for (int i = 0; i < iBlocks; i++) {
@@ -157,7 +157,7 @@ class TetrisPuzzleSolverMT {
    * @return an instance of Solution if the puzzle has a solution, null if it
    * doesn't (or if cancel() was called)
    */
-  Solution solve() {
+  Solution? solve() {
     if (solved) { //already solved
       return cachedResult!;
     }
@@ -170,7 +170,7 @@ class TetrisPuzzleSolverMT {
     Solution? ret; //this will contain the return value (Solution or null)
     //start slaves
     for (SlaveThread s in slaves) {
-      s.start();
+      s.run();
     }
     //force a context switch so they actually start. cheap, I know.
     // try {
@@ -211,8 +211,8 @@ class TetrisPuzzleSolverMT {
         break;
       }
       //check if all slaves are waiting and the queue is empty (puzzle has no solution)
-      synchronized (queue) {
-        int qLen = queue.size();
+      //synchronized (queue) {
+        int qLen = queue.length;
         if (qLen == 0) {
           bool allWaiting = true;
           for (SlaveThread s in slaves) {
@@ -227,7 +227,7 @@ class TetrisPuzzleSolverMT {
             done = true;
           }
         }
-      }
+      //}
       if (done) {
         break;
       }
@@ -264,7 +264,7 @@ class TetrisPuzzleSolverMT {
       }
     } else {
       // List<List<List<int>>> ret = new int[slaves.length][][];
-      var ret = List<List<List<int>>>.generate(slaves.length, (i) => [[]]);
+      var ret = List<List<List<int>>?>.generate(slaves.length, (i) => [[]]);
       for (int i = 0; i < slaves.length; i++) {
         try {
           var board = slaves[i].__board;
@@ -275,11 +275,11 @@ class TetrisPuzzleSolverMT {
           // }
           ret[i] = bcopy;
         } catch (Throwable t) {
-    ret[i] = null;
+          ret[i] = null;
+        }
+      }
+      return ret;
     }
-  }
-    return ret;
-  }
   }
 
   /**
@@ -302,14 +302,14 @@ class TetrisPuzzleSolverMT {
       // } catch (InterruptedException ex) {
       // }
     }
-    for (SlaveThread s in slaves) {
-      while (s.isAlive()) {
-        // try {
-        //   Thread.sleep(1);
-        // } catch (InterruptedException ex) {
-        // }
-      }
-    }
+    // for (SlaveThread s in slaves) {
+    //   while (s.isAlive()) {
+    //     // try {
+    //     //   Thread.sleep(1);
+    //     // } catch (InterruptedException ex) {
+    //     // }
+    //   }
+    // }
   }
 
   // /**
@@ -809,7 +809,7 @@ class Solution {
    *
    * @return
    */
-  List<List<int>> get() {
+  List<List<int>> getCopy() {
     var copy = List<List<int>>.generate(board.length, (i) => List<int>.generate(board[i].length, (index) => board[i][index], growable: false), growable: false);
 
     //     int[][] copy = new int[board.length][board[0].length];
@@ -827,10 +827,11 @@ class SlaveThread  { //extends Thread
   late List<List<int>> __board; //board that it's currently working on. a reference is kept here so a copy can be passed to the gui to show the animation. ignore.
   bool slavePaused = true; //set to true when it's paused in a safe state
   List<String> blocks;
+  List<BoardState> queue;
+  
+  SlaveThread(this.blocks, this.queue);
 
-  SlaveThread(this.blocks);
-
-  void run(List<List<int>> board) {
+  void run() {
     slavePaused = false;
     // setPriority(MAX_PRIORITY);
     // setName("TPS_SLAVE");
@@ -855,11 +856,11 @@ class SlaveThread  { //extends Thread
         //   return;
         // }
         // //get a work unit
-        synchronized (queue) {
-          if (queue.size() > 0) {
+        //synchronized (queue) {
+          if (queue.isNotEmpty) {
             //a work unit is available. fetch and remove from queue (actually a stack so work units with higher p (closer to solution) are processed first)
             waiting = false;
-            workunit = queue.getLast();
+            workunit = queue.last;
             queue.removeLast();
             iterations++;
             // if (waiting) {
@@ -873,12 +874,12 @@ class SlaveThread  { //extends Thread
               waiting = true;
             }
           }
-        }
+        //}
       }
       //at this point we surely have a work unit to process
-      final List<List<int>> board = workunit!.board; //extract board
+      final List<List<int>> board = workunit.board; //extract board
       __board = board; //copy reference (for gui). ignore.
-      final p = workunit!.p;
+      final p = workunit.p;
       final block = blocks[p - 1]; //which block do we have to place? (p-1 because p starts from 1)
       var toAdd = <BoardState>[]; //this list will contain all the newly created work units
       //find ALL places where we can place this block. for each place, a new work unit is created with the block in that location
@@ -899,12 +900,12 @@ class SlaveThread  { //extends Thread
               board[y + 2][x] = p;
               board[y + 3][x] = p;
               if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit!);
+                solution = Solution.copy(workunit);
                 slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -925,12 +926,12 @@ class SlaveThread  { //extends Thread
               board[y][x + 2] = p;
               board[y][x + 3] = p;
               if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit!);
+                solution = Solution.copy(workunit);
                 slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -954,12 +955,12 @@ class SlaveThread  { //extends Thread
               board[y][x + 1] = p;
               board[y + 1][x + 1] = p;
               if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit!);
+                solution = Solution.copy(workunit);
                 slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -987,12 +988,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x + 1] = p;
             board[y][x + 2] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit!.isStupid()) {
-                toAdd.add(BoardState.clone(workunit!));
+              if (!workunit.isStupid()) {
+                toAdd.add(BoardState.clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1017,12 +1018,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x + 1] = p;
             board[y + 2][x] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-            if (!workunit!.isStupid()) {
-              toAdd.add(BoardState.clone(workunit!));
+            if (!workunit.isStupid()) {
+              toAdd.add(BoardState.clone(workunit));
             }
             }
             //remove changes, keep looking
@@ -1047,12 +1048,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x + 1] = p;
             board[y + 2][x + 1] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit!.isStupid()) {
-                toAdd.add(BoardState.clone(workunit!));
+              if (!workunit.isStupid()) {
+                toAdd.add(BoardState.clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1076,12 +1077,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x + 1] = p;
             board[y + 1][x + 2] = p;
             if (p == blocks.length) { //solution found!
-            solution = Solution.copy(workunit!);
+            solution = Solution.copy(workunit);
             slavePaused = true;
             return;
           } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-            if (!workunit!.isStupid()) {
-              toAdd.add(BoardState.clone(workunit!));
+            if (!workunit.isStupid()) {
+              toAdd.add(BoardState.clone(workunit));
             }
           }
           //remove changes, keep looking
@@ -1109,12 +1110,12 @@ class SlaveThread  { //extends Thread
               board[y + 1][x + 2] = p;
               board[y][x + 2] = p;
               if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit!);
+                solution = Solution.copy(workunit);
                 slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1138,12 +1139,12 @@ class SlaveThread  { //extends Thread
               board[y + 1][x + 1] = p;
               board[y + 1][x + 2] = p;
               if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit!);
+                solution = Solution.copy(workunit);
                 slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1168,12 +1169,12 @@ class SlaveThread  { //extends Thread
               board[y][x + 1] = p;
               board[y + 2][x] = p;
               if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit!);
+                solution = Solution.copy(workunit);
                 slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1198,12 +1199,12 @@ class SlaveThread  { //extends Thread
               board[y + 1][x + 1] = p;
               board[y + 2][x + 1] = p;
               if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1231,12 +1232,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x] = p;
             board[y][x + 2] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit!.isStupid()) {
-                toAdd.add(BoardState.clone(workunit!));
+              if (!workunit.isStupid()) {
+                toAdd.add(BoardState.clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1261,12 +1262,12 @@ class SlaveThread  { //extends Thread
             board[y + 2][x + 1] = p;
             board[y + 2][x] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit!.isStupid()) {
-                toAdd.add(BoardState.clone(workunit!));
+              if (!workunit.isStupid()) {
+                toAdd.add(BoardState.clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1291,12 +1292,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x + 1] = p;
             board[y + 2][x + 1] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-            if (!workunit!.isStupid()) {
-              toAdd.add(BoardState.clone(workunit!));
+            if (!workunit.isStupid()) {
+              toAdd.add(BoardState.clone(workunit));
             }
             }
             //remove changes, keep looking
@@ -1320,12 +1321,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x + 1] = p;
             board[y + 1][x + 2] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit!.isStupid()) {
-                toAdd.add(BoardState.clone(workunit!));
+              if (!workunit.isStupid()) {
+                toAdd.add(BoardState.clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1354,12 +1355,12 @@ class SlaveThread  { //extends Thread
               board[y + 1][x + 1] = p;
               board[y + 2][x + 1] = p;
               if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit!);
+                solution = Solution.copy(workunit);
                 slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1383,12 +1384,12 @@ class SlaveThread  { //extends Thread
               board[y + 1][x] = p;
               board[y + 1][x + 1] = p;
               if (p == blocks.length) { //solution found!
-                solution = Solution.copy(workunit!);
+                solution = Solution.copy(workunit);
                 slavePaused = true;
                 return;
               } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-                if (!workunit!.isStupid()) {
-                  toAdd.add(BoardState.clone(workunit!));
+                if (!workunit.isStupid()) {
+                  toAdd.add(BoardState.clone(workunit));
                 }
               }
               //remove changes, keep looking
@@ -1416,12 +1417,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x + 1] = p;
             board[y + 1][x + 2] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit!.isStupid()) {
-                toAdd.add(BoardState.clone(workunit!));
+              if (!workunit.isStupid()) {
+                toAdd.add(BoardState.clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1446,12 +1447,12 @@ class SlaveThread  { //extends Thread
             board[y + 1][x + 1] = p;
             board[y + 2][x] = p;
             if (p == blocks.length) { //solution found!
-              solution = Solution.copy(workunit!);
+              solution = Solution.copy(workunit);
               slavePaused = true;
               return;
             } else { //needs more work. add to new state to work queue, but only if it's not a stupid config
-              if (!workunit!.isStupid()) {
-                toAdd.add(BoardState.clone(workunit!));
+              if (!workunit.isStupid()) {
+                toAdd.add(BoardState.clone(workunit));
               }
             }
             //remove changes, keep looking
@@ -1464,10 +1465,10 @@ class SlaveThread  { //extends Thread
       }
     }
 
-      if (toAdd.size() != 0) { //we got work to add to the main queue
-        synchronized (queue) {
+      if (toAdd.isNotEmpty) { //we got work to add to the main queue
+        //synchronized (queue) {
           queue.addAll(toAdd);
-        }
+        //}
       }
     }
 
