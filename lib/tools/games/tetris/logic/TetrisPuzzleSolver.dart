@@ -130,7 +130,7 @@ class TetrisPuzzleSolver {
    */
   bool _s(int p) {
     _iterations++;
-    if (_blocksPtr>=_blocks.length) {
+    if (_blocksPtr >= _blocks.length) {
       return true;   //puzzle is solved
     }
     //extract a block from blocks left to place
@@ -622,7 +622,7 @@ class TetrisPuzzleSolver {
    *
    * @return true if solveable, false otherwise
    */
-  bool solve() {
+  Future<bool> solve() async {
     if (!_solved) {
       _solveable = (_nPieces * 4 == board.length * board[0].length) && _s(1); //solve it
       _solved = true;
