@@ -7,6 +7,7 @@ import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
 
 class GCWPainterContainer extends StatefulWidget {
   final void Function(double)? onChanged;
+  final void Function(double)? onScaleChanged;
   final Widget child;
   final double scale;
   final bool? suppressTopSpace;
@@ -18,7 +19,8 @@ class GCWPainterContainer extends StatefulWidget {
         this.scale = 1,
         this.suppressTopSpace,
         this.suppressBottomSpace,
-        this.onChanged})
+        this.onChanged,
+        this.onScaleChanged})
       : super(key: key);
 
   @override
@@ -27,6 +29,8 @@ class GCWPainterContainer extends StatefulWidget {
 
 class _GCWPainterContainerState extends State<GCWPainterContainer> {
   late double _currentScale;
+  double _scaleFactor = 1.0;
+  double _baseScaleFactor = 1.0;
 
   @override
   void initState() {
@@ -72,9 +76,28 @@ class _GCWPainterContainerState extends State<GCWPainterContainer> {
             constraints: BoxConstraints(
                 maxWidth:
                     min(500, min(maxScreenWidth(context) * 0.95, maxScreenHeight(context) * 0.8)) * _currentScale),
-            margin: const EdgeInsets.symmetric(vertical: 20.0),
-            child: widget.child,
-          ),
+                margin: const EdgeInsets.symmetric(vertical: 20.0),
+                child: GestureDetector(
+                  child: widget.child,
+                  onScaleStart: (scaleStartDetails) {
+                    print('start ' + _scaleFactor.toString() + " " + scaleStartDetails.pointerCount.toString());
+                  },
+                  onScaleUpdate: (scaleUpdateDetails) {
+                    _scaleFactor = scaleUpdateDetails.scale;
+                    print('update ' + scaleUpdateDetails.scale.toString());
+                  // don't update the UI if the scale didn't change
+                  // if (scaleUpdateDetails.scale == 1.0) {
+                  // return;
+                  // }
+                  },
+                  onScaleEnd: (scaleEndDetails) {
+                    if (widget.onScaleChanged != null) {
+                      widget.onScaleChanged!(_scaleFactor);
+                    }
+                    print('end ' + scaleEndDetails.pointerCount.toString() +' '+ _scaleFactor.toString());
+                  },
+                ),
+            ),
         ),
       ),
     ]);
