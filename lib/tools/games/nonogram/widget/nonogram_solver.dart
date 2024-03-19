@@ -251,7 +251,7 @@ class NonogramSolverState extends State<NonogramSolver> {
       ),
       onScaleChanged: (scale) {
         setState(() {
-          print(puzzle.scale.toString() + ' ' +scale.toString());
+          print("nonogram scale old " + puzzle.scale.toString() + ' new ' +scale.toString() + ' new ' +(puzzle.scale * scale).toString());
           puzzle.scale *= scale;
         });
       },

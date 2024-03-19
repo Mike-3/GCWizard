@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/theme/theme.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
 import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
+import 'package:zoom_widget/zoom_widget.dart';
 
 class GCWPainterContainer extends StatefulWidget {
   final void Function(double)? onChanged;
@@ -72,31 +73,47 @@ class _GCWPainterContainerState extends State<GCWPainterContainer> {
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           physics: const AlwaysScrollableScrollPhysics(),
+          child: Zoom(
+            initTotalZoomOut: true,
+            initScale: 1,
+            onScaleUpdate: (var1, var2 ) {print('start ' + var1.toString() + ' ' + var2.toString()},
+
           child: Container(
             constraints: BoxConstraints(
                 maxWidth:
                     min(500, min(maxScreenWidth(context) * 0.95, maxScreenHeight(context) * 0.8)) * _currentScale),
                 margin: const EdgeInsets.symmetric(vertical: 20.0),
-                child: GestureDetector(
-                  child: widget.child,
-                  onScaleStart: (scaleStartDetails) {
-                    print('start ' + _scaleFactor.toString() + " " + scaleStartDetails.pointerCount.toString());
-                  },
-                  onScaleUpdate: (scaleUpdateDetails) {
-                    _scaleFactor = scaleUpdateDetails.scale;
-                    print('update ' + scaleUpdateDetails.scale.toString());
-                  // don't update the UI if the scale didn't change
-                  // if (scaleUpdateDetails.scale == 1.0) {
-                  // return;
-                  // }
-                  },
-                  onScaleEnd: (scaleEndDetails) {
-                    if (widget.onScaleChanged != null) {
-                      widget.onScaleChanged!(_scaleFactor);
-                    }
-                    print('end ' + scaleEndDetails.pointerCount.toString() +' '+ _scaleFactor.toString());
-                  },
+
+
                 ),
+                // GestureDetector(
+                //   child: widget.child,
+                //   // onPanDown: (panDown) {print('panDown ' + panDown.localPosition.toString());},
+                //   // onTap: () {print('tap ' );},
+                //
+                //   // onScaleStart: (scaleStartDetails) {
+                //   //   print('start ' + _scaleFactor.toString() + " " + scaleStartDetails.pointerCount.toString());
+                //   // },
+                //   //behavior: () => print('behavior '),
+                //
+                //   onScaleUpdate: (scaleUpdateDetails) {
+                //     _scaleFactor = scaleUpdateDetails.scale;
+                //     print('update ' + scaleUpdateDetails.scale.toString());
+                //   // don't update the UI if the scale didn't change
+                //   // if (scaleUpdateDetails.scale == 1.0) {
+                //   // return;
+                //   // }
+                //   },
+                //   onScaleEnd: (scaleEndDetails) {
+                //     if (widget.onScaleChanged != null) {
+                //       widget.onScaleChanged!(_scaleFactor);
+                //       _currentScale *= _scaleFactor;
+                //       if (widget.onChanged != null) widget.onChanged!(_currentScale);
+                //     }
+                //
+                //     print('end ' + scaleEndDetails.pointerCount.toString() +' '+ _scaleFactor.toString());
+                //   },
+                // ),
             ),
         ),
       ),
