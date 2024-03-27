@@ -317,6 +317,7 @@ class NonogramSolverState extends State<NonogramSolver> {
           GCWIntegerSpinner(
               title: i18n(context, 'common_row_count'),
               controller: puzzle.rowCountController,
+              flexValues: const [1, 1],
               value: puzzle.rowCount,
               min: 1,
               onChanged: (value) {
@@ -328,6 +329,7 @@ class NonogramSolverState extends State<NonogramSolver> {
           GCWIntegerSpinner(
               title: i18n(context, 'common_column_count'),
               controller: puzzle.columnCountController,
+              flexValues: const [1, 1],
               value: puzzle.columnCount,
               min: 1,
               onChanged: (value) {
