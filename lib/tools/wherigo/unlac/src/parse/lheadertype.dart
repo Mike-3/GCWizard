@@ -1,18 +1,18 @@
 import 'dart:typed_data';
-import 'package:unluac/parse/b_header.dart';
-import 'package:unluac/parse/b_object_type.dart';
-import 'package:unluac/parse/b_integer_type.dart';
-import 'package:unluac/parse/b_size_t_type.dart';
-import 'package:unluac/parse/l_number_type.dart';
-import 'package:unluac/parse/l_string_type.dart';
-import 'package:unluac/parse/l_constant_type.dart';
-import 'package:unluac/parse/l_function_type.dart';
-import 'package:unluac/parse/l_boolean_type.dart';
-import 'package:unluac/parse/l_local_type.dart';
-import 'package:unluac/parse/l_upvalue_type.dart';
-import 'package:unluac/decompile/code.dart';
-import 'package:unluac/decompile/code50.dart';
-import 'package:unluac/decompile/code_extract.dart';
+import 'bheader.dart';
+import 'bobjecttype.dart';
+import 'bintegertype.dart';
+import 'bsizettype.dart';
+import 'lnumbertype.dart';
+import 'lstringtype.dart';
+import 'lconstanttype.dart';
+import 'lfunctiontype.dart';
+import 'lbooleantype.dart';
+import 'llocaltype.dart';
+import 'lupvaluetype.dart';
+import '../decompile/code.dart';
+import '../decompile/code50.dart';
+import '../decompile/codeextract.dart';
 
 abstract class LHeaderType extends BObjectType<LHeader> {
   static final LHeaderType TYPE50 = LHeaderType50();

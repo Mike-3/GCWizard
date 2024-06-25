@@ -1,7 +1,3 @@
-import 'dart:collection';
-
-import 'package:unluac/parse.dart';
-
 import '../parse/lboolean.dart';
 import '../parse/llocaltype.dart';
 import '../parse/lnil.dart';
@@ -37,8 +33,8 @@ class Constant {
 
   final int type;
   final bool boolValue;
-  final LNumber number;
-  final String string;
+  final LNumber? number;
+  final String? string;
 
   Constant.intConstant(int constant)
       : type = 2,
@@ -75,21 +71,21 @@ class Constant {
         int newlines = 0;
         int unprintable = 0;
         bool rawstring = d.getConfiguration().rawstring;
-        for (int i = 0; i < string.length; i++) {
-          var c = string[i];
+        for (int i = 0; i < string!.length; i++) {
+          var c = string![i];
           if (c == '\n') {
             newlines++;
           } else if ((c.codeUnitAt(0) <= 31 && c != '\t') || c.codeUnitAt(0) >= 127) {
             unprintable++;
           }
         }
-        if (unprintable == 0 && (newlines > 1 || (newlines == 1 && string.indexOf('\n') != string.length - 1))) {
+        if (unprintable == 0 && (newlines > 1 || (newlines == 1 && string!.indexOf('\n') != string!.length - 1))) {
           int pipe = 0;
-          if (string[string.length - 1] == ']') {
+          if (string![string!.length - 1] == ']') {
             pipe = 1;
           }
           String pipeString = "]]";
-          while (string.contains(pipeString)) {
+          while (string!.contains(pipeString)) {
             pipe++;
             pipeString = "]${"=" * pipe}]";
           }
@@ -98,14 +94,14 @@ class Constant {
           int indent = out.getIndentationLevel();
           out.setIndentationLevel(0);
           out.println();
-          out.print(string);
+          out.print(string!);
           out.print("]${"=" * pipe}]");
           if (braced) out.print(")");
           out.setIndentationLevel(indent);
         } else {
           out.print("\"");
-          for (int i = 0; i < string.length; i++) {
-            var c = string[i];
+          for (int i = 0; i < string!.length; i++) {
+            var c = string![i];
             if (c.codeUnitAt(0) <= 31 || c.codeUnitAt(0) >= 127) {
               switch (c) {
                 case '\a':
@@ -164,13 +160,13 @@ class Constant {
 
   bool isNumber() => type == 2;
 
-  bool isInteger() => number.value == number.value.round();
+  bool isInteger() => number!.value == number!.value.round();
 
   int asInteger() {
     if (!isInteger()) {
       throw StateError("Not an integer");
     }
-    return number.value.toInt();
+    return number!.value.toInt();
   }
 
   bool isString() => type == 3;
@@ -182,15 +178,15 @@ class Constant {
     if (reservedWords.contains(string)) {
       return false;
     }
-    if (string.isEmpty) {
+    if (string!.isEmpty) {
       return false;
     }
-    var start = string[0];
+    var start = string![0];
     if (start != '_' && !RegExp(r'^[a-zA-Z]$').hasMatch(start)) {
       return false;
     }
-    for (int i = 1; i < string.length; i++) {
-      var next = string[i];
+    for (int i = 1; i < string!.length; i++) {
+      var next = string![i];
       if (RegExp(r'^[a-zA-Z0-9_]$').hasMatch(next)) {
         continue;
       }
@@ -203,7 +199,7 @@ class Constant {
     if (type != 3) {
       throw StateError("Not a string");
     }
-    return string;
+    return string!;
   }
 }
 

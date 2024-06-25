@@ -1,4 +1,4 @@
-import 'bibjecttype.dart';
+import 'bobjecttype.dart';
 import 'llocaltype.dart';
 
 class LLocal {

@@ -1,4 +1,4 @@
-import 'bibjecttype.dart';
+import 'biobjecttype.dart';
 
 class BList<T extends BObject> extends BObject {
   final BInteger length;
@@ -11,7 +11,7 @@ class BList<T extends BObject> extends BObject {
   }
 
   List<T> asArray(List<T> array) {
-    for (int i = 0; i < length.value; i++) {
+    for (int i = 0; i < values.length; i++) {
       array[i] = values[i];
     }
     return array;

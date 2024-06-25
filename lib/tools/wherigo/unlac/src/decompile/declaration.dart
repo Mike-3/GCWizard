@@ -4,7 +4,7 @@ class Declaration {
   final String name;
   final int begin;
   final int end;
-  int register;
+  int? register;
 
   /// Whether this is an invisible for-loop book-keeping variable.
   bool forLoop = false;

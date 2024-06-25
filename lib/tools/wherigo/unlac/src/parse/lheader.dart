@@ -1,6 +1,6 @@
 import '../decompile/codeextract.dart';
 import '../decompile/decompile.dart';
-import 'bibjecttype.dart';
+import 'bobjecttype.dart';
 import 'bintegertype.dart';
 import 'bsizettype.dart';
 import 'lbooleantype.dart';

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'bibjecttype.dart';
+import 'biobjecttype.dart';
 
 class BInteger extends BObject {
   final BigInt? big;

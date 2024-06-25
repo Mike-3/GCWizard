@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'bibjecttype.dart';
+import 'biobjecttype.dart';
 
 class BSizeT {
   final int value;

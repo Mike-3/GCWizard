@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'bibjecttype.dart';
+import 'bobjecttype.dart';
 
 class LUpvalue {
   late bool instack;

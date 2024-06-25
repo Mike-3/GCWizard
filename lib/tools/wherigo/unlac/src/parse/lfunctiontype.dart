@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
-import 'bibjecttype.dart';
+import 'bobjecttype.dart';
 import 'lfunction.dart';
+import 'llocal.dart';
+import 'lobject.dart';
 
 class LFunctionType extends BObjectType<LFunction> {
   static final LFunctionType TYPE50 = LFunctionType50();
