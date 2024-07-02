@@ -1,4 +1,5 @@
-import 'biobjecttype.dart';
+import 'binteger.dart';
+import 'bobject.dart';
 
 class BList<T extends BObject> extends BObject {
   final BInteger length;

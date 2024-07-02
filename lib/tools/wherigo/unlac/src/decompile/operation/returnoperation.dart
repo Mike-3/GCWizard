@@ -1,7 +1,8 @@
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/block.dart';
-import 'package:unluac/decompile/expression.dart';
-import 'package:unluac/decompile/statement.dart';
+import '../block/block.dart';
+import '../expression/expression.dart';
+import '../registers.dart';
+import '../statement/return.dart';
+import '../statement/statement.dart';
 
 class ReturnOperation extends Operation {
   List<Expression> values;

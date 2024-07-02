@@ -1,6 +1,7 @@
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/expression/expression.dart';
-import 'package:unluac/decompile/expression/unary_expression.dart';
+import '../expression/expression.dart';
+import '../expression/unaryexpression.dart';
+import '../registers.dart';
+import 'branch.dart';
 
 class NotBranch extends Branch {
   final Branch branch;

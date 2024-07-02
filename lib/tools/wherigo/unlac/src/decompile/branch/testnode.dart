@@ -1,6 +1,7 @@
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/expression.dart';
-import 'package:unluac/decompile/branch.dart';
+import '../expression/expression.dart';
+import '../registers.dart';
+import 'branch.dart';
+import 'notbranch.dart';
 
 class TestNode extends Branch {
   final int test;

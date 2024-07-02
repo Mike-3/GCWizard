@@ -7,7 +7,7 @@ class ConstantExpression extends Expression {
   final Constant constant;
   final int index;
 
-  ConstantExpression(this.constant, this.index) : super(PRECEDENCE_ATOMIC);
+  ConstantExpression(this.constant, this.index) : super(Expression.PRECEDENCE_ATOMIC);
 
   int getConstantIndex() {
     return index;

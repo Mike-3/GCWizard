@@ -1,7 +1,8 @@
-import 'decompiler.dart';
-import 'output.dart';
-import 'expression.dart';
-import 'table_reference.dart';
+import '../decompiler.dart';
+import '../expression/expression.dart';
+import '../expression/tablereference.dart';
+import '../output.dart';
+import 'target.dart';
 
 class TableTarget extends Target {
   final Expression table;

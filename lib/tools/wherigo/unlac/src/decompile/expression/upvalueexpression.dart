@@ -5,7 +5,7 @@ import 'expression.dart';
 class UpvalueExpression extends Expression {
   final String name;
 
-  UpvalueExpression(this.name) : super(PRECEDENCE_ATOMIC);
+  UpvalueExpression(this.name) : super(Expression.PRECEDENCE_ATOMIC);
 
   @override
   int getConstantIndex() {

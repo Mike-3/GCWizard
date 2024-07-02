@@ -1,9 +1,11 @@
-import 'package:unluac/decompile/decompiler.dart';
-import 'package:unluac/decompile/output.dart';
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/branch/branch.dart';
-import 'package:unluac/decompile/statement/statement.dart';
-import 'package:unluac/parse/lfunction.dart';
+import '../../parse/lfunction.dart';
+import '../branch/branch.dart';
+import '../output.dart';
+import '../registers.dart';
+import '../statement/statement.dart';
+import 'block.dart';
+
+import '../statement/statement.dart';
 
 class WhileBlock extends Block {
   final Branch branch;

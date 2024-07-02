@@ -6,7 +6,7 @@ class GlobalExpression extends Expression {
   final String name;
   final int index;
 
-  GlobalExpression(this.name, this.index) : super(PRECEDENCE_ATOMIC);
+  GlobalExpression(this.name, this.index) : super(Expression.PRECEDENCE_ATOMIC);
 
   @override
   int getConstantIndex() {

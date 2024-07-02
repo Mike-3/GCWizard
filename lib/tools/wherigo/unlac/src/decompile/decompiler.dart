@@ -1,6 +1,9 @@
 import 'dart:collection';
 import 'dart:core';
+import 'dart:core';
+import 'dart:core';
 
+import '../configuration.dart';
 import 'block/alwaysloop.dart';
 import 'block/block.dart';
 import 'block/booleanindicator.dart';
@@ -26,6 +29,8 @@ import 'branch/orbranch.dart';
 import 'branch/testnode.dart';
 import 'branch/testsetnode.dart';
 import 'branch/truenode.dart';
+import 'code.dart';
+import 'declaration.dart';
 import 'expression/closureexpression.dart';
 import 'expression/constantexpression.dart';
 import 'expression/expression.dart';
@@ -41,6 +46,8 @@ import 'operation/registerset.dart';
 import 'operation/returnoperation.dart';
 import 'operation/tableset.dart';
 import 'operation/upvalueset.dart';
+import 'output.dart';
+import 'registers.dart';
 import 'statement/assignment.dart';
 import 'statement/statement.dart';
 import 'target/globaltarget.dart';
@@ -51,6 +58,8 @@ import 'target/variabletarget.dart';
 import '../parse/lboolean.dart';
 import '../parse/lfunction.dart';
 import '../util/stack.dart';
+import 'upvalues.dart';
+import 'variablefinder.dart';
 
 class Decompiler {
   List<Block> blocks;
@@ -58,9 +67,9 @@ class Decompiler {
   bool[] reverseTarget;
   Function function;
   int length;
-  Stack<Branch> backup;
+  Stack<Branch>? backup;
   List<Declaration> declList;
-  Register r;
+  Register? r;
   int forTarget;
   int tforTarget;
 
@@ -162,9 +171,9 @@ class Decompiler {
   }
   
   Assignment processOperation(Operation operation, int line, int nextLine, Block block) {
-    Assignment assign;
+    Assignment? assign;
     bool wasMultiple = false;
-    Statement stmt = operation.process(r, block);
+    Statement? stmt = operation.process(r, block);
     if (stmt != null) {
       if (stmt is Assignment) {
         assign = stmt;
@@ -290,7 +299,7 @@ class Decompiler {
     return enclosing;
   }
   
-  Block enclosingBreakableBlock(int line) {
+  Block? enclosingBreakableBlock(int line) {
     Block outer = blocks[0];
     Block enclosing = outer;
     for (int i = 1; i < blocks.length; i++) {
@@ -302,7 +311,7 @@ class Decompiler {
     return enclosing == outer ? null : enclosing;
   }
   
-  Block enclosingUnprotectedBlock(int line) {
+  Block? enclosingUnprotectedBlock(int line) {
     Block outer = blocks[0];
     Block enclosing = outer;
     for (int i = 1; i < blocks.length; i++) {
@@ -314,7 +323,7 @@ class Decompiler {
     return enclosing == outer ? null : enclosing;
   }
   
-  Stack<Branch> backup;
+  Stack<Branch>? backup;
   
   Branch popCondition(Stack<Branch> stack) {
     Branch branch = stack.pop();
@@ -1293,7 +1302,7 @@ class Decompiler {
       }
       List<Operation> operations = processLine(line);
       List<Declaration> newLocals = r.getNewLocals(blockHandler == null ? line : line - 1);
-      Assignment assign = null;
+      Assignment? assign;
       if (blockHandler == null) {
         if (code.op(line) == Op.LOADNIL) {
           assign = Assignment();

@@ -9,7 +9,7 @@ class FunctionCall extends Expression {
   final List<Expression> arguments;
   final bool multiple;
 
-  FunctionCall(this.function, this.arguments, this.multiple) : super(PRECEDENCE_ATOMIC);
+  FunctionCall(this.function, this.arguments, this.multiple) : super(Expression.PRECEDENCE_ATOMIC);
 
   @override
   int getConstantIndex() {

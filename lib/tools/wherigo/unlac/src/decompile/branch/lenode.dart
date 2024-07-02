@@ -1,7 +1,8 @@
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/expression/binary_expression.dart';
-import 'package:unluac/decompile/expression/expression.dart';
-import 'package:unluac/decompile/expression/unary_expression.dart';
+import '../expression/binaryexpression.dart';
+import '../expression/expression.dart';
+import '../expression/unaryexpression.dart';
+import '../registers.dart';
+import 'branch.dart';
 
 class LENode extends Branch {
   final int left;

@@ -34,7 +34,7 @@ abstract class Statement {
     this.comment = comment;
   }
 
-  bool beginsWithParen() {
+  bool? beginsWithParen() {
     return false;
   }
 }

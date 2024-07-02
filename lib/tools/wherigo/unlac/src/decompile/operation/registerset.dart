@@ -1,7 +1,8 @@
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/block.dart';
-import 'package:unluac/decompile/expression.dart';
-import 'package:unluac/decompile/statement.dart';
+import '../block/block.dart';
+import '../expression/expression.dart';
+import '../registers.dart';
+import '../statement/assignment.dart';
+import '../statement/statement.dart';
 
 class RegisterSet extends Operation {
   final int register;

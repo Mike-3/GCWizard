@@ -1,5 +1,6 @@
-import 'decompiler.dart';
-import 'output.dart';
+import '../decompiler.dart';
+import '../output.dart';
+import 'target.dart';
 
 class GlobalTarget extends Target {
   final String name;

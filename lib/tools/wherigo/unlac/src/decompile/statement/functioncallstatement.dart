@@ -1,6 +1,7 @@
 import '../decompiler.dart';
 import '../expression/functioncall.dart';
 import '../output.dart';
+import 'statement.dart';
 
 class FunctionCallStatement extends Statement {
   final FunctionCall call;

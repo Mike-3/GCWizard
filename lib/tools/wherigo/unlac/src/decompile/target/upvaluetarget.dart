@@ -1,5 +1,6 @@
-import 'decompiler.dart';
-import 'output.dart';
+import '../decompiler.dart';
+import '../output.dart';
+import 'target.dart';
 
 class UpvalueTarget extends Target {
   final String name;

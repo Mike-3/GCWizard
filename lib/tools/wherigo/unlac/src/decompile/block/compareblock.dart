@@ -1,11 +1,9 @@
-import 'package:unluac/decompile/decompiler.dart';
-import 'package:unluac/decompile/output.dart';
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/branch/branch.dart';
-import 'package:unluac/decompile/operation/operation.dart';
-import 'package:unluac/decompile/operation/register_set.dart';
-import 'package:unluac/decompile/statement/statement.dart';
-import 'package:unluac/parse/l_function.dart';
+import '../../parse/lfunction.dart';
+import '../branch/branch.dart';
+import '../operation/registerset.dart';
+import '../output.dart';
+import '../statement/statement.dart';
+import 'block.dart';
 
 class CompareBlock extends Block {
   int target;

@@ -1,6 +1,7 @@
 import '../declaration.dart';
 import '../decompiler.dart';
 import '../output.dart';
+import 'statement.dart';
 
 class Declare extends Statement {
   final List<Declaration> decls;

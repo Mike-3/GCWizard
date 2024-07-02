@@ -1,17 +1,14 @@
-import 'package:unluac/decompile/declaration.dart';
-import 'package:unluac/decompile/decompiler.dart';
-import 'package:unluac/decompile/output.dart';
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/branch/branch.dart';
-import 'package:unluac/decompile/branch/test_node.dart';
-import 'package:unluac/decompile/expression/binary_expression.dart';
-import 'package:unluac/decompile/expression/expression.dart';
-import 'package:unluac/decompile/expression/local_variable.dart';
-import 'package:unluac/decompile/operation/operation.dart';
-import 'package:unluac/decompile/statement/assignment.dart';
-import 'package:unluac/decompile/statement/statement.dart';
-import 'package:unluac/parse/l_function.dart';
-import 'package:unluac/util/stack.dart';
+import '../../parse/lfunction.dart';
+import '../../util/stack.dart';
+import '../branch/branch.dart';
+import '../branch/testnode.dart';
+import '../declaration.dart';
+import '../expression/expression.dart';
+import '../output.dart';
+import '../registers.dart';
+import '../statement/assignment.dart';
+import '../statement/statement.dart';
+import 'block.dart';
 
 class IfThenEndBlock extends Block {
   final Branch branch;

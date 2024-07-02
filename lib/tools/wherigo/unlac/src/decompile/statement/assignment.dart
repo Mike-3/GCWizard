@@ -3,10 +3,11 @@ import '../decompiler.dart';
 import '../expression/expression.dart';
 import '../output.dart';
 import '../target/target.dart';
+import 'statement.dart';
 
 class Assignment extends Statement {
-  final List<Target> targets = List<Target>.filled(5, null, growable: true);
-  final List<Expression> values = List<Expression>.filled(5, null, growable: true);
+  final List<Target?> targets = List<Target?>.filled(5, null, growable: true);
+  final List<Expression?> values = List<Expression?>.filled(5, null, growable: true);
 
   bool allnil = true;
   bool declare = false;
@@ -15,21 +16,21 @@ class Assignment extends Statement {
   Assignment();
 
   @override
-  bool beginsWithParen() {
-    return targets[0].beginsWithParen();
+  bool? beginsWithParen() {
+    return targets[0]?.beginsWithParen();
   }
 
-  Target getFirstTarget() {
-    return targets[0];
+  Target? getFirstTarget() {
+    return targets?[0];
   }
 
-  Expression getFirstValue() {
+  Expression? getFirstValue() {
     return values[0];
   }
 
   bool assignsTarget(Declaration decl) {
     for (var target in targets) {
-      if (target.isDeclaration(decl)) {
+      if (target != null && target.isDeclaration(decl)) {
         return true;
       }
     }

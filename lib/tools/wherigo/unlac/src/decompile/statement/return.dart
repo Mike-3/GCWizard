@@ -1,6 +1,7 @@
 import '../decompiler.dart';
 import '../expression/expression.dart';
 import '../output.dart';
+import 'statement.dart';
 
 class Return extends Statement {
   List<Expression> values;

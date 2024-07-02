@@ -6,7 +6,7 @@ import 'expression.dart';
 class LocalVariable extends Expression {
   final Declaration decl;
 
-  LocalVariable(this.decl) : super(PRECEDENCE_ATOMIC);
+  LocalVariable(this.decl) : super(Expression.PRECEDENCE_ATOMIC);
 
   @override
   int getConstantIndex() {

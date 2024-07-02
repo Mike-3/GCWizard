@@ -1,6 +1,6 @@
-import 'declaration.dart';
-import 'decompiler.dart';
-import 'output.dart';
+import '../declaration.dart';
+import '../decompiler.dart';
+import '../output.dart';
 
 abstract class Target {
 
@@ -16,7 +16,7 @@ abstract class Target {
     return false;
   }
   
-  int getIndex() {
+  int? getIndex() {
     throw StateError('Illegal state');
   }
   

@@ -1,5 +1,5 @@
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/expression.dart';
+import '../expression/expression.dart';
+import '../registers.dart';
 
 abstract class Branch {
   final int line;

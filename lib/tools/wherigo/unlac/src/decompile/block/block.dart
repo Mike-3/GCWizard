@@ -1,8 +1,5 @@
-import 'package:unluac/decompile/decompiler.dart';
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/operation.dart';
-import 'package:unluac/decompile/statement.dart';
-import 'package:unluac/parse/lfunction.dart';
+import '../../parse/lfunction.dart';
+import '../statement/statement.dart';
 
 abstract class Block extends Statement implements Comparable<Block> {
   final LFunction function;

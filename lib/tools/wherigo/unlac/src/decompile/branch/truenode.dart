@@ -1,8 +1,9 @@
-import 'package:unluac/decompile/constant.dart';
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/expression/constant_expression.dart';
-import 'package:unluac/decompile/expression/expression.dart';
-import 'package:unluac/parse/lboolean.dart';
+import '../../parse/lboolean.dart';
+import '../constant.dart';
+import '../expression/constantexpression.dart';
+import '../expression/expression.dart';
+import '../registers.dart';
+import 'branch.dart';
 
 class TrueNode extends Branch {
   final int register;

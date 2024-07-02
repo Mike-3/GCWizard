@@ -6,7 +6,7 @@ class Vararg extends Expression {
   final int length;
   final bool multiple;
 
-  Vararg(this.length, this.multiple) : super(PRECEDENCE_ATOMIC);
+  Vararg(this.length, this.multiple) : super(Expression.PRECEDENCE_ATOMIC);
 
   @override
   int getConstantIndex() {

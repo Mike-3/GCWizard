@@ -1,8 +1,9 @@
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/block.dart';
-import 'package:unluac/decompile/expression.dart';
-import 'package:unluac/decompile/statement.dart';
-import 'package:unluac/decompile/target.dart';
+import '../block/block.dart';
+import '../expression/expression.dart';
+import '../registers.dart';
+import '../statement/assignment.dart';
+import '../statement/statement.dart';
+import '../target/globaltarget.dart';
 
 class GlobalSet extends Operation {
   String global;

@@ -26,7 +26,7 @@ class TableLiteral extends Expression {
   TableLiteral(int arraySize, int hashSize)
       : entries = List<Entry>.filled(arraySize + hashSize, null, growable: true),
         capacity = arraySize + hashSize,
-        super(PRECEDENCE_ATOMIC);
+        super(Expression.PRECEDENCE_ATOMIC);
 
   @override
   int getConstantIndex() {

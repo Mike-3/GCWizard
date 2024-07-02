@@ -1,5 +1,8 @@
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/expression.dart';
+import '../expression/binaryexpression.dart';
+import '../expression/expression.dart';
+import '../registers.dart';
+import 'branch.dart';
+import 'orbranch.dart';
 
 class AndBranch extends Branch {
   final Branch left;

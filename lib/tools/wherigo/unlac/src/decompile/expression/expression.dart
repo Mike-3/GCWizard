@@ -2,98 +2,99 @@ import '../../parse/lnil.dart';
 import '../constant.dart';
 import '../decompiler.dart';
 import '../output.dart';
+import '../target/target.dart';
 import 'binaryexpression.dart';
 import 'constantexpression.dart';
 import 'unaryexpression.dart';
 
 abstract class Expression {
-  static const int precedenceOr = 1;
-  static const int precedenceAnd = 2;
-  static const int precedenceCompare = 3;
-  static const int precedenceBor = 4;
-  static const int precedenceBxor = 5;
-  static const int precedenceBand = 6;
-  static const int precedenceShift = 7;
-  static const int precedenceConcat = 8;
-  static const int precedenceAdd = 9;
-  static const int precedenceMul = 10;
-  static const int precedenceUnary = 11;
-  static const int precedencePow = 12;
-  static const int precedenceAtomic = 13;
+  static const int PRECEDENCE_OR = 1;
+  static const int PRECEDENCE_AND = 2;
+  static const int PRECEDENCE_COMPARE = 3;
+  static const int PRECEDENCE_BOR = 4;
+  static const int PRECEDENCE_BXOR = 5;
+  static const int PRECEDENCE_BAND = 6;
+  static const int PRECEDENCE_SHIFT = 7;
+  static const int PRECEDENCE_CONCAT = 8;
+  static const int PRECEDENCE_ADD = 9;
+  static const int PRECEDENCE_MUL = 10;
+  static const int PRECEDENCE_UNARY = 11;
+  static const int PRECEDENCE_POW = 12;
+  static const int PRECEDENCE_ATOMIC = 13;
 
-  static const int associativityNone = 0;
-  static const int associativityLeft = 1;
-  static const int associativityRight = 2;
+  static const int ASSOCIATIVITY_NONE = 0;
+  static const int ASSOCIATIVITY_LEFT = 1;
+  static const int ASSOCIATIVITY_RIGHT = 2;
 
   static final Expression nil = ConstantExpression(Constant(LNil.nil), -1);
 
   static BinaryExpression makeCONCAT(Expression left, Expression right) {
     return BinaryExpression('..',
-        left, right, precedenceConcat, associativityRight);
+        left, right, PRECEDENCE_CONCAT, ASSOCIATIVITY_RIGHT);
   }
 
   static BinaryExpression makeADD(Expression left, Expression right) {
-    return BinaryExpression('+', left, right, precedenceAdd, associativityLeft);
+    return BinaryExpression('+', left, right, PRECEDENCE_ADD, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeSUB(Expression left, Expression right) {
-    return BinaryExpression('-', left, right, precedenceAdd, associativityLeft);
+    return BinaryExpression('-', left, right, PRECEDENCE_ADD, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeMUL(Expression left, Expression right) {
-    return BinaryExpression('*', left, right, precedenceMul, associativityLeft);
+    return BinaryExpression('*', left, right, PRECEDENCE_ADD, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeDIV(Expression left, Expression right) {
-    return BinaryExpression('/', left, right, precedenceMul, associativityLeft);
+    return BinaryExpression('/', left, right, PRECEDENCE_MUL, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeMOD(Expression left, Expression right) {
-    return BinaryExpression('%', left, right, precedenceMul, associativityLeft);
+    return BinaryExpression('%', left, right, PRECEDENCE_MUL, ASSOCIATIVITY_LEFT);
   }
 
   static UnaryExpression makeUNM(Expression expression) {
-    return UnaryExpression('-', expression, precedenceUnary);
+    return UnaryExpression('-', expression, PRECEDENCE_UNARY);
   }
 
   static UnaryExpression makeNOT(Expression expression) {
-    return UnaryExpression('not ', expression, precedenceUnary);
+    return UnaryExpression('not ', expression, PRECEDENCE_UNARY);
   }
 
   static UnaryExpression makeLEN(Expression expression) {
-    return UnaryExpression('#', expression, precedenceUnary);
+    return UnaryExpression('#', expression, PRECEDENCE_UNARY);
   }
 
   static BinaryExpression makePOW(Expression left, Expression right) {
-    return BinaryExpression('^', left, right, precedencePow, associativityRight);
+    return BinaryExpression('^', left, right, PRECEDENCE_POW, ASSOCIATIVITY_RIGHT);
   }
 
   static BinaryExpression makeIDIV(Expression left, Expression right) {
-    return BinaryExpression('//', left, right, precedenceMul, associativityLeft);
+    return BinaryExpression('//', left, right, PRECEDENCE_MUL, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeBAND(Expression left, Expression right) {
-    return BinaryExpression('&', left, right, precedenceBand, associativityLeft);
+    return BinaryExpression('&', left, right, PRECEDENCE_BAND, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeBOR(Expression left, Expression right) {
-    return BinaryExpression('|', left, right, precedenceBor, associativityLeft);
+    return BinaryExpression('|', left, right, PRECEDENCE_BOR, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeBXOR(Expression left, Expression right) {
-    return BinaryExpression('~', left, right, precedenceBxor, associativityLeft);
+    return BinaryExpression('~', left, right, PRECEDENCE_BXOR, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeSHL(Expression left, Expression right) {
-    return BinaryExpression('<<', left, right, precedenceShift, associativityLeft);
+    return BinaryExpression('<<', left, right, PRECEDENCE_SHIFT, ASSOCIATIVITY_LEFT);
   }
 
   static BinaryExpression makeSHR(Expression left, Expression right) {
-    return BinaryExpression('>>', left, right, precedenceShift, associativityLeft);
+    return BinaryExpression('>>', left, right, PRECEDENCE_SHIFT, ASSOCIATIVITY_LEFT);
   }
 
   static UnaryExpression makeBNOT(Expression expression) {
-    return UnaryExpression('~', expression, precedenceUnary);
+    return UnaryExpression('~', expression, PRECEDENCE_UNARY);
   }
 
   static void printSequence(Decompiler d, Output out, List<Expression> exprs,

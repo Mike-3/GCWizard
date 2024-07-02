@@ -1,10 +1,9 @@
-import 'package:unluac/decompile/decompiler.dart';
-import 'package:unluac/decompile/output.dart';
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/expression.dart';
-import 'package:unluac/decompile/statement.dart';
-import 'package:unluac/parse/lfunction.dart';
-import '../version.dart';
+import '../../parse/lfunction.dart';
+import '../expression/expression.dart';
+import '../output.dart';
+import '../registers.dart';
+import '../statement/statement.dart';
+import 'block.dart';
 
 class ForBlock extends Block {
   final int register;

@@ -41,10 +41,10 @@ class BinaryExpression extends Expression {
   }
 
   bool leftGroup() {
-    return precedence > left.precedence || (precedence == left.precedence && associativity == ASSOCIATIVITY_RIGHT);
+    return precedence > left.precedence || (precedence == left.precedence && associativity == Expression.ASSOCIATIVITY_RIGHT);
   }
 
   bool rightGroup() {
-    return precedence > right.precedence || (precedence == right.precedence && associativity == ASSOCIATIVITY_LEFT);
+    return precedence > right.precedence || (precedence == right.precedence && associativity == Expression.ASSOCIATIVITY_LEFT);
   }
 }

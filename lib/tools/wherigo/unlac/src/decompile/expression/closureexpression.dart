@@ -11,7 +11,7 @@ class ClosureExpression extends Expression {
   int upvalueLine;
   List<Declaration> declList;
 
-  ClosureExpression(this.function, this.declList, this.upvalueLine) : super(PRECEDENCE_ATOMIC);
+  ClosureExpression(this.function, this.declList, this.upvalueLine) : super(Expression.PRECEDENCE_ATOMIC);
 
   int getConstantIndex() {
     return -1;

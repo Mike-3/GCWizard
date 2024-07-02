@@ -1,6 +1,7 @@
-import 'declaration.dart';
-import 'decompiler.dart';
-import 'output.dart';
+import '../declaration.dart';
+import '../decompiler.dart';
+import '../output.dart';
+import 'target.dart';
 
 class VariableTarget extends Target {
   final Declaration decl;
@@ -28,7 +29,7 @@ class VariableTarget extends Target {
   }
 
   @override
-  int getIndex() {
+  int? getIndex() {
     return decl.register;
   }
 

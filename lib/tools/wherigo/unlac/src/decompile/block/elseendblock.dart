@@ -1,7 +1,8 @@
-import 'package:unluac/decompile/decompiler.dart';
-import 'package:unluac/decompile/output.dart';
-import 'package:unluac/decompile/statement.dart';
-import 'package:unluac/parse/lfunction.dart';
+import '../../parse/lfunction.dart';
+import '../output.dart';
+import '../statement/statement.dart';
+import 'block.dart';
+import 'ifthenendblock.dart';
 
 class ElseEndBlock extends Block {
   final List<Statement> statements;

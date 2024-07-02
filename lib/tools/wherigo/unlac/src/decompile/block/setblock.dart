@@ -1,15 +1,12 @@
-import 'package:unluac/decompile/decompiler.dart';
-import 'package:unluac/decompile/op.dart';
-import 'package:unluac/decompile/output.dart';
-import 'package:unluac/decompile/registers.dart';
-import 'package:unluac/decompile/branch/branch.dart';
-import 'package:unluac/decompile/expression/expression.dart';
-import 'package:unluac/decompile/operation/operation.dart';
-import 'package:unluac/decompile/operation/register_set.dart';
-import 'package:unluac/decompile/statement/assignment.dart';
-import 'package:unluac/decompile/statement/statement.dart';
-import 'package:unluac/decompile/target/target.dart';
-import 'package:unluac/parse/l_function.dart';
+import '../../parse/lfunction.dart';
+import '../branch/branch.dart';
+import '../expression/expression.dart';
+import '../output.dart';
+import '../registers.dart';
+import '../statement/assignment.dart';
+import '../statement/statement.dart';
+import 'block.dart';
+import 'booleanindicator.dart';
 
 class SetBlock extends Block {
   final int target;

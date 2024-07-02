@@ -1,4 +1,3 @@
-
 import '../decompiler.dart';
 import '../output.dart';
 import 'expression.dart';
@@ -7,7 +6,7 @@ class TableReference extends Expression {
   final Expression table;
   final Expression index;
 
-  TableReference(this.table, this.index) : super(PRECEDENCE_ATOMIC);
+  TableReference(this.table, this.index) : super(Expression.PRECEDENCE_ATOMIC);
 
   @override
   int getConstantIndex() {

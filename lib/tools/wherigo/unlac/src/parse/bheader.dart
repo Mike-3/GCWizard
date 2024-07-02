@@ -8,6 +8,7 @@ import 'bintegertype.dart';
 import 'bsizettype.dart';
 import 'lbooleantype.dart';
 import 'lconstanttype.dart';
+import 'lfunction.dart';
 import 'lfunctiontype.dart';
 import 'lheader.dart';
 import 'llocaltype.dart';
