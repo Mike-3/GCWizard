@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'bheader.dart';
+import 'bobjecttype.dart';
 import 'lnil.dart';
 import 'lobject.dart';
 

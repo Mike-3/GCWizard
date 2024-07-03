@@ -184,7 +184,7 @@ class LHeaderType51 extends LHeaderType {
     parse_instruction_size(buffer, header, s);
     parse_number_size(buffer, header, s);
     parse_number_integrality(buffer, header, s);
-    s.number = LNumberType(s.lNumberSize, s.lNumberIntegrality, LNumberType.MODE_NUMBER);
+    s.number = LNumberType(s.lNumberSize, s.lNumberIntegrality, NumberMode.MODE_NUMBER);
     s.function = LFunctionType.TYPE51;
     s.string = LStringType.getType50();
     s.constant = LConstantType.getType50();
@@ -203,7 +203,7 @@ class LHeaderType52 extends LHeaderType {
     parse_number_size(buffer, header, s);
     parse_number_integrality(buffer, header, s);
     parse_tail(buffer, header, s);
-    s.number = LNumberType(s.lNumberSize, s.lNumberIntegrality, LNumberType.MODE_NUMBER);
+    s.number = LNumberType(s.lNumberSize, s.lNumberIntegrality, NumberMode.MODE_NUMBER);
     s.function = LFunctionType.TYPE52;
     s.string = LStringType.getType50();
     s.constant = LConstantType.getType50();
@@ -249,8 +249,8 @@ class LHeaderType53 extends LHeaderType {
     } else {
       throw StateError('The input chunk reports an invalid endianness: $endianness');
     }
-    s.linteger = LNumberType(s.lIntegerSize, true, LNumberType.MODE_INTEGER);
-    s.lfloat = LNumberType(s.lFloatSize, false, LNumberType.MODE_FLOAT);
+    s.linteger = LNumberType(s.lIntegerSize, true, NumberMode.MODE_INTEGER);
+    s.lfloat = LNumberType(s.lFloatSize, false, NumberMode.MODE_FLOAT);
     s.function = LFunctionType.TYPE53;
     s.string = LStringType.getType53();
     s.constant = LConstantType.getType53();
@@ -263,23 +263,23 @@ class LHeaderType53 extends LHeaderType {
 }
 
 class LHeaderParseState {
-  BIntegerType integer;
-  BSizeTType sizeT;
-  LNumberType number;
-  LNumberType linteger;
-  LNumberType lfloat;
-  LStringType string;
-  LConstantType constant;
-  LFunctionType function;
-  CodeExtract extractor;
+  late BIntegerType integer;
+  late BSizeTType sizeT;
+  late LNumberType number;
+  late LNumberType linteger;
+  late LNumberType lfloat;
+  late LStringType string;
+  late LConstantType constant;
+  late LFunctionType function;
+  late CodeExtract extractor;
 
-  int format;
+  late int format;
 
-  int lNumberSize;
-  bool lNumberIntegrality;
+  late int lNumberSize;
+  late bool lNumberIntegrality;
 
-  int lIntegerSize;
-  int lFloatSize;
+  late int lIntegerSize;
+  late int lFloatSize;
 }
 
 class LHeader {

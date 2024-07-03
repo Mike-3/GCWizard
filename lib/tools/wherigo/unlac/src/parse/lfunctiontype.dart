@@ -1,32 +1,20 @@
 import 'dart:typed_data';
 
+import 'bheader.dart';
+import 'binteger.dart';
+import 'blist.dart';
 import 'bobjecttype.dart';
 import 'lfunction.dart';
 import 'llocal.dart';
 import 'lobject.dart';
+import 'lstring.dart';
+import 'lupvalue.dart';
 
 class LFunctionType extends BObjectType<LFunction> {
   static final LFunctionType TYPE50 = LFunctionType50();
   static final LFunctionType TYPE51 = LFunctionType();
   static final LFunctionType TYPE52 = LFunctionType52();
   static final LFunctionType TYPE53 = LFunctionType53();
-
-  static class LFunctionParseState {
-    LString name;
-    int lineBegin;
-    int lineEnd;
-    int lenUpvalues;
-    int lenParameter;
-    int vararg;
-    int maximumStackSize;
-    int length;
-    List<int> code;
-    BList<LObject> constants;
-    BList<LFunction> functions;
-    BList<BInteger> lines;
-    BList<LLocal> locals;
-    List<LUpvalue> upvalues;
-  }
 
   @override
   LFunction parse(ByteBuffer buffer, BHeader header) {
@@ -206,4 +194,21 @@ class LFunctionType50 extends LFunctionType {
     s.lenUpvalues = upvalues.length.asInt();
     s.upvalues = upvalues.asArray(List<LUpvalue>.filled(s.lenUpvalues, LUpvalue()));
   }
+}
+
+class LFunctionParseState {
+  late LString name;
+  late int lineBegin;
+  late int lineEnd;
+  late int lenUpvalues;
+  late int lenParameter;
+  late int vararg;
+  late int maximumStackSize;
+  late int length;
+  late List<int> code;
+  late BList<LObject> constants;
+  late BList<LFunction> functions;
+  late BList<BInteger> lines;
+  late BList<LLocal> locals;
+  late List<LUpvalue> upvalues;
 }

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'biobjecttype.dart';
+import 'binteger.dart';
 
 class BSizeT extends BInteger {
   BSizeT(BInteger b) : super(b);

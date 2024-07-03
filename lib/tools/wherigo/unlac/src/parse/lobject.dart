@@ -1,4 +1,4 @@
-import 'bobjecttype.dart';
+import 'bobject.dart';
 
 abstract class LObject extends BObject {
 

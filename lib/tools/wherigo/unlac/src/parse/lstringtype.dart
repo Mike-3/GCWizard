@@ -1,5 +1,10 @@
 import 'dart:typed_data';
 
+import 'bheader.dart';
+import 'bobjecttype.dart';
+import 'bsizet.dart';
+import 'lstring.dart';
+
 abstract class LStringType extends BObjectType<LString> {
   static LStringType50 getType50() {
     return LStringType50();
@@ -61,37 +66,4 @@ class ThreadLocal<T> {
 
   T get() => _value;
   void set(T value) => _value = value;
-}
-
-class BObjectType<T> {}
-
-class LString {
-  final BSizeT sizeT;
-  final String value;
-
-  LString(this.sizeT, this.value);
-}
-
-class BSizeT {
-  final int size;
-
-  BSizeT(this.size);
-
-  void iterate(void Function() action) {
-    for (int i = 0; i < size; i++) {
-      action();
-    }
-  }
-
-  BSizeT parse(ByteBuffer buffer, BHeader header) {
-    // Implement parsing logic here
-    return BSizeT(0); // Placeholder
-  }
-}
-
-class BHeader {
-  final BSizeT sizeT;
-  final bool debug;
-
-  BHeader(this.sizeT, this.debug);
 }

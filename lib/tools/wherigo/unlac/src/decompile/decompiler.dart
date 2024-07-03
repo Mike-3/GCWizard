@@ -2,8 +2,10 @@ import 'dart:collection';
 import 'dart:core';
 import 'dart:core';
 import 'dart:core';
+import 'dart:math';
 
 import '../configuration.dart';
+import '../parse/lbooleantype.dart';
 import '../version.dart';
 import 'block/alwaysloop.dart';
 import 'block/block.dart';
@@ -338,7 +340,7 @@ class Decompiler {
       begin += 1 + code.sBx(branch.begin);
     }
     while (!stack.isEmpty) {
-      Branch next = stack.peek();
+      Branch next = stack.peek;
       if (next is TestSetNode) break;
       if (next.end == begin) {
         branch = OrBranch(popCondition(stack).invert(), branch);
@@ -655,7 +657,7 @@ class Decompiler {
     for (int line = 1; line <= length; line++) {
       if (!skip[line]) {
         switch (code.op(line)) {
-          case EQ:
+          case Op.EQ:
             {
               EQNode node = EQNode(code.B(line), code.C(line), code.A(line) != 0, line, line + 2, line + 2 + code.sBx(line + 1));
               stack.push(node);
@@ -673,7 +675,7 @@ class Decompiler {
               }
               continue;
             }
-          case LT:
+          case Op.LT:
             {
               LTNode node = LTNode(code.B(line), code.C(line), code.A(line) != 0, line, line + 2, line + 2 + code.sBx(line + 1));
               stack.push(node);
@@ -691,7 +693,7 @@ class Decompiler {
               }
               continue;
             }
-          case LE:
+          case Op.LE:
             {
               LENode node = LENode(code.B(line), code.C(line), code.A(line) != 0, line, line + 2, line + 2 + code.sBx(line + 1));
               stack.push(node);
@@ -709,17 +711,17 @@ class Decompiler {
               }
               continue;
             }
-          case TEST:
+          case Op.TEST:
             stack.push(TestNode(code.A(line), code.C(line) != 0, line, line + 2, line + 2 + code.sBx(line + 1)));
             skip[line + 1] = true;
             continue;
-          case TESTSET:
+          case Op.TESTSET:
             testset = true;
             testsetend = line + 2 + code.sBx(line + 1);
             stack.push(TestSetNode(code.A(line), code.B(line), code.C(line) != 0, line, line + 2, line + 2 + code.sBx(line + 1)));
             skip[line + 1] = true;
             continue;
-          case TEST50:
+          case Op.TEST50:
             if (code.A(line) == code.B(line)) {
               stack.push(TestNode(code.A(line), code.C(line) != 0, line, line + 2, line + 2 + code.sBx(line + 1)));
             } else {
@@ -729,7 +731,7 @@ class Decompiler {
             }
             skip[line + 1] = true;
             continue;
-          case JMP:
+          case Op.JMP:
             {
               reduce = true;
               int tline = line + 1 + code.sBx(line);
@@ -739,7 +741,7 @@ class Decompiler {
               } else if (code.op(tline) == tforTarget && !skip[tline]) {
                 int A = code.A(tline);
                 int C = code.C(tline);
-                if (C == 0) throw new IllegalStateException();
+                if (C == 0) throw IllegalStateException();
                 r.setInternalLoopVariable(A, tline, line + 1);
                 r.setInternalLoopVariable(A + 1, tline, line + 1);
                 r.setInternalLoopVariable(A + 2, tline, line + 1);
@@ -781,7 +783,7 @@ class Decompiler {
               }
               break;
             }
-          case FORPREP:
+          case Op.FORPREP:
             reduce = true;
             blocks.add(ForBlock(function, line + 1, line + 2 + code.sBx(line), code.A(line), r));
             skip[line + 1 + code.sBx(line)] = true;
@@ -790,9 +792,9 @@ class Decompiler {
             r.setInternalLoopVariable(code.A(line) + 2, line, line + 2 + code.sBx(line));
             r.setExplicitLoopVariable(code.A(line) + 3, line, line + 2 + code.sBx(line));
             break;
-          case FORLOOP:
-            throw new IllegalStateException();
-          case TFORPREP:
+          case Op.FORLOOP:
+            throw IllegalStateException();
+          case Op.TFORPREP:
             {
               reduce = true;
               int tline = line + 1 + code.sBx(line);
@@ -821,7 +823,7 @@ class Decompiler {
       if (testset && testsetend == line + 1) {
         reduce = true;
       }
-      if (stack.isEmpty()) {
+      if (stack.isEmpty) {
         reduce = false;
       }
       if (reduce) {
@@ -829,10 +831,10 @@ class Decompiler {
         Stack<Branch> conditions = Stack<Branch>();
         Stack<Stack<Branch>> backups = Stack<Stack<Branch>>();
         do {
-          bool isAssignNode = stack.peek() is TestSetNode;
-          int assignEnd = stack.peek().end;
+          bool isAssignNode = stack.peek is TestSetNode;
+          int assignEnd = stack.peek.end;
           bool compareCorrect = false;
-          if (stack.peek() is TrueNode) {
+          if (stack.peek is TrueNode) {
             isAssignNode = true;
             compareCorrect = true;
             if (code.C(assignEnd) != 0) {
@@ -840,8 +842,8 @@ class Decompiler {
             } else {
               assignEnd += 1;
             }
-          } else if (stack.peek().isCompareSet) {
-            if (code.op(stack.peek().begin) != Op.LOADBOOL || code.C(stack.peek().begin) == 0) {
+          } else if (stack.peek.isCompareSet) {
+            if (code.op(stack.peek.begin) != Op.LOADBOOL || code.C(stack.peek.begin) == 0) {
               isAssignNode = true;
               if (code.C(assignEnd) != 0) {
                 assignEnd += 2;
@@ -851,52 +853,52 @@ class Decompiler {
               compareCorrect = true;
             }
           } else if (assignEnd - 3 >= 1 && code.op(assignEnd - 2) == Op.LOADBOOL && code.C(assignEnd - 2) != 0 && code.op(assignEnd - 3) == Op.JMP && code.sBx(assignEnd - 3) == 2) {
-            if (stack.peek() is TestNode) {
-              TestNode node = stack.peek();
+            if (stack.peek is TestNode) {
+              TestNode node = stack.peek;
               if (node.test == code.A(assignEnd - 2)) {
                 isAssignNode = true;
               }
             }
           } else if (assignEnd - 2 >= 1 && code.op(assignEnd - 1) == Op.LOADBOOL && code.C(assignEnd - 1) != 0 && code.op(assignEnd - 2) == Op.JMP && code.sBx(assignEnd - 2) == 2) {
-            if (stack.peek() is TestNode) {
+            if (stack.peek is TestNode) {
               isAssignNode = true;
               assignEnd += 1;
             }
           } else if (assignEnd - 1 >= 1 && code.op(assignEnd) == Op.LOADBOOL && code.C(assignEnd) != 0 && code.op(assignEnd - 1) == Op.JMP && code.sBx(assignEnd - 1) == 2) {
-            if (stack.peek() is TestNode) {
+            if (stack.peek is TestNode) {
               isAssignNode = true;
               assignEnd += 2;
             }
-          } else if (assignEnd - 1 >= 1 && r.isLocal(getAssignment(assignEnd - 1), assignEnd - 1) && assignEnd > stack.peek().line) {
+          } else if (assignEnd - 1 >= 1 && r.isLocal(getAssignment(assignEnd - 1), assignEnd - 1) && assignEnd > stack.peek.line) {
             Declaration decl = r.getDeclaration(getAssignment(assignEnd - 1), assignEnd - 1);
             if (decl.begin == assignEnd - 1 && decl.end > assignEnd - 1) {
               isAssignNode = true;
             }
           }
-          if (!compareCorrect && assignEnd - 1 == stack.peek().begin && code.op(stack.peek().begin) == Op.LOADBOOL && code.C(stack.peek().begin) != 0) {
+          if (!compareCorrect && assignEnd - 1 == stack.peek.begin && code.op(stack.peek.begin) == Op.LOADBOOL && code.C(stack.peek.begin) != 0) {
             backup = null;
-            int begin = stack.peek().begin;
+            int begin = stack.peek.begin;
             assignEnd = begin + 2;
             int target = code.A(begin);
             conditions.push(popCompareSetCondition(stack, assignEnd, target));
-            conditions.peek().setTarget = target;
-            conditions.peek().end = assignEnd;
-            conditions.peek().begin = begin;
+            conditions.peek.setTarget = target;
+            conditions.peek.end = assignEnd;
+            conditions.peek.begin = begin;
           } else if (isAssignNode) {
             backup = null;
-            int target = stack.peek().setTarget;
-            int begin = stack.peek().begin;
+            int target = stack.peek.setTarget;
+            int begin = stack.peek.begin;
             conditions.push(popSetCondition(stack, assignEnd, target));
-            conditions.peek().setTarget = target;
-            conditions.peek().end = assignEnd;
-            conditions.peek().begin = begin;
+            conditions.peek.setTarget = target;
+            conditions.peek.end = assignEnd;
+            conditions.peek.begin = begin;
           } else {
             backup = Stack<Branch>();
             conditions.push(popCondition(stack));
             backup.reverse();
           }
           backups.push(backup);
-        } while (!stack.isEmpty());
+        } while (!stack.isEmpty);
         do {
           Branch cond = conditions.pop();
           Stack<Branch> backup = backups.pop();
@@ -910,7 +912,7 @@ class Decompiler {
             Block breakableEnclosing = enclosingBreakableBlock(cond.begin);
             int loopstart = immediateEnclosing.end;
             if (immediateEnclosing == breakableEnclosing) loopstart--;
-            for (int iline = loopstart; iline >= Math.max(cond.begin, immediateEnclosing.begin); iline--) {
+            for (int iline = loopstart; iline >= max(cond.begin, immediateEnclosing.begin); iline--) {
               if (code.op(iline) == Op.JMP && iline + 1 + code.sBx(iline) == breakTarget) {
                 cond.end = iline;
                 break;
@@ -1271,8 +1273,8 @@ class Decompiler {
     blockStack.push(blocks[0]);
     skip = List<bool>(end + 1);
     for (int line = begin; line <= end; line++) {
-      Operation blockHandler = null;
-      while (blockStack.peek().end <= line) {
+      Operation? blockHandler;
+      while (blockStack.peek.end <= line) {
         Block block = blockStack.pop();
         blockHandler = block.process(this);
         if (blockHandler != null) {
@@ -1284,7 +1286,7 @@ class Decompiler {
           blockStack.push(blocks[blockIndex++]);
         }
       }
-      Block block = blockStack.peek();
+      Block block = blockStack.peek;
       r.startLine(line);
       if (skip[line]) {
         List<Declaration> newLocals = r.getNewLocals(line);
@@ -1294,7 +1296,7 @@ class Decompiler {
           for (Declaration decl in newLocals) {
             assign.addLast(VariableTarget(decl), r.getValue(decl.register, line));
           }
-          blockStack.peek().addStatement(assign);
+          blockStack.peek.addStatement(assign);
         }
         continue;
       }
@@ -1320,7 +1322,7 @@ class Decompiler {
           newLocals.clear();
         } else {
           for (Operation operation in operations) {
-            Assignment temp = processOperation(operation, line, line + 1, block);
+            Assignment? temp = processOperation(operation, line, line + 1, block);
             if (temp != null) {
               assign = temp;
             }
@@ -1349,7 +1351,7 @@ class Decompiler {
             for (Declaration decl in newLocals) {
               assign.addLast(VariableTarget(decl), r.getValue(decl.register, line));
             }
-            blockStack.peek().addStatement(assign);
+            blockStack.peek.addStatement(assign);
           }
         }
       }

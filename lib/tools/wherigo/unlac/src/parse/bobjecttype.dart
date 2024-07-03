@@ -1,5 +1,9 @@
 import 'dart:typed_data';
 
+import 'bheader.dart';
+import 'blist.dart';
+import 'bobject.dart';
+
 abstract class BObjectType<T extends BObject> {
   T parse(ByteBuffer buffer, BHeader header);
 
@@ -11,20 +15,5 @@ abstract class BObjectType<T extends BObject> {
     });
     return BList<T>(length, values);
   }
-}
-
-class BObject {}
-
-class BHeader {}
-
-class BInteger {
-  void iterate(void Function() callback) {}
-  int parse(ByteBuffer buffer, BHeader header) => 0;
-}
-
-class BList<T extends BObject> {
-  BList(this.length, this.values);
-  final BInteger length;
-  final List<T> values;
 }
 

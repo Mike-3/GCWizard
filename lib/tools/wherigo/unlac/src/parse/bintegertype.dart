@@ -1,5 +1,9 @@
 import 'dart:typed_data';
 
+import 'bheader.dart';
+import 'binteger.dart';
+import 'bobjecttype.dart';
+
 class BIntegerType extends BObjectType<BInteger> {
   final int intSize;
 
@@ -39,23 +43,5 @@ class BIntegerType extends BObjectType<BInteger> {
     }
     return value;
   }
-}
-
-class BInteger {
-  final BigInt value;
-
-  BInteger(this.value);
-
-  int asInt() => value.toInt();
-}
-
-class BHeader {
-  final bool debug;
-
-  BHeader({this.debug = false});
-}
-
-class BObjectType<T> {
-  T parse(ByteBuffer buffer, BHeader header);
 }
 

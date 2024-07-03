@@ -1,5 +1,5 @@
-import 'bobjecttype.dart';
-import 'llocaltype.dart';
+import 'binteger.dart';
+import 'lstring.dart';
 
 class LLocal {
   final LString name;

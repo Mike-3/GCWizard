@@ -1,6 +1,5 @@
 import '../decompile/codeextract.dart';
-import '../decompile/decompile.dart';
-import 'bobjecttype.dart';
+import 'bobject.dart';
 import 'bintegertype.dart';
 import 'bsizettype.dart';
 import 'lbooleantype.dart';
@@ -15,7 +14,7 @@ class LHeader extends BObject {
   final int format;
   final BIntegerType integer;
   final BSizeTType sizeT;
-  final LBooleanType bool;
+  final LBooleanType bool_;
   final LNumberType number;
   final LNumberType linteger;
   final LNumberType lfloat;
@@ -30,7 +29,7 @@ class LHeader extends BObject {
     this.format,
     this.integer,
     this.sizeT,
-    this.bool,
+    this.bool_,
     this.number,
     this.linteger,
     this.lfloat,

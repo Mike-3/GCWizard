@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:core';
 import 'dart:typed_data';
 
 import '../configuration.dart';
@@ -31,7 +32,7 @@ class BHeader {
   late final LHeader lheader;
   late final BIntegerType integer;
   late final BSizeTType sizeT;
-  late final LBooleanType bool;
+  late final LBooleanType bool_;
   late final LNumberType number;
   late final LNumberType linteger;
   late final LNumberType lfloat;
@@ -79,7 +80,7 @@ class BHeader {
     lheader = version.getLHeaderType().parse(buffer, this);
     integer = lheader.integer;
     sizeT = lheader.sizeT;
-    bool = lheader.bool;
+    bool_ = lheader.bool_;
     number = lheader.number;
     linteger = lheader.linteger;
     lfloat = lheader.lfloat;

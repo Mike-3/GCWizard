@@ -44,14 +44,14 @@ class Constant {
 
   Constant(LObject constant)
       : type = constant is LNil
-            ? 0
-            : constant is LBoolean
-                ? 1
-                : constant is LNumber
-                    ? 2
-                    : constant is LString
-                        ? 3
-                        : throw ArgumentError("Illegal constant type: $constant"),
+      ? 0
+      : constant is LBoolean
+      ? 1
+      : constant is LNumber
+      ? 2
+      : constant is LString
+      ? 3
+      : throw ArgumentError("Illegal constant type: $constant"),
         boolValue = constant is LBoolean ? constant == LBoolean.LTRUE : false,
         number = constant is LNumber ? constant : null,
         string = constant is LString ? constant.deref() : null;
@@ -101,49 +101,39 @@ class Constant {
         } else {
           out.print("\"");
           for (int i = 0; i < string!.length; i++) {
-            var c = string![i];
-            if (c.codeUnitAt(0) <= 31 || c.codeUnitAt(0) >= 127) {
-              switch (c) {
-                case '\a':
-                  out.print("\\a");
-                  break;
-                case '\b':
-                  out.print("\\b");
-                  break;
-                case '\f':
-                  out.print("\\f");
-                  break;
-                case '\n':
-                  out.print("\\n");
-                  break;
-                case '\r':
-                  out.print("\\r");
-                  break;
-                case '\t':
-                  out.print("\\t");
-                  break;
-                case '\v':
-                  out.print("\\v");
-                  break;
-                default:
-                  if (!rawstring || c.codeUnitAt(0) <= 127) {
-                    String dec = c.codeUnitAt(0).toString();
-                    int len = dec.length;
-                    out.print("\\");
-                    while (len++ < 3) {
-                      out.print("0");
-                    }
-                    out.print(dec);
-                  } else {
-                    out.print(c.codeUnitAt(0));
-                  }
+            var c = string!.codeUnitAt(i);
+            if (c <= 31 || c >= 127) {
+              if (c == 7) {
+                out.print("\\a");
+              } else if(c == 8) {
+                out.print("\\b");
+              } else if (c == 12) {
+                out.print("\\f");
+              } else if (c == 10) {
+                out.print("\\n");
+              } else if (c == 13) {
+                out.print("\\r");
+              } else if (c == 9) {
+                out.print("\\t");
+              } else if (c == 11) {
+                out.print("\\v");
+              } else if (!rawstring || c <= 127) {
+                String dec = c.toString();
+                int len = dec.length;
+                out.print("\\");
+                while (len++ < 3) {
+                  out.print("0");
+                }
+                out.print(dec);
+              } else {
+                out.print(c.toString());
               }
-            } else if (c == '"') {
+            } else if(c == 34) {
               out.print("\\\"");
-            } else if (c == '\\') {
+            } else if(c == 92) {
               out.print("\\\\");
             } else {
-              out.print(c);
+              out.print(String.fromCharCodes([c]));
             }
           }
           out.print("\"");
@@ -160,13 +150,13 @@ class Constant {
 
   bool isNumber() => type == 2;
 
-  bool isInteger() => number!.value == number!.value.round();
+  bool isInteger() => number!.value() == number!.value().round();
 
   int asInteger() {
     if (!isInteger()) {
       throw StateError("Not an integer");
     }
-    return number!.value.toInt();
+    return number!.value().toInt();
   }
 
   bool isString() => type == 3;
@@ -202,5 +192,3 @@ class Constant {
     return string!;
   }
 }
-
-

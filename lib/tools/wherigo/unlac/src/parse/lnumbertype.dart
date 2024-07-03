@@ -1,5 +1,8 @@
 import 'dart:typed_data';
 
+import 'bheader.dart';
+import 'lnumber.dart';
+
 enum NumberMode {
   MODE_NUMBER, // Used for Lua 5.0 - 5.2 where numbers can represent integers or floats
   MODE_FLOAT, // Used for floats in Lua 5.3
@@ -66,33 +69,4 @@ class LNumberType {
     }
     return value;
   }
-}
-
-class LNumber {}
-
-class LIntNumber extends LNumber {
-  final int value;
-  LIntNumber(this.value);
-}
-
-class LLongNumber extends LNumber {
-  final int value;
-  LLongNumber(this.value);
-}
-
-class LFloatNumber extends LNumber {
-  final double value;
-  final NumberMode mode;
-  LFloatNumber(this.value, this.mode);
-}
-
-class LDoubleNumber extends LNumber {
-  final double value;
-  final NumberMode mode;
-  LDoubleNumber(this.value, this.mode);
-}
-
-class BHeader {
-  final bool debug;
-  BHeader(this.debug);
 }

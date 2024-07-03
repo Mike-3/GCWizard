@@ -1,4 +1,3 @@
-import 'biobjecttype.dart';
 import 'bobject.dart';
 
 class BInteger extends BObject {

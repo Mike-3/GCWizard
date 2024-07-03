@@ -1,38 +1,8 @@
 import 'dart:typed_data';
 
-class LLocal {
-  final LString name;
-  final BInteger start;
-  final BInteger end;
-
-  LLocal(this.name, this.start, this.end);
-}
-
-class LString {
-  // Assuming LString has a parse method
-  LString parse(ByteBuffer buffer, BHeader header) {
-    // Implementation here
-  }
-}
-
-class BInteger {
-  // Assuming BInteger has a parse method and asInt method
-  BInteger parse(ByteBuffer buffer, BHeader header) {
-    // Implementation here
-  }
-
-  int asInt() {
-    // Implementation here
-  }
-}
-
-class BHeader {
-  final LString string;
-  final BInteger integer;
-  final bool debug;
-
-  BHeader(this.string, this.integer, this.debug);
-}
+import 'bheader.dart';
+import 'bobjecttype.dart';
+import 'llocal.dart';
 
 class LLocalType extends BObjectType<LLocal> {
   @override
@@ -45,8 +15,4 @@ class LLocalType extends BObjectType<LLocal> {
     }
     return LLocal(name, start, end);
   }
-}
-
-abstract class BObjectType<T> {
-  T parse(ByteBuffer buffer, BHeader header);
 }

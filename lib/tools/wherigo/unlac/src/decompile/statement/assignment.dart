@@ -10,7 +10,7 @@ class Assignment extends Statement {
   final List<Expression?> values = List<Expression?>.filled(5, null, growable: true);
 
   bool allnil = true;
-  bool declare = false;
+  bool _declare = false;
   int declareStart = 0;
 
   Assignment();
@@ -80,20 +80,20 @@ class Assignment extends Statement {
   }
 
   void declare(int declareStart) {
-    declare = true;
+    _declare = true;
     this.declareStart = declareStart;
   }
 
   @override
   void print(Decompiler d, Output out) {
     if (targets.isNotEmpty) {
-      if (declare) {
+      if (_declare) {
         out.print('local ');
       }
       bool functionSugar = false;
       if (targets.length == 1 && values.length == 1 && values[0].isClosure() && targets[0].isFunctionName()) {
         var closure = values[0];
-        if (!declare || declareStart >= closure.closureUpvalueLine()) {
+        if (!_declare || declareStart >= closure.closureUpvalueLine()) {
           functionSugar = true;
         }
         if (targets[0].isLocal() && closure.isUpvalueOf(targets[0].getIndex())) {
@@ -106,7 +106,7 @@ class Assignment extends Statement {
           out.print(', ');
           targets[i].print(d, out);
         }
-        if (!declare || !allnil) {
+        if (!_declare || !allnil) {
           out.print(' = ');
           Expression.printSequence(d, out, values, false, false);
         }
