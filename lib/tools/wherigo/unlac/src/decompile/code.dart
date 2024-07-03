@@ -62,3 +62,38 @@ class Code {
   }
 }
 
+class Code51 implements CodeExtract {
+  @override
+  int extract_A(int codepoint) {
+    return (codepoint >> 6) & 0xFF;
+  }
+
+  @override
+  int extract_C(int codepoint) {
+    return (codepoint >> 14) & 0x1FF;
+  }
+
+  @override
+  int extract_B(int codepoint) {
+    return codepoint >>> 23;
+  }
+
+  @override
+  int extract_Bx(int codepoint) {
+    return codepoint >>> 14;
+  }
+
+  @override
+  int extract_sBx(int codepoint) {
+    return (codepoint >>> 14) - 131071;
+  }
+
+  @override
+  int extract_op(int codepoint) {
+    return codepoint & 0x3F;
+  }
+}
+
+
+
+

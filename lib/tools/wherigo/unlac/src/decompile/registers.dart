@@ -109,7 +109,7 @@ class Registers {
   void setInternalLoopVariable(int register, int begin, int end) {
     var decl = getDeclaration(register, begin);
     if (decl == null) {
-      decl = Declaration("_FOR_", begin, end);
+      decl = Declaration.withParams("_FOR_", begin, end);
       decl.register = register;
       newDeclaration(decl, register, begin, end);
     }
@@ -119,7 +119,7 @@ class Registers {
   void setExplicitLoopVariable(int register, int begin, int end) {
     var decl = getDeclaration(register, begin);
     if (decl == null) {
-      decl = Declaration("_FORV_$register_", begin, end);
+      decl = Declaration.withParams("_FORV_$register" + "_", begin, end);
       decl.register = register;
       newDeclaration(decl, register, begin, end);
     }

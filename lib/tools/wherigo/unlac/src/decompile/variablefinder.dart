@@ -133,6 +133,7 @@ class VariableFinder {
             }
           }
           break;
+        default:
       }
     }
     List<Declaration> declList = [];
@@ -161,7 +162,7 @@ class VariableFinder {
         }
       }
       if (local) {
-        Declaration decl = Declaration(
+        Declaration decl = Declaration.withParams(
             id + register.toString() + "_" + lc.toString(),
             0,
             code.length + d.getVersion().getOuterBlockScopeAdjustment());
@@ -194,7 +195,7 @@ class RegisterState {
 class RegisterStates {
   int registers;
   int lines;
-  List<List<RegisterState>> states;
+  late List<List<RegisterState>> states;
 
   RegisterStates(this.registers, this.lines) {
     states = List.generate(

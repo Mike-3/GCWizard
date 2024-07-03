@@ -188,7 +188,7 @@ class LHeaderType51 extends LHeaderType {
     s.function = LFunctionType.TYPE51;
     s.string = LStringType.getType50();
     s.constant = LConstantType.getType50();
-    s.extractor = Code.Code51;
+    s.extractor = Code51;
   }
 }
 

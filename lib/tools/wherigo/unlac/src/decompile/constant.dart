@@ -1,8 +1,8 @@
 import '../parse/lboolean.dart';
-import '../parse/llocaltype.dart';
 import '../parse/lnil.dart';
 import '../parse/lnumber.dart';
 import '../parse/lobject.dart';
+import '../parse/lstring.dart';
 import 'decompiler.dart';
 import 'output.dart';
 
