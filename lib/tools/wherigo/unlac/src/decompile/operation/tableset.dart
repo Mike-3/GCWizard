@@ -5,6 +5,7 @@ import '../registers.dart';
 import '../statement/assignment.dart';
 import '../statement/statement.dart';
 import '../target/tabletarget.dart';
+import 'operation.dart';
 
 class TableSet extends Operation {
   Expression table;
@@ -19,7 +20,7 @@ class TableSet extends Operation {
   Statement? process(Registers r, Block block) {
     // .isTableLiteral() is sufficient when there is debugging info
     if (table.isTableLiteral() && (value.isMultiple() || table.isNewEntryAllowed())) {
-      table.addEntry(TableLiteral.Entry(index, value, !isTable, timestamp));
+      table.addEntry(Entry(index, value, !isTable, timestamp));
       return null;
     } else {
       return Assignment(TableTarget(table, index), value);

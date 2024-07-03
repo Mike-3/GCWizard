@@ -5,6 +5,7 @@ import '../output.dart';
 import '../target/target.dart';
 import 'binaryexpression.dart';
 import 'constantexpression.dart';
+import 'tableliteral.dart';
 import 'unaryexpression.dart';
 
 abstract class Expression {
@@ -26,7 +27,7 @@ abstract class Expression {
   static const int ASSOCIATIVITY_LEFT = 1;
   static const int ASSOCIATIVITY_RIGHT = 2;
 
-  static final Expression nil = ConstantExpression(Constant(LNil.nil), -1);
+  static final Expression nil = ConstantExpression(Constant(LNil.NIL), -1);
 
   static BinaryExpression makeCONCAT(Expression left, Expression right) {
     return BinaryExpression('..',
@@ -219,7 +220,7 @@ abstract class Expression {
     throw UnsupportedError('Not a table literal');
   }
 
-  void addEntry(TableLiteral.Entry entry) {
+  void addEntry(Entry entry) {
     throw UnsupportedError('Not a table literal');
   }
 

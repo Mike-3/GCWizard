@@ -4,6 +4,7 @@ import '../registers.dart';
 import '../statement/assignment.dart';
 import '../statement/statement.dart';
 import '../target/globaltarget.dart';
+import 'operation.dart';
 
 class GlobalSet extends Operation {
   String global;

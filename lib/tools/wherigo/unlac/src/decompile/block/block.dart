@@ -1,4 +1,6 @@
 import '../../parse/lfunction.dart';
+import '../decompiler.dart';
+import '../operation/operation.dart';
 import '../statement/statement.dart';
 
 abstract class Block extends Statement implements Comparable<Block> {

@@ -7,13 +7,13 @@ import 'branch.dart';
 class LTNode extends Branch {
   final int left;
   final int right;
-  final bool invert;
+  final bool _invert;
 
-  LTNode(this.left, this.right, this.invert, int line, int begin, int end) : super(line, begin, end);
+  LTNode(this.left, this.right, this._invert, int line, int begin, int end) : super(line, begin, end);
 
   @override
   Branch invert() {
-    return LTNode(left, right, !invert, line, end, begin);
+    return LTNode(left, right, !_invert, line, end, begin);
   }
 
   @override
@@ -33,7 +33,7 @@ class LTNode extends Branch {
     }
     String op = !transpose ? "<" : ">";
     Expression rtn = BinaryExpression(op, !transpose ? leftExpression : rightExpression, !transpose ? rightExpression : leftExpression, Expression.PRECEDENCE_COMPARE, Expression.ASSOCIATIVITY_LEFT);
-    if (invert) {
+    if (_invert) {
       rtn = UnaryExpression("not ", rtn, Expression.PRECEDENCE_UNARY);
     }
     return rtn;

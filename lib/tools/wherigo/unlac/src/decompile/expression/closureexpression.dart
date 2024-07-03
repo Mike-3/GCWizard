@@ -3,6 +3,7 @@ import '../declaration.dart';
 import '../decompiler.dart';
 import '../output.dart';
 import '../target/tabletarget.dart';
+import '../target/target.dart';
 import '../target/variabletarget.dart';
 import 'expression.dart';
 

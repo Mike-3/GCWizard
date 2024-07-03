@@ -1,6 +1,8 @@
 import '../../parse/lfunction.dart';
 import '../branch/branch.dart';
+import '../decompiler.dart';
 import '../expression/expression.dart';
+import '../operation/operation.dart';
 import '../output.dart';
 import '../registers.dart';
 import '../statement/assignment.dart';
@@ -61,7 +63,7 @@ class SetBlock extends Block {
   Expression getValue() => branch.asExpression(r);
 
   @override
-  Operation process(Decompiler d) {
+  Operation? process(Decompiler d) {
     if (empty) {
       var expression = r.getExpression(branch.setTarget, end);
       branch.useExpression(expression);

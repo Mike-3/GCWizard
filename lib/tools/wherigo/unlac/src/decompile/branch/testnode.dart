@@ -5,16 +5,16 @@ import 'notbranch.dart';
 
 class TestNode extends Branch {
   final int test;
-  final bool invert;
+  final bool _invert;
 
-  TestNode(this.test, this.invert, int line, int begin, int end)
+  TestNode(this.test, this._invert, int line, int begin, int end)
       : super(line, begin, end) {
     isTest = true;
   }
 
   @override
   Branch invert() {
-    return TestNode(test, !invert, line, end, begin);
+    return TestNode(test, !_invert, line, end, begin);
   }
 
   @override
@@ -24,8 +24,8 @@ class TestNode extends Branch {
 
   @override
   Expression asExpression(Registers r) {
-    if (invert) {
-      return NotBranch(this.invert()).asExpression(r);
+    if (_invert) {
+      return NotBranch(invert()).asExpression(r);
     } else {
       return r.getExpression(test, line);
     }
@@ -38,6 +38,6 @@ class TestNode extends Branch {
 
   @override
   String toString() {
-    return 'TestNode[test=$test;invert=$invert;line=$line;begin=$begin;end=$end]';
+    return 'TestNode[test=$test;invert=$_invert;line=$line;begin=$begin;end=$end]';
   }
 }

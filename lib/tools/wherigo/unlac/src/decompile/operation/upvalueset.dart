@@ -4,10 +4,11 @@ import '../registers.dart';
 import '../statement/assignment.dart';
 import '../statement/statement.dart';
 import '../target/upvaluetarget.dart';
+import 'operation.dart';
 
 class UpvalueSet extends Operation {
-  UpvalueTarget target;
-  Expression value;
+  late UpvalueTarget target;
+  late Expression value;
 
   UpvalueSet(int line, String upvalue, Expression value) : super(line) {
     target = UpvalueTarget(upvalue);

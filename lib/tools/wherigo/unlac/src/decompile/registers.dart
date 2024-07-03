@@ -2,6 +2,8 @@ import 'dart:core';
 import 'declaration.dart';
 import 'expression/expression.dart';
 import 'expression/localvariable.dart';
+import 'target/target.dart';
+import 'target/variabletarget.dart';
 
 class Registers {
   final int registers;

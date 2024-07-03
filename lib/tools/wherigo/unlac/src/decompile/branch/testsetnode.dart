@@ -4,16 +4,16 @@ import 'branch.dart';
 
 class TestSetNode extends Branch {
   final int test;
-  final bool invert;
+  final bool _invert;
   final int setTarget;
 
-  TestSetNode(int target, this.test, this.invert, int line, int begin, int end)
+  TestSetNode(int target, this.test, this._invert, int line, int begin, int end)
       : setTarget = target,
         super(line, begin, end);
 
   @override
   Branch invert() {
-    return TestSetNode(setTarget, test, !invert, line, end, begin);
+    return TestSetNode(setTarget, test, !_invert, line, end, begin);
   }
 
   @override
@@ -33,6 +33,6 @@ class TestSetNode extends Branch {
 
   @override
   String toString() {
-    return 'TestSetNode[target=$setTarget;test=$test;invert=$invert;line=$line;begin=$begin;end=$end]';
+    return 'TestSetNode[target=$setTarget;test=$test;invert=$_invert;line=$line;begin=$begin;end=$end]';
   }
 }

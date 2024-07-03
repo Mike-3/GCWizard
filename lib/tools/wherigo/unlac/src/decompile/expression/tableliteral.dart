@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:collection/collection.dart';
+
 import '../decompiler.dart';
 import '../output.dart';
 import 'expression.dart';
@@ -10,20 +14,16 @@ class TableLiteral extends Expression {
   int capacity;
 
   TableLiteral(int arraySize, int hashSize)
-      : entries = List<Entry>.filled(arraySize + hashSize, null, growable: true),
+      : entries = List<Entry>.filled(arraySize + hashSize, Entry(), growable: true),
         capacity = arraySize + hashSize,
         super(Expression.PRECEDENCE_ATOMIC);
 
   @override
   int getConstantIndex() {
     int index = -1;
-    for (var entry in entries) {
-      index = entry.key.getConstantIndex().compareTo(index) > 0
-          ? entry.key.getConstantIndex()
-          : index;
-      index = entry.value.getConstantIndex().compareTo(index) > 0
-          ? entry.value.getConstantIndex()
-          : index;
+    for (var entry in entries.whereNotNull()) {
+      index = max(entry.key.getConstantIndex(), index);
+      index = max(entry.value.getConstantIndex(), index);
     }
     return index;
   }

@@ -7,16 +7,16 @@ import 'branch.dart';
 
 class TrueNode extends Branch {
   final int register;
-  final bool invert;
+  final bool _invert;
 
-  TrueNode(this.register, this.invert, int line, int begin, int end) : super(line, begin, end) {
-    this.setTarget = register;
+  TrueNode(this.register, this._invert, int line, int begin, int end) : super(line, begin, end) {
+    setTarget = register;
     // isTest = true;
   }
 
   @override
   Branch invert() {
-    return TrueNode(register, !invert, line, end, begin);
+    return TrueNode(register, !_invert, line, end, begin);
   }
 
   @override
@@ -26,7 +26,7 @@ class TrueNode extends Branch {
 
   @override
   Expression asExpression(Registers r) {
-    return ConstantExpression(Constant(invert ? LBoolean.LTRUE : LBoolean.LFALSE), -1);
+    return ConstantExpression(Constant(_invert ? LBoolean.LTRUE : LBoolean.LFALSE), -1);
   }
 
   @override
@@ -36,6 +36,6 @@ class TrueNode extends Branch {
 
   @override
   String toString() {
-    return 'TrueNode[invert=$invert;line=$line;begin=$begin;end=$end]';
+    return 'TrueNode[invert=$_invert;line=$line;begin=$begin;end=$end]';
   }
 }

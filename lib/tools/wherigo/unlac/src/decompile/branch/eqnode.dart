@@ -6,14 +6,14 @@ import 'branch.dart';
 class EQNode extends Branch {
   final int left;
   final int right;
-  final bool invert;
+  final bool _invert;
 
-  EQNode(this.left, this.right, this.invert, int line, int begin, int end) 
+  EQNode(this.left, this.right, this._invert, int line, int begin, int end)
       : super(line, begin, end);
 
   @override
   Branch invert() {
-    return EQNode(left, right, !invert, line, end, begin);
+    return EQNode(left, right, !_invert, line, end, begin);
   }
 
   @override
@@ -24,7 +24,7 @@ class EQNode extends Branch {
   @override
   Expression asExpression(Registers r) {
     bool transpose = false;
-    String op = invert ? "!=" : "==";
+    String op = _invert ? "!=" : "==";
     return BinaryExpression(
       op,
       r.getKExpression(!transpose ? left : right, line),

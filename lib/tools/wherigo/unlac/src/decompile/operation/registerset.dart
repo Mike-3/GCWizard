@@ -3,6 +3,7 @@ import '../expression/expression.dart';
 import '../registers.dart';
 import '../statement/assignment.dart';
 import '../statement/statement.dart';
+import 'operation.dart';
 
 class RegisterSet extends Operation {
   final int register;

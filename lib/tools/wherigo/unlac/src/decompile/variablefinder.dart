@@ -9,47 +9,7 @@ import 'decompiler.dart';
 import 'op.dart';
 
 class VariableFinder {
-  static class RegisterState {
-    bool temporary;
-    bool local;
-    bool read;
-    bool written;
-
-    RegisterState()
-        : temporary = false,
-          local = false,
-          read = false,
-          written = false;
-  }
-
-  static class RegisterStates {
-    int registers;
-    int lines;
-    List<List<RegisterState>> states;
-
-    RegisterStates(this.registers, this.lines) {
-      states = List.generate(
-          lines, (_) => List.generate(registers, (_) => RegisterState()));
-    }
-
-    RegisterState get(int register, int line) {
-      return states[line - 1][register];
-    }
-
-    void setLocal(int register, int line) {
-      for (int r = 0; r <= register; r++) {
-        get(r, line).local = true;
-      }
-    }
-
-    void setTemporary(int register, int line) {
-      for (int r = register; r < registers; r++) {
-        get(r, line).temporary = true;
-      }
-    }
-  }
-
-  static bool isConstantReference(int value) {
+    static bool isConstantReference(int value) {
     return (value & 0x100) != 0;
   }
 
@@ -216,6 +176,46 @@ class VariableFinder {
   static int lc = 0;
 
   VariableFinder._();
+}
+
+class RegisterState {
+  bool temporary;
+  bool local;
+  bool read;
+  bool written;
+
+  RegisterState()
+      : temporary = false,
+        local = false,
+        read = false,
+        written = false;
+}
+
+class RegisterStates {
+  int registers;
+  int lines;
+  List<List<RegisterState>> states;
+
+  RegisterStates(this.registers, this.lines) {
+    states = List.generate(
+        lines, (_) => List.generate(registers, (_) => RegisterState()));
+  }
+
+  RegisterState get(int register, int line) {
+    return states[line - 1][register];
+  }
+
+  void setLocal(int register, int line) {
+    for (int r = 0; r <= register; r++) {
+      get(r, line).local = true;
+    }
+  }
+
+  void setTemporary(int register, int line) {
+    for (int r = register; r < registers; r++) {
+      get(r, line).temporary = true;
+    }
+  }
 }
 
 

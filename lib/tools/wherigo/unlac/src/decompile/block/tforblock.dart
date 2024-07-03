@@ -1,4 +1,6 @@
 import '../../parse/lfunction.dart';
+import '../../version.dart';
+import '../decompiler.dart';
 import '../expression/expression.dart';
 import '../output.dart';
 import '../registers.dart';

@@ -1,4 +1,5 @@
 import '../../parse/lfunction.dart';
+import '../decompiler.dart';
 import '../output.dart';
 import '../statement/statement.dart';
 import 'block.dart';

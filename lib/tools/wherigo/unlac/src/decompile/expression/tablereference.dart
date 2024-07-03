@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../decompiler.dart';
 import '../output.dart';
 import 'expression.dart';
@@ -10,7 +12,7 @@ class TableReference extends Expression {
 
   @override
   int getConstantIndex() {
-    return table.getConstantIndex().max(index.getConstantIndex());
+    return max(table.getConstantIndex(),index.getConstantIndex());
   }
 
   @override

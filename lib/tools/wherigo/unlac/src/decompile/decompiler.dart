@@ -4,6 +4,7 @@ import 'dart:core';
 import 'dart:core';
 
 import '../configuration.dart';
+import '../version.dart';
 import 'block/alwaysloop.dart';
 import 'block/block.dart';
 import 'block/booleanindicator.dart';
@@ -69,7 +70,7 @@ class Decompiler {
   final List<Declaration> declList;
 
   Function f;
-  LFunction function;
+  late LFunction function;
   final List<LFunction> functions;
   final int params;
   final int vararg;
@@ -77,10 +78,7 @@ class Decompiler {
   final Op tforTarget;
   final Op forTarget;
 
-  Decompiler(LFunction function)
-      : this(function, null, -1);
-  
-  Decompiler(LFunction function, List<Declaration> parentDecls, int line)
+  Decompiler(LFunction function, [List<Declaration>? parentDecls, int line = -1])
       : f = Function(function),
         function = function,
         registers = function.maximumStackSize,

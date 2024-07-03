@@ -3,6 +3,7 @@ import '../expression/functioncall.dart';
 import '../registers.dart';
 import '../statement/functioncallstatement.dart';
 import '../statement/statement.dart';
+import 'operation.dart';
 
 class CallOperation extends Operation {
   FunctionCall call;

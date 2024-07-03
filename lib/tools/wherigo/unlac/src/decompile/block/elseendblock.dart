@@ -1,7 +1,9 @@
 import '../../parse/lfunction.dart';
+import '../decompiler.dart';
 import '../output.dart';
 import '../statement/statement.dart';
 import 'block.dart';
+import 'ifthenelseblock.dart';
 import 'ifthenendblock.dart';
 
 class ElseEndBlock extends Block {
