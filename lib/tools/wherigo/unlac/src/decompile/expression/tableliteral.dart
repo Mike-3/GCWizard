@@ -3,20 +3,6 @@ import '../output.dart';
 import 'expression.dart';
 
 class TableLiteral extends Expression {
-  static class Entry implements Comparable<Entry> {
-    final Expression key;
-    final Expression value;
-    final bool isList;
-    final int timestamp;
-
-    Entry(this.key, this.value, this.isList, this.timestamp);
-
-    @override
-    int compareTo(Entry e) {
-      return timestamp.compareTo(e.timestamp);
-    }
-  }
-
   List<Entry> entries;
   bool isObject = true;
   bool isList = true;
@@ -139,5 +125,19 @@ class TableLiteral extends Expression {
   @override
   bool isBrief() {
     return false;
+  }
+}
+
+class Entry implements Comparable<Entry> {
+  final Expression key;
+  final Expression value;
+  final bool isList;
+  final int timestamp;
+
+  Entry(this.key, this.value, this.isList, this.timestamp);
+
+  @override
+  int compareTo(Entry e) {
+    return timestamp.compareTo(e.timestamp);
   }
 }

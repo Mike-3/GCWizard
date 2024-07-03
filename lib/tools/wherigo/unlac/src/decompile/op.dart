@@ -1,40 +1,5 @@
-enum OpcodeFormat {
-  A,
-  A_B,
-  A_C,
-  A_B_C,
-  A_Bx,
-  A_sBx,
-  Ax,
-  sBx,
-}
-
-class CodeExtract {
-  int extract_A(int codepoint) {
-    // Implement extraction logic
-    return 0;
-  }
-
-  int extract_B(int codepoint) {
-    // Implement extraction logic
-    return 0;
-  }
-
-  int extract_C(int codepoint) {
-    // Implement extraction logic
-    return 0;
-  }
-
-  int extract_Bx(int codepoint) {
-    // Implement extraction logic
-    return 0;
-  }
-
-  int extract_sBx(int codepoint) {
-    // Implement extraction logic
-    return 0;
-  }
-}
+import 'codeextract.dart';
+import 'opcodeformat.dart';
 
 enum Op {
   // Lua 5.1 Opcodes

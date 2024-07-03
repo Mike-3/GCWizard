@@ -21,7 +21,7 @@ class Assignment extends Statement {
   }
 
   Target? getFirstTarget() {
-    return targets?[0];
+    return targets[0];
   }
 
   Expression? getFirstValue() {
@@ -69,7 +69,7 @@ class Assignment extends Statement {
     for (var target in targets) {
       bool found = false;
       for (var decl in decls) {
-        if (target.isDeclaration(decl)) {
+        if (target!= null && target.isDeclaration(decl)) {
           found = true;
           break;
         }

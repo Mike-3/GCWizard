@@ -1,4 +1,3 @@
-import 'package:unluac/decompile/expression.dart';
 import '../parse/lfunction.dart';
 import '../version.dart';
 import 'constant.dart';

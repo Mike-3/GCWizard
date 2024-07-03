@@ -1,20 +1,13 @@
 import '../block/block.dart';
-import '../expression/expression.dart';
 import '../registers.dart';
-import '../statement/assignment.dart';
 import '../statement/statement.dart';
-import '../target/globaltarget.dart';
 
-class GlobalSet extends Operation {
-  String global;
-  Expression value;
+abstract class Operation {
+  final int line;
 
-  GlobalSet(int line, this.global, this.value) : super(line);
+  Operation(this.line);
 
-  @override
-  Statement process(Registers r, Block block) {
-    return Assignment(GlobalTarget(global), value);
-  }
+  Statement? process(Registers r, Block block);
 }
 
 

@@ -1,15 +1,17 @@
-import 'dart:io';
+import '../block/ifthenelseblock.dart';
+import '../decompiler.dart';
+import '../output.dart';
 
 abstract class Statement {
   /// Prints out a sequence of statements on separate lines. Correctly
   /// informs the last statement that it is last in a block.
-  static void printSequence(Decompiler d, IOSink out, List<Statement> stmts) {
+  static void printSequence(Decompiler d, Output out, List<Statement> stmts) {
     int n = stmts.length;
     for (int i = 0; i < n; i++) {
       bool last = (i + 1 == n);
       Statement stmt = stmts[i];
-      if (stmt.beginsWithParen() && (i > 0 || d.version.isAllowedPreceedingSemicolon())) {
-        out.write(";");
+      if ((stmt.beginsWithParen() ?? false) && (i > 0 || d.getVersion().isAllowedPreceedingSemicolon())) {
+        out.print(";");
       }
       if (last) {
         stmt.printTail(d, out);
@@ -17,14 +19,14 @@ abstract class Statement {
         stmt.print(d, out);
       }
       if (!(stmt is IfThenElseBlock)) {
-        out.writeln();
+        out.println();
       }
     }
   }
 
-  void print(Decompiler d, IOSink out);
+  void print(Decompiler d, Output out);
 
-  void printTail(Decompiler d, IOSink out) {
+  void printTail(Decompiler d, Output out) {
     print(d, out);
   }
 
@@ -36,25 +38,5 @@ abstract class Statement {
 
   bool? beginsWithParen() {
     return false;
-  }
-}
-
-class Decompiler {
-  final Version version;
-
-  Decompiler(this.version);
-}
-
-class Version {
-  bool isAllowedPreceedingSemicolon() {
-    // Implement the logic for checking if preceding semicolon is allowed
-    return true;
-  }
-}
-
-class IfThenElseBlock extends Statement {
-  @override
-  void print(Decompiler d, IOSink out) {
-    // Implement the print logic for IfThenElseBlock
   }
 }

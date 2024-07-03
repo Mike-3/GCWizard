@@ -62,16 +62,20 @@ import 'upvalues.dart';
 import 'variablefinder.dart';
 
 class Decompiler {
-  List<Block> blocks;
-  bool[] skip;
-  bool[] reverseTarget;
-  Function function;
-  int length;
-  Stack<Branch>? backup;
-  List<Declaration> declList;
-  Register? r;
-  int forTarget;
-  int tforTarget;
+  final int registers;
+  final int length;
+  final Code code;
+  final Upvalues upvalues;
+  final List<Declaration> declList;
+
+  Function f;
+  LFunction function;
+  final List<LFunction> functions;
+  final int params;
+  final int vararg;
+
+  final Op tforTarget;
+  final Op forTarget;
 
   Decompiler(LFunction function)
       : this(function, null, -1);
@@ -157,9 +161,9 @@ class Decompiler {
     }
   }
   
-  bool[] skip;
+  var skip = <bool>[];
 
-  bool[] reverseTarget;
+  var reverseTarget = <bool>[];
   
   void findReverseTargets() {
     reverseTarget = List.filled(length + 1, false);
@@ -392,7 +396,7 @@ class Decompiler {
     end = _adjustLine(end, target);
     int btarget = branch.setTarget;
     while (!stack.isEmpty) {
-      Branch next = stack.peek();
+      Branch next = stack.peek;
       bool ninvert;
       int nend = next.end;
       if (code.op(nend) == Op.LOADBOOL && (target == -1 || code.A(nend) == target)) {
@@ -437,12 +441,8 @@ class Decompiler {
     branch.setTarget = btarget;
     return branch;
   }
-  
-  bool isStatement(int line) {
-    return isStatement(line, -1);
-  }
-  
-  bool isStatement(int line, int testRegister) {
+
+  bool isStatement(int line, [int testRegister = -1]) {
     switch (code.op(line)) {
       case Op.MOVE:
       case Op.LOADK:
@@ -615,8 +615,8 @@ class Decompiler {
     blocks = [];
     OuterBlock outer = OuterBlock(function, length);
     blocks.add(outer);
-    bool[] isBreak = List<bool>.filled(length + 1, false);
-    bool[] loopRemoved = List<bool>.filled(length + 1, false);
+    var isBreak = List<bool>.filled(length + 1, false);
+    var loopRemoved = List<bool>.filled(length + 1, false);
     if (!first) {
       for (Block block in oldBlocks) {
         if (block is AlwaysLoop) {

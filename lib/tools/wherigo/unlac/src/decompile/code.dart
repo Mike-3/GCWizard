@@ -22,7 +22,7 @@ class Code {
     //   print('line $line: ${toString(line)}');
     //   reentered = false;
     // }
-    return map[opcode(line)]!;
+    return map.get(opcode(line))!;
   }
 
   int opcode(int line) {
