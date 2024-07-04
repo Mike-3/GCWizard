@@ -2,6 +2,7 @@ import '../../parse/lfunction.dart';
 import '../branch/branch.dart';
 import '../decompiler.dart';
 import '../expression/expression.dart';
+import '../op.dart';
 import '../operation/operation.dart';
 import '../operation/registerset.dart';
 import '../output.dart';

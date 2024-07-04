@@ -57,7 +57,7 @@ class Code {
     return code.length;
   }
 
-  String toString(int line) {
+  String toString_(int line) {
     return op(line).codePointToString(codepoint(line), extractor);
   }
 }
