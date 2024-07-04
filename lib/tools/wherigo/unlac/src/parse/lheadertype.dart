@@ -25,7 +25,7 @@ abstract class LHeaderType extends BObjectType<LHeader> {
   ];
 
   @override
-  LHeader parse(ByteBuffer buffer, BHeader header) {
+  LHeader parse(ByteBuffer_ buffer, BHeader header) {
     var s = LHeaderParseState();
     parse_main(buffer, header, s);
     var bool = LBooleanType();
@@ -48,9 +48,9 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     );
   }
 
-  void parse_main(ByteBuffer buffer, BHeader header, LHeaderParseState s);
+  void parse_main(ByteBuffer_ buffer, BHeader header, LHeaderParseState s);
 
-  void parse_format(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_format(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var format = buffer.getUint8();
     if (format != 0) {
       throw StateError('The input chunk reports a non-standard lua format: $format');
@@ -61,14 +61,14 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     }
   }
 
-  void parse_endianness(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_endianness(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var endianness = buffer.getUint8();
     switch (endianness) {
       case 0:
-        buffer.order = ByteOrder.bigEndian;
+        buffer.order = Endian.big;
         break;
       case 1:
-        buffer.order = ByteOrder.littleEndian;
+        buffer.order = Endian.little;
         break;
       default:
         throw StateError('The input chunk reports an invalid endianness: $endianness');
@@ -78,7 +78,7 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     }
   }
 
-  void parse_int_size(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_int_size(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var intSize = buffer.getUint8();
     if (header.debug) {
       print('-- int size: $intSize');
@@ -86,7 +86,7 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     s.integer = BIntegerType(intSize);
   }
 
-  void parse_size_t_size(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_size_t_size(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var sizeTSize = buffer.getUint8();
     if (header.debug) {
       print('-- size_t size: $sizeTSize');
@@ -94,7 +94,7 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     s.sizeT = BSizeTType(sizeTSize);
   }
 
-  void parse_instruction_size(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_instruction_size(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var instructionSize = buffer.getUint8();
     if (header.debug) {
       print('-- instruction size: $instructionSize');
@@ -104,7 +104,7 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     }
   }
 
-  void parse_number_size(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_number_size(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var lNumberSize = buffer.getUint8();
     if (header.debug) {
       print('-- Lua number size: $lNumberSize');
@@ -112,7 +112,7 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     s.lNumberSize = lNumberSize;
   }
 
-  void parse_number_integrality(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_number_integrality(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var lNumberIntegralityCode = buffer.getUint8();
     if (header.debug) {
       print('-- Lua number integrality code: $lNumberIntegralityCode');
@@ -123,7 +123,7 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     s.lNumberIntegrality = (lNumberIntegralityCode == 1);
   }
 
-  void parse_extractor(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_extractor(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var sizeOp = buffer.getUint8();
     var sizeA = buffer.getUint8();
     var sizeB = buffer.getUint8();
@@ -134,7 +134,7 @@ abstract class LHeaderType extends BObjectType<LHeader> {
     s.extractor = Code50(sizeOp, sizeA, sizeB, sizeC);
   }
 
-  void parse_tail(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_tail(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     for (var i = 0; i < luacTail.length; i++) {
       if (buffer.getUint8() != luacTail[i]) {
         throw StateError('The input file does not have the header tail of a valid Lua file (it may be corrupted).');
@@ -147,7 +147,7 @@ class LHeaderType50 extends LHeaderType {
   static const double TEST_NUMBER = 3.14159265358979323846E7;
 
   @override
-  void parse_main(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_main(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     s.format = 0;
     parse_endianness(buffer, header, s);
     parse_int_size(buffer, header, s);
@@ -176,7 +176,7 @@ class LHeaderType50 extends LHeaderType {
 
 class LHeaderType51 extends LHeaderType {
   @override
-  void parse_main(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_main(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     parse_format(buffer, header, s);
     parse_endianness(buffer, header, s);
     parse_int_size(buffer, header, s);
@@ -194,7 +194,7 @@ class LHeaderType51 extends LHeaderType {
 
 class LHeaderType52 extends LHeaderType {
   @override
-  void parse_main(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_main(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     parse_format(buffer, header, s);
     parse_endianness(buffer, header, s);
     parse_int_size(buffer, header, s);
@@ -212,7 +212,7 @@ class LHeaderType52 extends LHeaderType {
 }
 
 class LHeaderType53 extends LHeaderType {
-  void parse_integer_size(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_integer_size(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var lIntegerSize = buffer.getUint8();
     if (header.debug) {
       print('-- Lua integer size: $lIntegerSize');
@@ -223,7 +223,7 @@ class LHeaderType53 extends LHeaderType {
     s.lIntegerSize = lIntegerSize;
   }
 
-  void parse_float_size(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_float_size(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     var lFloatSize = buffer.getUint8();
     if (header.debug) {
       print('-- Lua float size: $lFloatSize');
@@ -232,7 +232,7 @@ class LHeaderType53 extends LHeaderType {
   }
 
   @override
-  void parse_main(ByteBuffer buffer, BHeader header, LHeaderParseState s) {
+  void parse_main(ByteBuffer_ buffer, BHeader header, LHeaderParseState s) {
     parse_format(buffer, header, s);
     parse_tail(buffer, header, s);
     parse_int_size(buffer, header, s);
@@ -243,9 +243,9 @@ class LHeaderType53 extends LHeaderType {
     var endianness = Uint8List(s.lIntegerSize);
     buffer.get(endianness);
     if (endianness[0] == 0x78 && endianness[1] == 0x56) {
-      buffer.order = ByteOrder.littleEndian;
+      buffer.order = Endian.little;
     } else if (endianness[s.lIntegerSize - 1] == 0x78 && endianness[s.lIntegerSize - 2] == 0x56) {
-      buffer.order = ByteOrder.bigEndian;
+      buffer.order = Endian.big;
     } else {
       throw StateError('The input chunk reports an invalid endianness: $endianness');
     }

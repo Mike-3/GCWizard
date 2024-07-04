@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'bheader.dart';
 import 'bobjecttype.dart';
 import 'lnil.dart';
@@ -17,7 +15,7 @@ abstract class LConstantType extends BObjectType<LObject> {
 
 class LConstantType50 extends LConstantType {
   @override
-  LObject parse(ByteBuffer buffer, BHeader header) {
+  LObject parse(ByteBuffer_ buffer, BHeader header) {
     int type = buffer.getUint8();
     if (header.debug) {
       print("-- parsing <constant>, type is ");
@@ -56,7 +54,7 @@ class LConstantType50 extends LConstantType {
 
 class LConstantType53 extends LConstantType {
   @override
-  LObject parse(ByteBuffer buffer, BHeader header) {
+  LObject parse(ByteBuffer_ buffer, BHeader header) {
     int type = buffer.getUint8();
     if (header.debug) {
       print("-- parsing <constant>, type is ");

@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'bheader.dart';
+import 'bobjecttype.dart';
 import 'lnumber.dart';
 
 enum NumberMode {
@@ -39,7 +38,7 @@ class LNumberType {
     throw StateError("The input chunk has an unsupported Lua number format");
   }
 
-  LNumber parse(ByteBuffer buffer, BHeader header) {
+  LNumber parse(ByteBuffer_ buffer, BHeader header) {
     LNumber value;
     if (integral) {
       switch (size) {

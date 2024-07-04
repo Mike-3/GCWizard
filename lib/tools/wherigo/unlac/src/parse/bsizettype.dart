@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'bheader.dart';
 import 'bintegertype.dart';
 import 'bobjecttype.dart';
@@ -13,7 +11,7 @@ class BSizeTType extends BObjectType<BSizeT> {
     integerType = BIntegerType(sizeTSize);
   }
 
-  BSizeT parse(ByteBuffer buffer, BHeader header) {
+  BSizeT parse(ByteBuffer_ buffer, BHeader header) {
     final value = BSizeT(integerType.raw_parse(buffer, header));
     if (header.debug) {
       print('-- parsed <size_t> $value');

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'bheader.dart';
 import 'bobjecttype.dart';
 import 'bsizet.dart';
@@ -19,7 +17,7 @@ abstract class LStringType extends BObjectType<LString> {
 
 class LStringType50 extends LStringType {
   @override
-  LString parse(ByteBuffer buffer, BHeader header) {
+  LString parse(ByteBuffer_ buffer, BHeader header) {
     BSizeT sizeT = header.sizeT.parse(buffer, header);
     final StringBuffer b = this.b.get();
     b.clear();
@@ -36,7 +34,7 @@ class LStringType50 extends LStringType {
 
 class LStringType53 extends LStringType {
   @override
-  LString parse(ByteBuffer buffer, BHeader header) {
+  LString parse(ByteBuffer_ buffer, BHeader header) {
     BSizeT sizeT;
     int size = 0xFF & buffer.getUint8();
     if (size == 0xFF) {

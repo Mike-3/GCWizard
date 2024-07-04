@@ -11,11 +11,11 @@ class BInteger extends BObject {
       : big = b.big,
         n = b.n;
 
-  BInteger(int n)
+  BInteger.Int(int n)
       : big = null,
         n = n;
 
-  BInteger(BigInt big)
+  BInteger.BigInt(BigInt big)
       : big = big,
         n = 0 {
     if (_maxInt == null) {

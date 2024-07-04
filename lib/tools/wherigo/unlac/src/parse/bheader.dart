@@ -5,6 +5,7 @@ import '../configuration.dart';
 import '../decompile/codeextract.dart';
 import '../version.dart';
 import 'bintegertype.dart';
+import 'bobjecttype.dart';
 import 'bsizettype.dart';
 import 'lbooleantype.dart';
 import 'lconstanttype.dart';
@@ -44,17 +45,17 @@ class BHeader {
 
   late final LFunction main;
 
-  BHeader(ByteBuffer buffer, Configuration config)
+  BHeader(ByteBuffer_ buffer, Configuration config)
       : config = config {
     // 4 byte Lua signature
     for (int i = 0; i < signature.length; i++) {
-      if (buffer.getUint8(i) != signature[i]) {
+      if (buffer.getUint8_(i) != signature[i]) {
         throw IllegalStateException(
             'The input file does not have the signature of a valid Lua file.');
       }
     }
     // 1 byte Lua version
-    int versionNumber = buffer.getUint8(4);
+    int versionNumber = buffer.getUint8_(4);
     switch (versionNumber) {
       case 0x50:
         version = Version.LUA50;

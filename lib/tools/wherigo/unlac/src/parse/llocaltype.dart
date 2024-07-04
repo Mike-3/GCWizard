@@ -6,7 +6,7 @@ import 'llocal.dart';
 
 class LLocalType extends BObjectType<LLocal> {
   @override
-  LLocal parse(ByteBuffer buffer, BHeader header) {
+  LLocal parse(ByteBuffer_ buffer, BHeader header) {
     final name = header.string.parse(buffer, header);
     final start = header.integer.parse(buffer, header);
     final end = header.integer.parse(buffer, header);

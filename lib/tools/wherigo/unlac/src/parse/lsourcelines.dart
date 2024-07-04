@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 class LSourceLines {
-  static LSourceLines? parse(ByteBuffer buffer) {
+  static LSourceLines? parse(ByteBuffer_ buffer) {
     var byteData = buffer.asByteData();
     int number = byteData.getInt32(0, Endian.little);
     int offset = 4;

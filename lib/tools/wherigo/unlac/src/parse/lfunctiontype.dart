@@ -17,7 +17,7 @@ class LFunctionType extends BObjectType<LFunction> {
   static final LFunctionType TYPE53 = LFunctionType53();
 
   @override
-  LFunction parse(ByteBuffer buffer, BHeader header) {
+  LFunction parse(ByteBuffer_ buffer, BHeader header) {
     if (header.debug) {
       print("-- beginning to parse function");
     }
@@ -47,7 +47,7 @@ class LFunctionType extends BObjectType<LFunction> {
     return lfunc;
   }
 
-  void parseMain(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseMain(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     s.name = header.string.parse(buffer, header);
     s.lineBegin = header.integer.parse(buffer, header).asInt();
     s.lineEnd = header.integer.parse(buffer, header).asInt();
@@ -61,7 +61,7 @@ class LFunctionType extends BObjectType<LFunction> {
     parseDebug(buffer, header, s);
   }
 
-  void parseCode(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseCode(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     if (header.debug) {
       print("-- beginning to parse bytecode list");
     }
@@ -75,7 +75,7 @@ class LFunctionType extends BObjectType<LFunction> {
     }
   }
 
-  void parseConstants(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseConstants(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     if (header.debug) {
       print("-- beginning to parse constants list");
     }
@@ -86,7 +86,7 @@ class LFunctionType extends BObjectType<LFunction> {
     s.functions = header.function.parseList(buffer, header);
   }
 
-  void parseDebug(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseDebug(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     if (header.debug) {
       print("-- beginning to parse source lines list");
     }
@@ -104,7 +104,7 @@ class LFunctionType extends BObjectType<LFunction> {
     }
   }
 
-  void parseUpvalues(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseUpvalues(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     s.upvalues = List<LUpvalue>.filled(s.lenUpvalues, LUpvalue());
     for (var i = 0; i < s.lenUpvalues; i++) {
       s.upvalues[i] = LUpvalue();
@@ -114,7 +114,7 @@ class LFunctionType extends BObjectType<LFunction> {
 
 class LFunctionType52 extends LFunctionType {
   @override
-  void parseMain(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseMain(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     s.lineBegin = header.integer.parse(buffer, header).asInt();
     s.lineEnd = header.integer.parse(buffer, header).asInt();
     s.lenParameter = buffer.getUint8();
@@ -127,13 +127,13 @@ class LFunctionType52 extends LFunctionType {
   }
 
   @override
-  void parseDebug(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseDebug(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     s.name = header.string.parse(buffer, header);
     super.parseDebug(buffer, header, s);
   }
 
   @override
-  void parseUpvalues(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseUpvalues(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     var upvalues = header.upvalue.parseList(buffer, header);
     s.lenUpvalues = upvalues.length.asInt();
     s.upvalues = upvalues.asArray(List<LUpvalue>.filled(s.lenUpvalues, LUpvalue()));
@@ -142,7 +142,7 @@ class LFunctionType52 extends LFunctionType {
 
 class LFunctionType53 extends LFunctionType {
   @override
-  void parseMain(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseMain(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     s.name = header.string.parse(buffer, header); // TODO: psource
     s.lineBegin = header.integer.parse(buffer, header).asInt();
     s.lineEnd = header.integer.parse(buffer, header).asInt();
@@ -157,7 +157,7 @@ class LFunctionType53 extends LFunctionType {
   }
 
   @override
-  void parseUpvalues(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseUpvalues(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     var upvalues = header.upvalue.parseList(buffer, header);
     s.lenUpvalues = upvalues.length.asInt();
     s.upvalues = upvalues.asArray(List<LUpvalue>.filled(s.lenUpvalues, LUpvalue()));
@@ -166,7 +166,7 @@ class LFunctionType53 extends LFunctionType {
 
 class LFunctionType50 extends LFunctionType {
   @override
-  void parseMain(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseMain(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     s.name = header.string.parse(buffer, header);
     s.lineBegin = header.integer.parse(buffer, header).asInt();
     s.lineEnd = 0;
@@ -184,12 +184,12 @@ class LFunctionType50 extends LFunctionType {
   }
 
   @override
-  void parseDebug(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseDebug(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     super.parseDebug(buffer, header, s);
   }
 
   @override
-  void parseUpvalues(ByteBuffer buffer, BHeader header, LFunctionParseState s) {
+  void parseUpvalues(ByteBuffer_ buffer, BHeader header, LFunctionParseState s) {
     var upvalues = header.upvalue.parseList(buffer, header);
     s.lenUpvalues = upvalues.length.asInt();
     s.upvalues = upvalues.asArray(List<LUpvalue>.filled(s.lenUpvalues, LUpvalue()));
