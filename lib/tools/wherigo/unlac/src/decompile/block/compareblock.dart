@@ -4,6 +4,7 @@ import '../decompiler.dart';
 import '../operation/operation.dart';
 import '../operation/registerset.dart';
 import '../output.dart';
+import '../registers.dart';
 import '../statement/statement.dart';
 import 'block.dart';
 

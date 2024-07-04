@@ -38,7 +38,7 @@ class DoEndBlock extends Block {
 
   @override
   void print(Decompiler d, Output out) {
-    out.println('do');
+    out.printlnWithText('do');
     out.indent();
     Statement.printSequence(d, out, statements);
     out.dedent();
