@@ -6,8 +6,6 @@ import '../registers.dart';
 import '../statement/statement.dart';
 import 'block.dart';
 
-import '../statement/statement.dart';
-
 class WhileBlock extends Block {
   final Branch branch;
   final int loopback;

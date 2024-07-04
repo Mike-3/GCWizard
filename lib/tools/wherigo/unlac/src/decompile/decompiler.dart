@@ -1,11 +1,8 @@
 import 'dart:collection';
 import 'dart:core';
-import 'dart:core';
-import 'dart:core';
 import 'dart:math';
 
 import '../configuration.dart';
-import '../parse/lbooleantype.dart';
 import '../version.dart';
 import 'block/alwaysloop.dart';
 import 'block/block.dart';
@@ -41,6 +38,7 @@ import 'expression/functioncall.dart';
 import 'expression/tableliteral.dart';
 import 'expression/tablereference.dart';
 import 'expression/vararg.dart';
+import 'function.dart';
 import 'op.dart';
 import 'operation/calloperation.dart';
 import 'operation/globalset.dart';
@@ -71,17 +69,17 @@ class Decompiler {
   final Upvalues upvalues;
   final List<Declaration> declList;
 
-  Function f;
+  late Function_ f;
   late LFunction function;
   final List<LFunction> functions;
   final int params;
   final int vararg;
 
   final Op tforTarget;
-  final Op forTarget;
+  final Op? forTarget;
 
   Decompiler(LFunction function, [List<Declaration>? parentDecls, int line = -1])
-      : f = Function(function),
+      : f = Function_(function),
         function = function,
         registers = function.maximumStackSize,
         length = function.code.length,
@@ -90,7 +88,7 @@ class Decompiler {
             ? VariableFinder.process(this, function.numParams, function.maximumStackSize)
             : function.locals.length >= function.numParams
                 ? List.generate(function.locals.length, (i) => Declaration(function.locals[i]))
-                : List.generate(function.numParams, (i) => Declaration("_ARG_$i_", 0, length - 1)),
+                : List.generate(function.numParams, (i) => Declaration("_ARG_$i" + "_", 0, length - 1)),
         upvalues = Upvalues(function, parentDecls, line),
         functions = function.functions,
         params = function.numParams,
@@ -105,9 +103,9 @@ class Decompiler {
   Version getVersion() {
     return function.header.version;
   }
-  
-  Registers r;
-  Block outer;
+
+  late Registers r;
+  late Block outer;
   
   void decompile() {
     r = Registers(registers, length, declList, f);
@@ -116,13 +114,13 @@ class Decompiler {
     outer = handleBranches(false);
     processSequence(1, length);
   }
-  
-  void print() {
+
+  void print_() {
     print(Output());
   }
-  
-  void print(OutputProvider out) {
-    print(Output(out));
+
+  void print__(OutputProvider out) {
+    print(Output.withProvider(out));
   }
   
   void print(Output out) {
@@ -174,14 +172,14 @@ class Decompiler {
     }
   }
   
-  Assignment processOperation(Operation operation, int line, int nextLine, Block block) {
+  Assignment? processOperation(Operation operation, int line, int nextLine, Block block) {
     Assignment? assign;
     bool wasMultiple = false;
     Statement? stmt = operation.process(r, block);
     if (stmt != null) {
       if (stmt is Assignment) {
         assign = stmt;
-        if (!assign.getFirstValue().isMultiple()) {
+        if (!assign.getFirstValue()!.isMultiple()) {
           block.addStatement(stmt);
         } else {
           wasMultiple = true;
@@ -197,7 +195,7 @@ class Decompiler {
           skip[nextLine] = true;
           nextLine++;
         }
-        if (wasMultiple && !assign.getFirstValue().isMultiple()) {
+        if (wasMultiple && !assign.getFirstValue()!.isMultiple()) {
           block.addStatement(stmt);
         }
       }
@@ -240,7 +238,7 @@ class Decompiler {
         int B = code.B(line);
         return TableTarget(upvalues.getExpression(A), r.getKExpression(B, previous));
       default:
-        throw StateError();
+        throw StateError(code.op(line).toString());
     }
   }
   
@@ -257,16 +255,16 @@ class Decompiler {
       case Op.SETTABLE:
       case Op.SETTABUP:
         if (f.isConstant(C)) {
-          throw StateError();
+          throw StateError(code.op(line).toString());
         } else {
           return r.getExpression(C, previous);
         }
       default:
-        throw StateError();
+        throw StateError(code.op(line).toString());
     }
   }
   
-  List<Block> blocks;
+  var blocks = <Block>[];
   
   int breakTarget(int line) {
     int tline = double.infinity;
@@ -290,7 +288,7 @@ class Decompiler {
     return enclosing;
   }
   
-  Block enclosingBlock(Block block) {
+  Block enclosingBlock_(Block block) {
     Block outer = blocks[0];
     Block enclosing = outer;
     for (int i = 1; i < blocks.length; i++) {
@@ -430,7 +428,7 @@ class Decompiler {
         }
         branch.end = nend;
       } else {
-        if (!(branch is TestSetNode)) {
+        if ((branch is! TestSetNode)) {
           stack.push(branch);
           branch = popCondition(stack);
         }
@@ -902,18 +900,18 @@ class Decompiler {
         do {
           Branch cond = conditions.pop();
           Stack<Branch> backup = backups.pop();
-          int breakTarget = breakTarget(cond.begin);
-          bool breakable = (breakTarget >= 1);
-          if (breakable && code.op(breakTarget) == Op.JMP && breakTarget != cond.end) {
-            breakTarget += 1 + code.sBx(breakTarget);
+          int breakTarget_ = breakTarget(cond.begin);
+          bool breakable = (breakTarget_ >= 1);
+          if (breakable && code.op(breakTarget_) == Op.JMP && breakTarget_ != cond.end) {
+            breakTarget_ += 1 + code.sBx(breakTarget_);
           }
-          if (breakable && breakTarget == cond.end) {
+          if (breakable && breakTarget_ == cond.end) {
             Block immediateEnclosing = enclosingBlock(cond.begin);
-            Block breakableEnclosing = enclosingBreakableBlock(cond.begin);
+            Block? breakableEnclosing = enclosingBreakableBlock(cond.begin);
             int loopstart = immediateEnclosing.end;
             if (immediateEnclosing == breakableEnclosing) loopstart--;
             for (int iline = loopstart; iline >= max(cond.begin, immediateEnclosing.begin); iline--) {
-              if (code.op(iline) == Op.JMP && iline + 1 + code.sBx(iline) == breakTarget) {
+              if (code.op(iline) == Op.JMP && iline + 1 + code.sBx(iline) == breakTarget_) {
                 cond.end = iline;
                 break;
               }
@@ -922,7 +920,7 @@ class Decompiler {
           bool hasTail = cond.end >= 2 && code.op(cond.end - 1) == Op.JMP;
           int tail = hasTail ? cond.end + code.sBx(cond.end - 1) : -1;
           int originalTail = tail;
-          Block enclosing = enclosingUnprotectedBlock(cond.begin);
+          Block? enclosing = enclosingUnprotectedBlock(cond.begin);
           if (enclosing != null) {
             if (enclosing.getLoopback() == cond.end) {
               cond.end = enclosing.end - 1;
