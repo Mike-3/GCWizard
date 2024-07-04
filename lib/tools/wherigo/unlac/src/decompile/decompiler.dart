@@ -80,7 +80,7 @@ class Decompiler {
 
   Decompiler(LFunction function, [List<Declaration>? parentDecls, int line = -1])
       : f = Function_(function),
-        function = function,
+        this.function = function,
         registers = function.maximumStackSize,
         length = function.code.length,
         code = Code(function),
@@ -88,7 +88,7 @@ class Decompiler {
             ? VariableFinder.process(this, function.numParams, function.maximumStackSize)
             : function.locals.length >= function.numParams
                 ? List.generate(function.locals.length, (i) => Declaration(function.locals[i]))
-                : List.generate(function.numParams, (i) => Declaration("_ARG_$i" + "_", 0, length - 1)),
+                : List.generate(function.numParams, (i) => Declaration.withParams("_ARG_$i" + "_", 0, length - 1)),
         upvalues = Upvalues(function, parentDecls, line),
         functions = function.functions,
         params = function.numParams,
@@ -267,7 +267,7 @@ class Decompiler {
   var blocks = <Block>[];
   
   int breakTarget(int line) {
-    int tline = double.infinity;
+    int tline = double.infinity.toInt();
     for (Block block in blocks) {
       if (block.breakable() && block.contains(line)) {
         tline = tline < block.end ? tline : block.end;
@@ -960,7 +960,7 @@ class Decompiler {
               int loopback2 = tail + sbx;
               bool isBreakableLoopEnd = function.header.version.isBreakableLoopEnd(op);
               if (isBreakableLoopEnd && loopback2 <= cond.begin && !isBreak[tail - 1]) {
-                blocks.add(IfThenEndBlock(function, cond, backup, r));
+                blocks.add(IfThenEndBlock.withParameters(function, cond, backup, r));
               } else {
                 skip[cond.end - 1] = true;
                 bool emptyElse = tail == cond.end;
@@ -982,14 +982,14 @@ class Decompiler {
                 }
               }
               if (loopback >= cond.begin || existsStatement) {
-                blocks.add(IfThenEndBlock(function, cond, backup, r));
+                blocks.add(IfThenEndBlock.withParameters(function, cond, backup, r));
               } else {
                 skip[cond.end - 1] = true;
                 blocks.add(WhileBlock(function, cond, originalTail, r));
               }
             }
           } else {
-            blocks.add(IfThenEndBlock(function, cond, backup, r));
+            blocks.add(IfThenEndBlock.withParameters(function, cond, backup, r));
           }
         } while (!conditions.isEmpty());
       }

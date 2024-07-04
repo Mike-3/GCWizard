@@ -3,6 +3,7 @@ import '../branch/branch.dart';
 import '../decompiler.dart';
 import '../expression/expression.dart';
 import '../operation/operation.dart';
+import '../operation/registerset.dart';
 import '../output.dart';
 import '../registers.dart';
 import '../statement/assignment.dart';
@@ -41,7 +42,7 @@ class SetBlock extends Block {
   @override
   void print(Decompiler d, Output out) {
     if (assign != null && assign!.getFirstTarget() != null) {
-      var assignOut = Assignment.withTargetValue(assign!.getFirstTarget(), getValue());
+      var assignOut = Assignment.withTargetValue(assign!.getFirstTarget()!, getValue());
       assignOut.print(d, out);
     } else {
       out.print('-- unhandled set block');

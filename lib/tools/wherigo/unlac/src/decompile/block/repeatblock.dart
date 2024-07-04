@@ -12,8 +12,8 @@ class RepeatBlock extends Block {
   final List<Statement> statements;
 
   RepeatBlock(LFunction function, Branch branch, Registers r)
-      : branch = branch,
-        r = r,
+      : this.branch = branch,
+        this.r = r,
         statements = List<Statement>.filled(branch.begin - branch.end + 1, Statement(), growable: true),
         super(function, branch.end, branch.begin);
 

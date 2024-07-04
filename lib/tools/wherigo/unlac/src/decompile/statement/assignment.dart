@@ -115,7 +115,7 @@ class Assignment extends Statement {
       }
       if (comment != null) {
         out.print(' -- ');
-        out.print(comment);
+        out.print(comment!);
       }
     }
   }

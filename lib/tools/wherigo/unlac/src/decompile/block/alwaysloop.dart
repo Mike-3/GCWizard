@@ -38,7 +38,7 @@ class AlwaysLoop extends Block {
 
   @override
   void print(Decompiler d, Output out) {
-    out.println("while true do");
+    out.printlnWithText("while true do");
     out.indent();
     Statement.printSequence(d, out, statements);
     out.dedent();

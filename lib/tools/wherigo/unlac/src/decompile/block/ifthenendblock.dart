@@ -21,9 +21,9 @@ class IfThenEndBlock extends Block {
   final List<Statement> statements;
 
   IfThenEndBlock(LFunction function, Branch branch, Registers r)
-      : this._(function, branch, null, r);
+      : this.withParameters(function, branch, null, r);
 
-  IfThenEndBlock._(LFunction function, Branch branch, this.stack, this.r)
+  IfThenEndBlock.withParameters(LFunction function, Branch branch, this.stack, this.r)
       : branch = branch,
         statements = List<Statement>.filled(branch.end - branch.begin + 1, Statement()),
         super(function, branch.begin == branch.end ? branch.begin - 1 : branch.begin,

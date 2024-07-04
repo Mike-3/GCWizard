@@ -78,8 +78,8 @@ class IfThenElseBlock extends Block {
     Statement.printSequence(d, out, statements);
     out.dedent();
     if (emptyElse) {
-      out.println('else');
-      out.println('end');
+      out.printlnWithText('else');
+      out.printlnWithText('end');
     }
   }
 }

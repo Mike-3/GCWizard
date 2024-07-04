@@ -14,9 +14,9 @@ class TForBlock extends Block {
   final List<Statement> statements;
 
   TForBlock(LFunction function, int begin, int end, int register, int length, Registers r)
-      : register = register,
-        length = length,
-        r = r,
+      : this.register = register,
+        this.length = length,
+        this.r = r,
         statements = List<Statement>.filled(end - begin + 1, Statement()),
         super(function, begin, end);
 
