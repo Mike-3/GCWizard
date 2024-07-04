@@ -17,7 +17,7 @@ class UpvalueSet extends Operation {
 
   @override
   Statement process(Registers r, Block block) {
-    return Assignment(target, value);
+    return Assignment.withTargetValue(target, value);
   }
 }
 

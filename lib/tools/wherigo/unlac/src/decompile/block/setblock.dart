@@ -41,7 +41,7 @@ class SetBlock extends Block {
   @override
   void print(Decompiler d, Output out) {
     if (assign != null && assign!.getFirstTarget() != null) {
-      var assignOut = Assignment(assign!.getFirstTarget(), getValue());
+      var assignOut = Assignment.withTargetValue(assign!.getFirstTarget(), getValue());
       assignOut.print(d, out);
     } else {
       out.print('-- unhandled set block');
@@ -73,7 +73,7 @@ class SetBlock extends Block {
       var target = assign!.getFirstTarget();
       var value = getValue();
       return Operation(end - 1, (Registers r, Block block) {
-        return Assignment(target, value);
+        return Assignment.withTargetValue(target, value);
       });
     } else {
       return Operation(end - 1, (Registers r, Block block) {
@@ -94,13 +94,13 @@ class SetBlock extends Block {
           }
           branch.useExpression(expr);
           if (r.isLocal(target, branch.end - 1)) {
-            return Assignment(r.getTarget(target, branch.end - 1), branch.asExpression(r));
+            return Assignment.withTargetValue(r.getTarget(target, branch.end - 1), branch.asExpression(r));
           }
           r.setValue(target, branch.end - 1, branch.asExpression(r));
         } else if (expr != null && target >= 0) {
           branch.useExpression(expr);
           if (r.isLocal(target, branch.end - 1)) {
-            return Assignment(r.getTarget(target, branch.end - 1), branch.asExpression(r));
+            return Assignment.withTargetValue(r.getTarget(target, branch.end - 1), branch.asExpression(r));
           }
           r.setValue(target, branch.end - 1, branch.asExpression(r));
         } else {

@@ -9,7 +9,7 @@ class BIntegerType extends BObjectType<BInteger> {
 
   BIntegerType(this.intSize);
 
-  BInteger rawParse(ByteBuffer buffer, BHeader header) {
+  BInteger raw_parse(ByteBuffer buffer, BHeader header) {
     BInteger value;
     switch (intSize) {
       case 0:
@@ -37,7 +37,7 @@ class BIntegerType extends BObjectType<BInteger> {
 
   @override
   BInteger parse(ByteBuffer buffer, BHeader header) {
-    final value = rawParse(buffer, header);
+    final value = raw_parse(buffer, header);
     if (header.debug) {
       print('-- parsed <integer> ${value.asInt()}');
     }

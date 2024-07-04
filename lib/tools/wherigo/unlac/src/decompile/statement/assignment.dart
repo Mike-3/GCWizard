@@ -91,27 +91,27 @@ class Assignment extends Statement {
         out.print('local ');
       }
       bool functionSugar = false;
-      if (targets.length == 1 && values.length == 1 && values[0].isClosure() && targets[0].isFunctionName()) {
-        var closure = values[0];
-        if (!_declare || declareStart >= closure.closureUpvalueLine()) {
+      if (targets.length == 1 && values.length == 1 && values.first!.isClosure() && targets.first!.isFunctionName()) {
+        var closure = values.first;
+        if (!_declare || declareStart >= closure!.closureUpvalueLine()) {
           functionSugar = true;
         }
-        if (targets[0].isLocal() && closure.isUpvalueOf(targets[0].getIndex())) {
+        if (targets.first!.isLocal() && closure!.isUpvalueOf(targets.first!.getIndex())) {
           functionSugar = true;
         }
       }
       if (!functionSugar) {
-        targets[0].print(d, out);
+        targets.first!.print(d, out);
         for (int i = 1; i < targets.length; i++) {
           out.print(', ');
-          targets[i].print(d, out);
+          targets[i]!.print(d, out);
         }
         if (!_declare || !allnil) {
           out.print(' = ');
           Expression.printSequence(d, out, values, false, false);
         }
       } else {
-        values[0].printClosure(d, out, targets[0]);
+        values.first!.printClosure(d, out, targets.first!);
       }
       if (comment != null) {
         out.print(' -- ');

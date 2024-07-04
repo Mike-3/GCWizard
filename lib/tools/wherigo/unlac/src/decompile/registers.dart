@@ -2,6 +2,7 @@ import 'dart:core';
 import 'declaration.dart';
 import 'expression/expression.dart';
 import 'expression/localvariable.dart';
+import 'function.dart';
 import 'target/target.dart';
 import 'target/variabletarget.dart';
 
@@ -10,7 +11,7 @@ class Registers {
   final int length;
 
   final List<List<Declaration?>> decls;
-  final Function f;
+  final Function_ f;
   final List<List<Expression?>> values;
   final List<List<int>> updated;
   final List<bool> startedLines;

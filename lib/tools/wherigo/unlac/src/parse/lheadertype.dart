@@ -155,8 +155,8 @@ class LHeaderType50 extends LHeaderType {
     parse_instruction_size(buffer, header, s);
     parse_extractor(buffer, header, s);
     parse_number_size(buffer, header, s);
-    var lfloat = LNumberType(s.lNumberSize, false, LNumberType.MODE_NUMBER);
-    var linteger = LNumberType(s.lNumberSize, true, LNumberType.MODE_NUMBER);
+    var lfloat = LNumberType(s.lNumberSize, false, NumberMode.MODE_NUMBER);
+    var linteger = LNumberType(s.lNumberSize, true, NumberMode.MODE_NUMBER);
     buffer.mark();
     var floatcheck = lfloat.parse(buffer, header).value();
     buffer.reset();
@@ -188,7 +188,7 @@ class LHeaderType51 extends LHeaderType {
     s.function = LFunctionType.TYPE51;
     s.string = LStringType.getType50();
     s.constant = LConstantType.getType50();
-    s.extractor = Code51;
+    s.extractor = Code.Code51;
   }
 }
 

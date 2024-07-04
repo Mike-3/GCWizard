@@ -15,7 +15,7 @@ class RegisterSet extends Operation {
   Statement? process(Registers r, Block block) {
     r.setValue(register, line, value);
     if (r.isAssignable(register, line)) {
-      return Assignment(r.getTarget(register, line), value);
+      return Assignment.withTargetValue(r.getTarget(register, line), value);
     } else {
       return null;
     }

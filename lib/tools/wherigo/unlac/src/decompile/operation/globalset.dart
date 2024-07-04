@@ -14,7 +14,7 @@ class GlobalSet extends Operation {
 
   @override
   Statement process(Registers r, Block block) {
-    return Assignment(GlobalTarget(global), value);
+    return Assignment.withTargetValue(GlobalTarget(global), value);
   }
 }
 

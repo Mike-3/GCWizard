@@ -13,13 +13,13 @@ class Disassembler {
   }
 
   void disassembleWithLevel(Output out, int level, int index) {
-    out.println('function $level $index');
+    out.printlnWithText('function $level $index');
     for (int line = 1; line <= function.code.length; line++) {
-      out.println('\t${code.opcode(line)} ${code.A(line)} ${code.B(line)} ${code.C(line)} ${code.Bx(line)} ${code.sBx(line)} ${code.codepoint(line)}');
+      out.printlnWithText('\t${code.opcode(line)} ${code.A(line)} ${code.B(line)} ${code.C(line)} ${code.Bx(line)} ${code.sBx(line)} ${code.codepoint(line)}');
     }
     out.println();
     for (int constant = 1; constant <= function.constants.length; constant++) {
-      out.println('\t$constant ${function.constants[constant - 1]}');
+      out.printlnWithText('\t$constant ${function.constants[constant - 1]}');
     }
     out.println();
     int subindex = 0;

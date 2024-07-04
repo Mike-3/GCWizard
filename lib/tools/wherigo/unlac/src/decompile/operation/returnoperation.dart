@@ -6,7 +6,7 @@ import '../statement/statement.dart';
 import 'operation.dart';
 
 class ReturnOperation extends Operation {
-  List<Expression> values;
+  late List<Expression> values;
 
   ReturnOperation(int line, Expression value) : super(line) {
     values = [value];
@@ -18,7 +18,7 @@ class ReturnOperation extends Operation {
 
   @override
   Statement process(Registers r, Block block) {
-    return Return(values);
+    return Return.multiple(values);
   }
 }
 

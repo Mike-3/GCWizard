@@ -86,7 +86,7 @@ class IfThenEndBlock extends Block {
                     Expression.PRECEDENCE_AND, Expression.ASSOCIATIVITY_NONE);
               }
               return Operation(end - 1, (Registers r, Block block) {
-                return Assignment(assign.getFirstTarget(), expr);
+                return Assignment.withTargetValue(assign.getFirstTarget(), expr);
               });
             }
           }

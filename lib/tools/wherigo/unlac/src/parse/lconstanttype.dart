@@ -43,7 +43,7 @@ class LConstantType50 extends LConstantType {
       case 0:
         return LNil.NIL;
       case 1:
-        return header.bool.parse(buffer, header);
+        return header.bool_.parse(buffer, header);
       case 3:
         return header.number.parse(buffer, header);
       case 4:

@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:core';
 import 'dart:typed_data';
 
 import '../configuration.dart';
@@ -43,7 +42,7 @@ class BHeader {
   late final LFunctionType function;
   late final CodeExtract extractor;
 
-  final LFunction main;
+  late final LFunction main;
 
   BHeader(ByteBuffer buffer, Configuration config)
       : config = config {

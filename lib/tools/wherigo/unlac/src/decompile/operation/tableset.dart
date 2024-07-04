@@ -23,7 +23,7 @@ class TableSet extends Operation {
       table.addEntry(Entry(index, value, !isTable, timestamp));
       return null;
     } else {
-      return Assignment(TableTarget(table, index), value);
+      return Assignment.withTargetValue(TableTarget(table, index), value);
     }
   }
 }
