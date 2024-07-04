@@ -12,9 +12,7 @@ class ReturnOperation extends Operation {
     values = [value];
   }
 
-  ReturnOperation.withValues(int line, List<Expression> values) : super(line) {
-    this.values = values;
-  }
+  ReturnOperation.withValues(int line, this.values) : super(line);
 
   @override
   Statement process(Registers r, Block block) {

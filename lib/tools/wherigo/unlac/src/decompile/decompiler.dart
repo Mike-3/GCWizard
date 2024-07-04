@@ -78,9 +78,9 @@ class Decompiler {
   final Op tforTarget;
   final Op? forTarget;
 
-  Decompiler(LFunction function, [List<Declaration>? parentDecls, int line = -1])
+  Decompiler(LFunction this.function, [List<Declaration>? parentDecls, int line = -1])
       : f = Function_(function),
-        this.function = function,
+        function = function,
         registers = function.maximumStackSize,
         length = function.code.length,
         code = Code(function),

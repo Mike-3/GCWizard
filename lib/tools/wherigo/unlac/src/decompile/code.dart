@@ -9,9 +9,9 @@ class Code {
   late final List<int> code;
 
   Code(LFunction function) {
-    this.code = function.code;
-    this.map = function.header.version.getOpcodeMap();
-    this.extractor = function.header.extractor;
+    code = function.code;
+    map = function.header.version.getOpcodeMap();
+    extractor = function.header.extractor;
   }
 
   // bool reentered = false;
