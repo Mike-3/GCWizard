@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import '../util/bytebuffer.dart';
 import 'bheader.dart';
 import 'binteger.dart';
 import 'blist.dart';

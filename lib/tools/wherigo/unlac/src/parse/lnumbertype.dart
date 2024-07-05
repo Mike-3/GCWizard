@@ -1,5 +1,5 @@
+import '../util/bytebuffer.dart';
 import 'bheader.dart';
-import 'bobjecttype.dart';
 import 'lnumber.dart';
 
 enum NumberMode {
@@ -43,10 +43,10 @@ class LNumberType {
     if (integral) {
       switch (size) {
         case 4:
-          value = LIntNumber(buffer.getInt32(0));
+          value = LIntNumber(buffer.getInt32_(0));
           break;
         case 8:
-          value = LLongNumber(buffer.getInt64(0));
+          value = LLongNumber(buffer.getInt64_(0));
           break;
         default:
           throw StateError("The input chunk has an unsupported Lua number format");
@@ -54,10 +54,10 @@ class LNumberType {
     } else {
       switch (size) {
         case 4:
-          value = LFloatNumber(buffer.getFloat32(0), mode);
+          value = LFloatNumber(buffer.getFloat32_(0), mode);
           break;
         case 8:
-          value = LDoubleNumber(buffer.getFloat64(0), mode);
+          value = LDoubleNumber(buffer.getFloat64_(0), mode);
           break;
         default:
           throw StateError("The input chunk has an unsupported Lua number format");

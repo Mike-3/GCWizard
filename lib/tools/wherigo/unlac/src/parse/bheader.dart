@@ -3,9 +3,10 @@ import 'dart:typed_data';
 
 import '../configuration.dart';
 import '../decompile/codeextract.dart';
+import '../util/bytebuffer.dart';
+import '../util/exception.dart';
 import '../version.dart';
 import 'bintegertype.dart';
-import 'bobjecttype.dart';
 import 'bsizettype.dart';
 import 'lbooleantype.dart';
 import 'lconstanttype.dart';
@@ -93,7 +94,7 @@ class BHeader {
 
     int upvalues = -1;
     if (versionNumber >= 0x53) {
-      upvalues = buffer.getUint8(5);
+      upvalues = buffer.getUint8_(5);
       if (debug) {
         print('-- main chunk upvalue count: $upvalues');
       }
@@ -106,7 +107,7 @@ class BHeader {
             'The main chunk has the wrong number of upvalues: ${main.numUpvalues} ($upvalues expected)');
       }
     }
-    if (main.numUpvalues >= 1 && versionNumber >= 0x52 && (main.upvalues[0].name == null || main.upvalues[0].name.isEmpty)) {
+    if (main.numUpvalues >= 1 && versionNumber >= 0x52 && (main.upvalues[0].name == null || main.upvalues[0].name!.isEmpty)) {
       main.upvalues[0].name = '_ENV';
     }
   }

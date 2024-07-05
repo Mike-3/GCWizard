@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'binteger.dart';
 
 class BSizeT extends BInteger {
@@ -7,6 +5,6 @@ class BSizeT extends BInteger {
 
   BSizeT(int n) : super(n);
 
-  BSizeT(math.BigInt n) : super(n);
+  BSizeT(BigInt n) : super(n);
 }
 

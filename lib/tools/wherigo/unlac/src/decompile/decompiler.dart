@@ -3,6 +3,10 @@ import 'dart:core';
 import 'dart:math';
 
 import '../configuration.dart';
+import '../parse/lboolean.dart';
+import '../parse/lfunction.dart';
+import '../util/stack.dart';
+import '../util/exception.dart';
 import '../version.dart';
 import 'block/alwaysloop.dart';
 import 'block/block.dart';
@@ -56,9 +60,6 @@ import 'target/tabletarget.dart';
 import 'target/target.dart';
 import 'target/upvaluetarget.dart';
 import 'target/variabletarget.dart';
-import '../parse/lboolean.dart';
-import '../parse/lfunction.dart';
-import '../util/stack.dart';
 import 'upvalues.dart';
 import 'variablefinder.dart';
 

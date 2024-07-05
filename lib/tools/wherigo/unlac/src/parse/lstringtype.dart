@@ -1,3 +1,4 @@
+import '../util/bytebuffer.dart';
 import 'bheader.dart';
 import 'bobjecttype.dart';
 import 'bsizet.dart';

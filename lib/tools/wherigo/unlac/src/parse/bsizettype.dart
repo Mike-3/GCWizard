@@ -1,7 +1,9 @@
+import '../util/bytebuffer.dart';
 import 'bheader.dart';
 import 'bintegertype.dart';
 import 'bobjecttype.dart';
 import 'bsizet.dart';
+
 
 class BSizeTType extends BObjectType<BSizeT> {
   final int sizeTSize;

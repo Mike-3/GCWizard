@@ -1,3 +1,5 @@
+import 'lnumbertype.dart';
+
 abstract class LNumber {
   static LNumber makeInteger(int number) {
     return LIntNumber(number);
@@ -123,5 +125,3 @@ class LLongNumber extends LNumber {
     return number.toDouble();
   }
 }
-
-enum NumberMode { MODE_NUMBER, MODE_STRING }

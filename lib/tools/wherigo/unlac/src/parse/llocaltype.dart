@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import '../util/bytebuffer.dart';
 import 'bheader.dart';
 import 'bobjecttype.dart';
 import 'llocal.dart';

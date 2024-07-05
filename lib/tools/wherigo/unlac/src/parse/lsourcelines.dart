@@ -1,13 +1,10 @@
-import 'dart:typed_data';
+import '../util/bytebuffer.dart';
 
 class LSourceLines {
   static LSourceLines? parse(ByteBuffer_ buffer) {
-    var byteData = buffer.asByteData();
-    int number = byteData.getInt32(0, Endian.little);
-    int offset = 4;
-    while (number-- > 0) {
-      byteData.getInt32(offset, Endian.little);
-      offset += 4;
+    int number = buffer.getInt32();
+    while(number-- > 0) {
+      buffer.getInt32();
     }
     return null;
   }

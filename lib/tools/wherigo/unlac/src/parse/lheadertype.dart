@@ -1,8 +1,11 @@
 import 'dart:typed_data';
+
+import '../util/bytebuffer.dart';
 import 'bheader.dart';
 import 'bobjecttype.dart';
 import 'bintegertype.dart';
 import 'bsizettype.dart';
+import 'lheader.dart';
 import 'lnumbertype.dart';
 import 'lstringtype.dart';
 import 'lconstanttype.dart';
@@ -241,7 +244,7 @@ class LHeaderType53 extends LHeaderType {
     parse_integer_size(buffer, header, s);
     parse_float_size(buffer, header, s);
     var endianness = Uint8List(s.lIntegerSize);
-    buffer.get(endianness);
+    buffer.getInt8_(endianness);
     if (endianness[0] == 0x78 && endianness[1] == 0x56) {
       buffer.order = Endian.little;
     } else if (endianness[s.lIntegerSize - 1] == 0x78 && endianness[s.lIntegerSize - 2] == 0x56) {
@@ -280,36 +283,4 @@ class LHeaderParseState {
 
   late int lIntegerSize;
   late int lFloatSize;
-}
-
-class LHeader {
-  final int format;
-  final BIntegerType integer;
-  final BSizeTType sizeT;
-  final LBooleanType bool;
-  final LNumberType number;
-  final LNumberType linteger;
-  final LNumberType lfloat;
-  final LStringType string;
-  final LConstantType constant;
-  final LLocalType local;
-  final LUpvalueType upvalue;
-  final LFunctionType function;
-  final CodeExtract extractor;
-
-  LHeader(
-    this.format,
-    this.integer,
-    this.sizeT,
-    this.bool,
-    this.number,
-    this.linteger,
-    this.lfloat,
-    this.string,
-    this.constant,
-    this.local,
-    this.upvalue,
-    this.function,
-    this.extractor,
-  );
 }
