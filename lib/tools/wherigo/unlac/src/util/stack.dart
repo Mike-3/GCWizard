@@ -12,7 +12,7 @@ class Stack<T> {
 
   void push(T item) {
     if (_data.length > 65536) {
-      throw IndexError(_data.length, _data, 'Trying to push more than 65536 items!');
+      throw IndexError.withLength(_data.length, _data.length, message: 'Trying to push more than 65536 items!');
     }
     _data.add(item);
   }
