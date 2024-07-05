@@ -20,10 +20,10 @@ class BIntegerType extends BObjectType<BInteger> {
         value = BInteger.Int(buffer.getInt8_(0));
         break;
       case 2:
-        value = BInteger.Int(buffer.getInt16_(0, Endian.little));
+        value = BInteger.Int(buffer.getInt16__(0, Endian.little));
         break;
       case 4:
-        value = BInteger.Int(buffer.getInt32(0, Endian.little));
+        value = BInteger.Int(buffer.getInt32__(0, Endian.little));
         break;
       default:
         {

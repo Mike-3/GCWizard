@@ -26,15 +26,20 @@ class ByteBuffer_ {
     return buffer.asByteData(pointer, 2).getInt16(0, order);
   }
 
-  int getInt16_(int pointer, Endian order) {
+  int getInt16__(int pointer, Endian order) {
     return buffer.asByteData(pointer, 2).getInt16(0, order);
   }
+
   int getInt32() {
     pointer += 4;
     return buffer.asByteData(pointer, 4).getInt32(0, order);
   }
 
   int getInt32_(int pointer) {
+    return buffer.asByteData(pointer, 4).getInt32(0, order);
+  }
+
+  int getInt32__(int pointer, Endian order) {
     return buffer.asByteData(pointer, 4).getInt32(0, order);
   }
 
