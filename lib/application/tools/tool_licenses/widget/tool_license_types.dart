@@ -6,15 +6,20 @@ import 'package:intl/intl.dart';
 
 enum ToolLicenseType {
   FREE_TO_USE,
+  AL, // Artistic License
   APACHE2, // Apache 2.0
   BSD, // BSD
+  BSD2, // BSD2
   BSD3, // BSD v3
   CCBY4, // Creative Commons CC BY 4.0
   CCBYSA4, // Creative Commons CC BY-SA 4.0
+  CCBYSA3, // Creative Commons CC BY-SA 2.0
   CCBYSA2, // Creative Commons CC BY-SA 2.0
   CCNC25, // Creative Commons CC NC 2.5
+  CCNC30, // Creative Commons CC NC 3.0
   CC0_1, // Creative Commons CC0 1.0
   MIT, // MIT
+  MPL2, // MPL-2.0
   GPL3, //GNU GPL v3.0
   GITHUB_DEFAULT, //Github Default
   GFDL, // GNU Free Documentation License
@@ -24,19 +29,25 @@ enum ToolLicenseType {
 String _licenseType(BuildContext context, ToolLicenseType licenseType) {
   switch (licenseType) {
     case ToolLicenseType.FREE_TO_USE: return i18n(context, 'toollicenses_freetouse');
+    case ToolLicenseType.AL: return 'Artistic License';
     case ToolLicenseType.APACHE2: return 'Apache 2.0 License';
     case ToolLicenseType.BSD: return 'BSD License';
+    case ToolLicenseType.BSD2: return 'BSD-2-Clause';
     case ToolLicenseType.BSD3: return 'BSD-3-Clause';
     case ToolLicenseType.CCBY4: return 'Creative Commons CC BY 4.0';
     case ToolLicenseType.CCBYSA4: return 'Creative Commons CC BY-SA 4.0';
+    case ToolLicenseType.CCBYSA3: return 'Creative Commons CC BY-SA 3.0';
     case ToolLicenseType.CCBYSA2: return 'Creative Commons CC BY-SA 2.0';
     case ToolLicenseType.CCNC25: return 'Creative Commons CC NC 2.5';
+    case ToolLicenseType.CCNC30: return 'Creative Commons CC NC 3.0';
     case ToolLicenseType.CC0_1: return 'Creative Commons CC0 1.0';
     case ToolLicenseType.MIT: return 'MIT License';
+    case ToolLicenseType.MPL2: return 'Mozilla Public License Version 2.0';
     case ToolLicenseType.GPL3: return 'GNU GPL v3.0 License';
     case ToolLicenseType.GITHUB_DEFAULT: return 'Github Default License';
     case ToolLicenseType.GFDL: return 'GNU Free Documentation License';
     case ToolLicenseType.PUBLIC_DOMAIN: return 'Public Domain';
+      // TODO: Handle this case.
   }
 }
 
@@ -66,6 +77,7 @@ String toolLicenseTypeString(BuildContext context, ToolLicenseEntry toolLicense)
   if (toolLicense is ToolLicenseImage) return i18n(context, 'toollicenses_image');
   if (toolLicense is ToolLicenseFont) return i18n(context, 'toollicenses_font');
   if (toolLicense is ToolLicenseAPI) return i18n(context, 'toollicenses_api');
+  if (toolLicense is ToolLicenseOwnReProduction) return i18n(context, 'toollicenses_ownreprodction');
 
   return '';
 }
@@ -76,7 +88,7 @@ abstract class ToolLicenseEntry {
   final String title;
   final String? customComment;
 
-  ToolLicenseEntry({required this.context, required this.author, required this.title, this.customComment});
+  const ToolLicenseEntry({required this.context, required this.author, required this.title, this.customComment});
 
   List<Object> toRow();
 }
@@ -87,7 +99,7 @@ abstract class _ToolLicenseTextSource extends ToolLicenseEntry {
   final int? day;
   final String? publisher;
 
-  _ToolLicenseTextSource({required BuildContext context, required String author, required String title, this.year, this.month, this.day, this.publisher, String? customComment})
+  const _ToolLicenseTextSource({required BuildContext context, required String author, required String title, this.year, this.month, this.day, this.publisher, String? customComment})
       : super(context: context, author: author, title: title, customComment: customComment);
 }
 
@@ -96,7 +108,7 @@ abstract class _ToolLicenseOnlineTextSource extends _ToolLicenseTextSource {
   final String? licenseUrl;
   final ToolLicenseType? licenseType;
 
-  _ToolLicenseOnlineTextSource({required BuildContext context, required String author, required String title, int? year, int? month, int? day, String? publisher, String? customComment, required this.sourceUrl, this.licenseType, this.licenseUrl})
+  const _ToolLicenseOnlineTextSource({required BuildContext context, required String author, required String title, int? year, int? month, int? day, String? publisher, String? customComment, required this.sourceUrl, this.licenseType, this.licenseUrl})
       : super(context: context, author: author, title: title, year: year, month: month, day: day, publisher: publisher, customComment: customComment);
 }
 
@@ -126,7 +138,7 @@ String? _getDate(BuildContext context, int? year, int? month, int? day) {
 class ToolLicenseOfflineBook extends _ToolLicenseTextSource {
   final String? isbn;
 
-  ToolLicenseOfflineBook({required BuildContext context, required String author, required String title, int? year, int? month, int? day, String? customComment, this.isbn, String? publisher})
+  const ToolLicenseOfflineBook({required BuildContext context, required String author, required String title, int? year, int? month, int? day, String? customComment, this.isbn, String? publisher})
       : super(context: context, author: author, title: title, year: year, month: month, day: day, customComment: customComment);
 
   @override
@@ -157,7 +169,7 @@ class ToolLicenseOfflineBook extends _ToolLicenseTextSource {
 class ToolLicenseOnlineBook extends _ToolLicenseOnlineTextSource {
   final String? isbn;
 
-  ToolLicenseOnlineBook({required BuildContext context, required String author, required String title, int? year, int? month, int? day, required String sourceUrl, String? licenseUrl, ToolLicenseType? licenseType, String? customComment, this.isbn, String? publisher})
+  const ToolLicenseOnlineBook({required BuildContext context, required String author, required String title, int? year, int? month, int? day, required String sourceUrl, String? licenseUrl, ToolLicenseType? licenseType, String? customComment, this.isbn, String? publisher})
       : super(context: context, author: author, title: title, year: year, month: month, day: day, publisher: publisher, sourceUrl: sourceUrl, licenseType: licenseType, licenseUrl: licenseUrl, customComment: customComment);
 
   @override
@@ -196,7 +208,7 @@ class ToolLicenseOnlineBook extends _ToolLicenseOnlineTextSource {
  */
 class ToolLicenseOfflineArticle extends _ToolLicenseTextSource {
 
-  ToolLicenseOfflineArticle({required BuildContext context, required String author, required String title, int? year, int? month, int? day, String? customComment, String? publisher})
+  const ToolLicenseOfflineArticle({required BuildContext context, required String author, required String title, int? year, int? month, int? day, String? customComment, String? publisher})
       : super(context: context, author: author, title: title, year: year, month: month, day: day, publisher: publisher, customComment: customComment);
 
   @override
@@ -224,7 +236,7 @@ class ToolLicenseOfflineArticle extends _ToolLicenseTextSource {
  */
 class ToolLicenseOnlineArticle extends _ToolLicenseOnlineTextSource {
 
-  ToolLicenseOnlineArticle({
+  const ToolLicenseOnlineArticle({
     required BuildContext context,
     required String author,
     required String title,
@@ -265,7 +277,7 @@ class ToolLicenseOnlineArticle extends _ToolLicenseOnlineTextSource {
 abstract class _ToolLicenseDigitalSource extends ToolLicenseEntry {
   final String? version;
 
-  _ToolLicenseDigitalSource({required BuildContext context, required String author, required String title, this.version, String? customComment})
+  const _ToolLicenseDigitalSource({required BuildContext context, required String author, required String title, this.version, String? customComment})
       : super(context: context, author: author, title: title, customComment: customComment);
 }
 
@@ -285,7 +297,7 @@ class ToolLicensePrivatePermittedDigitalSource extends _ToolLicenseDigitalSource
   final int? permissionDay;
   final String? sourceUrl;
 
-  ToolLicensePrivatePermittedDigitalSource({required BuildContext context, required String author, required String title, required this.medium, required this.permissionYear, this.permissionMonth, this.permissionDay, String? version, this.sourceUrl, String? customComment})
+  const ToolLicensePrivatePermittedDigitalSource({required BuildContext context, required String author, required String title, required this.medium, required this.permissionYear, this.permissionMonth, this.permissionDay, String? version, this.sourceUrl, String? customComment})
       : super(context: context, author: author, title: title, version: version, customComment: customComment);
 
   @override
@@ -311,7 +323,7 @@ abstract class _ToolLicensePublicDigitalSource extends _ToolLicenseDigitalSource
   final String? licenseUrl;
   final ToolLicenseType licenseType;
 
-  _ToolLicensePublicDigitalSource({required BuildContext context, required String author, required String title, required this.sourceUrl, this.licenseUrl, required this.licenseType, String? version, String? customComment})
+  const _ToolLicensePublicDigitalSource({required BuildContext context, required String author, required String title, required this.sourceUrl, this.licenseUrl, required this.licenseType, String? version, String? customComment})
       : super(context: context, author: author, title: title, version: version, customComment: customComment);
 
   @override
@@ -345,7 +357,7 @@ abstract class _ToolLicensePublicDigitalSource extends _ToolLicenseDigitalSource
     licenseUrl == if available: url of the license (in best case: Github fork or/and explicit repository commit)
  */
 class ToolLicenseCodeLibrary extends _ToolLicensePublicDigitalSource {
-  ToolLicenseCodeLibrary({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
+  const ToolLicenseCodeLibrary({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
       : super(context: context, author: author, title: title, version: version, sourceUrl: sourceUrl, licenseUrl: licenseUrl, licenseType: licenseType, customComment: customComment);
 }
 
@@ -360,7 +372,7 @@ class ToolLicenseCodeLibrary extends _ToolLicensePublicDigitalSource {
     licenseUrl == if available: url of the license (in best case: Github fork or/and explicit repository commit)
  */
 class ToolLicensePortedCode extends _ToolLicensePublicDigitalSource {
-  ToolLicensePortedCode({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
+  const ToolLicensePortedCode({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
       : super(context: context, author: author, title: title, version: version, sourceUrl: sourceUrl, licenseUrl: licenseUrl, licenseType: licenseType, customComment: customComment);
 }
 
@@ -375,7 +387,7 @@ class ToolLicensePortedCode extends _ToolLicensePublicDigitalSource {
     licenseUrl == if available: url of the license (in best case: Github fork or/and explicit repository commit)
  */
 class ToolLicenseImage extends _ToolLicensePublicDigitalSource {
-  ToolLicenseImage({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
+  const ToolLicenseImage({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
       : super(context: context, author: author, title: title, version: version, sourceUrl: sourceUrl, licenseUrl: licenseUrl, licenseType: licenseType, customComment: customComment);
 }
 
@@ -390,7 +402,7 @@ class ToolLicenseImage extends _ToolLicensePublicDigitalSource {
     licenseUrl == if available: url of the license (in best case: Github fork or/and explicit repository commit)
  */
 class ToolLicenseFont extends _ToolLicensePublicDigitalSource {
-  ToolLicenseFont({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
+  const ToolLicenseFont({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
       : super(context: context, author: author, title: title, version: version, sourceUrl: sourceUrl, licenseUrl: licenseUrl, licenseType: licenseType, customComment: customComment);
 }
 
@@ -405,6 +417,21 @@ class ToolLicenseFont extends _ToolLicensePublicDigitalSource {
     licenseUrl == if available: url of the license (in best case: Github fork or/and explicit repository commit)
  */
 class ToolLicenseAPI extends _ToolLicensePublicDigitalSource {
-  ToolLicenseAPI({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
+  const ToolLicenseAPI({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
+      : super(context: context, author: author, title: title, version: version, sourceUrl: sourceUrl, licenseUrl: licenseUrl, licenseType: licenseType, customComment: customComment);
+}
+
+/*
+ OwnReproduction: Image, Text, etc. which is reproduced or produced iaw a public source)
+    author == author(s) and/or organisation(s);
+    title == Source title
+    version == if available
+    customComment == whatever seems to be important..., license clarifications, ...
+    sourceUrl == API entry point (could be invalid without parameters, which is ok I think)
+    licenseType == if available: which license is the used source
+    licenseUrl == if available: url of the license (in best case: Github fork or/and explicit repository commit)
+ */
+class ToolLicenseOwnReProduction extends _ToolLicensePublicDigitalSource {
+  const ToolLicenseOwnReProduction({required BuildContext context, required String author, required String title, required String sourceUrl, String? licenseUrl, required ToolLicenseType licenseType, String? version, String? customComment})
       : super(context: context, author: author, title: title, version: version, sourceUrl: sourceUrl, licenseUrl: licenseUrl, licenseType: licenseType, customComment: customComment);
 }

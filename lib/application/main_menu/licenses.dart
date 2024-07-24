@@ -58,6 +58,7 @@ class _LicensesState extends State<Licenses> {
     var _contentImage = SplayTreeMap<String, List<ToolLicenseEntry>>();
     var _contentFont = SplayTreeMap<String, List<ToolLicenseEntry>>();
     var _contentAPI = SplayTreeMap<String, List<ToolLicenseEntry>>();
+    var _contentOwnReProduction = SplayTreeMap<String, List<ToolLicenseEntry>>();
 
     for (var tool in tools) {
       var name = toolName(context, tool);
@@ -151,11 +152,136 @@ class _LicensesState extends State<Licenses> {
           }
           continue;
         }
+
+        if (license is ToolLicenseOwnReProduction) {
+          if (_contentOwnReProduction.containsKey(name)) {
+            _contentOwnReProduction[name]!.add(license);
+          } else {
+            _contentOwnReProduction.putIfAbsent(name, () => [license]);
+          }
+          continue;
+        }
+
       }
     }
 
     var content = <Widget>[];
     if (_contentCodeLibrary.isNotEmpty) {
+      var common = i18n(context, 'common_common');
+      _contentCodeLibrary.putIfAbsent(common, () =>
+          [
+            ToolLicensePortedCode(context: context, author: 'loki3d.com', title: 'archive',
+              sourceUrl: 'https://web.archive.org/web/20240510080116/https://pub.dev/packages/archive',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240723102619/https://pub.dev/packages/archive/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'blue-fire.xyz', title: 'audioplayers',
+              sourceUrl: 'https://web.archive.org/web/20240531121621/https://pub.dev/packages/audioplayers',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240531121707/https://pub.dev/packages/audioplayers/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'simc.dev', title: 'auto_size_text',
+              sourceUrl: 'https://web.archive.org/web/20240626175457/https://pub.dev/packages/auto_size_text',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240617114646/https://pub.dev/packages/auto_size_text/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'yuli.dev', title: 'base32',
+              sourceUrl: 'https://web.archive.org/web/20230315051619/https://pub.dev/packages/base32',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240723103223/https://pub.dev/packages/base32/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'baseflow.com', title: 'cached_network_image',
+              sourceUrl: 'https://web.archive.org/web/20240706134343/https://pub.dev/packages/cached_network_image',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240616042637/https://pub.dev/packages/cached_network_image/license'
+            ),
+            ToolLicensePortedCode(context: context, author: '@BertrandBev (GitHub)', title: 'code_text_field',
+              sourceUrl: 'https://web.archive.org/web/20230331140622/https://pub.dev/packages/code_text_field',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20221203134431/https://pub.dev/packages/code_text_field/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'dart.dev', title: 'collection',
+              sourceUrl: 'https://web.archive.org/web/20240710230349/https://pub.dev/packages/collection',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://web.archive.org/web/20240512042724/https://pub.dev/packages/collection/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'fluttercommunity.dev', title: 'device_info_plus',
+              sourceUrl: 'https://web.archive.org/web/20240717112621/https://pub.dev/packages/device_info_plus',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://web.archive.org/web/20231227005521/https://pub.dev/packages/device_info_plus/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'agilord.com', title: 'diacritic',
+              sourceUrl: 'https://web.archive.org/web/20240402144558/https://pub.dev/packages/diacritic',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://web.archive.org/web/20231003194728/https://pub.dev/packages/diacritic/license'
+            ),
+            ToolLicensePortedCode(context: context, author: '@leocavalcante (GitHub)', title: 'encrypt',
+              sourceUrl: 'https://web.archive.org/web/20240621090542/https://pub.dev/packages/encrypt',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://web.archive.org/web/20220625065953/https://pub.dev/packages/encrypt/license'
+            ),
+            ToolLicensePortedCode(context: context, author: '@bigflood (GitHub)', title: 'exif',
+              sourceUrl: 'https://web.archive.org/web/20240723104405/https://pub.dev/packages/exif',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20220520175714/https://pub.dev/packages/exif/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'miguelruivo.com', title: 'file_picker',
+              sourceUrl: 'https://web.archive.org/web/20240627151130/https://pub.dev/packages/file_picker',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240512010848/https://pub.dev/packages/file_picker/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'codeux.design', title: 'file_picker_writable',
+              sourceUrl: 'https://web.archive.org/web/20240723104746/https://pub.dev/packages/file_picker_writable',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240723104942/https://pub.dev/packages/file_picker_writable/license'
+            ),
+            ToolLicensePortedCode(context: context, author: '@flutter (GitHub, Google Inc.)', title: 'Flutter',
+              sourceUrl: 'https://github.com/S-Man42/flutter/tree/ed470fd1017fd904ad34530f732dee56ab536965',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://github.com/S-Man42/flutter/blob/ed470fd1017fd904ad34530f732dee56ab536965/LICENSE'
+            ),
+            ToolLicensePortedCode(context: context, author: '@GitTouch (GitHub)', title: 'flutter_highlight',
+              sourceUrl: 'https://web.archive.org/web/20240109182902/https://pub.dev/packages/flutter_highlight',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20230208081256/https://pub.dev/packages/flutter_highlight/license'
+            ),
+            ToolLicensePortedCode(context: context, author: '@flutter (GitHub, Google Inc.)', title: 'flutter_localizations',
+              sourceUrl: 'https://web.archive.org/web/20240418002509/https://api.flutter.dev/flutter/flutter_localizations/flutter_localizations-library.html',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://github.com/S-Man42/flutter/blob/ed470fd1017fd904ad34530f732dee56ab536965/LICENSE'
+            ),
+            ToolLicensePortedCode(context: context, author: 'fleaflet.dev', title: 'flutter_map',
+              sourceUrl: 'https://web.archive.org/web/20240606210131/https://pub.dev/packages/flutter_map',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://web.archive.org/web/20240606210131/https://pub.dev/packages/flutter_map/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'balanci.ng', title: 'flutter_map_marker_popup',
+              sourceUrl: 'https://web.archive.org/web/20240222173114/https://pub.dev/packages/flutter_map_marker_popup',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://web.archive.org/web/20240723144921/https://pub.dev/packages/flutter_map_marker_popup/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'ownweb.fr', title: 'flutter_map_tappable_polyline',
+              sourceUrl: 'https://web.archive.org/web/20230927164717/https://pub.dev/packages/flutter_map_tappable_polyline',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240723145110/https://pub.dev/packages/flutter_map_tappable_polyline/license'
+            ),
+            ToolLicensePortedCode(context: context, author: '@GitTouch (GitHub)', title: 'https://pub.dev/packages/highlight',
+              sourceUrl: 'https://web.archive.org/web/20231103183350/https://pub.dev/packages/highlight',
+              licenseType: ToolLicenseType.MIT,
+              licenseUrl: 'https://web.archive.org/web/20240723145359/https://pub.dev/packages/highlight/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'dart.dev', title: 'http',
+              sourceUrl: 'https://web.archive.org/web/20240708062104/https://pub.dev/packages/http',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://web.archive.org/web/20240513101105/https://pub.dev/packages/http/license'
+            ),
+            ToolLicensePortedCode(context: context, author: 'dart.dev', title: 'http_parser',
+              sourceUrl: 'https://web.archive.org/web/20240714172550/https://pub.dev/packages/http_parser',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl: 'https://web.archive.org/web/20230530135251/https://pub.dev/packages/http_parser/license'
+            ),
+      ]);
+
       content.add(GCWExpandableTextDivider(
           expanded: false,
           text: i18n(context, 'toollicenses_codelibrary'),
@@ -225,6 +351,13 @@ class _LicensesState extends State<Licenses> {
           child: _licenseContent(_contentOfflineBook)
       ));
     }
+    if (_contentOwnReProduction.isNotEmpty) {
+      content.add(GCWExpandableTextDivider(
+          expanded: false,
+          text: i18n(context, 'toollicenses_ownreprodction'),
+          child: _licenseContent(_contentOwnReProduction)
+      ));
+    }
 
     return MainMenuEntryStub(content: Column(
       children: content
@@ -234,43 +367,36 @@ class _LicensesState extends State<Licenses> {
       GCWExpandableTextDivider(
           text: i18n(context, 'licenses_additionalcode'),
           child: GCWColumnedMultilineOutput(data: [
-            # DONE const ['Astronomy Functions', 'astronomie.info, jgiesen.de', 'Personal Permission'],
+
+            # DONE # const ['Astronomy Functions', 'astronomie.info, jgiesen.de', 'Personal Permission'],
             # DONE # const ['Base58', 'Dark Launch', null],
-            const ['Base91', 'Joachim Henke', 'BSD-3-Clause License'],
-            const ['Base122', 'Kevin Alberston\nPatrick Favre-Bulle', 'MIT License\nApache License, Version 2.0'],
-            const ['Beatnik Interpreter', 'Hendrik Van Belleghem', 'Gnu Public License, Artistic License'],
-            const [
-              'Calendar conversions',
-              'Johannes Thomann, University of Zurich Asia-Orient-Institute',
-              'Personal Permission'
-            ],
-            # DONE const ['Centroid Code', 'Andy Eschbacher (carto.com)', 'Personal Permission'],
-            const [
-              'Chef Interpreter',
-              'Wesley Janssen, Joost Rijneveld, Mathijs Vos',
-              'CC0 1.0 Universal Public Domain Dedication'
-            ],
+            # DONE # const ['Base91', 'Joachim Henke', 'BSD-3-Clause License'],
+            # DONE # const ['Base122', 'Kevin Alberston\nPatrick Favre-Bulle', 'MIT License\nApache License, Version 2.0'],
+            # DONE # const ['Beatnik Interpreter', 'Hendrik Van Belleghem', 'Gnu Public License, Artistic License'],
+            # DONE # const ['Calendar conversions','Johannes Thomann, University of Zurich Asia-Orient-Institute','Personal Permission'],
+            const ['Centroid Code', 'Andy Eschbacher (carto.com)', 'Personal Permission'],
+            # DONE # const ['Chef Interpreter','Wesley Janssen, Joost Rijneveld, Mathijs Vos','CC0 1.0 Universal Public Domain Dedication'],
             const ['Color Picker', 'flutter_hsvcolor_picker (minimized)', null],
-            # DONE const ['Coordinate Measurement', 'David Vávra', 'Apache 2.0 License'],
-            const ['Cow Interpreter', 'Marco "Atomk" F.', 'MIT License'],
-            const ['Cow Generator', 'Frank Buss', 'Personal Permission'],
-            # DONE const ['DutchGrid Code', '@djvanderlaan', 'MIT License'],
-            # DONE const ['Gauss-Krüger Code', 'moenk', 'Personal Permission'],
-            const ['GC Wizard Script Code', 'Herbert Schildt/James Holmes\nMcGrawHill', 'Personal Permission'],
-            # DONE const ['Geo3x3 Code', '@taisukef', 'CC0-1.0 License'],
-            # DONE ['Geodetics Code', 'Charles Karney\n(GeographicLib)', buildUrl('MIT/X11 License', 'https://github.com/geographiclib/geographiclib/blob/main/LICENSE.txt')],
-            # DONE ['Geodetics Code', 'MITRE\n(Geodetic Library)', buildUrl('Apache 2.0 License', 'https://github.com/mitre/geodetic_library/blob/main/LICENSE')],
-            # DONE ['Geodetics Code', 'Paul Kohut\n(GeoFormulas)', buildUrl('Apache 2.0 License', 'https://github.com/pkohut/GeoFormulas?tab=readme-ov-file#legal-stuff')],
-            # DONE const ['GeoHex Code', '@chsii (geohex4j), @sa2da (geohex.org)', 'MIT License'],
-            # DONE const ['Lambert Code', 'Charles Karney (GeographicLib)', 'MIT/X11 License'],
-            const ['Magic Eye Solver', 'piellardj.github.io\ngithub.com/machinewrapped', 'MIT License'],
-            const ['Malbolge Code', 'lscheffer.com, Matthias Ernst', 'CC0, Public Domain'],
-            # DONE const ['Substitution Breaker', 'Jens Guballa (guballa.de)', 'MIT License'],
-            # DONE const ['Sudoku Solver', 'Peter Norvig (norvig.com), \'dartist\'', 'MIT License'],
-            const ['Urwigo Tools', '@Krevo (WherigoTools)', 'MIT License'],
-            const ['Vigenère Breaker', 'Jens Guballa (guballa.de)', 'Personal Permission'],
-            const ['Whitespace Interpreter', 'Adam Papenhausen', 'MIT License'],
-            const ['Wherigo Analyzer', 'WFoundation\ngithub.com/WFoundation', ''],
+            # DONE # const ['Coordinate Measurement', 'David Vávra', 'Apache 2.0 License'],
+            # DONE # const ['Cow Interpreter', 'Marco "Atomk" F.', 'MIT License'],
+            # DONE # const ['Cow Generator', 'Frank Buss', 'Personal Permission'],
+            const ['DutchGrid Code', '@djvanderlaan', 'MIT License'],
+            const ['Gauss-Krüger Code', 'moenk', 'Personal Permission'],
+            # DONE # const ['GC Wizard Script Code', 'Herbert Schildt/James Holmes\nMcGrawHill', 'Personal Permission'],
+            # DONE # const ['Geo3x3 Code', '@taisukef', 'CC0-1.0 License'],
+            # DONE # ['Geodetics Code', 'Charles Karney\n(GeographicLib)', buildUrl('MIT/X11 License', 'https://github.com/geographiclib/geographiclib/blob/main/LICENSE.txt')],
+            # DONE # ['Geodetics Code', 'MITRE\n(Geodetic Library)', buildUrl('Apache 2.0 License', 'https://github.com/mitre/geodetic_library/blob/main/LICENSE')],
+            # DONE # ['Geodetics Code', 'Paul Kohut\n(GeoFormulas)', buildUrl('Apache 2.0 License', 'https://github.com/pkohut/GeoFormulas?tab=readme-ov-file#legal-stuff')],
+            # DONE # const ['GeoHex Code', '@chsii (geohex4j), @sa2da (geohex.org)', 'MIT License'],
+            # DONE # const ['Lambert Code', 'Charles Karney (GeographicLib)', 'MIT/X11 License'],
+            # DONE # const ['Magic Eye Solver', 'piellardj.github.io\ngithub.com/machinewrapped', 'MIT License'],
+            # DONE # const ['Malbolge Code', 'lscheffer.com, Matthias Ernst', 'CC0, Public Domain'],
+            # DONE # const ['Substitution Breaker', 'Jens Guballa (guballa.de)', 'MIT License'],
+            # DONE # const ['Sudoku Solver', 'Peter Norvig (norvig.com), \'dartist\'', 'MIT License'],
+            # DONE # const ['Urwigo Tools', '@Krevo (WherigoTools)', 'MIT License'],
+            # DONE # const ['Vigenère Breaker', 'Jens Guballa (guballa.de)', 'Personal Permission'],
+            # DONE # const ['Whitespace Interpreter', 'Adam Papenhausen', 'MIT License'],
+            # DONE # const ['Wherigo Analyzer', 'WFoundation\ngithub.com/WFoundation', ''],
           ], suppressCopyButtons: true,)),
       GCWExpandableTextDivider(
           text: i18n(context, 'licenses_used_apis'),
@@ -301,57 +427,54 @@ class _LicensesState extends State<Licenses> {
           expanded: false,
           suppressTopSpace: false,
           child: const GCWColumnedMultilineOutput(data: [
-            ['archive', 'Apache 2.0 License'],
-            ['audioplayers', 'MIT License'],
-            ['auto_size_text', 'MIT License'],
-            ['base32', 'MIT License'],
-            ['cached_network_image', 'MIT License'],
-            ['code_text_field', 'MIT License'],
-            ['device_info_plus', 'BSD-3-Clause License'],
-            ['diacritic', 'BSD-3-Clause License'],
-            ['encrypt', 'BSD-3-Clause License'],
-            ['exif', 'MIT License'],
-            ['file_picker', 'MIT License'],
-            ['file_picker_writable', 'MIT License'],
-            ['flutter_highlight', 'MIT License'],
-            ['flutter_localizations', 'BSD-3-Clause License'],
-            ['flutter_map', 'BSD-3-Clause License'],
-            ['flutter_map_marker_popup', 'BSD-3-Clause License'],
-            ['flutter_map_tappable_polyline', 'MIT License'],
-            ['highlight', 'MIT License'],
-            ['http', 'BSD-3-Clause License'],
-            ['http_parser', 'BSD-3-Clause License'],
-            ['image', 'Apache 2.0 License'],
-            ['intl', 'BSD-3-Clause License'],
-            ['latlong2', 'Apache 2.0 License'],
-            ['location', 'MIT License'],
-            ['mask_text_input_formatter', 'MIT License'],
-            ['math_expressions', 'MIT License'],
-            ['package_info_plus', 'BSD-3-Clause License'],
-            ['path', 'BSD-3-Clause License'],
-            ['path_provider', 'BSD-3-Clause License'],
-            ['permission_handler', 'MIT License'],
-            ['photo_view', 'MIT License'],
+            # DONE # ['archive', 'Apache 2.0 License'],
+            # DONE # ['audioplayers', 'MIT License'],
+            # DONE # ['auto_size_text', 'MIT License'],
+            # DONE # ['base32', 'MIT License'],
+            MANUALLY ['cached_network_image', 'MIT License'],
+            # DONE # ['code_text_field', 'MIT License'],
+            MANUALLY ['device_info_plus', 'BSD-3-Clause License'],
+            # DONE # ['diacritic', 'BSD-3-Clause License'],
+            # DONE # ['encrypt', 'BSD-3-Clause License'],
+            # DONE # ['exif', 'MIT License'],
+            MANUALLY ['file_picker', 'MIT License'],
+            MANUALLY ['file_picker_writable', 'MIT License'],
+            # DONE # ['flutter_highlight', 'MIT License'],
+            MANUALLY ['flutter_localizations', 'BSD-3-Clause License'],
+            # DONE # ['flutter_map', 'BSD-3-Clause License'],
+            # DONE # ['flutter_map_marker_popup', 'BSD-3-Clause License'],
+            # DONE # ['flutter_map_tappable_polyline', 'MIT License'],
+            # DONE # ['highlight', 'MIT License'],
+            # DONE # ['http', 'BSD-3-Clause License'],
+            # DONE # ['http_parser', 'BSD-3-Clause License'],
+            # DONE # ['image', 'Apache 2.0 License'],
+            # DONE # ['intl', 'BSD-3-Clause License'],
+            # DONE # ['latlong2', 'Apache 2.0 License'],
+            MANUALLY ['location', 'MIT License'],
+            MANUALLY ['mask_text_input_formatter', 'MIT License'],
+            # DONE # ['math_expressions', 'MIT License'],
+            MANUALLY ['package_info_plus', 'BSD-3-Clause License'],
+            MANUALLY ['path', 'BSD-3-Clause License'],
+            MANUALLY ['path_provider', 'BSD-3-Clause License'],
+            MANUALLY ['permission_handler', 'MIT License'],
+            MANUALLY ['photo_view', 'MIT License'],
             # DONE ['pointycastle', 'MIT License'],
-            ['prefs', 'Apache 3.0 License'],
-            ['provider', 'MIT License'],
-            ['qr', 'BSD-3-Clause License'],
-            ['r_scan', 'BSD-3-Clause License'],
-            ['scrollable_positioned_list', 'BSD-3-Clause License'],
-            ['stack', 'MIT License'],
-            ['touchable', 'GPL 3.0 License'],
-            ['tuple', 'BSD-2-Clause License'],
-            ['universal_html', 'Apache 2.0 License'],
-            ['unrar_file', 'Apache 2.0 License'],
-            ['uuid', 'MIT License'],
-            ['url_launcher', 'BSD-3-Clause License'],
-            ['utility', 'MIT License'],
-            ['week_of_year', 'BSD-3-Clause License'],
-            ['xml', 'MIT License'],
-            [
-              'xmp',
-              'MIT License'
-            ], // it used not in pubspec but directly embedded because of conflicts of internal dependencies
+            # DONE # ['prefs', 'Apache 3.0 License'],
+            MANUALLY ['provider', 'MIT License'],
+            # DONE # ['qr', 'BSD-3-Clause License'],
+            # DONE # ['r_scan', 'BSD-3-Clause License'],
+            MANUALLY ['scrollable_positioned_list', 'BSD-3-Clause License'],
+            # DONE # ['stack', 'MIT License'],
+            # DONE # ['touchable', 'GPL 3.0 License'],
+            # DONE # ['tuple', 'BSD-2-Clause License'],
+            MANUALLY ['universal_html', 'Apache 2.0 License'],
+            MANUALLY ['unrar_file', 'Apache 2.0 License'],
+            # DONE # ['uuid', 'MIT License'],
+            MANUALLY ['url_launcher', 'BSD-3-Clause License'],
+            MANUALLY ['utility', 'MIT License'],
+            # DONE #['week_of_year', 'BSD-3-Clause License'],
+            MANUALLY ['xml', 'MIT License'],
+            MANUALLY ['xmp','MIT License'], // it used not in pubspec but directly embedded because of conflicts of internal dependencies
           ])),
       GCWExpandableTextDivider(
           text: i18n(context, 'licenses_fonts'),
