@@ -6,7 +6,7 @@ import 'package:gc_wizard/utils/alphabets.dart';
 
 /// Ragbaby Types:
 /// ## Options:
-/// [NoJX] : (default) 24 letters alphabet: J becomes I and X becomes U
+/// [NoJX] : (default) 24 letters alphabet: J becomes I and X becomes W
 ///
 /// [AZ]   : 26 letters alphabet: A-Z
 ///
@@ -24,7 +24,7 @@ const Map<RagbabyType, String> RAGBABY_OPTIONS = {
 /// The [password] starts the secret alphabet.
 /// All remaining characters are added at the end.
 /// Every letter of the secret alphabet is unique.
-String _createSecretAlphabet(String password,
+String createSecretAlphabet(String password,
     {RagbabyType type = RagbabyType.NoJX}) {
   String keyAlphabet;
   if (type == RagbabyType.NoJX) {
@@ -52,20 +52,15 @@ String _createSecretAlphabet(String password,
 /// Encrypts [plainText] with [password] using Ragbaby algorithm
 ///
 /// For more info: https://www.cwu.edu/academics/math/_documents/kryptos-challenges/cwu-kryptos-rag-baby-cipher.pdf
+/// and https://youngtyros.com/2023/02/19/ragbaby-cipher/
+/// and https://www.dcode.fr/ragbaby-cipher
 String encryptRagbaby(String plainText, String password,
     {RagbabyType type = RagbabyType.NoJX}) {
   if (plainText.isEmpty) return '';
 
-  var rotator = Rotator(alphabet: _createSecretAlphabet(password, type: type));
-  var cleanedInput = plainText;
-
-  if (type == RagbabyType.NoJX) {
-    cleanedInput = cleanedInput
-        .replaceAll('X', 'U')
-        .replaceAll('J', 'I')
-        .replaceAll('x', 'u')
-        .replaceAll('j', 'i');
-  }
+  var alphabet = createSecretAlphabet(password, type: type);
+  var rotator = Rotator(alphabet: alphabet);
+  var cleanedInput = _sanitizeInput(plainText, type);
 
   final List<String> words = cleanedInput.split(RegExp('\\s+|[\\n\\r]+'));
   List<String> encryptedText = [];
@@ -73,9 +68,12 @@ String encryptRagbaby(String plainText, String password,
   for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
     String word = words[wordIndex];
     String encryptedWord = '';
+    int corrector = 0;
 
     for (int letterIndex = 0; letterIndex < word.length; letterIndex++) {
-      int rotation = wordIndex + letterIndex + 1;
+      if (!alphabet.contains(word[letterIndex].toUpperCase())) {corrector++;}
+
+      int rotation = wordIndex + letterIndex + 1 - corrector;
       encryptedWord += rotator.rotate(word[letterIndex], rotation);
     }
     encryptedText.add(encryptedWord);
@@ -86,24 +84,44 @@ String encryptRagbaby(String plainText, String password,
 /// Decrypts [cipherText] with [password] using Ragbaby algorithm
 ///
 /// For more info: https://www.cwu.edu/academics/math/_documents/kryptos-challenges/cwu-kryptos-rag-baby-cipher.pdf
+/// and https://youngtyros.com/2023/02/19/ragbaby-cipher/
+/// and https://www.dcode.fr/ragbaby-cipher
 String decryptRagbaby(String cipherText, String password,
     {RagbabyType type = RagbabyType.NoJX}) {
+
   if (cipherText.isEmpty) return '';
 
-  var rotator = Rotator(alphabet: _createSecretAlphabet(password, type: type));
+  var alphabet = createSecretAlphabet(password, type: type);
+  var rotator = Rotator(alphabet: alphabet);
+  var cleanedInput = _sanitizeInput(cipherText, type);
 
-  final List<String> words = cipherText.split(RegExp('\\s+|[\\n\\r]+'));
+  final List<String> words = cleanedInput.split(RegExp('\\s+|[\\n\\r]+'));
   List<String> decryptedText = [];
 
   for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
     String decryptedWord = '';
     String word = words[wordIndex];
+    int corrector = 0;
 
     for (int letterIndex = 0; letterIndex < word.length; letterIndex++) {
-      int rotation = -(wordIndex + letterIndex + 1);
+      if (!alphabet.contains(word[letterIndex].toUpperCase())) {corrector++;}
+
+      int rotation = -(wordIndex + letterIndex + 1) + corrector;
       decryptedWord += rotator.rotate(word[letterIndex], rotation);
     }
     decryptedText.add(decryptedWord);
   }
   return decryptedText.join(' ');
+}
+
+String _sanitizeInput(String text, RagbabyType type) {
+  String output = text;
+  if (type == RagbabyType.NoJX) {
+    output = text
+        .replaceAll('X', 'W')
+        .replaceAll('J', 'I')
+        .replaceAll('x', 'w')
+        .replaceAll('j', 'i');
+  }
+  return output;
 }
