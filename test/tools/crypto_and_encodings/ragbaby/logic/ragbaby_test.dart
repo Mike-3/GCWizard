@@ -2,7 +2,7 @@ import "package:flutter_test/flutter_test.dart";
 import 'package:gc_wizard/tools/crypto_and_encodings/ragbaby/logic/ragbaby.dart';
 
 void main() {
-  group("Ragbaby.encryptRagbaby:", () {
+  group("Ragbaby: encryptRagbaby:", () {
     List<Map<String, Object?>> _inputsToExpected = [
       {'input': '', 'option': RagbabyType, 'pw': '', 'expectedOutput': ''},
       {
@@ -15,7 +15,7 @@ void main() {
         'input': 'The quick brown fox jumps!',
         'option': RagbabyType.AZ,
         'pw': 'secretword',
-        'expectedOutput': 'Wjt vymdu hdggz jgr peyeb.'
+        'expectedOutput': 'Wjt vymdu hdggz jgr peyeb!'
       },
       {
         'input': '34 quick brown foxes?',
@@ -47,15 +47,15 @@ void main() {
     }
   });
 
-  group("Ragbaby.decryptRagbaby:", () {
+  group("Ragbaby: decryptRagbaby:", () {
     List<Map<String, Object?>> _inputsToExpected = [
       {'expectedOutput': '', 'option': RagbabyType, 'pw': '', 'input': ''},
 
       {
-        'expectedOutput': 'The quick brown fow.',
+        'expectedOutput': 'The quick brown fou.',
         'option': RagbabyType.NoJX,
         'pw': 'secretword',
-        'input': 'Wkt vzndu hdggs kgg.'
+        'input': 'Wkt vzndu hdggs kgc.'
       },
       {
         'expectedOutput': 'The quick brown fox jumps!',
@@ -70,11 +70,17 @@ void main() {
         'input': '46 vymdu hdggz jg3aa?'
       },
       {
-        'expectedOutput': 'Words to live by: NEVER PUT BOTH FEET IN YOUR MOUTH AT THE SAME TIME BECAUSE THEN YOU DON’T HAVE A LEG TO STAND ON.',
+        'expectedOutput' : 'BEI GRABTHARS HAMMER',
         'option': RagbabyType.NoJX,
-        'pw': 'caution',
-        'input': 'Ybwhc  od qdam gt: GMTQT YEG LKHY RRSL KP DPLB UQMQT KP PUC EPBU RVDT ZURVYPB VNIU PCY TAT’A DYRD Y HDG UO SITEH  ND.',
-      }
+        'pw': '',
+        'input' :'CGM IUEGAPIBD LERSMA'
+      },
+      {
+        'expectedOutput' : 'DU WIRST GERÄCHT WERDEN.',
+        'option': RagbabyType.AZ,
+        'pw': 'fedcba',
+        'input' : 'CW YLVXZ JAWÄJOE FGXJJW.'
+      },
     ];
 
     for (var elem in _inputsToExpected) {
