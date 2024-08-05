@@ -9003,15 +9003,18 @@ void initializeRegistry(BuildContext context) {
           'rotation',
         ],
         licenses: [
-          ToolLicensePrivatePermittedDigitalSource(
+          ToolLicenseOnlineArticle(
               context: context,
               author: 'Jens Guballa',
               title: 'Vigenère Solver',
               customComment: '',
               sourceUrl:
                   'https://web.archive.org/web/20240722204526/https://guballa.de/vigenere-solver',
-              medium: 'e-Mail',
+              licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+              privatePermission: ToolLicensePrivatePermission(context: context,
+              medium: 'e-mail',
               permissionYear: 0)
+  ),
         ]),
     GCWTool(tool: Vigenere(), id: 'vigenere', searchKeys: const [
       'vigenere',
