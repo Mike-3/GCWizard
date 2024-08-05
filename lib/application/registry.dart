@@ -410,6 +410,7 @@ import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_t
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table_data_view/widget/periodic_table_data_view.dart';
 import 'package:gc_wizard/tools/science_and_technology/physical_constants/widget/physical_constants.dart';
 import 'package:gc_wizard/tools/science_and_technology/piano/widget/piano.dart';
+import 'package:gc_wizard/tools/science_and_technology/postcode/widget/postcode.dart';
 import 'package:gc_wizard/tools/science_and_technology/primes/primes_integerfactorization/widget/primes_integerfactorization.dart';
 import 'package:gc_wizard/tools/science_and_technology/primes/primes_isprime/widget/primes_isprime.dart';
 import 'package:gc_wizard/tools/science_and_technology/primes/primes_nearestprime/widget/primes_nearestprime.dart';
@@ -1365,6 +1366,21 @@ void initializeRegistry(BuildContext context) {
       'music'
           'music_notes',
       'piano',
+    ]),
+    GCWTool(tool: const Postcode(), id: 'postcode', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'postcode',
+      'symbol_postcode01247',
+      'symbol_postcode8421',
+      'binary'
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'de.wikipedia.org and contributors',
+          title: 'Zielcode',
+          sourceUrl:
+            'https://de.wikipedia.org/w/index.php?title=Zielcode&oldid=246247471')
     ]),
     GCWTool(tool: const PiSelection(), id: 'pi_selection', categories: const [
       ToolCategory.SCIENCE_AND_TECHNOLOGY
@@ -7738,16 +7754,19 @@ void initializeRegistry(BuildContext context) {
           'oak_island'
         ],
         licenses: [
-          ToolLicensePrivatePermittedDigitalSource(
+          ToolLicenseFont(
               context: context,
               author: 'www.OakIslandMystery.com',
               title: 'Oak Island ciphery',
-              medium: 'e-mail',
               sourceUrl:
                   'https://web.archive.org/web/20200809015129/https://www.oakislandmystery.com/community/coded-email/view/form',
+              licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+          privatePermission: ToolLicensePrivatePermission(context: context,
+            medium: 'e-mail',
               permissionYear: 2023,
               permissionMonth: 6,
               permissionDay: 1)
+          ),
         ]),
     GCWSymbolTableTool(
         symbolKey: 'oak_island_money_pit_extended',
@@ -7756,16 +7775,19 @@ void initializeRegistry(BuildContext context) {
           'oak_island'
         ],
         licenses: [
-          ToolLicensePrivatePermittedDigitalSource(
+          ToolLicenseFont(
               context: context,
               author: 'www.OakIslandMystery.com',
               title: 'Oak Island cipher',
-              medium: 'e-mail',
               sourceUrl:
                   'https://web.archive.org/web/20230322224111/https://www.oakislandmystery.com/community/coded-email',
+              licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+              privatePermission: ToolLicensePrivatePermission(context: context,
+              medium: 'e-mail',
               permissionYear: 2023,
               permissionMonth: 6,
               permissionDay: 1)
+          ),
         ]),
     GCWSymbolTableTool(
         symbolKey: 'oak_island_money_pit_libyan',

@@ -1,6 +1,9 @@
+import 'package:code_text_field/code_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
+import 'package:gc_wizard/application/theme/theme.dart';
+import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
 import 'package:gc_wizard/common_widgets/dropdowns/gcw_dropdown.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_columned_multiline_output.dart';
@@ -18,6 +21,7 @@ class Postcode extends StatefulWidget {
 }
 
 class PostcodeState extends State<Postcode> {
+  late CodeController _decodeGraphicController;
   late TextEditingController _decodeController;
   late TextEditingController _encodePostalCodeController;
 
@@ -33,6 +37,7 @@ class PostcodeState extends State<Postcode> {
   @override
   void initState() {
     super.initState();
+    _decodeGraphicController = CodeController();
     _decodeController = TextEditingController(text: _currentDecodeInput);
     _encodePostalCodeController = TextEditingController(text: _currentEncodePostalCode);
   }
@@ -70,7 +75,7 @@ class PostcodeState extends State<Postcode> {
       children: <Widget>[
         GCWTextField(
           controller: _decodeController,
-          hintText: '0.-_ 1Il|',
+          hintText: i18n(context, 'postcode_valid_character') + ' (0 => 0.-_  1 => 1Il|)',
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp('[/./-_ 01Il/|]')),
           ],
@@ -236,9 +241,32 @@ class PostcodeState extends State<Postcode> {
           if (result.errorCode == ErrorCode.Invalid) {
             output.add([i18n(context, 'postcode_invalid_data'), '']);
           }
-          return GCWDefaultOutput(child:
-            GCWColumnedMultilineOutput(data: output, flexValues: const [3, 2]),
-          );
+          var extendedOutput = result.extendedOutput(
+              i18n(context, 'postcode_postalcode'),
+              'CS',
+              i18n(context, 'postcode_streetcode'),
+              i18n(context, 'postcode_housenumber'),
+              i18n(context, 'postcode_feeprotectioncode'));
+          _decodeGraphicController.text = extendedOutput;
+
+          return Column(children: [
+            GCWDefaultOutput(child:
+              GCWColumnedMultilineOutput(data: output, flexValues: const [3, 2]),
+            ),
+            GCWTextDivider(text: i18n(context, 'common_details')),
+            extendedOutput.isEmpty
+              ? Container()
+              : CodeField(
+                  controller: _decodeGraphicController,
+                  textStyle: gcwMonotypeTextStyle(),
+                  lineNumbers: false,
+                  lineNumberStyle: const LineNumberStyle(
+                    width: 0.0,
+                    margin: 0.0,
+                    textStyle: TextStyle(fontSize: 0.0))
+                ),
+          ]);
+
         case ErrorCode.Length:
           if (_currentDecodeInput.isNotEmpty) {
             return GCWDefaultOutput(child: i18n(context, 'postcode_invalid_length') + ' (30, 36, 69, 80)');
