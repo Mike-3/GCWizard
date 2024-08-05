@@ -3965,4 +3965,7 @@ class McInfo {
   String territoryAlphaCode = '';
   String fullmapcode = '';
   int territoryNumber = 0;
+
+  McInfo();
 }
+

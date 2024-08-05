@@ -6,6 +6,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
+import 'package:gc_wizard/tools/coords/_common/formats/mapcode/logic/mapcode.dart';
+import 'package:gc_wizard/tools/coords/_common/formats/mapcode/logic/external_libs/mapcode.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format_constants.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/ellipsoid.dart';
@@ -36,6 +38,7 @@ import 'package:gc_wizard/tools/coords/_common/formats/utm/logic/utm.dart';
 import 'package:gc_wizard/tools/coords/_common/formats/xyz/logic/xyz.dart';
 import 'package:gc_wizard/tools/coords/map_view/logic/map_geometries.dart';
 import 'package:gc_wizard/tools/coords/waypoint_projection/logic/projection.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/_common/logic/crypt_alphabet_modification.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/abaddon/logic/abaddon.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/alphabet_values/logic/alphabet_values.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/atbash/logic/atbash.dart';
@@ -43,13 +46,17 @@ import 'package:gc_wizard/tools/crypto_and_encodings/avemaria/logic/avemaria.dar
 import 'package:gc_wizard/tools/crypto_and_encodings/bacon/logic/bacon.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/base/_common/logic/base.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/bcd/_common/logic/bcd.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/bifid/logic/bifid.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/enclosed_areas/logic/enclosed_areas.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/gc_code/logic/gc_code.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/hashes/logic/hashes.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/morse/logic/morse.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/polybios/logic/polybios.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/roman_numbers/roman_numbers/logic/roman_numbers.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/rotation/logic/rotation.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/substitution/logic/substitution.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/logic/text_analysis.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/trifid/logic/trifid.dart';
 import 'package:gc_wizard/tools/science_and_technology/complex_numbers/logic/complex_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/cross_sums/logic/crosstotals.dart';
 import 'package:gc_wizard/tools/science_and_technology/divisor/logic/divisor.dart';
@@ -1198,11 +1205,15 @@ class _GCWizardSCriptInterpreter {
       state.variables[stckvar.loopVariable] =
           (state.variables[stckvar.loopVariable] as num) + stckvar.stepValue;
       if (stckvar.descending) {
-        if ((state.variables[stckvar.loopVariable] as num) <
-            stckvar.targetValue) return;
+        if ((state.variables[stckvar.loopVariable] as num) < stckvar.targetValue) {
+          findEOL();
+          return;
+        }
       } else {
-        if ((state.variables[stckvar.loopVariable] as num) >
-            stckvar.targetValue) return;
+        if ((state.variables[stckvar.loopVariable] as num) > stckvar.targetValue) {
+          findEOL();
+          return;
+        }
       }
       state.forStack.push(stckvar);
       state.scriptIndex = stckvar.loopStart;
@@ -2135,6 +2146,7 @@ class _GCWizardSCriptInterpreter {
         state.token == "~") {
       op = state.token;
       getToken();
+      if (state.tokenType == 0) return op;
     }
     if (state.tokenType == FUNCTION) {
       result = executeFunction(state.token, state.tokenType);
