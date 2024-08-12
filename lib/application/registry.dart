@@ -1091,6 +1091,12 @@ void initializeRegistry(BuildContext context) {
         id: 'languagegames_selection',
         categories: const [ToolCategory.CRYPTOGRAPHY],
         searchKeys: const []),
+    GCWTool(tool: const LogicalSupporter(), id: 'logicalsupporter', categories: const [
+      ToolCategory.GAMES
+    ], searchKeys: const [
+      'games',
+      'games_logicalsupporter',
+    ]),
     GCWTool(tool: const MagicEyeSolver(), id: 'magic_eye', isBeta: true, categories: const [
       ToolCategory.IMAGES_AND_FILES
     ], searchKeys: const [
