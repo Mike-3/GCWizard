@@ -1,4 +1,5 @@
 import 'package:gc_wizard/utils/collection_utils.dart';
+import 'package:gc_wizard/utils/constants.dart';
 /*
  * Doctor Who Alien language
  * Every letter gets a special
@@ -22,19 +23,21 @@ const Map<String, String> alphabetJudoon  = {
 String encryptJudoon(String input) {
   if (input.isEmpty) return "";
 
+  input = input.trim();
   return input
       .split('')
-      .map((char) => alphabetJudoon[char.toLowerCase()] ?? '•')
+      .map((char) => alphabetJudoon[char.toLowerCase()] ?? UNKNOWN_ELEMENT)
       .join(' ');
 }
 
 String decryptJudoon(String input) {
   if (input.isEmpty) return "";
 
+  input = input.trim();
   final invertedDict = switchMapKeyValue(alphabetJudoon);
 
   return input
       .split(' ')
-      .map((word) => invertedDict[word.toLowerCase()] ?? '•')
+      .map((word) => invertedDict[word.toLowerCase()] ?? UNKNOWN_ELEMENT)
       .join('');
 }

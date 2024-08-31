@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/apparent_temperature_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/astronomy_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/babylon_numbers_selection.dart';
+import 'package:gc_wizard/application/category_views/selector_lists/bacon_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/base_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/bcd_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/beaufort_selection.dart';
@@ -145,6 +146,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/atbash/widget/atbash.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/avemaria/widget/avemaria.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/babylon_numbers/widget/babylon_numbers.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/bacon/widget/bacon.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/bacon/widget/bacon_analyze.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/base/base122/widget/base122.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/base/base16/widget/base16.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/base/base32/widget/base32.dart';
@@ -210,6 +212,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/hashes/hashes_identificatio
 import 'package:gc_wizard/tools/crypto_and_encodings/hashes/hashes_overview/widget/hashes_overview.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/homophone/widget/homophone.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/houdini/widget/houdini.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/language_games/judoon/widget/judoon.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/kamasutra/widget/kamasutra.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/kenny/widget/kenny.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/chicken_language/widget/chicken_language.dart';
@@ -231,6 +234,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/playfair/widget/playfair.da
 import 'package:gc_wizard/tools/crypto_and_encodings/pokemon/widget/pokemon.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/pollux/widget/pollux.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/polybios/widget/polybios.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/porta/widget/porta.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/predator/widget/predator.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/prime_alphabet/widget/prime_alphabet.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/rabbit/widget/rabbit.dart';
@@ -588,7 +592,7 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'Johannes Trithemius',
           title:
-              'Polygraphiae libri sex, Ioannis Trithemii abbatis Peapolitani, quondam Spanheimensis, ad Maximilianum Caesarem',
+          'Polygraphiae libri sex, Ioannis Trithemii abbatis Peapolitani, quondam Spanheimensis, ad Maximilianum Caesarem',
           sourceUrl: 'https://www.loc.gov/resource/rbc0001.2009fabyan12345/?r=-0.956,-0.016,2.912,1.143,0')
     ]),
     GCWTool(
@@ -596,12 +600,11 @@ void initializeRegistry(BuildContext context) {
         id: 'babylonnumbers_selection',
         categories: const [ToolCategory.CRYPTOGRAPHY],
         searchKeys: const []),
-    GCWTool(tool: const Bacon(), id: 'bacon', categories: const [
-      ToolCategory.CRYPTOGRAPHY
-    ], searchKeys: const [
-      'bacon',
-      'binary',
-    ]),
+    GCWTool(
+        tool: const BaconSelection(),
+        id: 'bacon_selection',
+        categories: const [ToolCategory.CRYPTOGRAPHY],
+        searchKeys: const []),
     GCWTool(
         tool: const BaseSelection(),
         id: 'base_selection',
@@ -803,7 +806,7 @@ void initializeRegistry(BuildContext context) {
         title: 'Enigma machine',
         licenseType: ToolLicenseType.CCBYSA4,
         licenseUrl:
-            'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+        'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
         sourceUrl: 'https://en.wikipedia.org/w/index.php?title=Enigma_machine&oldid=1226502398',
       ),
       ToolLicenseOnlineArticle(
@@ -812,7 +815,7 @@ void initializeRegistry(BuildContext context) {
           title: 'Enigma (Maschine)',
           licenseType: ToolLicenseType.CCBYSA4,
           licenseUrl:
-              'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
+          'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
           sourceUrl: 'https://de.wikipedia.org/w/index.php?title=Enigma_(Maschine)&oldid=245365474'),
       ToolLicenseOnlineArticle(
           context: context,
@@ -822,7 +825,7 @@ void initializeRegistry(BuildContext context) {
           month: 4,
           day: 20,
           sourceUrl:
-              'https://web.archive.org/web/20240613212151/https://www2.informatik.hu-berlin.de/~oependox/files/Ausarbeitung-Enigma.pdf'),
+          'https://web.archive.org/web/20240613212151/https://www2.informatik.hu-berlin.de/~oependox/files/Ausarbeitung-Enigma.pdf'),
     ]),
     GCWTool(
         tool: const EsotericProgrammingLanguageSelection(),
@@ -895,7 +898,7 @@ void initializeRegistry(BuildContext context) {
           title: 'Conways_Spiel_des_Lebens',
           licenseType: ToolLicenseType.CCBYSA4,
           licenseUrl:
-              'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
+          'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
           sourceUrl: 'https://de.wikipedia.org/w/index.php?title=Conways_Spiel_des_Lebens&oldid=246560171'),
     ]),
     GCWTool(tool: const GCCode(), id: 'gccode', categories: const [
@@ -929,7 +932,7 @@ void initializeRegistry(BuildContext context) {
         title: 'Dow Jones API',
         licenseType: ToolLicenseType.FREE_TO_USE,
         licenseUrl:
-            'https://web.archive.org/web/20240725231749/https://geohashing.site/index.php?title=Dow_Jones_Industrial_Average&type=revision&diff=21062&oldid=21061',
+        'https://web.archive.org/web/20240725231749/https://geohashing.site/index.php?title=Dow_Jones_Industrial_Average&type=revision&diff=21062&oldid=21061',
         sourceUrl: 'http://geo.crox.net/djia',
       ),
     ]),
@@ -1055,6 +1058,7 @@ void initializeRegistry(BuildContext context) {
         id: 'ipcodes',
         categories: const [ToolCategory.SCIENCE_AND_TECHNOLOGY],
         searchKeys: const ['ipcodes']),
+
     GCWTool(tool: const Kamasutra(), id: 'kamasutra', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -1102,7 +1106,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Jérémie "piellardj" Piellard',
           title: 'stereogram-solver',
           sourceUrl:
-              'https://web.archive.org/web/20240722204912/https://github.com/piellardj/stereogram-solver?tab=readme-ov-file',
+          'https://web.archive.org/web/20240722204912/https://github.com/piellardj/stereogram-solver?tab=readme-ov-file',
           licenseType: ToolLicenseType.MIT),
     ]),
     GCWTool(tool: const MathematicalConstants(), id: 'mathematical_constants', categories: const [
@@ -1164,7 +1168,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Department of Defense',
           title: 'Navajo Code Talkers\' Dictionary REVISED 15 JUNE 1945',
           sourceUrl:
-              'https://web.archive.org/web/20240722205845/https://www.history.navy.mil/research/library/online-reading-room/title-list-alphabetically/n/navajo-code-talker-dictionary.html')
+          'https://web.archive.org/web/20240722205845/https://www.history.navy.mil/research/library/online-reading-room/title-list-alphabetically/n/navajo-code-talker-dictionary.html')
     ]),
     GCWTool(tool: const NonogramSolver(), id: 'nonogramsolver', categories: const [
       ToolCategory.GAMES
@@ -1286,6 +1290,21 @@ void initializeRegistry(BuildContext context) {
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
       'polybios',
+    ]),
+    GCWTool(tool: const Porta(), id: 'porta', categories: const [
+      ToolCategory.CRYPTOGRAPHY
+    ], searchKeys: const [
+      'porta',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+        context: context,
+        author: 'Didier Müller',
+        title: 'Le chiffre da Porta',
+        sourceUrl: 'https://web.archive.org/web/20240726132205/https://www.apprendre-en-ligne.net/crypto/porta/index.html',
+        year: 2021,
+        month: 01,
+        day: 24,
+      )
     ]),
     GCWTool(
         tool: const PredatorSelection(),
@@ -1477,7 +1496,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl: 'https://gitlab.com/guballa/SubstitutionBreaker/-/tree/93dcc269efbfe6c62c3a93a6ce66077d6ff335fb',
           licenseType: ToolLicenseType.MIT,
           licenseUrl:
-              'https://gitlab.com/guballa/SubstitutionBreaker/-/blob/93dcc269efbfe6c62c3a93a6ce66077d6ff335fb/LICENSE'),
+          'https://gitlab.com/guballa/SubstitutionBreaker/-/blob/93dcc269efbfe6c62c3a93a6ce66077d6ff335fb/LICENSE'),
     ]),
     GCWTool(tool: const SudokuSolver(), id: 'sudokusolver', categories: const [
       ToolCategory.GAMES
@@ -1669,7 +1688,7 @@ void initializeRegistry(BuildContext context) {
         author: 'vCalc',
         title: 'Summer Simmer Index',
         sourceUrl:
-            'https://web.archive.org/web/20240724192214/https://ncalculators.com/meteorology/summer-simmer-index-calculator.htm',
+        'https://web.archive.org/web/20240724192214/https://ncalculators.com/meteorology/summer-simmer-index-calculator.htm',
       )
     ]),
     GCWTool(tool: const Windchill(), id: 'windchill', searchKeys: const [
@@ -1806,7 +1825,7 @@ void initializeRegistry(BuildContext context) {
             title: 'Equatorial coordinate system',
             licenseType: ToolLicenseType.CCBYSA4,
             licenseUrl:
-                'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+            'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
             sourceUrl: 'https://en.wikipedia.org/w/index.php?title=Equatorial_coordinate_system&oldid=1228085432',
           ),
           ToolLicensePortedCode(
@@ -1821,6 +1840,18 @@ void initializeRegistry(BuildContext context) {
     GCWTool(tool: const BabylonNumbers(), id: 'babylonnumbers', searchKeys: const [
       'babylonian_numerals',
     ], licenses: const []),
+
+    //BaconSelection **************************************************************************************************
+    GCWTool(tool: const Bacon(), id: 'bacon', categories: const [
+    ], searchKeys: const [
+      'bacon',
+      'binary',
+    ]),
+    GCWTool(tool: const BaconAnalyze(), id: 'bacon_analyze', categories: const [
+    ], searchKeys: const [
+      'bacon',
+      'binary',
+    ]),
 
     //BaseSelection **************************************************************************************************
     GCWTool(tool: Base16(), id: 'base_base16', searchKeys: const [
@@ -1867,7 +1898,7 @@ void initializeRegistry(BuildContext context) {
             author: 'darklaunch',
             title: 'Base58 Decoder and Encoder',
             sourceUrl:
-                'https://web.archive.org/web/20240721175752/https://www.darklaunch.com/base58-encode-and-decode-using-php-with-example-base58-encode-base58-decode.html',
+            'https://web.archive.org/web/20240721175752/https://www.darklaunch.com/base58-encode-and-decode-using-php-with-example-base58-encode-base58-decode.html',
             licenseType: ToolLicenseType.PUBLIC_DOMAIN),
       ],
     ),
@@ -1926,14 +1957,14 @@ void initializeRegistry(BuildContext context) {
             author: 'Kevin Alberston',
             title: 'Base122',
             sourceUrl:
-                'https://web.archive.org/web/20240721180712/https://github.com/kevinAlbs/Base122/blob/master/base122.js',
+            'https://web.archive.org/web/20240721180712/https://github.com/kevinAlbs/Base122/blob/master/base122.js',
             licenseType: ToolLicenseType.MIT),
         ToolLicenseCodeLibrary(
             context: context,
             author: 'Patrick Favre-Bulle',
             title: 'Base122',
             sourceUrl:
-                'https://web.archive.org/web/20240723104905/https://github.com/patrickfav/base122-java/blob/master/src/main/java/at/favre/lib/encoding/Base122.java',
+            'https://web.archive.org/web/20240723104905/https://github.com/patrickfav/base122-java/blob/master/src/main/java/at/favre/lib/encoding/Base122.java',
             licenseType: ToolLicenseType.APACHE2),
       ],
     ),
@@ -2287,13 +2318,13 @@ void initializeRegistry(BuildContext context) {
             context: context,
             author: 'Hartwig Koch, Frank Naberfeld\n(Robert Bosch GmbH)',
             title:
-                'Verfahren zur Festlegung einer Ortsposition und Vorrichtung zur elektronischen Verarbeitung von Ortspositionen\nPatent DE 102 39 432.6',
+            'Verfahren zur Festlegung einer Ortsposition und Vorrichtung zur elektronischen Verarbeitung von Ortspositionen\nPatent DE 102 39 432.6',
             year: 2002,
             month: 8,
             day: 28,
             licenseType: ToolLicenseType.FREE_TO_USE,
             sourceUrl:
-                'https://web.archive.org/web/20240720180713/https://patentimages.storage.googleapis.com/8c/d1/46/c983120d1aea7b/DE10239432A1.pdf'),
+            'https://web.archive.org/web/20240720180713/https://patentimages.storage.googleapis.com/8c/d1/46/c983120d1aea7b/DE10239432A1.pdf'),
         ToolLicensePortedCode(
           context: context,
           author: 'Jan van der Laan',
@@ -2307,14 +2338,14 @@ void initializeRegistry(BuildContext context) {
             author: 'F.H. Schreutelkamp, Strang van Hees\n(De Koepel)',
             title: 'Benaderingsformules voor de transformatie tussen RD- en WGS84-kaartcoördinaten',
             sourceUrl:
-                'https://web.archive.org/web/20041206052853/http://www.dekoepel.nl/pdf/Transformatieformules.pdf'),
+            'https://web.archive.org/web/20041206052853/http://www.dekoepel.nl/pdf/Transformatieformules.pdf'),
         ToolLicenseOnlineArticle(
           context: context,
           author: 'en.wikipedia.org and contributors',
           title: 'Global Area Reference System',
           licenseType: ToolLicenseType.CCBYSA4,
           licenseUrl:
-              'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+          'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
           sourceUrl: 'https://en.wikipedia.org/w/index.php?title=Global_Area_Reference_System&oldid=1127203453',
         ),
         ToolLicenseOnlineArticle(
@@ -2325,14 +2356,14 @@ void initializeRegistry(BuildContext context) {
             month: 10,
             day: 6,
             sourceUrl:
-                'https://web.archive.org/web/20061020155156/http://earth-info.nga.mil/GandG/coordsys/grids/gars.html'),
+            'https://web.archive.org/web/20061020155156/http://earth-info.nga.mil/GandG/coordsys/grids/gars.html'),
         ToolLicensePortedCode(
             context: context,
             author: 'Taisuke Fukuno',
             title: 'Geo3x3',
             licenseType: ToolLicenseType.CC0_1,
             licenseUrl:
-                'https://github.com/S-Man42/Geo3x3/tree/ca45f4a2c5fcebd806d1dbf615c7a26a8cad1150?tab=License-1-ov-file',
+            'https://github.com/S-Man42/Geo3x3/tree/ca45f4a2c5fcebd806d1dbf615c7a26a8cad1150?tab=License-1-ov-file',
             sourceUrl: 'https://github.com/S-Man42/Geo3x3/tree/ca45f4a2c5fcebd806d1dbf615c7a26a8cad1150'),
         ToolLicenseOnlineArticle(
             context: context,
@@ -2347,7 +2378,7 @@ void initializeRegistry(BuildContext context) {
             title: 'geohex4j',
             licenseType: ToolLicenseType.MIT,
             licenseUrl:
-                'https://github.com/S-Man42/geohex4j/tree/464acda075666e0c2cb868935b334371c7f2eb97?tab=readme-ov-file#license',
+            'https://github.com/S-Man42/geohex4j/tree/464acda075666e0c2cb868935b334371c7f2eb97?tab=readme-ov-file#license',
             sourceUrl: 'https://github.com/S-Man42/geohex4j/tree/464acda075666e0c2cb868935b334371c7f2eb97'),
         ToolLicenseOnlineArticle(
           context: context,
@@ -2371,7 +2402,7 @@ void initializeRegistry(BuildContext context) {
             title: 'Open Location Code',
             licenseType: ToolLicenseType.APACHE2,
             licenseUrl:
-                'https://github.com/S-Man42/open-location-code/blob/dfcebc905b81c3d9c987f7b3ac6e992f1e8710c6/LICENSE',
+            'https://github.com/S-Man42/open-location-code/blob/dfcebc905b81c3d9c987f7b3ac6e992f1e8710c6/LICENSE',
             sourceUrl: 'https://github.com/S-Man42/open-location-code/tree/dfcebc905b81c3d9c987f7b3ac6e992f1e8710c6'),
         ToolLicenseOnlineArticle(
             context: context,
@@ -2384,11 +2415,11 @@ void initializeRegistry(BuildContext context) {
             context: context,
             author: 'Bundesamt für Landestopografie Schweiz swisstopo',
             title:
-                'Formeln und Konstanten für die Berechnung der Schweizerischen schiefachsigen Zylinderprojektion und der Transformation zwischen Koordinatensystemen',
+            'Formeln und Konstanten für die Berechnung der Schweizerischen schiefachsigen Zylinderprojektion und der Transformation zwischen Koordinatensystemen',
             year: 2016,
             month: 12,
             sourceUrl:
-                'https://web.archive.org/web/20210511074533/https://www.swisstopo.admin.ch/content/swisstopo-internet/de/topics/survey/reference-systems/switzerland/_jcr_content/contentPar/tabs/items/dokumente_publikatio/tabPar/downloadlist/downloadItems/517_1459343190376.download/refsys_d.pdf'),
+            'https://web.archive.org/web/20210511074533/https://www.swisstopo.admin.ch/content/swisstopo-internet/de/topics/survey/reference-systems/switzerland/_jcr_content/contentPar/tabs/items/dokumente_publikatio/tabPar/downloadlist/downloadItems/517_1459343190376.download/refsys_d.pdf'),
         ToolLicensePortedCode(
             context: context,
             author: 'Thomas \'moenk\' Mönkemeier\n(moenk.de)',
@@ -2399,7 +2430,7 @@ void initializeRegistry(BuildContext context) {
               permissionYear: 2013,
             ),
             sourceUrl:
-                'https://web.archive.org/web/20121102023141/http://www.moenk.de/index.php?serendipity[subpage]=downloadmanager&level=1&thiscat=4',
+            'https://web.archive.org/web/20121102023141/http://www.moenk.de/index.php?serendipity[subpage]=downloadmanager&level=1&thiscat=4',
             licenseType: ToolLicenseType.PRIVATE_PERMISSION),
       ],
     ),
@@ -2424,8 +2455,16 @@ void initializeRegistry(BuildContext context) {
               title: 'GeoFormula and TerpsTest',
               licenseType: ToolLicenseType.APACHE2,
               licenseUrl:
-                  'https://github.com/S-Man42/GeoFormulas/tree/ac40eb5589883999f830908cd1db45c73e1e1267?tab=readme-ov-file#legal-stuff',
-              sourceUrl: 'https://github.com/S-Man42/GeoFormulas/tree/ac40eb5589883999f830908cd1db45c73e1e1267')
+              'https://github.com/S-Man42/GeoFormulas/tree/ac40eb5589883999f830908cd1db45c73e1e1267?tab=readme-ov-file#legal-stuff',
+              sourceUrl: 'http://web.archive.org/web/20240812021538/https://github.com/pkohut/GeoFormulas'),
+          ToolLicensePortedCode(
+              context: context,
+              author: '@josxha (Github)',
+              title: 'Flutter Map: Scalebar',
+              licenseType: ToolLicenseType.BSD3,
+              licenseUrl:
+              'https://web.archive.org/web/20240606210131/https://pub.dev/packages/flutter_map/license',
+              sourceUrl: 'http://web.archive.org/web/20240831132524/https://github.com/josxha/flutter_map/blob/477bbdf41e5e99b74b8f2f6b7054f38e1e8d64c7/lib/src/layer/scalebar/scalebar.dart')
         ]),
     GCWTool(
       tool: const VariableCoordinateFormulas(),
@@ -2468,7 +2507,7 @@ void initializeRegistry(BuildContext context) {
               title: 'GPS Averaging',
               licenseType: ToolLicenseType.APACHE2,
               licenseUrl:
-                  'https://github.com/S-Man42/GPS-Averaging/blob/260eb5464d6d1b969c3f30bce42c5cf7848aab93/LICENSE.md',
+              'https://github.com/S-Man42/GPS-Averaging/blob/260eb5464d6d1b969c3f30bce42c5cf7848aab93/LICENSE.md',
               sourceUrl: 'https://github.com/S-Man42/GPS-Averaging/tree/260eb5464d6d1b969c3f30bce42c5cf7848aab93')
         ]),
     GCWTool(
@@ -2821,7 +2860,7 @@ void initializeRegistry(BuildContext context) {
             permissionDay: 21,
           ),
           sourceUrl:
-              'https://web.archive.org/web/20240721214347/https://www.aoi.uzh.ch/de/islamwissenschaft/studium/tools/kalenderumrechnung.html',
+          'https://web.archive.org/web/20240721214347/https://www.aoi.uzh.ch/de/islamwissenschaft/studium/tools/kalenderumrechnung.html',
           licenseType: ToolLicenseType.PRIVATE_PERMISSION,
         ),
       ],
@@ -2888,7 +2927,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Hendrik Van Belleghem',
           title: 'Acme-Beatnik-0.02',
           sourceUrl:
-              'https://web.archive.org/web/20240722064615/https://metacpan.org/release/BEATNIK/Acme-Beatnik-0.02/source',
+          'https://web.archive.org/web/20240722064615/https://metacpan.org/release/BEATNIK/Acme-Beatnik-0.02/source',
           licenseType: ToolLicenseType.AL),
     ]),
     GCWTool(tool: const Befunge(), id: 'befunge', isBeta: true, searchKeys: const [
@@ -2945,7 +2984,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Mark "AtomK F.',
           title: 'C-Cow-Interpreter',
           sourceUrl:
-              'https://web.archive.org/web/20240722070830/https://github.com/Atomk/C-COW-Interpreter/blob/master/cow-interpreter.c',
+          'https://web.archive.org/web/20240722070830/https://github.com/Atomk/C-COW-Interpreter/blob/master/cow-interpreter.c',
           licenseType: ToolLicenseType.MIT),
       // TODO: @Thomas: PortedCode richtig oder OnlineArticle?
       ToolLicensePortedCode(
@@ -2982,7 +3021,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Jonathan Todd Skinner',
           title: 'the Deadfish Programming Language',
           sourceUrl:
-              'https://web.archive.org/web/20100425075447/http://www.jonathantoddskinner.com/projects/deadfish.html'),
+          'https://web.archive.org/web/20100425075447/http://www.jonathantoddskinner.com/projects/deadfish.html'),
       ToolLicenseOnlineArticle(
           context: context,
           author: 'Esolang, the esoteric programming languages wiki',
@@ -2993,7 +3032,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Jonathan Todd Skinner',
           title: 'the Deadfish Programming Language',
           sourceUrl:
-              'https://web.archive.org/web/20100425075447/http://www.jonathantoddskinner.com/projects/deadfish.html',
+          'https://web.archive.org/web/20100425075447/http://www.jonathantoddskinner.com/projects/deadfish.html',
           licenseType: ToolLicenseType.FREE_TO_USE),
     ]),
     GCWTool(tool: const Hohoho(), id: 'hohoho', searchKeys: const [
@@ -3122,7 +3161,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Adam "adapap" Papenhausen',
           title: 'whitespace-interpreter',
           sourceUrl:
-              'https://web.archive.org/web/20240722195953/https://github.com/adapap/whitespace-interpreter/blob/master/whitespace_interpreter.py#L1',
+          'https://web.archive.org/web/20240722195953/https://github.com/adapap/whitespace-interpreter/blob/master/whitespace_interpreter.py#L1',
           licenseType: ToolLicenseType.MIT),
       ToolLicenseCodeLibrary(
           context: context,
@@ -3544,6 +3583,19 @@ void initializeRegistry(BuildContext context) {
       'languagegames',
       'duckspeak',
     ]),
+    GCWTool(tool: const Judoon(), id: 'judoon', searchKeys: const [
+      'judoon'
+    ], licenses: [
+      ToolLicenseOnlineArticle(context: context,
+        author: 'Whooligan',
+        title: 'Whooligan\'s Judoon Language Translator',
+        sourceUrl: 'https://web.archive.org/web/20230311235731/http://www.judoon.com/judoon-translator.php',
+      ),
+      ToolLicenseOnlineArticle(context: context,
+        author: 'Whooligan',
+        title: 'Doctor Who Fan Forum',
+        sourceUrl: 'http://www.judoon.com/judoon-translator.php',
+      )]),
     GCWTool(tool: const PigLatin(), id: 'piglatin', searchKeys: const [
       'languagegames',
       'languagegames_piglatin',
@@ -4634,7 +4686,7 @@ void initializeRegistry(BuildContext context) {
         title: 'Scrabble letter distributions',
         licenseType: ToolLicenseType.CCBYSA4,
         licenseUrl:
-            'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+        'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
         sourceUrl: 'https://en.wikipedia.org/w/index.php?title=Scrabble_letter_distributions&oldid=1231431837',
       ),
       ToolLicenseOnlineArticle(
@@ -4643,7 +4695,7 @@ void initializeRegistry(BuildContext context) {
           title: 'Scrabble',
           licenseType: ToolLicenseType.CCBYSA4,
           licenseUrl:
-              'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
+          'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
           sourceUrl: 'https://de.wikipedia.org/w/index.php?title=Scrabble&oldid=245686434'),
     ]),
     GCWTool(tool: const ScrabbleOverview(), id: 'scrabbleoverview', searchKeys: const [
@@ -4655,7 +4707,7 @@ void initializeRegistry(BuildContext context) {
         title: 'Scrabble letter distributions',
         licenseType: ToolLicenseType.CCBYSA4,
         licenseUrl:
-            'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+        'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
         sourceUrl: 'https://en.wikipedia.org/w/index.php?title=Scrabble_letter_distributions&oldid=1231431837',
       ),
       ToolLicenseOnlineArticle(
@@ -4664,7 +4716,7 @@ void initializeRegistry(BuildContext context) {
           title: 'Scrabble',
           licenseType: ToolLicenseType.CCBYSA4,
           licenseUrl:
-              'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
+          'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
           sourceUrl: 'https://de.wikipedia.org/w/index.php?title=Scrabble&oldid=245686434'),
     ]),
 
@@ -4708,7 +4760,7 @@ void initializeRegistry(BuildContext context) {
         tool: const FourteenSegments(),
         id: 'segmentdisplay_14segments',
         iconPath:
-            'lib/tools/science_and_technology/segment_display/14_segment_display/assets/icon_14segment_display.png',
+        'lib/tools/science_and_technology/segment_display/14_segment_display/assets/icon_14segment_display.png',
         searchKeys: const [
           'segments',
           'segments_fourteen',
@@ -4718,7 +4770,7 @@ void initializeRegistry(BuildContext context) {
         tool: const SixteenSegments(),
         id: 'segmentdisplay_16segments',
         iconPath:
-            'lib/tools/science_and_technology/segment_display/16_segment_display/assets/icon_16segment_display.png',
+        'lib/tools/science_and_technology/segment_display/16_segment_display/assets/icon_16segment_display.png',
         searchKeys: const [
           'segments',
           'segments_sixteen',
@@ -4830,9 +4882,9 @@ void initializeRegistry(BuildContext context) {
           author: 'Zac Forshee',
           title: 'ImageHashing ',
           licenseUrl:
-              'https://web.archive.org/web/20240724150805/https://github.com/jforshee/ImageHashing/blob/master/README.md',
+          'https://web.archive.org/web/20240724150805/https://github.com/jforshee/ImageHashing/blob/master/README.md',
           sourceUrl:
-              'https://web.archive.org/web/20240000000000*/https://github.com/jforshee/ImageHashing/blob/master/ImageHashing/ImageHashing.cs',
+          'https://web.archive.org/web/20240000000000*/https://github.com/jforshee/ImageHashing/blob/master/ImageHashing/ImageHashing.cs',
           licenseType: ToolLicenseType.FREE_TO_USE),
     ]),
 
@@ -4845,7 +4897,7 @@ void initializeRegistry(BuildContext context) {
           title: 'Adlam (Schrift)',
           licenseType: ToolLicenseType.CCBYSA4,
           licenseUrl:
-              'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
+          'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
           sourceUrl: 'https://de.wikipedia.org/w/index.php?title=Adlam_(Schrift)&oldid=223204639'),
     ]),
     GCWSymbolTableTool(symbolKey: 'albhed', symbolSearchStrings: const [
@@ -4856,7 +4908,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Al-bhed-fans (deviantart.com)',
           title: 'Al-bhed TTF',
           sourceUrl:
-              'https://web.archive.org/web/20231121201318/https://www.deviantart.com/al-bhed-fans/art/Al-bhed-TTF-20702586',
+          'https://web.archive.org/web/20231121201318/https://www.deviantart.com/al-bhed-fans/art/Al-bhed-TTF-20702586',
           licenseType: ToolLicenseType.FREE_TO_USE)
     ]),
 
@@ -4931,7 +4983,7 @@ void initializeRegistry(BuildContext context) {
           title: 'Ancient alphabet',
           licenseUrl: 'https://web.archive.org/web/20230224043116/https://www.fandom.com/licensing',
           sourceUrl:
-              'https://web.archive.org/web/20220609042351/https://stargate.fandom.com/wiki/Ancient_language?file=Ancient_alpahabet.png',
+          'https://web.archive.org/web/20220609042351/https://stargate.fandom.com/wiki/Ancient_language?file=Ancient_alpahabet.png',
           licenseType: ToolLicenseType.CCBYSA3)
     ]),
     GCWSymbolTableTool(symbolKey: 'arabic_indian_numerals', symbolSearchStrings: const [
@@ -4947,7 +4999,14 @@ void initializeRegistry(BuildContext context) {
     GCWSymbolTableTool(symbolKey: 'arcadian', symbolSearchStrings: const [
       'symbol_arcadian',
     ], licenses: [
-      stl._toolLicenseCullyLong,
+      ToolLicenseFont(
+        context: context,
+        author: 'Skies of Arcadia Island (arcadia.island.free.fr)',
+        title: 'La police d\'Arcadia',
+        sourceUrl:
+        'https://web.archive.org/web/20230628184941/http://arcadia.island.free.fr/down/police.zip',
+        licenseType: ToolLicenseType.FREE_TO_USE,
+      ),
     ]),
     GCWSymbolTableTool(symbolKey: 'ath', symbolSearchStrings: const [
       'symbol_ath',
@@ -4957,15 +5016,24 @@ void initializeRegistry(BuildContext context) {
         author: 'WurdBentur',
         title: 'Dadh Ath',
         sourceUrl:
-            'https://web.archive.org/web/20240808095142/https://www.deviantart.com/wurdbendur/art/Dadh-Ath-9821558',
+        'https://web.archive.org/web/20240808095142/https://www.deviantart.com/wurdbendur/art/Dadh-Ath-9821558',
         licenseType: ToolLicenseType.FREE_TO_USE,
       ),
-      ToolLicenseFont(
+      ToolLicenseImage(
         context: context,
-        author: 'Omniglot',
+        author: 'Morioka Hiroyuki',
         title: 'Ath alphabet',
         sourceUrl: 'https://web.archive.org/web/20240808095601/https://www.omniglot.com/conscripts/ath.htm',
-        licenseType: ToolLicenseType.FREE_TO_USE,
+        licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+        licenseUseType: ToolLicenseUseType.COPY,
+        privatePermission: ToolLicensePrivatePermission(
+            context: context,
+            medium: 'e-mail',
+            permissionYear: 2024,
+            permissionMonth: 7,
+            permissionDay: 31,
+            permissionAuthor: 'Simon Ager (Omniglot)'
+        ),
       )
     ]),
     GCWSymbolTableTool(symbolKey: 'atlantean', symbolSearchStrings: const [
@@ -4998,7 +5066,7 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'Trevor A Johnston',
           title:
-              'Auslan: The Sign Language of the Australian Deaf community. Unpublished doctoral dissertation, University of Sydney, Sydney.',
+          'Auslan: The Sign Language of the Australian Deaf community. Unpublished doctoral dissertation, University of Sydney, Sydney.',
           year: 1989,
           month: 1,
           day: 1,
@@ -5041,7 +5109,7 @@ void initializeRegistry(BuildContext context) {
           title: "Essai sur divers procédés d'expéditive française",
           year: 1815,
           sourceUrl:
-              "https://books.google.de/books?id=lkVzrUr1RvEC&q=essai+sur+divers+proc%C3%A9d%C3%A9s+d%27exp%C3%A9ditive+fran%C3%A7aise&pg=PA1&redir_esc=y#v=snippet&q=essai%20sur%20divers%20proc%C3%A9d%C3%A9s%20d'exp%C3%A9ditive%20fran%C3%A7aise&f=false")
+          "https://books.google.de/books?id=lkVzrUr1RvEC&q=essai+sur+divers+proc%C3%A9d%C3%A9s+d%27exp%C3%A9ditive+fran%C3%A7aise&pg=PA1&redir_esc=y#v=snippet&q=essai%20sur%20divers%20proc%C3%A9d%C3%A9s%20d'exp%C3%A9ditive%20fran%C3%A7aise&f=false")
     ]),
     GCWSymbolTableTool(symbolKey: 'barcode39', symbolSearchStrings: const [
       'barcodes',
@@ -5062,7 +5130,7 @@ void initializeRegistry(BuildContext context) {
           author: 'commons.wikimedia.org and contributors',
           title: 'Bruce_Martin_hexadecimal_notation_proposal.png',
           sourceUrl:
-              'https://en.wikipedia.org/w/index.php?title=Hexadecimal&oldid=1230560724#/media/File:Bruce_Martin_hexadecimal_notation_proposal.png'),
+          'https://en.wikipedia.org/w/index.php?title=Hexadecimal&oldid=1230560724#/media/File:Bruce_Martin_hexadecimal_notation_proposal.png'),
     ]),
     GCWSymbolTableTool(symbolKey: 'base16', symbolSearchStrings: const [
       'base16'
@@ -5072,7 +5140,7 @@ void initializeRegistry(BuildContext context) {
           author: 'commons.wikimedia.org and contributors',
           title: 'Base-16_digits.svg',
           sourceUrl:
-              'https://en.wikipedia.org/w/index.php?title=Hexadecimal&oldid=1230560724#/media/File:Base-16_digits.svg'),
+          'https://en.wikipedia.org/w/index.php?title=Hexadecimal&oldid=1230560724#/media/File:Base-16_digits.svg'),
     ]),
     GCWSymbolTableTool(symbolKey: 'baudot_1888', symbolSearchStrings: const [
       'ccitt',
@@ -5106,7 +5174,7 @@ void initializeRegistry(BuildContext context) {
           author: 'commons.wikimedia.org and contributors',
           title: 'Table_de_correspondance_entre_le_Bibinaire_et_les_autres_notations.svg',
           sourceUrl:
-              'https://en.wikipedia.org/w/index.php?title=Bibi-binary&oldid=1218138081#/media/File:Table_de_correspondance_entre_le_Bibinaire_et_les_autres_notations.svg'),
+          'https://en.wikipedia.org/w/index.php?title=Bibi-binary&oldid=1218138081#/media/File:Table_de_correspondance_entre_le_Bibinaire_et_les_autres_notations.svg'),
     ]),
     GCWSymbolTableTool(symbolKey: 'billiard_balls', symbolSearchStrings: const [
       'symbol_billiard_balls',
@@ -5200,7 +5268,7 @@ void initializeRegistry(BuildContext context) {
           author: 'commons.wikimedia.org and contributors',
           title: 'British Sign Language chart.png',
           sourceUrl:
-              'https://web.archive.org/web/20220126171505/https://commons.wikimedia.org/wiki/File:British_Sign_Language_chart.png')
+          'https://web.archive.org/web/20220126171505/https://commons.wikimedia.org/wiki/File:British_Sign_Language_chart.png')
     ]),
     GCWSymbolTableTool(symbolKey: 'chain_of_death_direction', symbolSearchStrings: const [
       'symbol_chain_of_death_direction',
@@ -5297,7 +5365,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Studio Mies',
           title: 'Lettertype Mies Christmas Icons',
           sourceUrl:
-              'https://web.archive.org/web/20220726192456/https://www.dafont.com/de/lettertype-mies-christmas-icons.font',
+          'https://web.archive.org/web/20220726192456/https://www.dafont.com/de/lettertype-mies-christmas-icons.font',
           licenseType: ToolLicenseType.PERSONAL_USE)
     ]),
     GCWSymbolTableTool(symbolKey: 'cirth_erebor', symbolSearchStrings: const [
@@ -5350,7 +5418,22 @@ void initializeRegistry(BuildContext context) {
       'color',
       'symbol_color_code',
     ], licenses: [
-      stl._toolLicenseMyGeoToolsCodeTabellen,
+      ToolLicenseImage(
+          context: context,
+          author: 'ColorADD.net',
+          title: 'ColorADD - The Color Alphabet',
+          privatePermission: ToolLicensePrivatePermission(
+              medium: 'e-mail',
+              permissionYear: 2024,
+              permissionMonth: 8,
+              permissionDay: 20,
+              context: context,
+              permissionAuthor: 'Silvia Couto'
+          ),
+          sourceUrl:
+          'https://web.archive.org/web/20240629170653/https://www.coloradd.net/en/coloradd-code/',
+          licenseType: ToolLicenseType.NON_COMMERCIAL,
+          licenseUseType: ToolLicenseUseType.COPY)
     ]),
     GCWSymbolTableTool(symbolKey: 'color_honey', symbolSearchStrings: const [
       'color',
@@ -5426,7 +5509,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Pixel Sagas',
           title: 'Modern Cybertronic',
           sourceUrl:
-              'https://web.archive.org/web/20240403144459/https://www.pixelsagas.com/?download=modern-cybertronic',
+          'https://web.archive.org/web/20240403144459/https://www.pixelsagas.com/?download=modern-cybertronic',
           licenseType: ToolLicenseType.FREE_TO_USE,
           licenseUrl: 'https://web.archive.org/web/20240728140247/https://www.pixelsagas.com/?p=55285#comment-92401')
     ]),
@@ -5440,7 +5523,7 @@ void initializeRegistry(BuildContext context) {
           author: 'wikipedia.org and contributors',
           title: 'Gallery of sovereign state flags',
           sourceUrl:
-              'https://web.archive.org/web/20210109105312/https://en.wikipedia.org/wiki/Gallery_of_sovereign_state_flags',
+          'https://web.archive.org/web/20210109105312/https://en.wikipedia.org/wiki/Gallery_of_sovereign_state_flags',
           licenseType: ToolLicenseType.CCBYSA4)
     ]),
     GCWSymbolTableTool(symbolKey: 'covenant', symbolSearchStrings: const [
@@ -5461,7 +5544,7 @@ void initializeRegistry(BuildContext context) {
           author: 'MagnusArania',
           title: 'Crystallic Alphabet',
           sourceUrl:
-              'https://web.archive.org/web/20221213100809/https://www.deviantart.com/magnusarania/art/Crystallic-Alphabet-457870324',
+          'https://web.archive.org/web/20221213100809/https://www.deviantart.com/magnusarania/art/Crystallic-Alphabet-457870324',
           licenseType: ToolLicenseType.FREE_TO_USE)
     ]),
     GCWSymbolTableTool(symbolKey: 'cyrillic', symbolSearchStrings: const [
@@ -5496,7 +5579,7 @@ void initializeRegistry(BuildContext context) {
           day: 29,
           licenseType: ToolLicenseType.FREE_TO_USE,
           licenseUrl:
-              'https://web.archive.org/web/20240514014436/https://en.uesp.net/wiki/File:Obliviontt.zip#Licensing',
+          'https://web.archive.org/web/20240514014436/https://en.uesp.net/wiki/File:Obliviontt.zip#Licensing',
           sourceUrl: 'httpss://web.archive.org/web/20240514014436/https://en.uesp.net/wiki/File:Obliviontt.zip')
     ]),
     GCWSymbolTableTool(symbolKey: 'dagger', symbolSearchStrings: const [
@@ -5520,13 +5603,13 @@ void initializeRegistry(BuildContext context) {
           title: 'The Return of Sherlock Holmes - Chapter III: The Adventure of the Dancing Men',
           year: 1905,
           sourceUrl:
-              'https://web.archive.org/web/20230310063322/https://en.wikisource.org/wiki/The_Return_of_Sherlock_Holmes/Chapter_3'),
+          'https://web.archive.org/web/20230310063322/https://en.wikisource.org/wiki/The_Return_of_Sherlock_Holmes/Chapter_3'),
       ToolLicenseOnlineBook(
           context: context,
           author: 'en.wikipedia.org and contributors',
           title: 'The Adventure of the Dancing Men',
           sourceUrl:
-              'https://web.archive.org/web/20210108115120/https://en.wikipedia.org/wiki/The_Adventure_of_the_Dancing_Men',
+          'https://web.archive.org/web/20210108115120/https://en.wikipedia.org/wiki/The_Adventure_of_the_Dancing_Men',
           licenseType: ToolLicenseType.CCBYSA4),
       stl._toolLicenseWrixonGeheimsprachen,
     ]),
@@ -5539,7 +5622,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Deafblind Information Australia',
           title: 'Living with Deafblindness. Deafblind Manual Alphabet',
           sourceUrl:
-              'https://web.archive.org/web/20240808104641/https://www.deafblindinformation.org.au/living-with-deafblindness/deafblind-communication/deafblind-manual-alphabet/'),
+          'https://web.archive.org/web/20240808104641/https://www.deafblindinformation.org.au/living-with-deafblindness/deafblind-communication/deafblind-manual-alphabet/'),
       ToolLicenseOnlineArticle(
           context: context,
           author: 'en.wikipedia.org and contributors',
@@ -5573,7 +5656,7 @@ void initializeRegistry(BuildContext context) {
           title: 'Dinotopian',
           year: 1998,
           sourceUrl:
-              'https://web.archive.org/web/20210923113944/https://www.oocities.org/timessquare/4965/sffont.html#dino',
+          'https://web.archive.org/web/20210923113944/https://www.oocities.org/timessquare/4965/sffont.html#dino',
           licenseType: ToolLicenseType.FREE_TO_USE,
           customComment: 'License text in first section of the website')
     ]),
@@ -5607,7 +5690,7 @@ void initializeRegistry(BuildContext context) {
           author: 'West Wind Fonts',
           title: '"Roswell Wreckage" Font',
           sourceUrl:
-              'https://web.archive.org/web/20240729163459/https://blambot.com/collections/dialogue-fonts/products/roswell-wreckage?variant=20500735164470',
+          'https://web.archive.org/web/20240729163459/https://blambot.com/collections/dialogue-fonts/products/roswell-wreckage?variant=20500735164470',
           licenseType: ToolLicenseType.FREE_TO_USE,
           customComment: 'for Non-profit/ Indie Comics')
     ]),
@@ -5697,7 +5780,7 @@ void initializeRegistry(BuildContext context) {
             context: context,
           ),
           sourceUrl:
-              'https://web.archive.org/web/20210731034944/https://www.anthroposophie-muenchen.de/eurythmiefiguren',
+          'https://web.archive.org/web/20210731034944/https://www.anthroposophie-muenchen.de/eurythmiefiguren',
           licenseType: ToolLicenseType.NON_COMMERCIAL,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -5729,7 +5812,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Nederlandse fantasia Wiki',
           title: 'Fantastisch',
           sourceUrl:
-              'https://web.archive.org/web/20240714203824/https://nederlandse-fantasia.fandom.com/wiki/Fantastisch',
+          'https://web.archive.org/web/20240714203824/https://nederlandse-fantasia.fandom.com/wiki/Fantastisch',
           licenseType: ToolLicenseType.CCBYSA3)
     ]),
     GCWSymbolTableTool(symbolKey: 'fez', symbolSearchStrings: const [
@@ -5811,7 +5894,7 @@ void initializeRegistry(BuildContext context) {
           author: 'W. G. Perrin',
           title: 'The Project Gutenberg EBook of British Flags',
           sourceUrl:
-              'https://web.archive.org/web/20240723212351/https://www.gutenberg.org/files/46370/46370-h/46370-h.htm')
+          'https://web.archive.org/web/20240723212351/https://www.gutenberg.org/files/46370/46370-h/46370-h.htm')
     ]),
     GCWSymbolTableTool(symbolKey: 'flags_rn_marryat', symbolSearchStrings: const [
       'symbol_flags',
@@ -5834,7 +5917,7 @@ void initializeRegistry(BuildContext context) {
           author: 'W. G. Perrin',
           title: 'The Project Gutenberg EBook of British Flags',
           sourceUrl:
-              'https://web.archive.org/web/20240723212351/https://www.gutenberg.org/files/46370/46370-h/46370-h.htm'),
+          'https://web.archive.org/web/20240723212351/https://www.gutenberg.org/files/46370/46370-h/46370-h.htm'),
       ToolLicenseOnlineBook(
           context: context,
           author: 'Sir Home Riggs Popham',
@@ -5846,12 +5929,22 @@ void initializeRegistry(BuildContext context) {
     GCWSymbolTableTool(symbolKey: 'fonic', symbolSearchStrings: const [
       'symbol_fonic',
     ], licenses: [
-      ToolLicenseFont(
-          context: context,
-          author: 'Unknown',
-          title: 'Fonic',
-          sourceUrl: 'https://web.archive.org/web/20200814001421/https://www.omniglot.com/conscripts/fonime.htm',
-          licenseType: ToolLicenseType.FREE_TO_USE)
+      ToolLicenseImage(
+        context: context,
+        author: 'Unknown',
+        title: 'Fonic',
+        sourceUrl: 'https://web.archive.org/web/20200814001421/https://www.omniglot.com/conscripts/fonime.htm',
+        licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+        licenseUseType: ToolLicenseUseType.COPY,
+        privatePermission: ToolLicensePrivatePermission(
+            context: context,
+            medium: 'e-mail',
+            permissionYear: 2024,
+            permissionMonth: 7,
+            permissionDay: 31,
+            permissionAuthor: 'Simon Ager (Omniglot)'
+        ),
+      )
     ]),
     GCWSymbolTableTool(symbolKey: 'four_triangles', symbolSearchStrings: const [
       'symbol_four_triangles',
@@ -5914,11 +6007,11 @@ void initializeRegistry(BuildContext context) {
       'symbol_futurama',
     ], licenses: [
       ToolLicenseFont(
-        context: context,
-        author: 'Darrell Johnson, Leandro Pardini',
-        title: 'Futurama Alien Alphabet One',
-        sourceUrl: 'https://web.archive.org/web/20190704113955/www.futurama-madhouse.net/fonts/index.shtml',
-        licenseType: ToolLicenseType.FREE_TO_USE)
+          context: context,
+          author: 'Darrell Johnson, Leandro Pardini',
+          title: 'Futurama Alien Alphabet One',
+          sourceUrl: 'https://web.archive.org/web/20190704113955/www.futurama-madhouse.net/fonts/index.shtml',
+          licenseType: ToolLicenseType.FREE_TO_USE)
     ]),
     GCWSymbolTableTool(symbolKey: 'futurama_2', symbolSearchStrings: const [
       'symbol_futurama_2',
@@ -5938,7 +6031,7 @@ void initializeRegistry(BuildContext context) {
           author: 'wikiHow Staff',
           title: 'Gallifreyisch schreiben wie Doktor Who',
           sourceUrl:
-              'https://web.archive.org/web/20150725002038/https://de.wikihow.com/Gallifreyisch-schreiben-wie-Doktor-Who',
+          'https://web.archive.org/web/20150725002038/https://de.wikihow.com/Gallifreyisch-schreiben-wie-Doktor-Who',
           licenseUseType: ToolLicenseUseType.REPRODUCTION,
           licenseType: ToolLicenseType.REPRODUCTION_NEEDED)
     ]),
@@ -6015,7 +6108,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Sarinilli',
           title: 'Gerudo Typography - Font',
           sourceUrl:
-              'https://web.archive.org/web/20200906044202/https://www.deviantart.com/sarinilli/art/Gerudo-Typography-Font-278213135',
+          'https://web.archive.org/web/20200906044202/https://www.deviantart.com/sarinilli/art/Gerudo-Typography-Font-278213135',
           licenseType: ToolLicenseType.PERSONAL_USE)
     ]),
     GCWSymbolTableTool(symbolKey: 'glagolitic', symbolSearchStrings: const [
@@ -6034,7 +6127,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Sylvarmyst',
           title: 'Gnommish',
           sourceUrl:
-              'https://web.archive.org/web/20240730050939/https://fontstruct.com/fontstructions/show/677781/gnommish_31',
+          'https://web.archive.org/web/20240730050939/https://fontstruct.com/fontstructions/show/677781/gnommish_31',
           licenseType: ToolLicenseType.CCBYSA3)
     ]),
     GCWSymbolTableTool(symbolKey: 'greek_numerals', symbolSearchStrings: const [
@@ -6188,7 +6281,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Martin Anderson - mdta Design',
           title: 'TP Hylian - Wii Regular Fonts Free Downloads',
           sourceUrl:
-              'https://web.archive.org/web/20240730150257/https://www.onlinewebfonts.com/download/722c88b417177812725b0943f5470a72',
+          'https://web.archive.org/web/20240730150257/https://www.onlinewebfonts.com/download/722c88b417177812725b0943f5470a72',
           licenseType: ToolLicenseType.FREE_TO_USE)
     ]),
     GCWSymbolTableTool(symbolKey: 'hylian_wind_waker', symbolSearchStrings: const [
@@ -6251,7 +6344,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Aaqil A. Azhar (Foneer)',
           title: 'Robotica SGA',
           sourceUrl:
-              'https://web.archive.org/web/20240730195127/https://fontstruct.com/fontstructions/show/2324755/robotica-sga',
+          'https://web.archive.org/web/20240730195127/https://fontstruct.com/fontstructions/show/2324755/robotica-sga',
           licenseType: ToolLicenseType.NON_COMMERCIAL)
     ]),
     GCWSymbolTableTool(symbolKey: 'interlac', symbolSearchStrings: const [
@@ -6262,7 +6355,7 @@ void initializeRegistry(BuildContext context) {
           author: 'blue panther',
           title: 'Interlac Font',
           sourceUrl:
-              'https://web.archive.org/web/20191026172055/https://legionfonts.com/fonts/interlac--by-blue-panther-',
+          'https://web.archive.org/web/20191026172055/https://legionfonts.com/fonts/interlac--by-blue-panther-',
           licenseType: ToolLicenseType.FREE_TO_USE)
     ]),
     GCWSymbolTableTool(symbolKey: 'iokharic', symbolSearchStrings: const [
@@ -6352,7 +6445,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Geocaching Toolbox',
           title: 'Optical telegraph (Murray)',
           sourceUrl:
-              'https://web.archive.org/web/20200621050813/https://www.geocachingtoolbox.com/index.php?lang=en&page=codeTables&id=shutterTelegraph',
+          'https://web.archive.org/web/20200621050813/https://www.geocachingtoolbox.com/index.php?lang=en&page=codeTables&id=shutterTelegraph',
           licenseType: ToolLicenseType.CCNC30)
     ]),
     GCWSymbolTableTool(
@@ -6371,7 +6464,7 @@ void initializeRegistry(BuildContext context) {
           title: 'Kabouter-ABC',
           sourceUrl: 'https://web.archive.org/web/20200808071342/https://nl.scoutwiki.org/Kabouter-ABC',
           licenseUrl:
-              'https://web.archive.org/web/20200810033013/https://creativecommons.org/licenses/by-nc-sa/4.0/deed.nl',
+          'https://web.archive.org/web/20200810033013/https://creativecommons.org/licenses/by-nc-sa/4.0/deed.nl',
           licenseType: ToolLicenseType.CCBYNC40),
     ]),
     GCWSymbolTableTool(symbolKey: 'kabouter_abc_1947', symbolSearchStrings: const [
@@ -6479,7 +6572,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'Noto Sans Linear B',
           sourceUrl: 'https://fonts.google.com/noto/specimen/Noto+Sans+Linear+B',
-          licenseType: ToolLicenseType.OFL11)
+          licenseType: ToolLicenseType.SIL_OFL11)
     ]),
     GCWSymbolTableTool(symbolKey: 'lorm', symbolSearchStrings: const [
       'symbol_signlanguage',
@@ -6525,7 +6618,7 @@ void initializeRegistry(BuildContext context) {
           author: 'TTFTCUTS',
           title: 'Marain',
           sourceUrl:
-              'https://web.archive.org/web/20210823033202/https://fontstruct.com/fontstructions/show/1446008/marain-5',
+          'https://web.archive.org/web/20210823033202/https://fontstruct.com/fontstructions/show/1446008/marain-5',
           licenseType: ToolLicenseType.CCBYSA3)
     ]),
     GCWSymbolTableTool(symbolKey: 'marain_v2', symbolSearchStrings: const [
@@ -6536,7 +6629,7 @@ void initializeRegistry(BuildContext context) {
           author: 'TTFTCUTS',
           title: 'Marain Dots',
           sourceUrl:
-              'https://web.archive.org/web/20240801172315/https://fontstruct.com/fontstructions/show/1445997/marain-dots',
+          'https://web.archive.org/web/20240801172315/https://fontstruct.com/fontstructions/show/1445997/marain-dots',
           licenseType: ToolLicenseType.CCBYSA3)
     ]),
     GCWSymbolTableTool(symbolKey: 'matoran', symbolSearchStrings: const [
@@ -6587,7 +6680,7 @@ void initializeRegistry(BuildContext context) {
         author: 'Unity Corps Research Library',
         title: 'Mayan Numbers',
         sourceUrl:
-            'https://web.archive.org/web/20240722213816/https://www.mayan-calendar.org/images/reference/mayan-numbers_mayan-number-system_720x570.gif',
+        'https://web.archive.org/web/20240722213816/https://www.mayan-calendar.org/images/reference/mayan-numbers_mayan-number-system_720x570.gif',
         licenseType: ToolLicenseType.FREE_TO_USE,
         licenseUseType: ToolLicenseUseType.COPY,
       ),
@@ -6661,7 +6754,7 @@ void initializeRegistry(BuildContext context) {
         author: 'Samuel Morse',
         title: 'Morse (1838, U.S.Patent 1647, 20.06.1840)',
         sourceUrl:
-            'https://web.archive.org/web/20240724104528/https://patentimages.storage.googleapis.com/bb/4a/53/3d3b9d7e4c8619/US1647.pdf',
+        'https://web.archive.org/web/20240724104528/https://patentimages.storage.googleapis.com/bb/4a/53/3d3b9d7e4c8619/US1647.pdf',
       )
     ]),
     GCWSymbolTableTool(symbolKey: 'morse_1844_vail', symbolSearchStrings: const [
@@ -6701,7 +6794,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Helmar Fischer',
           title: 'Der Klappentelegraph',
           sourceUrl:
-              'https://web.archive.org/web/20240808115703/https://cms.sachsen.schule/fileadmin/_special/gruppen/592/klappentelegraph/download/klappentelegraphenalphabet_f_2007.pdf',
+          'https://web.archive.org/web/20240808115703/https://cms.sachsen.schule/fileadmin/_special/gruppen/592/klappentelegraph/download/klappentelegraphenalphabet_f_2007.pdf',
           licenseType: ToolLicenseType.PRIVATE_PERMISSION,
           privatePermission: ToolLicensePrivatePermission(
               context: context,
@@ -6719,7 +6812,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Helmar Fischer',
           title: 'Der Klappentelegraph',
           sourceUrl:
-              'https://web.archive.org/web/20240808115529/https://cms.sachsen.schule/fileadmin/_special/gruppen/592/klappentelegraph/download/klappentelegraphenalphabet_2016.pdf',
+          'https://web.archive.org/web/20240808115529/https://cms.sachsen.schule/fileadmin/_special/gruppen/592/klappentelegraph/download/klappentelegraphenalphabet_2016.pdf',
           licenseType: ToolLicenseType.PRIVATE_PERMISSION,
           privatePermission: ToolLicensePrivatePermission(
               context: context,
@@ -6748,7 +6841,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Omar Roucoux',
           title: 'Dunstable Signalling Station',
           sourceUrl:
-              'https://web.archive.org/web/20240808120043/https://virtual-library.culturalservices.net/webingres/bedfordshire/vlib/0.digitised_resources/dunstable_article_signalling_station_enlargement.htm',
+          'https://web.archive.org/web/20240808120043/https://virtual-library.culturalservices.net/webingres/bedfordshire/vlib/0.digitised_resources/dunstable_article_signalling_station_enlargement.htm',
           licenseType: ToolLicenseType.PRIVATE_PERMISSION,
           privatePermission: ToolLicensePrivatePermission(
               context: context,
@@ -6789,10 +6882,10 @@ void initializeRegistry(BuildContext context) {
           author: 'Ni_no_Kuni',
           title: 'NazcaanRegular',
           sourceUrl:
-              'https://web.archive.org/web/20240802171148/https://drive.google.com/file/d/0B50-IT1pATGoZDBkbU0yQXNEWlk/view?resourcekey=0-wgv-U23dbvlsc1Wbq30Oug',
+          'https://web.archive.org/web/20240802171148/https://drive.google.com/file/d/0B50-IT1pATGoZDBkbU0yQXNEWlk/view?resourcekey=0-wgv-U23dbvlsc1Wbq30Oug',
           licenseType: ToolLicenseType.FREE_TO_USE,
           licenseUrl:
-              'https://web.archive.org/web/20240819153145/https://www.reddit.com/r/Ni_no_Kuni/comments/zo3xji/nazcaan_font/?rdt=54051')
+          'https://web.archive.org/web/20240819153145/https://www.reddit.com/r/Ni_no_Kuni/comments/zo3xji/nazcaan_font/?rdt=54051')
     ]),
     GCWSymbolTableTool(symbolKey: 'new_zealand_sign_language', symbolSearchStrings: const [
       'symbol_signlanguage',
@@ -6946,7 +7039,7 @@ void initializeRegistry(BuildContext context) {
         author: 'Opternus',
         title: 'LWL Farbcodierungen',
         sourceUrl:
-            'https://web.archive.org/web/20240808130122/https://www.opternus.de/media/pdf/79/53/b6/LWL-Farbcodes.pdf',
+        'https://web.archive.org/web/20240808130122/https://www.opternus.de/media/pdf/79/53/b6/LWL-Farbcodes.pdf',
       )
     ]),
     GCWSymbolTableTool(symbolKey: 'optical_fiber_swisscom', symbolSearchStrings: const [
@@ -6959,7 +7052,7 @@ void initializeRegistry(BuildContext context) {
         author: 'Opternus',
         title: 'LWL Farbcodierungen',
         sourceUrl:
-            'https://web.archive.org/web/20240808130122/https://www.opternus.de/media/pdf/79/53/b6/LWL-Farbcodes.pdf',
+        'https://web.archive.org/web/20240808130122/https://www.opternus.de/media/pdf/79/53/b6/LWL-Farbcodes.pdf',
       )
     ]),
     GCWSymbolTableTool(symbolKey: 'phoenician', symbolSearchStrings: const [
@@ -7078,12 +7171,22 @@ void initializeRegistry(BuildContext context) {
     GCWSymbolTableTool(symbolKey: 'puzzle', symbolSearchStrings: const [
       'symbol_puzzle',
     ], licenses: [
-      ToolLicenseFont(
-          context: context,
-          author: 'Josh Ragsdell',
-          title: 'Puzzle Code',
-          sourceUrl: 'https://web.archive.org/web/20210625060800/https://www.omniglot.com/conscripts/puzzlecode.htm',
-          licenseType: ToolLicenseType.FREE_TO_USE),
+      ToolLicenseImage(
+        context: context,
+        author: 'Josh Ragsdell',
+        title: 'Puzzle Code',
+        sourceUrl: 'https://web.archive.org/web/20210625060800/https://www.omniglot.com/conscripts/puzzlecode.htm',
+        licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+        licenseUseType: ToolLicenseUseType.COPY,
+        privatePermission: ToolLicensePrivatePermission(
+            context: context,
+            medium: 'e-mail',
+            permissionYear: 2024,
+            permissionMonth: 7,
+            permissionDay: 31,
+            permissionAuthor: 'Simon Ager (Omniglot)'
+        ),
+      ),
     ]),
     GCWSymbolTableTool(symbolKey: 'puzzle_2', symbolSearchStrings: const [
       'symbol_puzzle',
@@ -7133,10 +7236,10 @@ void initializeRegistry(BuildContext context) {
           author: 'patrocool',
           title: 'Ravkan',
           sourceUrl:
-              'https://web.archive.org/web/20240228064125/https://fontstruct.com/fontstructions/show/2220712/ravkan-27',
+          'https://web.archive.org/web/20240228064125/https://fontstruct.com/fontstructions/show/2220712/ravkan-27',
           licenseType: ToolLicenseType.NON_COMMERCIAL,
           licenseUrl:
-              'https://web.archive.org/web/20240805121408/https://fontstruct.com/fontstructions/license/2220712/ravkan-27'),
+          'https://web.archive.org/web/20240805121408/https://fontstruct.com/fontstructions/license/2220712/ravkan-27'),
     ]),
     GCWSymbolTableTool(symbolKey: 'ravkan_extended', symbolSearchStrings: const [
       'symbol_ravkan_extended',
@@ -7241,7 +7344,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Leadermassimo',
           title: 'San Luca code',
           sourceUrl:
-              'https://web.archive.org/web/20191203174714/https://www.geocachingtoolbox.com/index.php?lang=de&page=codeTables&id=sanLucaCode',
+          'https://web.archive.org/web/20191203174714/https://www.geocachingtoolbox.com/index.php?lang=de&page=codeTables&id=sanLucaCode',
           licenseType: ToolLicenseType.CCBYSA4,
           customComment: 'wikimafia.it'),
       stl._toolLicenseGeocachingToolbox,
@@ -7265,7 +7368,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Université de Lille',
           title: 'L’alphabet shadok',
           sourceUrl:
-              'https://web.archive.org/web/20240805184521/https://www.fil.univ-lille.fr/~L1S1Info/Doc/HTML/tp_numeration_shadok.html')
+          'https://web.archive.org/web/20240805184521/https://www.fil.univ-lille.fr/~L1S1Info/Doc/HTML/tp_numeration_shadok.html')
     ]),
     GCWSymbolTableTool(symbolKey: 'sheikah', symbolSearchStrings: const [
       'zelda',
@@ -7367,7 +7470,7 @@ void initializeRegistry(BuildContext context) {
           permissionDay: 9,
         ),
         sourceUrl:
-            'https://web.archive.org/web/20240722095602/https://www.addizio.de/wp-content/uploads/2019/04/Solmisation.zip',
+        'https://web.archive.org/web/20240722095602/https://www.addizio.de/wp-content/uploads/2019/04/Solmisation.zip',
         licenseType: ToolLicenseType.PRIVATE_PERMISSION,
         licenseUseType: ToolLicenseUseType.COPY,
       ),
@@ -7440,12 +7543,21 @@ void initializeRegistry(BuildContext context) {
     GCWSymbolTableTool(symbolKey: 'sunuz', symbolSearchStrings: const [
       'symbol_sunuz',
     ], licenses: [
-      ToolLicenseFont(
-          context: context,
-          author: 'Unknown',
-          title: 'Tékumelani Languages',
-          sourceUrl: 'https://web.archive.org/web/20160719051617/https://www.tekumel.com/blueroom_fonts.html',
-          licenseType: ToolLicenseType.FREE_TO_USE)
+      ToolLicenseImage(
+        context: context,
+        author: 'Muhammad Abd-el-Rahman Barker',
+        title: 'Tékumel writing systems',
+        sourceUrl: 'http://web.archive.org/web/20240418033554/https://www.omniglot.com/conscripts/tekumel.php',
+        licenseUseType: ToolLicenseUseType.COPY,
+        licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+        privatePermission: ToolLicensePrivatePermission(
+            context: context,
+            medium: 'e-mail',
+            permissionYear: 2024,
+            permissionMonth: 7,
+            permissionDay: 31,
+            permissionAuthor: 'Simon Ager (Omniglot)'
+        ),)
     ]),
     GCWSymbolTableTool(symbolKey: 'surf', symbolSearchStrings: const [
       'symbol_surf',
@@ -7522,7 +7634,7 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'Museumsstiftung Post und Kommunikation',
           title:
-              'Lithografie: "Deutsche Volks-Telegraphie" mit der Darstellung des Zeichensystem des optischen Telegrafen von Schmidt',
+          'Lithografie: "Deutsche Volks-Telegraphie" mit der Darstellung des Zeichensystem des optischen Telegrafen von Schmidt',
           sourceUrl: 'https://sammlungen.museumsstiftung.de/',
           licenseType: ToolLicenseType.CCBYSA4,
           customComment: 'Inventarnummer 4.2012.518')
@@ -7537,11 +7649,11 @@ void initializeRegistry(BuildContext context) {
       'symbol_tenctonese',
     ], licenses: [
       ToolLicenseFont(context: context,
-        author: 'Jeff Lee',
-        title: 'Tenctonese Cursive',
-        sourceUrl: 'https://web.archive.org/web/20240819151530/https://www.shipbrook.net/jeff/tencton/index.html',
-        licenseType: ToolLicenseType.FREE_TO_USE,
-        licenseUrl: 'https://web.archive.org/web/20230603002844/https://www.shipbrook.net/jeff/typograf.html'
+          author: 'Jeff Lee',
+          title: 'Tenctonese Cursive',
+          sourceUrl: 'https://web.archive.org/web/20240819151530/https://www.shipbrook.net/jeff/tencton/index.html',
+          licenseType: ToolLicenseType.FREE_TO_USE,
+          licenseUrl: 'https://web.archive.org/web/20230603002844/https://www.shipbrook.net/jeff/typograf.html'
       )
     ]),
     GCWSymbolTableTool(symbolKey: 'tenctonese_printed', symbolSearchStrings: const [
@@ -7566,7 +7678,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl: 'https://web.archive.org/web/20230605163745/https://www.oocities.org/enrombell/eng_dir/Index.htm',
           licenseType: ToolLicenseType.FREE_TO_USE,
           licenseUrl:
-              'https://web.archive.org/web/20220210114601/https://freetengwar.sourceforge.net/links.html#unicode_tengwar_fonts')
+          'https://web.archive.org/web/20220210114601/https://freetengwar.sourceforge.net/links.html#unicode_tengwar_fonts')
     ]),
     GCWSymbolTableTool(symbolKey: 'tengwar_classic', symbolSearchStrings: const [
       'symbol_lordoftherings',
@@ -7579,7 +7691,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl: 'https://web.archive.org/web/20230605163745/https://www.oocities.org/enrombell/eng_dir/Index.htm',
           licenseType: ToolLicenseType.FREE_TO_USE,
           licenseUrl:
-              'https://web.archive.org/web/20220210114601/https://freetengwar.sourceforge.net/links.html#unicode_tengwar_fonts')
+          'https://web.archive.org/web/20220210114601/https://freetengwar.sourceforge.net/links.html#unicode_tengwar_fonts')
     ]),
     GCWSymbolTableTool(symbolKey: 'tengwar_general', symbolSearchStrings: const [
       'symbol_lordoftherings',
@@ -7592,7 +7704,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl: 'https://web.archive.org/web/20230605163745/https://www.oocities.org/enrombell/eng_dir/Index.htm',
           licenseType: ToolLicenseType.FREE_TO_USE,
           licenseUrl:
-              'https://web.archive.org/web/20220210114601/https://freetengwar.sourceforge.net/links.html#unicode_tengwar_fonts')
+          'https://web.archive.org/web/20220210114601/https://freetengwar.sourceforge.net/links.html#unicode_tengwar_fonts')
     ]),
     GCWSymbolTableTool(symbolKey: 'terzi', symbolSearchStrings: const [
       'symbol_terzi',
@@ -7607,7 +7719,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl: 'https://web.archive.org/web/20230605163745/https://www.oocities.org/enrombell/eng_dir/Index.htm',
           licenseType: ToolLicenseType.FREE_TO_USE,
           licenseUrl:
-              'https://web.archive.org/web/20220210114601/https://freetengwar.sourceforge.net/links.html#unicode_tengwar_fonts')
+          'https://web.archive.org/web/20220210114601/https://freetengwar.sourceforge.net/links.html#unicode_tengwar_fonts')
     ]),
     GCWSymbolTableTool(symbolKey: 'theban', symbolSearchStrings: const [
       'symbol_theban',
@@ -7662,7 +7774,7 @@ void initializeRegistry(BuildContext context) {
           author: 'de.wikipedia.org and contributors',
           title: 'Bildtafel der Verkehrszeichen in der Bundesrepublik Deutschland seit 2017',
           sourceUrl:
-              'https://de.wikipedia.org/w/index.php?title=Bildtafel_der_Verkehrszeichen_in_der_Bundesrepublik_Deutschland_seit_2017&oldid=247018625',
+          'https://de.wikipedia.org/w/index.php?title=Bildtafel_der_Verkehrszeichen_in_der_Bundesrepublik_Deutschland_seit_2017&oldid=247018625',
           licenseType: ToolLicenseType.CCBYSA4)
     ]),
     GCWSymbolTableTool(symbolKey: 'ulog', symbolSearchStrings: const [
@@ -7729,7 +7841,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'Pressure Tendency',
           sourceUrl:
-              'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
+          'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -7743,7 +7855,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'WEATHER FIGURES AND SYMBOLS',
           sourceUrl:
-              'https://web.archive.org/web/20230809231644/https://cdn2.hubspot.net/hubfs/604407/weather_symbols.gif',
+          'https://web.archive.org/web/20230809231644/https://cdn2.hubspot.net/hubfs/604407/weather_symbols.gif',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -7757,7 +7869,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'Low Clouds',
           sourceUrl:
-              'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
+          'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -7771,7 +7883,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'Middle Clouds',
           sourceUrl:
-              'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
+          'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -7785,7 +7897,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'High Clouds',
           sourceUrl:
-              'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
+          'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -7799,7 +7911,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'Sky Cover',
           sourceUrl:
-              'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
+          'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -7812,7 +7924,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'Past Weather',
           sourceUrl:
-              'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
+          'https://web.archive.org/web/20231123172913/https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -7825,7 +7937,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Unknown',
           title: 'WEATHER FIGURES AND SYMBOLS',
           sourceUrl:
-              'https://web.archive.org/web/20230809231644/https://cdn2.hubspot.net/hubfs/604407/weather_symbols.gif',
+          'https://web.archive.org/web/20230809231644/https://cdn2.hubspot.net/hubfs/604407/weather_symbols.gif',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN,
           licenseUseType: ToolLicenseUseType.COPY)
     ]),
@@ -7919,16 +8031,43 @@ void initializeRegistry(BuildContext context) {
       'symbol_yan_koryani',
     ], licenses: [
       stl._toolLicenseMyGeoToolsCodeTabellen,
-      ToolLicenseFont(
-          context: context,
-          author: 'Omniglot',
-          title: 'Tékumel writing systems',
-          sourceUrl: 'https://web.archive.org/web/20140802011409/http://www.omniglot.com/writing/tekumel.php',
-          licenseType: ToolLicenseType.FREE_TO_USE)
+      ToolLicenseImage(
+        context: context,
+        author: 'Muhammad Abd-el-Rahman Barker',
+        title: 'Tékumel writing systems',
+        sourceUrl: 'http://web.archive.org/web/20240418033554/https://www.omniglot.com/conscripts/tekumel.php',
+        licenseUseType: ToolLicenseUseType.COPY,
+        licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+        privatePermission: ToolLicensePrivatePermission(
+            context: context,
+            medium: 'e-mail',
+            permissionYear: 2024,
+            permissionMonth: 7,
+            permissionDay: 31,
+            permissionAuthor: 'Simon Ager (Omniglot)'
+        ),)
     ]),
     GCWSymbolTableTool(symbolKey: 'yinyang', symbolSearchStrings: const [
       'symbol_yinyang',
-    ], licenses: const []),
+    ], licenses: [
+      ToolLicenseImage(
+        context: context,
+        author: 'Erik Moreno',
+        year: 2006, month: 2,
+        title: 'Yin yang Alphalines',
+        licenseUseType: ToolLicenseUseType.COPY,
+        licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+        privatePermission: ToolLicensePrivatePermission(
+            context: context,
+            medium: 'e-mail',
+            permissionYear: 2024,
+            permissionMonth: 7,
+            permissionDay: 31,
+            permissionAuthor: 'Simon Ager (Omniglot)'
+        ),
+        sourceUrl: 'http://web.archive.org/web/20240224073021/https://www.omniglot.com/conscripts/yyal.htm',
+      )
+    ]),
     GCWSymbolTableTool(symbolKey: 'zamonian', symbolSearchStrings: const [
       'symbol_zamonian',
     ], licenses: [
@@ -7988,7 +8127,7 @@ void initializeRegistry(BuildContext context) {
           author: 'en.wikisource.org and contributors; Donald and Bettye Harden',
           title: 'Zodiac Killer cipher translated',
           sourceUrl:
-              'https://en.wikisource.org/w/index.php?title=Index:Zodiac_Killer_cipher_deciphered_by_Donald_and_Bettye_Harden.pdf&oldid=11214165',
+          'https://en.wikisource.org/w/index.php?title=Index:Zodiac_Killer_cipher_deciphered_by_Donald_and_Bettye_Harden.pdf&oldid=11214165',
           licenseType: ToolLicenseType.CCBYSA4)
     ]),
 
@@ -8019,7 +8158,7 @@ void initializeRegistry(BuildContext context) {
             author: 'Silvia Rubio Hernández',
             title: 'Vapriikki Case: Design and Evaluation of an Interactive Mixed-Reality Museum Exhibit',
             sourceUrl:
-                'https://web.archive.org/web/20240721203438/https://trepo.tuni.fi/bitstream/handle/10024/102557/1513599679.pdf?sequence=1&isAllowed=y',
+            'https://web.archive.org/web/20240721203438/https://trepo.tuni.fi/bitstream/handle/10024/102557/1513599679.pdf?sequence=1&isAllowed=y',
             customComment: 'Page 23ff'),
         ToolLicenseOfflineBook(
             context: context,
@@ -8055,11 +8194,11 @@ void initializeRegistry(BuildContext context) {
         context: context,
         author: 'Helmar Fischer',
         title:
-            'Informationen übertragen - nicht mit der großen Klappe sondern mit sechs kleinen Klappen ... der Klappentelegraph',
+        'Informationen übertragen - nicht mit der großen Klappe sondern mit sechs kleinen Klappen ... der Klappentelegraph',
         privatePermission: ToolLicensePrivatePermission(
             context: context, medium: 'e-Mail', permissionYear: 2021, permissionMonth: 7, permissionDay: 23),
         sourceUrl:
-            'https://web.archive.org/web/20240721211725/https://cms.sachsen.schule/typoecke2/typo-experimente/informationuebertragung-mit-dem-klappentelegraph/',
+        'https://web.archive.org/web/20240721211725/https://cms.sachsen.schule/typoecke2/typo-experimente/informationuebertragung-mit-dem-klappentelegraph/',
       ),
       ToolLicenseOnlineArticle(
         context: context,
@@ -8073,14 +8212,14 @@ void initializeRegistry(BuildContext context) {
           permissionDay: 13,
         ),
         sourceUrl:
-            'https://web.archive.org/web/20240727121255/https://virtual-library.culturalservices.net/webingres/bedfordshire/vlib/0.digitised_resources/dunstable_article_signalling_station_two.htm',
+        'https://web.archive.org/web/20240727121255/https://virtual-library.culturalservices.net/webingres/bedfordshire/vlib/0.digitised_resources/dunstable_article_signalling_station_two.htm',
       ),
       ToolLicenseImage(
         context: context,
         author: 'Unknown',
         title: 'View of the Telegraph erected on the Admiralty Office, Charing Cross in Feby 1796',
         sourceUrl:
-            'https://web.archive.org/web/20240819160122/https://c7.alamy.com/comp/P036GR/english-view-of-the-telegraph-erected-on-the-admiralty-office-charing-cross-in-feby-1796-text-in-english-within-plate-the-print-dates-from-the-year-that-the-revd-lord-george-murray-designed-the-original-arrangement-although-telegraph-or-semaphore-signals-were-also-developed-in-france-as-well-as-england-in-the-last-years-of-the-18th-century-murrays-system-was-known-as-the-shutter-telegraph-and-comprised-a-vertical-board-with-six-large-holes-in-its-face-each-of-which-could-be-opened-to-display-the-sky-or-a-light-or-closed-see-mdl0020-depending-on-the-lie-of-the-land-distances-bet-P036GR.jpg',
+        'https://web.archive.org/web/20240819160122/https://c7.alamy.com/comp/P036GR/english-view-of-the-telegraph-erected-on-the-admiralty-office-charing-cross-in-feby-1796-text-in-english-within-plate-the-print-dates-from-the-year-that-the-revd-lord-george-murray-designed-the-original-arrangement-although-telegraph-or-semaphore-signals-were-also-developed-in-france-as-well-as-england-in-the-last-years-of-the-18th-century-murrays-system-was-known-as-the-shutter-telegraph-and-comprised-a-vertical-board-with-six-large-holes-in-its-face-each-of-which-could-be-opened-to-display-the-sky-or-a-light-or-closed-see-mdl0020-depending-on-the-lie-of-the-land-distances-bet-P036GR.jpg',
         licenseType: ToolLicenseType.FREE_TO_USE,
         licenseUseType: ToolLicenseUseType.COPY,
       ),
@@ -8122,7 +8261,7 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'Königl. Pruess. Telegraphendirection',
           title:
-              'Classe 5.2 Wörterbuch für die Telegraphisten-Correspondenz\nInstruction. Erster Abschnitt. Die Behandlung des Apparates.\nInstruction. Zweiter Abschnitt. Das Telegraphieren.',
+          'Classe 5.2 Wörterbuch für die Telegraphisten-Correspondenz\nInstruction. Erster Abschnitt. Die Behandlung des Apparates.\nInstruction. Zweiter Abschnitt. Das Telegraphieren.',
           privatePermission: ToolLicensePrivatePermission(
             context: context,
             medium: 'e-Mail',
@@ -8150,7 +8289,7 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'Taliaferro Preston Shaffner',
           title:
-              'The Telegraph Manual: A Complete History and Description of the Semaphoric, Electri and Magnetic Telegraphs of Europe, Asia, Africa, and America, Ancient and Modern',
+          'The Telegraph Manual: A Complete History and Description of the Semaphoric, Electri and Magnetic Telegraphs of Europe, Asia, Africa, and America, Ancient and Modern',
           sourceUrl: '',
           year: 1859,
           publisher: 'Pudney & Russell',
@@ -8184,7 +8323,7 @@ void initializeRegistry(BuildContext context) {
             context: context,
             author: 'Tal. P. Shaffner',
             title:
-                'The telegraph manual : a complete history and description of the semaphoric, electric and magnetic telegraphs of Europe, Asia, Africa, and America, ancient and modern : with six hundred and twenty-five illustrations',
+            'The telegraph manual : a complete history and description of the semaphoric, electric and magnetic telegraphs of Europe, Asia, Africa, and America, ancient and modern : with six hundred and twenty-five illustrations',
             publisher: 'D. van Nostrand, New York',
             isbn: '',
             year: 1867,
@@ -8339,7 +8478,7 @@ void initializeRegistry(BuildContext context) {
         author: 'Jens Guballa',
         title: 'Implementierung des Vigenère Solvers',
         sourceUrl:
-            'https://web.archive.org/web/20240414052702/https://guballa.de/bits-and-bytes/implementierung-des-vigenere-solvers',
+        'https://web.archive.org/web/20240414052702/https://guballa.de/bits-and-bytes/implementierung-des-vigenere-solvers',
       )
     ]),
     GCWTool(tool: Vigenere(), id: 'vigenere', searchKeys: const [
