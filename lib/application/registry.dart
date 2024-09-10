@@ -2432,6 +2432,14 @@ void initializeRegistry(BuildContext context) {
             sourceUrl:
             'https://web.archive.org/web/20121102023141/http://www.moenk.de/index.php?serendipity[subpage]=downloadmanager&level=1&thiscat=4',
             licenseType: ToolLicenseType.PRIVATE_PERMISSION),
+        ToolLicensePortedCode(
+            context: context,
+            author: 'Google Inc.',
+            title: 's2-geometry-library-java',
+            sourceUrl:
+            'https://web.archive.org/web/20240903110359/https://github.com/google/s2-geometry-library-java/tree/master',
+            licenseType: ToolLicenseType.APACHE2,
+            licenseUrl: 'https://web.archive.org/web/20240903110701/https://github.com/google/s2-geometry-library-java/tree/master?tab=Apache-2.0-1-ov-file'),
       ],
     ),
     GCWTool(
@@ -2563,7 +2571,23 @@ void initializeRegistry(BuildContext context) {
           'coordinates',
           'coordinates_centerthreepoints',
         ],
-        licenses: const []),
+        licenses: [
+          ToolLicensePortedCode(
+            context: context,
+            author: 'Kirk Kuykendall, Charles \'@cffk\' Karney (gis.stackexchange.com)',
+            title: 'Answer: How can I use ArcGIS 10.1 to find a geodesic equidistant point defined by three points?',
+            sourceUrl: 'http://web.archive.org/web/20240909104633/https://gis.stackexchange.com/revisions/63083/4',
+            licenseType: ToolLicenseType.CCBYSA3,
+            licenseUrl: 'http://web.archive.org/web/20240909124039/https://gis.stackexchange.com/posts/63083/timeline'
+          ),
+          ToolLicenseOnlineArticle(
+            context: context,
+            author: 'Rod Stephens',
+            year: 2001, month: 11, day: 8,
+            title: 'Draw a circle through three points in C#',
+            sourceUrl: 'http://web.archive.org/web/20140428104056/http://blog.csharphelper.com/2011/11/08/draw-a-circle-through-three-points-in-c.aspx'
+          )
+        ]),
     GCWTool(
         tool: const SegmentLine(),
         id: 'coords_segmentline',
