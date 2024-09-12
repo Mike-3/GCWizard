@@ -392,7 +392,8 @@ class MapViewPersistenceAdapter {
       "\"longitude\":": "\"lon\":",
       "\"isVisible\":": "\"visible\":",
       "\"coordinateFormat\":": "\"format\":",
-      "\"circleColorSameAsColor\":": "\"sameColor\":"
+      "\"circleColorSameAsColor\":": "\"sameColor\":",
+      "\"isEditable\":": "\"edit\":"
     };
 
     if (restore) replaceMap = switchMapKeyValue(replaceMap);
@@ -406,7 +407,12 @@ class MapViewPersistenceAdapter {
       "(,\")([^\"]+)(\":null})": "}",
       "(\"name\":\"\",)": "",
       "(\"isVisible\":true,)": "",
-      "(\"isVisible\":true})": "}"
+      "(\",isVisible\":true})": "}",
+      "(\"isEditable\":true,)": "",
+      "(\",isEditable\":true})": "}",
+      "(\"type\":geodetic,)": "",
+      "(\",type\":geodetic})": "}",
+      "(\"circleColorSameAsColor\":true,)": "",
     };
 
     regExpList.forEach((key, value) {
