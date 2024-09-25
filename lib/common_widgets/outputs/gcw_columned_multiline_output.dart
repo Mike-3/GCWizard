@@ -15,7 +15,7 @@ class GCWColumnedMultilineOutput extends StatefulWidget {
   final bool hasHeader;
   final bool copyAll;
   final List<void Function()>? tappables;
-  final TextStyle? textStyle;
+  final TextStyle? style;
   final double fontSize;
   final List<Widget>? firstRows;
 
@@ -28,7 +28,7 @@ class GCWColumnedMultilineOutput extends StatefulWidget {
       this.hasHeader = false,
       this.copyAll = false,
       this.tappables,
-      this.textStyle,
+      this.style,
       this.fontSize = 0.0,
       this.firstRows})
       : super(key: key);
@@ -54,7 +54,7 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
     int index = 0;
     return widget.data.map((rowData) {
       Widget output;
-      var textStyle = widget.textStyle ?? gcwTextStyle(fontSize: widget.fontSize);
+      var textStyle = widget.style ?? gcwTextStyle(fontSize: widget.fontSize);
 
       var columns = rowData
           .asMap()
@@ -74,12 +74,14 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
               }
             }
 
+            isFirst = false;
             return MapEntry(
                 index, Expanded(flex: index < widget.flexValues.length ? widget.flexValues[index] : 1, child: child));
           })
           .values
           .toList();
 
+      isFirst = true;
       String? copyText;
       copyColumn ??= rowData.length - 1;
       if (copyColumn != null && copyColumn! >= 0) {
@@ -124,7 +126,6 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
       }
       odd = !odd;
 
-      isFirst = false;
 
       if (widget.tappables != null) {
         return InkWell(
