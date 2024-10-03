@@ -24,14 +24,16 @@ class _TowerOfHanoiState extends State<TowerOfHanoi> {
     return Column(
       children: <Widget>[
         GCWIntegerSpinner(
+          title: i18n(context, 'tower_of_hanoi_disc_count'),
           value: _discCount,
           min: 1,
-          max: 10,
+          max: MAXDISCCOUNT,
           onChanged: (value) {
             setState(() {
               _discCount = value;
             });
           },
+          flexValues: const [1, 1],
         ),
         GCWDefaultOutput(child: _buildOutput(context))
       ],
@@ -50,19 +52,21 @@ class _TowerOfHanoiState extends State<TowerOfHanoi> {
             flexValues: const [2, 4]
           ),
           Container(padding: const EdgeInsets.only(bottom: 10)),
-          GCWColumnedMultilineOutput(
-            hasHeader: true,
-            style: gcwMonotypeTextStyle(),
-            firstRows: [Row(children: [
-              Expanded(flex: 2, child: GCWText(text: i18n(context, 'tower_of_hanoi_move'), style: boldTextStyle )),
-              Expanded(flex: 4, child: GCWText(text: i18n(context, 'tower_of_hanoi_towers'), style: boldTextStyle))])],
-            data: moves(_discCount).mapIndexed((index, entry) {
-              var move = moveString.replaceFirst('{0}', entry.$2.toString());
-              move = move.replaceFirst('{1}', entry.$3.toString());
-              move = move.replaceFirst('{2}', entry.$4.toString());
-              return [(index + 1).toString(), entry.$1 + '\n' + move];}).toList(),
-            flexValues: const [1, 4]
-          ),
+          (_discCount > MAXDISCVIEWCOUNT)
+          ? GCWText(text: i18n(context, 'tower_of_hanoi_to_many_moves'))
+          : GCWColumnedMultilineOutput(
+              hasHeader: true,
+              style: gcwMonotypeTextStyle(),
+              firstRows: [Row(children: [
+                Expanded(flex: 2, child: GCWText(text: i18n(context, 'tower_of_hanoi_move'), style: boldTextStyle )),
+                Expanded(flex: 4, child: GCWText(text: i18n(context, 'tower_of_hanoi_towers'), style: boldTextStyle))])],
+              data: moves(_discCount).mapIndexed((index, entry) {
+                var move = moveString.replaceFirst('{0}', entry.$2.toString());
+                move = move.replaceFirst('{1}', entry.$3.toString());
+                move = move.replaceFirst('{2}', entry.$4.toString());
+                return [(index + 1).toString(), entry.$1 + '\n' + move];}).toList(),
+              flexValues: const [1, 4]
+            ),
     ]);
   }
 }
