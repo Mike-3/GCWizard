@@ -39,6 +39,7 @@ class _VisualCryptographyState extends State<VisualCryptography> {
   GCWFile? _encodeImage;
   GCWFile? _encodeKeyImage;
   int _encodeScale = 100;
+  int _pixelSize = 1;
   String? _encodeImageSize;
   var _decodeOffsetsX = 0;
   var _decodeOffsetsY = 0;
@@ -269,6 +270,18 @@ class _VisualCryptographyState extends State<VisualCryptography> {
                               });
                             },
                           ),
+                          GCWIntegerSpinner(
+                            title: i18n(context, 'visual_cryptography_pixel_size'),
+                            value: _pixelSize,
+                            min: 1,
+                            max: 1000,
+                            onChanged: (value) {
+                              setState(() {
+                                _pixelSize = value;
+                                _updateEncodeImageSize();
+                              });
+                            },
+                          ),
 
                           Container(), // For some reasons, this fixes a bug: Without this, the encode scale input affects the decode offset y input...
 
@@ -315,8 +328,8 @@ class _VisualCryptographyState extends State<VisualCryptography> {
 
     var encodeScale = _currentEncryptionWithKeyMode ? 100 : _encodeScale;
 
-    var width = _currentImageWidth! * encodeScale ~/ 100 * 2 + _decodeOffsetsX.abs();
-    var height = _currentImageHeight! * encodeScale ~/ 100 * 2 + _decodeOffsetsY.abs();
+    var width = (_currentImageWidth! * encodeScale ~/ 100 * 2 + _encodeOffsetsX.abs()) * _pixelSize;
+    var height = (_currentImageHeight! * encodeScale ~/ 100 * 2 + _encodeOffsetsY.abs()) * _pixelSize;
     _encodeImageSize = '$width × $height px';
   }
 
@@ -470,12 +483,13 @@ class _VisualCryptographyState extends State<VisualCryptography> {
   }
 
   Future<GCWAsyncExecuterParameters> _buildJobDataEncode() async {
-    return GCWAsyncExecuterParameters(Tuple5<Uint8List, Uint8List?, int, int, int>(
+    return GCWAsyncExecuterParameters(Tuple6<Uint8List, Uint8List?, int, int, int, int>(
         _encodeImage?.bytes ?? Uint8List(0),
         _currentEncryptionWithKeyMode ? _encodeKeyImage?.bytes ?? Uint8List(0) : null,
         _encodeOffsetsX,
         _encodeOffsetsY,
-        _encodeScale));
+        _currentEncryptionWithKeyMode ? 100 : _encodeScale,
+        _currentEncryptionWithKeyMode ? 1 : _pixelSize));
   }
 
   void _saveOutputEncode(Tuple2<Uint8List, Uint8List?>? output) {
