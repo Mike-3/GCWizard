@@ -86,7 +86,7 @@ class _EpochTimeState extends State<EpochTime> {
                 },
                 onChanged: (datetime) {
                   setState(() {
-                    _currentDateTime = datetime.datetime;
+                    _currentDateTime = datetime.dateTimeUtc;
                   });
                 },
               ),
@@ -130,7 +130,7 @@ class _EpochTimeState extends State<EpochTime> {
               ? timeStamp
               : GCWColumnedMultilineOutput(
                   hasHeader: false,
-                  flexValues: [5, 2, 4],
+                  flexValues: const [5, 2, 4],
                   data: [
                     [
                       i18n(context, 'epoch_time_timezone_name'),
