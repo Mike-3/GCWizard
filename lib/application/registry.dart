@@ -225,6 +225,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/mexican_army_cipher_wheel/w
 import 'package:gc_wizard/tools/crypto_and_encodings/morbit/widget/morbit.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/morse/widget/morse.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/navajo/widget/navajo.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/navajo/widget/navajo_list.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_converter/widget/numeral_words_converter.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_identify_languages/widget/numeral_words_identify_languages.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_lists/widget/numeral_words_lists.dart';
@@ -300,7 +301,7 @@ import 'package:gc_wizard/tools/images_and_files/magic_eye_solver/widget/magic_e
 import 'package:gc_wizard/tools/images_and_files/qr_code/widget/qr_code.dart';
 import 'package:gc_wizard/tools/images_and_files/stegano/widget/stegano.dart';
 import 'package:gc_wizard/tools/images_and_files/visual_cryptography/widget/visual_cryptography.dart';
-import 'package:gc_wizard/tools/miscellaneous/gcwizardscript/widget/gcwizard_script.dart';
+import 'package:gc_wizard/tools/general_tools/gcwizardscript/widget/gcwizard_script.dart';
 import 'package:gc_wizard/tools/science_and_technology/alcohol_mass/widget/alcohol_mass.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/hebrew/widget/hebrew_number_system.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/milesian/widget/milesian_number_system.dart';
@@ -536,7 +537,7 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'amsco',
     ]),
-    GCWTool(tool: const AnimatedImage(), id: 'animated_image', isBeta: true, categories: const [
+    GCWTool(tool: const AnimatedImage(), id: 'animated_image', categories: const [
       ToolCategory.IMAGES_AND_FILES
     ], searchKeys: const [
       'animated_images',
@@ -1021,7 +1022,7 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'illiac',
     ]),
-    GCWTool(tool: const ImagesAndFilesSelection(), id: 'imagesandfiles_selection', isBeta: true, searchKeys: const [
+    GCWTool(tool: const ImagesAndFilesSelection(), id: 'imagesandfiles_selection', searchKeys: const [
       'images',
       'imagesandfilesselection',
     ]),
@@ -1160,6 +1161,18 @@ void initializeRegistry(BuildContext context) {
         searchKeys: const ['music', 'music_notes'],
         licenses: const []),
     GCWTool(tool: const Navajo(), id: 'navajo', categories: const [
+      ToolCategory.CRYPTOGRAPHY
+    ], searchKeys: const [
+      'navajo',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Department of Defense',
+          title: 'Navajo Code Talkers\' Dictionary REVISED 15 JUNE 1945',
+          sourceUrl:
+          'https://web.archive.org/web/20240722205845/https://www.history.navy.mil/research/library/online-reading-room/title-list-alphabetically/n/navajo-code-talker-dictionary.html')
+    ]),
+    GCWTool(tool: const NavajoList(), id: 'navajolist', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
       'navajo',
@@ -1329,7 +1342,7 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'projectiles',
     ], licenses: const []),
-    GCWTool(tool: const QrCode(), id: 'qr_code', isBeta: true, categories: const [
+    GCWTool(tool: const QrCode(), id: 'qr_code', categories: const [
       ToolCategory.IMAGES_AND_FILES
     ], searchKeys: const [
       'qrcode',
@@ -1860,10 +1873,10 @@ void initializeRegistry(BuildContext context) {
           ),
           ToolLicensePortedCode(
               context: context,
-              author: '@max-mapper',
+              author: '@max-mapper (Github)',
               title: 'equatorial',
               licenseType: ToolLicenseType.GITHUB_DEFAULT,
-              sourceUrl: 'https://github.com/S-Man42/equatorial/tree/f11b2a91be12721d87b108cc495953bc96565fec'),
+              sourceUrl: 'https://web.archive.org/web/20240819162607/https://github.com/max-mapper/equatorial'),
         ]),
 
     //Babylon Numbers Selection **************************************************************************************
@@ -2888,7 +2901,15 @@ void initializeRegistry(BuildContext context) {
     GCWTool(tool: const CalendarWeek(), id: 'dates_calendarweek', searchKeys: const [
       'dates',
       'dates_calendarweek',
-    ], licenses: const []),
+    ], licenses: [
+      ToolLicensePortedCode(context: context,
+        author: '@Samurai8 (StackOverflow)',
+        title: 'Answer: Week number in US format',
+        sourceUrl: 'https://web.archive.org/web/20241004130845/https://stackoverflow.com/questions/34369722/week-number-in-us-format/34373514#34373514',
+        licenseType: ToolLicenseType.CCBYSA3,
+        licenseUrl: 'https://web.archive.org/web/20241004043710/https://creativecommons.org/licenses/by-sa/3.0/'
+      )
+    ]),
 
     GCWTool(tool: const DayOfTheYear(), id: 'dates_day_of_the_year', searchKeys: const [
       'dates',
@@ -4576,7 +4597,7 @@ void initializeRegistry(BuildContext context) {
         searchKeys: const []),
 
     //PeriodicTableSelection ***************************************************************************************
-    GCWTool(tool: const PeriodicTable(), id: 'periodictable', searchKeys: const [], licenses: const []),
+    GCWTool(tool: const PeriodicTable(), id: 'periodictable', searchKeys: const [], licenses: [stl._toolLicensePSEWiki]),
     GCWTool(
         tool: const PeriodicTableDataView(
           atomicNumber: 1,
@@ -4584,7 +4605,7 @@ void initializeRegistry(BuildContext context) {
         id: 'periodictable_dataview',
         searchKeys: const [
           'periodictabledataview',
-        ]),
+        ], licenses: [stl._toolLicensePSEWiki]),
     GCWTool(tool: const AtomicNumbersToText(), id: 'atomicnumberstotext', searchKeys: const [
       'periodictable_atomicnumbers',
     ]),
@@ -5486,28 +5507,26 @@ void initializeRegistry(BuildContext context) {
     GCWSymbolTableTool(symbolKey: 'color_add', symbolSearchStrings: const [
       'color',
       'symbol_color_add',
-    ], licenses: const []),
+    ], licenses: [ToolLicenseImage(
+        context: context,
+        author: 'ColorADD.net',
+        title: 'ColorADD - The Color Alphabet',
+        privatePermission: ToolLicensePrivatePermission(
+            medium: 'e-mail',
+            permissionYear: 2024,
+            permissionMonth: 8,
+            permissionDay: 20,
+            context: context,
+            permissionAuthor: 'Silvia Couto'
+        ),
+        sourceUrl:
+        'https://web.archive.org/web/20240629170653/https://www.coloradd.net/en/coloradd-code/',
+        licenseType: ToolLicenseType.NON_COMMERCIAL,
+        licenseUseType: ToolLicenseUseType.COPY)]),
     GCWSymbolTableTool(symbolKey: 'color_code', symbolSearchStrings: const [
       'color',
       'symbol_color_code',
-    ], licenses: [
-      ToolLicenseImage(
-          context: context,
-          author: 'ColorADD.net',
-          title: 'ColorADD - The Color Alphabet',
-          privatePermission: ToolLicensePrivatePermission(
-              medium: 'e-mail',
-              permissionYear: 2024,
-              permissionMonth: 8,
-              permissionDay: 20,
-              context: context,
-              permissionAuthor: 'Silvia Couto'
-          ),
-          sourceUrl:
-          'https://web.archive.org/web/20240629170653/https://www.coloradd.net/en/coloradd-code/',
-          licenseType: ToolLicenseType.NON_COMMERCIAL,
-          licenseUseType: ToolLicenseUseType.COPY)
-    ]),
+    ], licenses: []),
     GCWSymbolTableTool(symbolKey: 'color_honey', symbolSearchStrings: const [
       'color',
       'symbol_color_honey',

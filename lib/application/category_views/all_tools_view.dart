@@ -137,6 +137,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/language_games/spoon_langua
 import 'package:gc_wizard/tools/crypto_and_encodings/mexican_army_cipher_wheel/widget/mexican_army_cipher_wheel.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/morbit/widget/morbit.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/navajo/widget/navajo.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/navajo/widget/navajo_list.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/one_time_pad/widget/one_time_pad.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/playfair/widget/playfair.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/pokemon/widget/pokemon.dart';
@@ -194,7 +195,7 @@ import 'package:gc_wizard/tools/images_and_files/magic_eye_solver/widget/magic_e
 import 'package:gc_wizard/tools/images_and_files/qr_code/widget/qr_code.dart';
 import 'package:gc_wizard/tools/images_and_files/stegano/widget/stegano.dart';
 import 'package:gc_wizard/tools/images_and_files/visual_cryptography/widget/visual_cryptography.dart';
-import 'package:gc_wizard/tools/miscellaneous/gcwizardscript/widget/gcwizard_script.dart';
+import 'package:gc_wizard/tools/general_tools/gcwizardscript/widget/gcwizard_script.dart';
 import 'package:gc_wizard/tools/science_and_technology/alcohol_mass/widget/alcohol_mass.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/hebrew/widget/hebrew_number_system.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/milesian/widget/milesian_number_system.dart';
@@ -678,6 +679,7 @@ void _initStaticToolList() {
       className(const NonogramSolver()),
       className(const NumberPyramidSolver()),
       className(const Navajo()),
+      className(const NavajoList()),
       className(const NumberSequenceSelection()),
       className(MultiDecoder()),
       className(const NumeralBases()),
