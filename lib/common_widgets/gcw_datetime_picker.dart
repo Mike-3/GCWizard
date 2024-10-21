@@ -84,7 +84,7 @@ const TIMEZONES = [
 ];
 
 class GCWDateTimePicker extends StatefulWidget {
-  final void Function(DateTimeDuration) onChanged;
+  final void Function(DateTimeTZDuration) onChanged;
   final DateTime? datetime;
   final Duration? duration;
   final Set<DateTimePickerConfig> config;
@@ -108,7 +108,7 @@ class GCWDateTimePicker extends StatefulWidget {
     this.datetime,
     this.duration,
     required this.config,
-    this.timezoneOffset = const Duration(hours: 0),
+    this.timezoneOffset = const Duration(),
     this.minDays = 1,
     this.maxDays = 31,
     this.maxHours = 23,
@@ -520,8 +520,12 @@ class _GCWDateTimePickerState extends State<GCWDateTimePicker> {
     duration *= _currentSign;
 
     var timezone = Duration(minutes: _currentTimezoneOffset);
-    var output = DateTimeDuration(
-        dateTimeUtc: DateTimeTimezone.fromLocalTime(DateTime.utc(_currentYear, _currentMonth, _currentDay,
+    if (!widget.config.contains(DateTimePickerConfig.TIMEZONES)) {
+      timezone = DateTime(_currentYear, _currentMonth, _currentDay,
+          _currentHour, _currentMinute, _currentSecond, _currentMilliSecond).timeZoneOffset;
+    }
+    var output = DateTimeTZDuration(
+        dateTimeUtc: DateTimeTZ.fromLocalTime(DateTime.utc(_currentYear, _currentMonth, _currentDay,
             _currentHour, _currentMinute, _currentSecond, _currentMilliSecond), timezone).dateTimeUtc,
         timezone: timezone,
         duration: duration);

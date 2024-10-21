@@ -2491,6 +2491,13 @@ void initializeRegistry(BuildContext context) {
             sourceUrl:
             'https://web.archive.org/web/20121102023141/http://www.moenk.de/index.php?serendipity[subpage]=downloadmanager&level=1&thiscat=4',
             licenseType: ToolLicenseType.PRIVATE_PERMISSION),
+        ToolLicensePortedCode( //TODO: When webarchive save working again: Store links in WebArchive
+            context: context,
+            author: 'Patrick \'PattuX\' Wienhöft (GitHub)',
+            title: 'Auto Reverse Wherigo Solver',
+            sourceUrl: 'https://github.com/PattuX/auto_reverse_wig_solver',
+            licenseType: ToolLicenseType.MIT,
+            licenseUrl: 'https://github.com/PattuX/auto_reverse_wig_solver/blob/master/LICENSE.txt'),
         ToolLicensePortedCode(
             context: context,
             author: 'Google Inc.',
@@ -7472,6 +7479,13 @@ void initializeRegistry(BuildContext context) {
           title: 'Romulan',
           sourceUrl: 'https://web.archive.org/web/20170401035807/https://fonts2u.com/romulan.font',
           licenseType: ToolLicenseType.NON_COMMERCIAL),
+    ]),
+    GCWSymbolTableTool(symbolKey: 'runes', symbolSearchStrings: const [
+      'symbol_runes',
+      'symbol_futhark',
+      'symbol_futhorc'
+    ], licenses: [
+      stl._toolLicenseMyGeoToolsCodeTabellen,
     ]),
     GCWSymbolTableTool(symbolKey: 'sanluca', symbolSearchStrings: const [
       'symbol_sanluca',
