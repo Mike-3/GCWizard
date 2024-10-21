@@ -9,6 +9,7 @@ import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/epoch_time/logic/epoch_time.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/excel_time/logic/excel_time.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/unix_time/logic/unix_time.dart';
+import 'package:gc_wizard/utils/complex_return_types.dart';
 import 'package:intl/intl.dart';
 
 class EpochTime extends StatefulWidget {
@@ -28,7 +29,7 @@ class EpochTime extends StatefulWidget {
 
 class _EpochTimeState extends State<EpochTime> {
   late dynamic _currentTimeStamp;
-  var _currentDateTime = DateTime.now();
+  var _currentDateTime = DateTimeTZ.now();
   GCWSwitchPosition _currentMode = GCWSwitchPosition.right;
 
   @override
@@ -86,7 +87,7 @@ class _EpochTimeState extends State<EpochTime> {
                 },
                 onChanged: (datetime) {
                   setState(() {
-                    _currentDateTime = datetime.dateTimeUtc;
+                    _currentDateTime = datetime;
                   });
                 },
               ),
@@ -108,7 +109,7 @@ class _EpochTimeState extends State<EpochTime> {
           timeStamp = output.timeStamp.toInt();
           break;
         case EPOCH.EXCEL1900:
-          output = DateTimeToExcelTime(_currentDateTime);
+          output = DateTimeToExcelTime(_currentDateTime.toLocalTime());
           timeStamp = output.timeStamp;
           break;
       }
