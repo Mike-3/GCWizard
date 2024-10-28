@@ -1,7 +1,6 @@
 import "package:flutter_test/flutter_test.dart";
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
-
-import '../../lib/common_widgets/gcw_openfile.dart';
+import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
 
 void main() {
   group("_GCWOoenFile.downloadFileAsync:", () {
