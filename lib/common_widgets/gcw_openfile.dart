@@ -336,8 +336,7 @@ Future<Uint8ListText?> downloadFileAsync(GCWAsyncExecuterParameters? jobData) as
   if (result.text.isNotEmpty) result = await _downloadWithProxyStream(uri, sendAsyncPort);
   if (result.text.isNotEmpty) result = await _downloadWithGet(uri, sendAsyncPort);
   if (result.text.isNotEmpty) result = await _downloadWithGetProxy(uri, sendAsyncPort);
-
-// ToDo only working with AsyncPort (await not working)
+  
   sendAsyncPort?.send(result);
   return Future.value(result);
 }
