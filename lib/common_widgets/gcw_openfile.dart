@@ -130,7 +130,7 @@ class _GCWOpenFileState extends State<GCWOpenFile> {
                   height: GCW_ASYNC_EXECUTER_INDICATOR_HEIGHT,
                   width: GCW_ASYNC_EXECUTER_INDICATOR_WIDTH,
                   child: GCWAsyncExecuter<Uint8ListText?>(
-                    isolatedFunction: _downloadFileAsync,
+                    isolatedFunction: downloadFileAsync,
                     parameter: _buildJobDataDownload,
                     onReady: (data) => _saveDownload(data),
                     isOverlay: true,
@@ -326,7 +326,7 @@ void showOpenFileDialog(BuildContext context, List<FileType> supportedFileTypes,
       []);
 }
 
-Future<Uint8ListText?> _downloadFileAsync(GCWAsyncExecuterParameters? jobData) async {
+Future<Uint8ListText?> downloadFileAsync(GCWAsyncExecuterParameters? jobData) async {
   if (jobData?.parameters is! Uri) return null;
 
   SendPort? sendAsyncPort = jobData?.sendAsyncPort;
@@ -374,14 +374,13 @@ Future<Uint8ListText> _downloadWithStream(Uri uri, SendPort? sendAsyncPort) asyn
           },
           onDone: () {
             if (_bytes.isEmpty) {
-              result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
+              return Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
             } else {
               result = Uint8ListText('', Uint8List.fromList(_bytes));
             }
           },
         );
       }
-      return response;
     });
   } on TimeoutException catch (_) {
     result = Uint8ListText('common_loadfile_exception_responsestatus', Uint8List(0));
