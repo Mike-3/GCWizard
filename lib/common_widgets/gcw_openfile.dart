@@ -332,7 +332,7 @@ Future<Uint8ListText?> downloadFileAsync(GCWAsyncExecuterParameters? jobData) as
 
   SendPort? sendAsyncPort = jobData?.sendAsyncPort;
   Uri? uri = jobData!.parameters as Uri;
-  
+
   var result = await _downloadWithStream(uri, sendAsyncPort);
   if (result.text.isNotEmpty) result = await _downloadWithProxyStream(uri, sendAsyncPort);
   if (result.text.isNotEmpty) result = await _downloadWithGet(uri, sendAsyncPort);
@@ -382,6 +382,8 @@ Future<Uint8ListText> _downloadWithStream(Uri uri, SendPort? sendAsyncPort) asyn
     result = Uint8ListText('common_loadfile_exception_responsestatus', Uint8List(0));
   } on SocketException catch (_) {
     result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
+  } catch (_) {
+    result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
   }
   return result;
 }
@@ -400,6 +402,8 @@ Future<Uint8ListText> _downloadWithGet(Uri uri, SendPort? sendAsyncPort) async {
   } on TimeoutException catch (_) {
     result = Uint8ListText('common_loadfile_exception_responsestatus', Uint8List(0));
   } on SocketException catch (_) {
+    result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
+  } catch (_) {
     result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
   }
   return result;
