@@ -297,6 +297,7 @@ import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_integ
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_letter.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_lists/randomizer_lists.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_password.dart';
+import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_rockpaperscissors.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_selection.dart';
 import 'package:gc_wizard/tools/images_and_files/animated_image/widget/animated_image.dart';
 import 'package:gc_wizard/tools/images_and_files/animated_image_morse_code/widget/animated_image_morse_code.dart';
@@ -1603,7 +1604,7 @@ void initializeRegistry(BuildContext context) {
         categories: const [ToolCategory.CRYPTOGRAPHY],
         searchKeys: const []),
     GCWTool(tool: const TowerOfHanoi(), id: 'tower_of_hanoi', categories: const [
-      ToolCategory.SCIENCE_AND_TECHNOLOGY
+      ToolCategory.GAMES
     ], searchKeys: const [
       'games',
       'tower_of_hanoi',
@@ -4692,6 +4693,7 @@ void initializeRegistry(BuildContext context) {
     GCWTool(tool: const RandomizerCoin(), id: 'randomizer_coin', searchKeys: const []),
     GCWTool(tool: const RandomizerDice(), id: 'randomizer_dice', searchKeys: const []),
     GCWTool(tool: const RandomizerCards(), id: 'randomizer_cards', searchKeys: const []),
+    GCWTool(tool: const RandomizerRockPaperScissors(), id: 'randomizer_rockpaperscissors', searchKeys: const []),
     GCWTool(tool: const RandomizerPassword(), id: 'randomizer_password', searchKeys: const []),
     GCWTool(tool: const RandomizerInteger(), id: 'randomizer_integer', searchKeys: const []),
     GCWTool(tool: const RandomizerDouble(), id: 'randomizer_double', searchKeys: const []),
@@ -5628,18 +5630,6 @@ void initializeRegistry(BuildContext context) {
           sourceUrl: 'https://en.wikipedia.org/w/index.php?title=Cooke_and_Wheatstone_telegraph&oldid=1232265572',
           licenseType: ToolLicenseType.CCBYSA4)
     ]),
-    GCWSymbolTableTool(symbolKey: 'cosmic', symbolSearchStrings: const [
-      'symbol_cosmic',
-    ], licenses: [
-      ToolLicenseFont(
-          context: context,
-          author: 'Pixel Sagas',
-          title: 'Modern Cybertronic',
-          sourceUrl:
-          'https://web.archive.org/web/20240403144459/https://www.pixelsagas.com/?download=modern-cybertronic',
-          licenseType: ToolLicenseType.FREE_TO_USE,
-          licenseUrl: 'https://web.archive.org/web/20240728140247/https://www.pixelsagas.com/?p=55285#comment-92401')
-    ]),
     GCWSymbolTableTool(symbolKey: 'country_flags', symbolSearchStrings: const [
       'countries',
       'symbol_flags',
@@ -5673,6 +5663,18 @@ void initializeRegistry(BuildContext context) {
           sourceUrl:
           'https://web.archive.org/web/20221213100809/https://www.deviantart.com/magnusarania/art/Crystallic-Alphabet-457870324',
           licenseType: ToolLicenseType.FREE_TO_USE)
+    ]),
+	GCWSymbolTableTool(symbolKey: 'cybertronic', symbolSearchStrings: const [
+      'symbol_cybertronic',
+    ], licenses: [
+      ToolLicenseFont(
+          context: context,
+          author: 'Pixel Sagas',
+          title: 'Modern Cybertronic',
+          sourceUrl:
+          'https://web.archive.org/web/20240403144459/https://www.pixelsagas.com/?download=modern-cybertronic',
+          licenseType: ToolLicenseType.FREE_TO_USE,
+          licenseUrl: 'https://web.archive.org/web/20240728140247/https://www.pixelsagas.com/?p=55285#comment-92401')
     ]),
     GCWSymbolTableTool(symbolKey: 'cyrillic', symbolSearchStrings: const [
       'symbol_cyrillic',
