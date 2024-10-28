@@ -4362,6 +4362,7 @@
   "randomizer_coin_description": "Random generator for coin flips",
   "randomizer_coin_head": "Head",
   "randomizer_coin_tail": "Tail",
+  "randomizer_coin_edge": "Edge",
   "randomizer_coin_count": "Total",
   "randomizer_dice_title": "Dice Thrower",
   "randomizer_dice_description": "Random generator for dice throws for common dice sizes",
