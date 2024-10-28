@@ -151,7 +151,7 @@ class _GCWOpenFileState extends State<GCWOpenFile> {
       return null;
     }
 
-    await _getAndValidateUri(_currentUrl!.trim()).then((uri) {
+    await getAndValidateUri(_currentUrl!.trim()).then((uri) {
       if (uri == null) {
         showSnackBar(i18n(context, 'common_loadfile_exception_url'), context);
         return null;
@@ -293,17 +293,6 @@ class _GCWOpenFileState extends State<GCWOpenFile> {
       ],
     );
   }
-
-  Future<Uri?> _getAndValidateUri(String url) async {
-    const _HTTP = 'http://';
-    const _HTTPS = 'https://';
-
-    if (url.startsWith(_HTTP) || url.startsWith(_HTTPS)) {
-    } else {
-      url = _HTTPS + url;
-    }
-    return Future<Uri?>.value(Uri.parse(url));
-  }
 }
 
 void showOpenFileDialog(BuildContext context, List<FileType> supportedFileTypes, void Function(GCWFile?) onLoaded) {
@@ -326,6 +315,18 @@ void showOpenFileDialog(BuildContext context, List<FileType> supportedFileTypes,
       []);
 }
 
+Future<Uri?> getAndValidateUri(String url) async {
+  const _HTTP = 'http://';
+  const _HTTPS = 'https://';
+
+  if (url.startsWith(_HTTP) || url.startsWith(_HTTPS)) {
+  } else {
+    url = _HTTPS + url;
+  }
+  return Future<Uri?>.value(Uri.parse(url));
+}
+
+const _PROXY_SERVER  = 'https://corsproxy.io/?';
 Future<Uint8ListText?> downloadFileAsync(GCWAsyncExecuterParameters? jobData) async {
   if (jobData?.parameters is! Uri) return null;
 
@@ -336,7 +337,7 @@ Future<Uint8ListText?> downloadFileAsync(GCWAsyncExecuterParameters? jobData) as
   if (result.text.isNotEmpty) result = await _downloadWithProxyStream(uri, sendAsyncPort);
   if (result.text.isNotEmpty) result = await _downloadWithGet(uri, sendAsyncPort);
   if (result.text.isNotEmpty) result = await _downloadWithGetProxy(uri, sendAsyncPort);
-  
+
   sendAsyncPort?.send(result);
   return Future.value(result);
 }
@@ -404,23 +405,20 @@ Future<Uint8ListText> _downloadWithGet(Uri uri, SendPort? sendAsyncPort) async {
   return result;
 }
 
-const _proxyServer  = 'https://corsproxy.io/?';
 Future<Uint8ListText> _downloadWithGetProxy(Uri uri, SendPort? sendAsyncPort) async {
-  var proxyUri = Uri.parse(_proxyServer + uri.toString());
+  var proxyUri = Uri.parse(_PROXY_SERVER + uri.toString());
 
   return _downloadWithGet(proxyUri, sendAsyncPort);
 }
 
 Future<Uint8ListText> _downloadWithProxyStream(Uri uri, SendPort? sendAsyncPort) async {
-  var proxyUri = Uri.parse(_proxyServer + uri.toString());
+  var proxyUri = Uri.parse(_PROXY_SERVER + uri.toString());
 
   return _downloadWithStream(proxyUri, sendAsyncPort);
 }
 
 /// Open File Picker dialog
-///
 /// Returns null if nothing was selected.
-///
 Future<GCWFile?> openFileExplorer({List<FileType>? allowedFileTypes}) async {
   try {
      var files = (await filePicker.FilePicker.platform.pickFiles(
