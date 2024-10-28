@@ -130,7 +130,7 @@ class _GCWOpenFileState extends State<GCWOpenFile> {
                   height: GCW_ASYNC_EXECUTER_INDICATOR_HEIGHT,
                   width: GCW_ASYNC_EXECUTER_INDICATOR_WIDTH,
                   child: GCWAsyncExecuter<Uint8ListText?>(
-                    isolatedFunction: _downloadFileAsync,
+                    isolatedFunction: downloadFileAsync,
                     parameter: _buildJobDataDownload,
                     onReady: (data) => _saveDownload(data),
                     isOverlay: true,
@@ -151,7 +151,7 @@ class _GCWOpenFileState extends State<GCWOpenFile> {
       return null;
     }
 
-    await _getAndValidateUri(_currentUrl!.trim()).then((uri) {
+    await getAndValidateUri(_currentUrl!.trim()).then((uri) {
       if (uri == null) {
         showSnackBar(i18n(context, 'common_loadfile_exception_url'), context);
         return null;
@@ -293,17 +293,6 @@ class _GCWOpenFileState extends State<GCWOpenFile> {
       ],
     );
   }
-
-  Future<Uri?> _getAndValidateUri(String url) async {
-    const _HTTP = 'http://';
-    const _HTTPS = 'https://';
-
-    if (url.startsWith(_HTTP) || url.startsWith(_HTTPS)) {
-    } else {
-      url = _HTTPS + url;
-    }
-    return Future<Uri?>.value(Uri.parse(url));
-  }
 }
 
 void showOpenFileDialog(BuildContext context, List<FileType> supportedFileTypes, void Function(GCWFile?) onLoaded) {
@@ -326,7 +315,19 @@ void showOpenFileDialog(BuildContext context, List<FileType> supportedFileTypes,
       []);
 }
 
-Future<Uint8ListText?> _downloadFileAsync(GCWAsyncExecuterParameters? jobData) async {
+Future<Uri?> getAndValidateUri(String url) async {
+  const _HTTP = 'http://';
+  const _HTTPS = 'https://';
+
+  if (url.startsWith(_HTTP) || url.startsWith(_HTTPS)) {
+  } else {
+    url = _HTTPS + url;
+  }
+  return Future<Uri?>.value(Uri.parse(url));
+}
+
+const _PROXY_SERVER  = 'https://corsproxy.io/?';
+Future<Uint8ListText?> downloadFileAsync(GCWAsyncExecuterParameters? jobData) async {
   if (jobData?.parameters is! Uri) return null;
 
   SendPort? sendAsyncPort = jobData?.sendAsyncPort;
@@ -337,7 +338,6 @@ Future<Uint8ListText?> _downloadFileAsync(GCWAsyncExecuterParameters? jobData) a
   if (result.text.isNotEmpty) result = await _downloadWithGet(uri, sendAsyncPort);
   if (result.text.isNotEmpty) result = await _downloadWithGetProxy(uri, sendAsyncPort);
 
-// ToDo only working with AsyncPort (await not working)
   sendAsyncPort?.send(result);
   return Future.value(result);
 }
@@ -361,27 +361,22 @@ Future<Uint8ListText> _downloadWithStream(Uri uri, SendPort? sendAsyncPort) asyn
         _total = response.contentLength ?? 0;
         int progressStep = max(_total ~/ 100, 1);
 
-        response.stream.listen(
-          (value) async {
-            _bytes.addAll(value);
+        await for (final value in response.stream) {
+          _bytes.addAll(value);
 
-            if (_total != 0 &&
-                sendAsyncPort != null &&
-                (_received % progressStep > (_received + value.length) % progressStep)) {
-              sendAsyncPort.send(DoubleText(PROGRESS, (_received + value.length) / _total));
-            }
-            _received += value.length;
-          },
-          onDone: () {
-            if (_bytes.isEmpty) {
-              result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
-            } else {
-              result = Uint8ListText('', Uint8List.fromList(_bytes));
-            }
-          },
-        );
+          if (_total != 0 &&
+              sendAsyncPort != null &&
+              (_received % progressStep > (_received + value.length) % progressStep)) {
+            sendAsyncPort.send(DoubleText(PROGRESS, (_received + value.length) / _total));
+          }
+          _received += value.length;
+        }
+        if (_bytes.isEmpty) {
+          result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
+        } else {
+          result = Uint8ListText('', Uint8List.fromList(_bytes));
+        }
       }
-      return response;
     });
   } on TimeoutException catch (_) {
     result = Uint8ListText('common_loadfile_exception_responsestatus', Uint8List(0));
@@ -410,23 +405,20 @@ Future<Uint8ListText> _downloadWithGet(Uri uri, SendPort? sendAsyncPort) async {
   return result;
 }
 
-const _proxyServer  = 'https://corsproxy.io/?';
 Future<Uint8ListText> _downloadWithGetProxy(Uri uri, SendPort? sendAsyncPort) async {
-  var proxyUri = Uri.parse(_proxyServer + uri.toString());
+  var proxyUri = Uri.parse(_PROXY_SERVER + uri.toString());
 
   return _downloadWithGet(proxyUri, sendAsyncPort);
 }
 
 Future<Uint8ListText> _downloadWithProxyStream(Uri uri, SendPort? sendAsyncPort) async {
-  var proxyUri = Uri.parse(_proxyServer + uri.toString());
+  var proxyUri = Uri.parse(_PROXY_SERVER + uri.toString());
 
   return _downloadWithStream(proxyUri, sendAsyncPort);
 }
 
 /// Open File Picker dialog
-///
 /// Returns null if nothing was selected.
-///
 Future<GCWFile?> openFileExplorer({List<FileType>? allowedFileTypes}) async {
   try {
      var files = (await filePicker.FilePicker.platform.pickFiles(
