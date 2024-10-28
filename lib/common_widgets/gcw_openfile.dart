@@ -361,25 +361,21 @@ Future<Uint8ListText> _downloadWithStream(Uri uri, SendPort? sendAsyncPort) asyn
         _total = response.contentLength ?? 0;
         int progressStep = max(_total ~/ 100, 1);
 
-        response.stream.listen(
-          (value) async {
-            _bytes.addAll(value);
+        await for (final value in response.stream) {
+          _bytes.addAll(value);
 
-            if (_total != 0 &&
-                sendAsyncPort != null &&
-                (_received % progressStep > (_received + value.length) % progressStep)) {
-              sendAsyncPort.send(DoubleText(PROGRESS, (_received + value.length) / _total));
-            }
-            _received += value.length;
-          },
-          onDone: () {
-            if (_bytes.isEmpty) {
-              return Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
-            } else {
-              result = Uint8ListText('', Uint8List.fromList(_bytes));
-            }
-          },
-        );
+          if (_total != 0 &&
+              sendAsyncPort != null &&
+              (_received % progressStep > (_received + value.length) % progressStep)) {
+            sendAsyncPort.send(DoubleText(PROGRESS, (_received + value.length) / _total));
+          }
+          _received += value.length;
+        }
+        if (_bytes.isEmpty) {
+          result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
+        } else {
+          result = Uint8ListText('', Uint8List.fromList(_bytes));
+        }
       }
     });
   } on TimeoutException catch (_) {
