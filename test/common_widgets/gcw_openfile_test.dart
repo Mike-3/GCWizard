@@ -6,8 +6,8 @@ import '../../lib/common_widgets/gcw_openfile.dart';
 void main() {
   group("_GCWOoenFile.downloadFileAsync:", () {
     List<Map<String, Object?>> _inputsToExpected = [
-      // {'url' : 'https://s3.amazonaws.com/gs-geo-images/cab6d299-7f28-4791-9df3-d904e46e7d5e.jpg', 'expectedOutput' : 17723},
-      // {'url' : 'https://img.geocaching.com/cab6d299-7f28-4791-9df3-d904e46e7d5e.jpg', 'expectedOutput' : 17723},
+      {'url' : 'https://s3.amazonaws.com/gs-geo-images/cab6d299-7f28-4791-9df3-d904e46e7d5e.jpg', 'expectedOutput' : 17723},
+      {'url' : 'https://img.geocaching.com/cab6d299-7f28-4791-9df3-d904e46e7d5e.jpg', 'expectedOutput' : 17723},
       {'url' : 'img.geocaching.com/cab6d299-7f28-4791-9df3-d904e46e7d5e.jpg', 'expectedOutput' : 17723},
       {'url' : 'http://up.picr.de/18592631jk.gif', 'expectedOutput' : 1046925},
     ];
