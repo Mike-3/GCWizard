@@ -566,6 +566,7 @@
   "ccitt_5_title": "CCITT IA-5",
   "ccitt_5_description": "International Alphabet No 5, 7 Bit Code",
   "ccitt_5_example": "CACHE → 1000011 1000001 1000011 1001000 1000101",
+  "changelog_3.2.2": "[fix] Enigma",
   "changelog_3.2.1": "[new] Towers of Hanoi\n[new] Randomizer\n[new] Navajo List\n[new] Coord Format: 10Y Waldmeister\n[new] Symbol Table: Orgacolor\n[fix] Many bug fixes",
   "changelog_3.2.0": "[new] Logical Helper\n[new] Ragbaby\n[new] Judoon\n[new] Porta\n[new] Wedding Anniversaries\n[new] DIN Formats\n[new] Coord Format: GARS\n[new] Coord Format: Bosch\n[new] Coord Format: S2Cells (Hilbert)\n[new]Replacement: Generate Random\n[new] Postcode\n[new] Image View: Background Color\n[new] Bacon: Step 2\n[new] Symbol Tables\n[chg] Revised Coord Functions\n[fix] Several bug fixes",
   "changelog_3.1.1": "[new] Some Symbol Tables\n[new]Coord Formats: Bosch, GARS\n[new] Background Colors in Image View\n[fix] Skytale\n[fix] Affine\n[fix] Semaphore\n[fix] GCW Script\n[fix] AMSCO\n[fix] MapCode\n[fix] Internals",
