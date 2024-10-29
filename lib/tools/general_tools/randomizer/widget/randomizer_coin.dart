@@ -49,7 +49,7 @@ class _RandomizerCoinState extends State<RandomizerCoin> {
   void _calculateOutput() {
     var out = <int>[];
     for (int i = 0; i < _currentCount; i++) {
-      out.add(randomInteger(0, 10000));
+      out.add(randomInteger(0, 2500));
     }
 
     if (out.isEmpty) {
