@@ -253,9 +253,13 @@ class _EnigmaState extends State<Enigma> {
   }
 
   Widget _buildOutput() {
-    if (!_isTextChange) {
-      FocusScope.of(context).requestFocus(FocusNode());
-    } else {
+    // not sure what it does
+    // if (!_isTextChange) {
+    //   FocusScope.of(context).requestFocus(FocusNode());
+    // } else {
+    //   _isTextChange = false;
+    // }
+    if (_isTextChange) {
       _isTextChange = false;
     }
 
