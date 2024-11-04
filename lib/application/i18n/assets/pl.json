@@ -566,7 +566,7 @@
   "ccitt_5_title": "CCITT IA-5",
   "ccitt_5_description": "Międzynarodowa alfabet nr 5, 7 bitowy",
   "ccitt_5_example": "CACHE → 1000011 1000001 1000011 1001000 1000101",
-  "changelog_3.2.2": "[new] Randomizer Rock Paper Scissors\n[fix] Enigma (Thanks, mister-rage)\n[fix] Formula Solver: Formula References",
+  "changelog_3.2.2": "[new] Randomizer: Rock Paper Scissors\n[fix] Enigma (Thanks, mister-rage)\n[fix] Formula Solver: Formula References",
   "changelog_3.2.1": "[new] Towers of Hanoi\n[new] Randomizer\n[new] Navajo List\n[new] Coord Format: 10Y Waldmeister\n[new] Symbol Table: Orgacolor\n[fix] Many bug fixes",
   "changelog_3.2.0": "[new] Logiczny Pomocnik\n[new] Ragbaby\n[new] Judoon\n[new] Porta\n[new] Rocznice ślubne\n[new] Formaty DIN\n[new] Formaty Władcy: GARS\n[new] Formaty Władcy: Bosch\n[new]Replacement: Generuj losowy\n[new] Postcode\n[new] Widok: Kolor tła\n[new] Bacon: Krok 2\n[new] Tabele Symboli\n[chg] Zmienione Funkcje Władcy\n[fix] Kilka poprawek błędów",
   "changelog_3.1.1": "[new] Niektóre Tabele Symboli\n[new] Formaty współrzędnych: Bosch, GARS\n[new] Kolory tła w podglądzie obrazu\n[fix] Skytale\n[fix] Pokrewny\n[fix] Semafor\n[fix] Skrypt GCW\n[fix] AMSCO\n[fix] MapCode\n[fix] Wewnętrzne",
