@@ -33,7 +33,7 @@
 // Generator   Frank Buss
 // https://frank-buss.de/cow.html
 // permission to use the javascript-code received per E-mail on 23 May 2021 17:32
-// and forwarded to info@gcwizard.net
+// and forwarded to geocache.wizard@gmail.com
 //---------------------------------------------------------
 
 const _ERROR_COW_INVALIDCODE = 'common_programming_error_invalid_opcode';
