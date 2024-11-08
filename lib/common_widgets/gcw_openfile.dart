@@ -249,7 +249,7 @@ class _GCWOpenFileState extends State<GCWOpenFile> {
               _buildOpenFromDevice();
             }),
         Container(width: DOUBLE_DEFAULT_MARGIN),
-        kIsWeb ? Container() : GCWIconButton(
+        GCWIconButton(
           icon: Icons.public,
           iconColor: widget.isDialog ? themeColors().dialogText() : themeColors().mainFont(),
           size: IconButtonSize.LARGE,
@@ -380,7 +380,7 @@ Future<Uint8ListText> _downloadWithStream(Uri uri, SendPort? sendAsyncPort) asyn
     });
   } on TimeoutException catch (_) {
     result = Uint8ListText('common_loadfile_exception_responsestatus', Uint8List(0));
-  } on SocketException catch (_) {
+  } catch (_) {
     result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
   }
   return result;
@@ -399,7 +399,7 @@ Future<Uint8ListText> _downloadWithGet(Uri uri, SendPort? sendAsyncPort) async {
     }
   } on TimeoutException catch (_) {
     result = Uint8ListText('common_loadfile_exception_responsestatus', Uint8List(0));
-  } on SocketException catch (_) {
+  } catch (_) {
     result = Uint8ListText('common_loadfile_exception_nofile', Uint8List(0));
   }
   return result;
