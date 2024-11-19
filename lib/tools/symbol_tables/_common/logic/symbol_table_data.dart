@@ -67,8 +67,10 @@ class SymbolTableData {
   int maxSymbolTextLength = 0;
 
   Future<void> initialize(BuildContext context, {bool importEncryption = true}) async {
-    await _loadConfig(context);
-    await _initializeImages(context, importEncryption);
+    if (images.isEmpty) {
+      await _loadConfig(context);
+      await _initializeImages(context, importEncryption);
+    }
    }
 
   Size? imageSize() {
