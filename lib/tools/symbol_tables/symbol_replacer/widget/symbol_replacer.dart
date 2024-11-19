@@ -521,12 +521,18 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
     var list = <List<Map<String, SymbolReplacerSymbolData>>>[];
     if (_symbolImage == null) return null;
 
-    list = await Future.wait(_compareSymbolItems.map((_symbolTableViewData) async {
-      var symbolTableViewData = _symbolTableViewData.value;
-      if (symbolTableViewData.data == null) await symbolTableViewData.initialize(context);
+    const BLOCKSIZE = 100; // reduce needed memory
 
-      return symbolTableViewData.data?.images ?? [];
-    }));
+    for (int i = 0; i < (_compareSymbolItems.length / BLOCKSIZE).ceil(); i++) {
+      var filteredSymbols = _compareSymbolItems.skip(i * BLOCKSIZE).take(BLOCKSIZE);
+
+      list += await Future.wait(filteredSymbols.map((_symbolTableViewData) async {
+        var symbolTableViewData = _symbolTableViewData.value;
+        if (symbolTableViewData.data == null) await symbolTableViewData.initialize(context);
+
+        return symbolTableViewData.data?.images ?? [];
+      }));
+    }
 
     return GCWAsyncExecuterParameters(
         Tuple2<SymbolReplacerImage, List<List<Map<String, SymbolReplacerSymbolData>>>>(_symbolImage!, list));
