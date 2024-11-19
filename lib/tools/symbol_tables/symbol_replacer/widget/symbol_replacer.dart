@@ -521,7 +521,7 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
     var list = <List<Map<String, SymbolReplacerSymbolData>>>[];
     if (_symbolImage == null) return null;
 
-    const BLOCKSIZE = 100; // reduce needed memory
+    const BLOCKSIZE = 50; // reduce needed memory
 
     for (int i = 0; i < (_compareSymbolItems.length / BLOCKSIZE).ceil(); i++) {
       var filteredSymbols = _compareSymbolItems.skip(i * BLOCKSIZE).take(BLOCKSIZE);
