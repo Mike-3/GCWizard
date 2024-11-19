@@ -143,7 +143,7 @@ class _GCWAsyncExecuterState<T> extends State<GCWAsyncExecuter<T>> {
           ]);
         });
   }
-  
+
   void _cancelProcess() {
     if (_isolate != null) {
       _isolate!.kill(priority: Isolate.immediate);
