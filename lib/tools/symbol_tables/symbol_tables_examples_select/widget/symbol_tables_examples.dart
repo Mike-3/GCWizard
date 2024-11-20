@@ -11,6 +11,7 @@ import 'package:gc_wizard/tools/symbol_tables/_common/logic/symbol_table_data.da
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_text_to_symbols.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_tool.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_zoom_buttons.dart';
+import 'package:gc_wizard/utils/methodLimiter.dart';
 import 'package:prefs/prefs.dart';
 
 class SymbolTableExamples extends StatefulWidget {
@@ -147,8 +148,10 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
         physics: const AlwaysScrollableScrollPhysics(), primary: true, child: Column(children: symbols));
   }
 
-  Future<SymbolTableData> _loadSymbolData(String symbolKey, int index) async {
+  Future<SymbolTableData> _loadSymbolData(String symbolKey, int index, MethodLimiter limiter) async {
     var symbolTableData = SymbolTableData(context, symbolKey);
+
+    limiter.callMethod(() => exampleMethod(1)),
     await Future.delayed(Duration(milliseconds: (index~/ 10) * 300) , () => symbolTableData.initialize());
 
     return symbolTableData;
