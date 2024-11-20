@@ -106,6 +106,8 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
   }
 
   Widget _createSymbols(int countColumns) {
+    var limiter = MethodLimiter(5);
+
     var symbols = symbolKeys.mapIndexed<Widget>((index, symbolKey) {
       return Column(
         children: [
@@ -125,7 +127,7 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
                 },
               )),
           FutureBuilder<SymbolTableData>(
-              future: _loadSymbolData(symbolKey, index),
+              future: _loadSymbolData(symbolKey, index, limiter),
               builder: (BuildContext context, AsyncSnapshot<SymbolTableData> snapshot) {
                 if (snapshot.hasData && snapshot.data is SymbolTableData) {
                   return GCWSymbolTableTextToSymbols(
