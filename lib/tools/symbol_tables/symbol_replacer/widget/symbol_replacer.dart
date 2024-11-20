@@ -35,6 +35,7 @@ import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/logic/symbol_repla
 import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/widget/symbol_replacer_manual_control.dart';
 import 'package:gc_wizard/tools/symbol_tables/symbol_replacer/widget/symbol_replacer_symboldata.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
+import 'package:gc_wizard/utils/methodLimiter.dart';
 import 'package:gc_wizard/utils/ui_dependent_utils/common_widget_utils.dart';
 import 'package:tuple/tuple.dart';
 
@@ -519,20 +520,16 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
 
   Future<GCWAsyncExecuterParameters?> _buildJobDataSearchSymbolTable() async {
     var list = <List<Map<String, SymbolReplacerSymbolData>>>[];
+    var limiter = MethodLimiter(5);
     if (_symbolImage == null) return null;
 
-    const BLOCKSIZE = 100; // reduce needed memory
+    list = await Future.wait(_compareSymbolItems.map((_symbolTableViewData) async {
+      var symbolTableViewData = _symbolTableViewData.value;
+      if (symbolTableViewData.data == null) await limiter.callMethod(() => symbolTableViewData.initialize(context));
 
-    for (int i = 0; i < (_compareSymbolItems.length / BLOCKSIZE).ceil(); i++) {
-      var filteredSymbols = _compareSymbolItems.skip(i * BLOCKSIZE).take(BLOCKSIZE);
+      return symbolTableViewData.data?.images ?? [];
+    }));
 
-      list += await Future.wait(filteredSymbols.map((_symbolTableViewData) async {
-        var symbolTableViewData = _symbolTableViewData.value;
-        if (symbolTableViewData.data == null) await symbolTableViewData.initialize(context);
-
-        return symbolTableViewData.data?.images ?? [];
-      }));
-    }
 
     return GCWAsyncExecuterParameters(
         Tuple2<SymbolReplacerImage, List<List<Map<String, SymbolReplacerSymbolData>>>>(_symbolImage!, list));
