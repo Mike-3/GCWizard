@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/navigation/no_animation_material_page_route.dart';
@@ -10,6 +11,7 @@ import 'package:gc_wizard/tools/symbol_tables/_common/logic/symbol_table_data.da
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_text_to_symbols.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_tool.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_zoom_buttons.dart';
+import 'package:gc_wizard/utils/method_limiter.dart';
 import 'package:prefs/prefs.dart';
 
 class SymbolTableExamples extends StatefulWidget {
@@ -74,11 +76,11 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
           },
         ),
         GCWSubmitButton(
-            onPressed: () {
-              setState(() {
-                _createdSymbols = _createSymbols(countColumns);
-              });
-            }
+          onPressed: () {
+            setState(() {
+              _createdSymbols = _createSymbols(countColumns);
+            });
+          }
         ),
         GCWTextDivider(
             text: i18n(context, 'common_output'),
@@ -104,8 +106,13 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
   }
 
   Widget _createSymbols(int countColumns) {
+    var limiter = MethodLimiter(MAX_PARALLEL_LOADS);
+
     return ListView.builder(
       itemCount: symbolKeys.length,
+      addAutomaticKeepAlives: false,
+      addRepaintBoundaries: false,
+      addSemanticIndexes: false,
       itemBuilder: (context, index) {
         String symbolKey = symbolKeys[index];
         return Column(
@@ -129,18 +136,17 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
               ),
             ),
             FutureBuilder<SymbolTableData>(
-              future: _loadSymbolData(symbolKey, index),
+              future: _loadSymbolData(symbolKey, index, limiter),
               builder: (BuildContext context, AsyncSnapshot<SymbolTableData> snapshot) {
                 if (snapshot.hasData && snapshot.data is SymbolTableData) {
                   return GCWSymbolTableTextToSymbols(
-                    text: _currentInput,
-                    ignoreUnknown: true,
-                    countColumns: countColumns,
-                    data: snapshot.data!,
-                    showExportButton: false,
-                    specialEncryption: false,
-                    fixed: true,
-                  );
+                      text: _currentInput,
+                      ignoreUnknown: true,
+                      countColumns: countColumns,
+                      data: snapshot.data!,
+                      showExportButton: false,
+                      specialEncryption: false,
+                      fixed: true);
                 } else {
                   return Container();
                 }
@@ -152,9 +158,10 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
     );
   }
 
-  Future<SymbolTableData> _loadSymbolData(String symbolKey, int index) async {
+  Future<SymbolTableData> _loadSymbolData(String symbolKey, int index, MethodLimiter limiter) async {
     var symbolTableData = SymbolTableData(symbolKey);
-    await symbolTableData.initialize(context);
+
+    await limiter.callMethod(() => symbolTableData.initialize(context));
 
     return symbolTableData;
   }

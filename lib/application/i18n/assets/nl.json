@@ -566,6 +566,7 @@
   "ccitt_5_title": "CCITT IA-5",
   "ccitt_5_description": "Internationaal telegraaf alfabet, nr. 5, 7 bits code",
   "ccitt_5_example": "CACHE → 1000011 1000001 1000011 1001000 1000101",
+  "changelog_3.2.3": "[fix] Amino Acids Overview (Thanks, SzpiegDonPedro)\n[fix] Symbol Replacer (Thanks, SzpiegDonPedro)",
   "changelog_3.2.2": "[new] Toevalsgenerator Steen Papier Schaar\n[fix] Enigma (Bedankt, mister-rage)\n[fix] Formule oplosser: Formule referenties",
   "changelog_3.2.1": "[new] Torens van Hanoi\n[new] Toevalsgenerator\n[new] Navajo lijst\n[new] Symbool tabel: Orgacolor\n[fix] Veel bug fixes",
   "changelog_3.2.0": "[new] Logigram hulp\n[new] Ragbaby\n[new] Judoon\n[new] Porta\n[new] Huwelijksjubilea\n[new] DIN-formaten\n[new] Coord-format: GARS\n[new] Coord-format: Bosch\n[new] Coord-format: S2Cellen (Hilbert)\n[new] Vervangen: random generator\n[new] Postcode\n[new] Afbeeldingen: achtergrondkleur\n[new] Bacon: tekstanalyse\n[new] Symbooltabellen\n[chg] Herziene coord functies\n[fix] Verscheidene bug fixes",

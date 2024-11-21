@@ -14,6 +14,7 @@ import 'package:gc_wizard/utils/json_utils.dart';
 part 'package:gc_wizard/tools/symbol_tables/_common/logic/common_symbols.dart';
 
 const SYMBOLTABLES_ASSETPATH = 'lib/tools/symbol_tables/_common/assets/';
+const MAX_PARALLEL_LOADS = 5;
 
 class SymbolTableConstants {
   static final IMAGE_SUFFIXES = RegExp(r'\.(png|jpg|bmp|gif)', caseSensitive: false);

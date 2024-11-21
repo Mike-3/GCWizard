@@ -566,6 +566,7 @@
   "ccitt_5_title": "CCITT IA-5",
   "ccitt_5_description": "Internationales Alphabet Nr. 5, 7 Bit Code",
   "ccitt_5_example": "CACHE → 1000011 1000001 1000011 1001000 1000101",
+  "changelog_3.2.3": "[fix] Amino Acids Overview (Thanks, SzpiegDonPedro)\n[fix] Symbol Replacer (Thanks, SzpiegDonPedro)",
   "changelog_3.2.2": "[new] Zufallsgenerator: Schere Stein Papier\n[fix] Enigma (Danke, mister-rage)\n[fix] Formelrechner: Formelreferenzen",
   "changelog_3.2.1": "[new] Türme von Hanoi\n[new] Zufallsgenerator\n[new] Navajo Liste\n[new] Koord Format: 10Y Waldmeister\n[new] Symboltabelle: Orgacolor\n[fix] Viele Bug Fixes",
   "changelog_3.2.0": "[new] Logikrästel-Helfer\n[new] Ragbaby\n[new] Judoon\n[new] Porta\n[new] Hochzeitsjubiläen\n[new] DIN-Formate\n[new] Koord-format: GARS\n[new] Koord-format: Bosch\n[new] Koord-format: S2Cells (Hilbert)\n[new] Ersetzen: Zufallsgenerator\n[new] Postcode\n[new] Bilder anzeigen: Hintergrundfarbe\n[new] Bacon: Analyse von Texten\n[new] Symbol Tabellen\n[chg] Überarbeitete Koordinatenfunktionen\n[fix] Verschiedene Bug fixes",
