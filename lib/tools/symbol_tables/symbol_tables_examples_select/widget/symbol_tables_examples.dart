@@ -11,7 +11,7 @@ import 'package:gc_wizard/tools/symbol_tables/_common/logic/symbol_table_data.da
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_text_to_symbols.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_tool.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_zoom_buttons.dart';
-import 'package:gc_wizard/utils/methodLimiter.dart';
+import 'package:gc_wizard/utils/method_limiter.dart';
 import 'package:prefs/prefs.dart';
 
 class SymbolTableExamples extends StatefulWidget {
@@ -106,7 +106,7 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
   }
 
   Widget _createSymbols(int countColumns) {
-    var limiter = MethodLimiter(5);
+    var limiter = MethodLimiter(MAX_PARALLEL_LOADS);
 
     var symbols = symbolKeys.mapIndexed<Widget>((index, symbolKey) {
       return Column(
