@@ -107,6 +107,9 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
   Widget _createSymbols(int countColumns) {
     return ListView.builder(
       itemCount: symbolKeys.length,
+      addAutomaticKeepAlives: false,
+      addRepaintBoundaries: false,
+      addSemanticIndexes: false,
       itemBuilder: (context, index) {
         String symbolKey = symbolKeys[index];
         return Column(
