@@ -97,8 +97,8 @@ class _GCWAsyncExecuterState<T> extends State<GCWAsyncExecuter<T>> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (widget.isOverlay) {
-              Navigator.of(context).pop();
-              _cancelProcess();// Pop from dialog on completion (needen on overlay)
+              Navigator.of(context).pop(); // Pop from dialog on completion (needen on overlay)
+              _cancelProcess();
             }
             if (_result is T) {
               widget.onReady(_result as T);
@@ -147,11 +147,11 @@ class _GCWAsyncExecuterState<T> extends State<GCWAsyncExecuter<T>> {
   void _cancelProcess() {
     if (_isolate != null) {
       _isolate!.kill(priority: Isolate.immediate);
-      _isolate = null; // Entferne die Referenz
+      _isolate = null;
     }
     if (_receivePort != null) {
       _receivePort!.close();
-      _receivePort = null; // Entferne die Referenz
+      _receivePort = null;
     }
   }
 }
