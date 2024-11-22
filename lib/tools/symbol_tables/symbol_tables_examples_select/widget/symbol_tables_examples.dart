@@ -1,4 +1,4 @@
-import 'package:collection/collection.dart';
+
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/navigation/no_animation_material_page_route.dart';
@@ -105,25 +105,34 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
   }
 
   Widget _createSymbols(int countColumns) {
-    var symbols = symbolKeys.mapIndexed<Widget>((index, symbolKey) {
-      return Column(
-        children: [
-          GCWTextDivider(
+    return ListView.builder(
+      itemCount: symbolKeys.length,
+      addAutomaticKeepAlives: false,
+      addRepaintBoundaries: false,
+      addSemanticIndexes: false,
+      itemBuilder: (context, index) {
+        String symbolKey = symbolKeys[index];
+        return Column(
+          children: [
+            GCWTextDivider(
               text: i18n(context, 'symboltables_${symbolKey}_title'),
               trailing: GCWIconButton(
                 icon: Icons.open_in_new,
                 size: IconButtonSize.SMALL,
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      NoAnimationMaterialPageRoute<GCWSymbolTableTool>(
-                          builder: (context) => GCWSymbolTableTool(
-                                symbolKey: symbolKey,
-                                symbolSearchStrings: const [],
-                              )));
+                    context,
+                    NoAnimationMaterialPageRoute<GCWSymbolTableTool>(
+                      builder: (context) => GCWSymbolTableTool(
+                        symbolKey: symbolKey,
+                        symbolSearchStrings: const [],
+                      ),
+                    ),
+                  );
                 },
-              )),
-          FutureBuilder<SymbolTableData>(
+              ),
+            ),
+            FutureBuilder<SymbolTableData>(
               future: _loadSymbolData(symbolKey, index),
               builder: (BuildContext context, AsyncSnapshot<SymbolTableData> snapshot) {
                 if (snapshot.hasData && snapshot.data is SymbolTableData) {
@@ -138,18 +147,17 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
                 } else {
                   return Container();
                 }
-              })
-        ],
-      );
-    }).toList();
-
-    return SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(), primary: true, child: Column(children: symbols));
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<SymbolTableData> _loadSymbolData(String symbolKey, int index) async {
     var symbolTableData = SymbolTableData(context, symbolKey);
-    await Future.delayed(Duration(milliseconds: (index~/ 10) * 300) , () => symbolTableData.initialize());
+    await symbolTableData.initialize();
 
     return symbolTableData;
   }
