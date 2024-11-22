@@ -566,6 +566,7 @@
   "ccitt_5_title": "CCITT IA-5",
   "ccitt_5_description": "Internationellt Telegraf alfabet nr 5, 7 bitars kod",
   "ccitt_5_example": "CACHE → 1000011 1000001 1000011 1001000 1000101",
+  "changelog_3.2.3": "[fix] Amino Acids Overview (Thanks, SzpiegDonPedro)\n[fix] Symbol Replacer (Thanks, SzpiegDonPedro)",
   "changelog_3.2.2": "[new] Slumptalsgenerator sten sax påse\n[fix] Enigma (Tack, mister-rage)\n[fix] Formellösare: Formelreferenser",
   "changelog_3.2.1": "[new] Torn av Hanoi\n[new] Slumptalsgenerator\n[new] Navajo lista\n[new] Symbol tabell: Orgacolor\n[fix] Många buggfixar",
   "changelog_3.2.0": "[new] Logikspel-hjälp\n[new] Ragbaby\n[new] Judoon\n[new] Porta\n[new] bröllopsdag\n[new] DIN-format\n[new] Koordinatformat: GARS\n[new] Koordinatformat: Bosch\n[new] Koordinatformat: S2Cells (Hilbert)\n[new]Ersättare: Generera slumpmässigt\n[new] Postnummer\n[new] Bildvisning: Bakgrundsfärg\n[new] Bacon: Steg 2\n[new] Symboltabeller\n[chg] Reviderade koordinatfunktioner\n[fix] Flera buggfixar",
