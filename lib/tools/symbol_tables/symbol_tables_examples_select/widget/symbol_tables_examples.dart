@@ -133,7 +133,7 @@ class _SymbolTableExamplesState extends State<SymbolTableExamples> {
                     ),
                   );
                 },
-              ),
+              )
             ),
             FutureBuilder<SymbolTableData>(
               future: _loadSymbolData(symbolKey, index, limiter),

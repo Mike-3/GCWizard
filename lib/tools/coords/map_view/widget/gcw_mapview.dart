@@ -233,7 +233,7 @@ class _GCWMapViewState extends State<GCWMapView> {
                 initialCameraFit: _getBounds(),
                 /// IMPORTANT for dragging
                 minZoom: 1.0,
-                maxZoom: 18.0,
+                maxZoom: 20.0,
                 interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate), // suppress rotation
                 onTap: (_, __) => _popupLayerController.hidePopup(),
                 onLongPress: widget.isEditable && !_isPointsHidden // == _persistanceAdapter is set
