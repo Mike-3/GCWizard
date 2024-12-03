@@ -49,48 +49,45 @@ class GameOfLifePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var _touchCanvas = TouchyCanvas(context, canvas);
-
-    var paint = Paint();
-    paint.style = PaintingStyle.stroke;
-
+    var paintLine = Paint();
+    var paintFull = Paint();
+    var paintBackground = Paint();
+    var paintTransparent = Paint();
     double boxSize = size.width / this.size;
+
+    paintLine.strokeWidth = (this.size > 20) ? 1 : 2;
+    paintLine.style = PaintingStyle.stroke;
+    paintLine.color = (this.size > 50) ? themeColors().secondary().withOpacity(0.0) : themeColors().secondary();
+
+    paintBackground.style = PaintingStyle.fill;
+    paintBackground.color = themeColors().gridBackground();
+
+    paintTransparent.style = PaintingStyle.fill;
+    paintTransparent.color = Colors.transparent;
+
+    paintFull.style = PaintingStyle.fill;
+    paintFull.color = themeColors().mainFont();
+
+
+    _touchCanvas.drawRect(Rect.fromLTWH(0, 0, this.size  * boxSize, this.size * boxSize), paintBackground);
 
     for (int i = 0; i < this.size; i++) {
       for (int j = 0; j < this.size; j++) {
-        paint.strokeWidth = this.size > 20 ? 1 : 2;
 
         var x = j * boxSize;
         var y = i * boxSize;
 
         var isSet = state[i][j] == true;
 
-        paint.color = isSet ? themeColors().mainFont() : themeColors().gridBackground();
-        paint.style = PaintingStyle.fill;
-
-        _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), paint);
-
-        paint.color = themeColors().secondary();
-
-        if (this.size > 50) paint.color = paint.color.withOpacity(0.0);
-
-        _touchCanvas.drawLine(Offset(x, 0.0), Offset(x, size.width), paint);
-        _touchCanvas.drawLine(Offset(0.0, y), Offset(size.height, y), paint);
-
-        paint.color = paint.color.withOpacity(0.0);
-        _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), paint, onTapDown: (tapDetail) {
-          onSetCell(i, j, !isSet);
-        });
+        _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), isSet ? paintFull : paintTransparent,
+            onTapDown: (tapDetail) {onSetCell(i, j, !isSet);});
       }
     }
 
-    if (this.size > 50) {
-      paint.color = paint.color.withOpacity(0.0);
-    } else {
-      paint.color = themeColors().secondary();
+    for (double i = 0; i <= this.size * boxSize + 0.0000001; i+=boxSize) {
+      _touchCanvas.drawLine(Offset(i, 0.0), Offset(i, size.width), paintLine);
+      _touchCanvas.drawLine(Offset(0.0, i), Offset(size.height, i), paintLine);
     }
-
-    _touchCanvas.drawLine(Offset(size.height, 0.0), Offset(size.height, size.width), paint);
-    _touchCanvas.drawLine(Offset(0.0, size.width), Offset(size.height, size.width), paint);
   }
 
   @override
