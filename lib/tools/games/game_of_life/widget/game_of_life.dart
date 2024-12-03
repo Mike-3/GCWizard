@@ -97,7 +97,7 @@ class _GameOfLifeState extends State<GameOfLife> {
         GCWIntegerSpinner(
           title: i18n(context, 'gameoflife_size'),
           min: 2,
-          max: 200,
+          max: 1000,
           value: _currentSize,
           onChanged: (value) {
             setState(() {
