@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_button.dart';
@@ -24,7 +22,7 @@ class GameOfLife extends StatefulWidget {
 const _KEY_CUSTOM_RULES = 'gameoflife_custom';
 
 class _GameOfLifeState extends State<GameOfLife> {
-  var _currentSize = 12;
+  static var _currentSize = 12;
   var _board = GameOfLifeData(_currentSize);
 
   var _currentWrapWorld = false;
@@ -183,9 +181,9 @@ class _GameOfLifeState extends State<GameOfLife> {
               child: GCWText(
                   align: Alignment.center,
                   text:
-                      '${i18n(context, 'gameoflife_step')}: $_board.currentStep\n${i18n(context, 'gameoflife_livingcells', parameters: [
-                        _countCells()
-                      ])}'),
+                      i18n(context, 'gameoflife_step') + ': ' + _board.step.toString() + '\n' +
+                          i18n(context, 'gameoflife_livingcells', parameters: [_countCells()])
+              ),
             ),
             GCWIconButton(
               icon: Icons.arrow_forward_ios,
@@ -229,13 +227,13 @@ class _GameOfLifeState extends State<GameOfLife> {
   }
 
   void _forward() {
-    _board.currentStep++;
+    _board.step++;
 
     _calculateStep();
   }
 
   void _backwards() {
-    if (_board.currentStep > 0) _board.currentStep--;
+    if (_board.step > 0) _board.step--;
 
     _calculateStep();
   }
@@ -289,8 +287,8 @@ class _GameOfLifeState extends State<GameOfLife> {
   }
 
   void _calculateStep() {
-    if (_board.currentStep < _board.boards.length) {
-      _board.currentBoard = List.from(_board.boards[_board.currentStep]);
+    if (_board.step < _board.boards.length) {
+      _board.currentBoard = List.from(_board.boards[_board.step]);
       return;
     }
 
@@ -304,7 +302,7 @@ class _GameOfLifeState extends State<GameOfLife> {
       rules = _allRules[_currentRules] ?? const GameOfLifeRules();
     }
 
-    _board.boards.add(_board.calculateStep(_board.boards.currentBoard, rules, isWrapWorld: _currentWrapWorld));
-    _board.boards.currentBoard = List.from(_board.boards.last);
+    _board.boards.add(_board.calculateStep(_board.currentBoard, rules, isWrapWorld: _currentWrapWorld));
+    _board.currentBoard = List.from(_board.boards.last);
   }
 }

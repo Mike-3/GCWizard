@@ -3,19 +3,19 @@ import 'dart:math';
 class GameOfLifeData {
   late List<List<List<bool>>> boards;
   List<List<bool>> currentBoard = [];
-  var currentStep = 0;
-  var currentSize = 0;
+  var step = 0;
+  final int size;
 
-  GameOfLifeData(this.currentSize, {List<List<bool>>? content}) {
+  GameOfLifeData(this.size, {List<List<bool>>? content}) {
     _generateBoard(content);
   }
 
   void _generateBoard(List<List<bool>>? content) {
     var _newBoard =
-      List<List<bool>>.generate(currentSize, (index) => List<bool>.generate(currentSize, (index) => false));
+      List<List<bool>>.generate(size, (index) => List<bool>.generate(size, (index) => false));
 
     if (content != null && content.isNotEmpty) {
-      var limit = min(currentSize, content.length);
+      var limit = min(size, content.length);
 
       for (int i = 0; i < limit; i++) {
         for (int j = 0; j < limit; j++) {
@@ -28,14 +28,14 @@ class GameOfLifeData {
     boards.add(_newBoard);
 
     currentBoard = List.from(_newBoard);
-    currentStep = 0;
+    step = 0;
   }
 
   void reset({List<List<bool>>? board}) {
     boards = <List<List<bool>>>[];
     boards.add(board ?? List.from(currentBoard));
 
-    currentStep = 0;
+    step = 0;
   }
 
   int _countNeighbors(List<List<bool>> _currentBoard, int i, int j, {bool isOpenWorld = false}) {
