@@ -1,5 +1,10 @@
 import 'dart:math';
 
+import 'package:gc_wizard/utils/file_utils/file_utils.dart';
+import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
+
+part 'package:gc_wizard/tools/games/game_of_life/logic/game_of_life_rle.dart';
+
 class GameOfLifeData {
   late List<List<List<bool>>> boards;
   List<List<bool>> currentBoard = [];

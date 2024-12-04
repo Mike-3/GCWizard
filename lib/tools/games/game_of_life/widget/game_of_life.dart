@@ -5,7 +5,9 @@ import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_button.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
 import 'package:gc_wizard/common_widgets/dropdowns/gcw_dropdown.dart';
+import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
 import 'package:gc_wizard/common_widgets/gcw_painter_container.dart';
+import 'package:gc_wizard/common_widgets/gcw_snackbar.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
 import 'package:gc_wizard/common_widgets/spinners/gcw_integer_spinner.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_onoff_switch.dart';
@@ -13,6 +15,7 @@ import 'package:gc_wizard/common_widgets/text_input_formatters/wrapper_for_maskt
 import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
 import 'package:gc_wizard/tools/games/game_of_life/logic/game_of_life.dart';
 import 'package:gc_wizard/tools/games/game_of_life/widget/game_of_life_board.dart';
+import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 
 class GameOfLife extends StatefulWidget {
   const GameOfLife({Key? key}) : super(key: key);
@@ -62,6 +65,22 @@ class _GameOfLifeState extends State<GameOfLife> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
+        GCWOpenFile(
+          title: i18n(context, 'common_import') + ' RLE',
+          onLoaded: (GCWFile? value) {
+            if (value == null) {
+              showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
+            } else {
+              var __board = importRLE(value);
+              if (__board != null) {
+                _board = __board;
+                _currentSize = _board.size;
+              } else {
+                showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
+              }
+            }
+            setState(() {});
+        }),
         GCWIntegerSpinner(
           title: i18n(context, 'gameoflife_size'),
           min: 2,
