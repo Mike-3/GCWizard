@@ -4,21 +4,18 @@ class GameOfLifeData {
   late List<List<List<bool>>> boards;
   List<List<bool>> currentBoard = [];
   var step = 0;
-  final int size;
+  final Point<int> size;
 
   GameOfLifeData(this.size, {List<List<bool>>? content}) {
     _generateBoard(content);
   }
 
   void _generateBoard(List<List<bool>>? content) {
-    var _newBoard =
-      List<List<bool>>.generate(size, (index) => List<bool>.generate(size, (index) => false));
+    var _newBoard = List<List<bool>>.generate(size.y, (index) => List<bool>.generate(size.x, (index) => false));
 
     if (content != null && content.isNotEmpty) {
-      var limit = min(size, content.length);
-
-      for (int i = 0; i < limit; i++) {
-        for (int j = 0; j < limit; j++) {
+      for (int i = 0; i < min(size.y, content.length); i++) {
+        for (int j = 0; j < min(size.x, content[i].length); j++) {
           _newBoard[i][j] = content[i][j];
         }
       }
@@ -38,19 +35,18 @@ class GameOfLifeData {
     step = 0;
   }
 
-  int _countNeighbors(List<List<bool>> _currentBoard, int i, int j, {bool isOpenWorld = false}) {
+  int _countNeighbors(List<List<bool>> board, int i, int j, {bool isOpenWorld = false}) {
     var counter = 0;
-    var size = _currentBoard.length;
 
     for (int k = i - 1; k <= i + 1; k++) {
-      if (!isOpenWorld && (k < 0 || k == size)) continue;
+      if (!isOpenWorld && (k < 0 || k == size.y)) continue;
 
       for (int l = j - 1; l <= j + 1; l++) {
-        if (!isOpenWorld && (l < 0 || l == size)) continue;
+        if (!isOpenWorld && (l < 0 || l == size.x)) continue;
 
         if (k == i && l == j) continue;
 
-        if (_currentBoard[k % size][l % size]) {
+        if (board[k % size.y][l % size.x]) {
           counter++;
         }
       }
@@ -59,10 +55,8 @@ class GameOfLifeData {
     return counter;
   }
 
-  List<List<bool>> calculateStep(List<List<bool>> _currentBoard, GameOfLifeRules rules,
-      {bool isWrapWorld = false}) {
-    var size = _currentBoard.length;
-    var _newStepBoard = List<List<bool>>.generate(size, (index) => List<bool>.generate(size, (index) => false));
+  List<List<bool>> calculateStep(List<List<bool>> board, GameOfLifeRules rules, {bool isWrapWorld = false}) {
+    var _newStepBoard = List<List<bool>>.generate(size.y, (index) => List<bool>.generate(size.x, (index) => false));
 
     var _rules = rules;
     if (_rules.isInverse) {
@@ -71,13 +65,13 @@ class GameOfLifeData {
       _rules = rules;
     }
 
-    for (int i = 0; i < size; i++) {
-      for (int j = 0; j < size; j++) {
-        var countNeighbors = _countNeighbors(_currentBoard, i, j, isOpenWorld: isWrapWorld);
-        if (_currentBoard[i][j] && _rules.survivals.contains(countNeighbors)) {
+    for (int i = 0; i < size.y; i++) {
+      for (int j = 0; j < size.x; j++) {
+        var countNeighbors = _countNeighbors(board, i, j, isOpenWorld: isWrapWorld);
+        if (board[i][j] && _rules.survivals.contains(countNeighbors)) {
           _newStepBoard[i][j] = true;
         }
-        if (!_currentBoard[i][j] && _rules.births.contains(countNeighbors)) {
+        if (!board[i][j] && _rules.births.contains(countNeighbors)) {
           _newStepBoard[i][j] = true;
         }
       }

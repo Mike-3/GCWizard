@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_button.dart';
@@ -22,7 +24,7 @@ class GameOfLife extends StatefulWidget {
 const _KEY_CUSTOM_RULES = 'gameoflife_custom';
 
 class _GameOfLifeState extends State<GameOfLife> {
-  static var _currentSize = 12;
+  static var _currentSize = const Point<int>(12, 12);
   var _board = GameOfLifeData(_currentSize);
 
   var _currentWrapWorld = false;
@@ -63,11 +65,11 @@ class _GameOfLifeState extends State<GameOfLife> {
         GCWIntegerSpinner(
           title: i18n(context, 'gameoflife_size'),
           min: 2,
-          max: 1000,
-          value: _currentSize,
+          max: 2000,
+          value: _currentSize.x,
           onChanged: (value) {
             setState(() {
-              _currentSize = value;
+              _currentSize = Point<int>(value, value);
               _board = GameOfLifeData(_currentSize, content: _board.currentBoard);
               _board.reset();
             });
@@ -216,7 +218,7 @@ class _GameOfLifeState extends State<GameOfLife> {
               var isInverse = (_currentRules == _KEY_CUSTOM_RULES && _currentCustomInverse) ||
                   (_currentRules != _KEY_CUSTOM_RULES && _allRules[_currentRules]!.isInverse);
               _board.currentBoard = List<List<bool>>.generate(
-                  _currentSize, (index) => List<bool>.generate(_currentSize, (index) => isInverse));
+                  _board.size.y, (index) => List<bool>.generate(_board.size.x, (index) => isInverse));
 
               _board.reset();
             });
@@ -272,8 +274,8 @@ class _GameOfLifeState extends State<GameOfLife> {
 
   int _countCells() {
     var counter = 0;
-    for (int i = 0; i < _currentSize; i++) {
-      for (int j = 0; j < _currentSize; j++) {
+    for (int i = 0; i < _board.size.y; i++) {
+      for (int j = 0; j < _board.size.x; j++) {
         if (_board.currentBoard[i][j]) counter++;
       }
     }

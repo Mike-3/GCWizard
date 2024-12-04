@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/theme/theme_colors.dart';
 import 'package:touchable/touchable.dart';
 
+const _MAX_TOUCH_SIZE = 500;
+
 class GameOfLifeBoard extends StatefulWidget {
-  final int size;
+  final Point<int> size;
   final void Function(List<List<bool>>) onChanged;
   final List<List<bool>> state;
 
@@ -39,7 +43,7 @@ class _GameOfLifeBoardState extends State<GameOfLifeBoard> {
 }
 
 class GameOfLifePainter extends CustomPainter {
-  final int size;
+  final Point<int> size;
   final List<List<bool>> state;
   final BuildContext context;
   final void Function(int, int, bool) onSetCell;
@@ -53,11 +57,12 @@ class GameOfLifePainter extends CustomPainter {
     var paintFull = Paint();
     var paintBackground = Paint();
     var paintTransparent = Paint();
-    double boxSize = size.width / this.size;
+    var enableTouch = max(this.size.x, this.size.y) <= _MAX_TOUCH_SIZE;
+    double boxSize = size.width / this.size.x;
 
-    paintLine.strokeWidth = (this.size > 20) ? 1 : 2;
+    paintLine.strokeWidth = (max(this.size.x, this.size.y) > 20) ? 1 : 2;
     paintLine.style = PaintingStyle.stroke;
-    paintLine.color = (this.size > 50) ? themeColors().secondary().withOpacity(0.0) : themeColors().secondary();
+    paintLine.color = themeColors().secondary();
 
     paintBackground.style = PaintingStyle.fill;
     paintBackground.color = themeColors().gridBackground();
@@ -69,24 +74,34 @@ class GameOfLifePainter extends CustomPainter {
     paintFull.color = themeColors().mainFont();
 
 
-    _touchCanvas.drawRect(Rect.fromLTWH(0, 0, this.size  * boxSize, this.size * boxSize), paintBackground);
+    _touchCanvas.drawRect(Rect.fromLTWH(0, 0, this.size.x  * boxSize, this.size.y * boxSize), paintBackground);
 
-    for (int i = 0; i < this.size; i++) {
-      for (int j = 0; j < this.size; j++) {
+    for (int i = 0; i < this.size.y; i++) {
+      for (int j = 0; j < this.size.x; j++) {
 
         var x = j * boxSize;
         var y = i * boxSize;
 
-        var isSet = state[i][j] == true;
+        var isSet = state[i][j];
 
-        _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), isSet ? paintFull : paintTransparent,
-            onTapDown: (tapDetail) {onSetCell(i, j, !isSet);});
+        if (enableTouch) {
+          _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), isSet ? paintFull : paintTransparent,
+              onTapDown: (tapDetail) {
+                onSetCell(i, j, !isSet);
+              });
+        } else if (isSet) {
+          _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), paintFull);
+        }
       }
     }
 
-    for (double i = 0; i <= this.size * boxSize + 0.0000001; i+=boxSize) {
-      _touchCanvas.drawLine(Offset(i, 0.0), Offset(i, size.width), paintLine);
-      _touchCanvas.drawLine(Offset(0.0, i), Offset(size.height, i), paintLine);
+    if (max(this.size.x, this.size.y) <= 50) {
+      for (double i = 0; i <= this.size.x * boxSize + 0.0000001; i += boxSize) {
+        _touchCanvas.drawLine(Offset(i, 0.0), Offset(i, size.width), paintLine);
+      }
+      for (double j = 0; j <= this.size.y * boxSize + 0.0000001; j += boxSize) {
+        _touchCanvas.drawLine(Offset(0.0, j), Offset(size.height, j), paintLine);
+      }
     }
   }
 
