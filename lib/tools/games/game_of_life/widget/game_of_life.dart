@@ -24,11 +24,9 @@ class GameOfLife extends StatefulWidget {
 const _KEY_CUSTOM_RULES = 'gameoflife_custom';
 
 class _GameOfLifeState extends State<GameOfLife> {
-  late List<List<List<bool>>> _boards;
-  List<List<bool>> _currentBoard = [];
-  var _currentStep = 0;
-
   var _currentSize = 12;
+  var _board = GameOfLifeData(_currentSize);
+
   var _currentWrapWorld = false;
   var _currentRules = 'gameoflife_conway';
   late Map<String, GameOfLifeRules?> _allRules;
@@ -47,8 +45,6 @@ class _GameOfLifeState extends State<GameOfLife> {
     _currentCustomSurviveController = TextEditingController(text: _currentCustomSurvive);
     _currentCustomBirthController = TextEditingController(text: _currentCustomBirth);
 
-    _generateBoard();
-
     _allRules = Map<String, GameOfLifeRules?>.from(DEFAULT_GAME_OF_LIFE_RULES);
     _allRules.removeWhere((key, value) => value == null);
     _allRules.putIfAbsent(_KEY_CUSTOM_RULES, () => null);
@@ -60,34 +56,6 @@ class _GameOfLifeState extends State<GameOfLife> {
     _currentCustomBirthController.dispose();
 
     super.dispose();
-  }
-
-  void _generateBoard() {
-    var _newBoard =
-        List<List<bool>>.generate(_currentSize, (index) => List<bool>.generate(_currentSize, (index) => false));
-
-    if (_currentBoard.isEmpty) {
-      var limit = min(_currentSize, _currentBoard.length);
-
-      for (int i = 0; i < limit; i++) {
-        for (int j = 0; j < limit; j++) {
-          _newBoard[i][j] = _currentBoard[i][j];
-        }
-      }
-    }
-
-    _boards = <List<List<bool>>>[];
-    _boards.add(_newBoard);
-
-    _currentBoard = List.from(_newBoard);
-    _currentStep = 0;
-  }
-
-  void _reset({List<List<bool>>? board}) {
-    _boards = <List<List<bool>>>[];
-    _boards.add(board ?? List.from(_currentBoard));
-
-    _currentStep = 0;
   }
 
   @override
@@ -102,8 +70,8 @@ class _GameOfLifeState extends State<GameOfLife> {
           onChanged: (value) {
             setState(() {
               _currentSize = value;
-              _generateBoard();
-              _reset();
+              _board = GameOfLifeData(_currentSize, content: _board.currentBoard);
+              _board.reset();
             });
           },
         ),
@@ -127,7 +95,7 @@ class _GameOfLifeState extends State<GameOfLife> {
               } else if (_allRules[_currentRules]!.isInverse) {
                 _currentWrapWorld = true;
               }
-              _reset();
+              _board.reset();
             });
           },
         ),
@@ -141,7 +109,7 @@ class _GameOfLifeState extends State<GameOfLife> {
                     onChanged: (text) {
                       setState(() {
                         _currentCustomSurvive = text;
-                        _reset();
+                        _board.reset();
                       });
                     },
                   ),
@@ -152,7 +120,7 @@ class _GameOfLifeState extends State<GameOfLife> {
                     onChanged: (text) {
                       setState(() {
                         _currentCustomBirth = text;
-                        _reset();
+                        _board.reset();
                       });
                     },
                   ),
@@ -162,7 +130,7 @@ class _GameOfLifeState extends State<GameOfLife> {
                     onChanged: (value) {
                       setState(() {
                         _currentCustomInverse = value;
-                        _reset();
+                        _board.reset();
                       });
                     },
                   )
@@ -175,17 +143,17 @@ class _GameOfLifeState extends State<GameOfLife> {
           onChanged: (value) {
             setState(() {
               _currentWrapWorld = value;
-              _reset();
+              _board.reset();
             });
           },
         ),
         GCWPainterContainer(
           child: GameOfLifeBoard(
-            state: _currentBoard,
+            state: _board.currentBoard,
             size: _currentSize,
             onChanged: (newBoard) {
               setState(() {
-                _reset(board: newBoard);
+                _board.reset(board: newBoard);
               });
             },
           ),
@@ -215,7 +183,7 @@ class _GameOfLifeState extends State<GameOfLife> {
               child: GCWText(
                   align: Alignment.center,
                   text:
-                      '${i18n(context, 'gameoflife_step')}: $_currentStep\n${i18n(context, 'gameoflife_livingcells', parameters: [
+                      '${i18n(context, 'gameoflife_step')}: $_board.currentStep\n${i18n(context, 'gameoflife_livingcells', parameters: [
                         _countCells()
                       ])}'),
             ),
@@ -249,10 +217,10 @@ class _GameOfLifeState extends State<GameOfLife> {
             setState(() {
               var isInverse = (_currentRules == _KEY_CUSTOM_RULES && _currentCustomInverse) ||
                   (_currentRules != _KEY_CUSTOM_RULES && _allRules[_currentRules]!.isInverse);
-              _currentBoard = List<List<bool>>.generate(
+              _board.currentBoard = List<List<bool>>.generate(
                   _currentSize, (index) => List<bool>.generate(_currentSize, (index) => isInverse));
 
-              _reset();
+              _board.reset();
             });
           },
         )
@@ -261,13 +229,13 @@ class _GameOfLifeState extends State<GameOfLife> {
   }
 
   void _forward() {
-    _currentStep++;
+    _board.currentStep++;
 
     _calculateStep();
   }
 
   void _backwards() {
-    if (_currentStep > 0) _currentStep--;
+    if (_board.currentStep > 0) _board.currentStep--;
 
     _calculateStep();
   }
@@ -308,7 +276,7 @@ class _GameOfLifeState extends State<GameOfLife> {
     var counter = 0;
     for (int i = 0; i < _currentSize; i++) {
       for (int j = 0; j < _currentSize; j++) {
-        if (_currentBoard[i][j]) counter++;
+        if (_board.currentBoard[i][j]) counter++;
       }
     }
 
@@ -321,8 +289,8 @@ class _GameOfLifeState extends State<GameOfLife> {
   }
 
   void _calculateStep() {
-    if (_currentStep < _boards.length) {
-      _currentBoard = List.from(_boards[_currentStep]);
+    if (_board.currentStep < _board.boards.length) {
+      _board.currentBoard = List.from(_board.boards[_board.currentStep]);
       return;
     }
 
@@ -336,7 +304,7 @@ class _GameOfLifeState extends State<GameOfLife> {
       rules = _allRules[_currentRules] ?? const GameOfLifeRules();
     }
 
-    _boards.add(calculateGameOfLifeStep(_currentBoard, rules, isWrapWorld: _currentWrapWorld));
-    _currentBoard = List.from(_boards.last);
+    _board.boards.add(_board.calculateStep(_board.boards.currentBoard, rules, isWrapWorld: _currentWrapWorld));
+    _board.boards.currentBoard = List.from(_board.boards.last);
   }
 }
