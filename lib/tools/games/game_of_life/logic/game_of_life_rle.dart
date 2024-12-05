@@ -1,7 +1,7 @@
 part of 'package:gc_wizard/tools/games/game_of_life/logic/game_of_life.dart';
 
 GameOfLifeData? importRLE(GCWFile file) {
-  var sizeRegex = RegExp(r'[xX]\s*=\s*(\d+)\s*,\s*[yY]\s*=\s*(\d+)');
+  var sizeRegex = RegExp(r'^[xX]\s*=\s*(\d+)\s*,\s*[yY]\s*=\s*(\d+)', multiLine: true);
   var ruleRegex = RegExp(r',\s*rule\s*=\s*(.*)');
   var patternRegex = RegExp(r'(\d*)([bo$])', multiLine: true);
 
@@ -14,15 +14,18 @@ GameOfLifeData? importRLE(GCWFile file) {
   var dataEnd = text.indexOf('!', sizeMatch.end);
   if (dataStart < 0 || dataEnd < 0) return null;
 
+  var rule = ruleRegex.firstMatch(text.substring(sizeMatch.end, dataStart));
+var rules = DEFAULT_GAME_OF_LIFE_RULES.values.first;
+
   var count = 0;
   var count2 = 0;
   var currentLine = 0;
   var currentPos = 0;
   var dataError = false;
-  var board = GameOfLifeData(Point<int>(int.parse(sizeMatch[1]!), int.parse(sizeMatch[2]!)));
+  var board = GameOfLifeData(Point<int>(int.parse(sizeMatch[1]!), int.parse(sizeMatch[2]!)), rules);
 
   patternRegex.allMatches(text.substring(dataStart + 1, dataEnd + 1)).forEach((pattern) {
-    count += (pattern[1] == null || pattern[1]!.isEmpty) ? 1 : int.parse(pattern[1]!);
+    count = (pattern[1] == null || pattern[1]!.isEmpty) ? 1 : int.parse(pattern[1]!);
     switch (pattern[2]) {
       case 'o':
         for (var i = 0; i < count; i++) {
@@ -37,6 +40,7 @@ GameOfLifeData? importRLE(GCWFile file) {
         break;
       case '\$':
         currentLine += count;
+        currentPos = 0;
         break;
     }
       count2++;

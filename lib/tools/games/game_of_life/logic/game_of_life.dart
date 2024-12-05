@@ -10,9 +10,9 @@ class GameOfLifeData {
   List<List<bool>> currentBoard = [];
   var step = 0;
   final Point<int> size;
-  late GameOfLifeRules rules;
+  GameOfLifeRules rules;
 
-  GameOfLifeData(this.size, {GameOfLifeRules rules = , List<List<bool>>? content}) {
+  GameOfLifeData(this.size, this.rules, {List<List<bool>>? content}) {
     _generateBoard(content);
   }
 
@@ -61,15 +61,10 @@ class GameOfLifeData {
     return counter;
   }
 
-  List<List<bool>> calculateStep(List<List<bool>> board, GameOfLifeRules rules, {bool isWrapWorld = false}) {
+  List<List<bool>> calculateStep(List<List<bool>> board, {bool isWrapWorld = false}) {
     var _newStepBoard = List<List<bool>>.generate(size.y, (index) => List<bool>.generate(size.x, (index) => false));
 
-    var _rules = rules;
-    if (_rules.isInverse) {
-      _rules = rules.inverseRules();
-    } else {
-      _rules = rules;
-    }
+    var _rules = (rules.isInverse) ? rules.inverseRules() : rules;
 
     for (int i = 0; i < size.y; i++) {
       for (int j = 0; j < size.x; j++) {
@@ -84,6 +79,17 @@ class GameOfLifeData {
     }
 
     return _newStepBoard;
+  }
+
+  int countCells() {
+    var counter = 0;
+    for (int i = 0; i < size.y; i++) {
+      for (int j = 0; j < size.x; j++) {
+        if (currentBoard[i][j]) counter++;
+      }
+    }
+
+    return counter;
   }
 }
 

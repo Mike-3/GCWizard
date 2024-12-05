@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/theme/theme_colors.dart';
 import 'package:touchable/touchable.dart';
 
-const _MAX_TOUCH_SIZE = 500;
-
 class GameOfLifeBoard extends StatefulWidget {
   final Point<int> size;
   final void Function(List<List<bool>>) onChanged;
@@ -24,19 +22,21 @@ class _GameOfLifeBoardState extends State<GameOfLifeBoard> {
       children: <Widget>[
         Expanded(
             child: AspectRatio(
-                aspectRatio: 1 / 1,
+                aspectRatio: max(widget.size.x, 1) / max(widget.size.y, 1),
                 child: CanvasTouchDetector(
                   gesturesToOverride: const [GestureType.onTapDown],
                   builder: (context) {
                     return CustomPaint(
-                        painter: GameOfLifePainter(context, widget.size, widget.state, (int x, int y, bool value) {
+                        painter: GameOfLifePainter(context, widget.size, widget.state, (int x, int y) {
                       setState(() {
-                        widget.state[x][y] = value;
+                        widget.state[x][y] = !widget.state[x][y];
                         widget.onChanged(widget.state);
                       });
                     }));
                   },
-                )))
+                )
+            )
+        )
       ],
     );
   }
@@ -46,9 +46,9 @@ class GameOfLifePainter extends CustomPainter {
   final Point<int> size;
   final List<List<bool>> state;
   final BuildContext context;
-  final void Function(int, int, bool) onSetCell;
+  final void Function(int, int) onInvertCell;
 
-  GameOfLifePainter(this.context, this.size, this.state, this.onSetCell);
+  GameOfLifePainter(this.context, this.size, this.state, this.onInvertCell);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -57,7 +57,6 @@ class GameOfLifePainter extends CustomPainter {
     var paintFull = Paint();
     var paintBackground = Paint();
     var paintTransparent = Paint();
-    var enableTouch = max(this.size.x, this.size.y) <= _MAX_TOUCH_SIZE;
     double boxSize = size.width / this.size.x;
 
     paintLine.strokeWidth = (max(this.size.x, this.size.y) > 20) ? 1 : 2;
@@ -78,18 +77,10 @@ class GameOfLifePainter extends CustomPainter {
 
     for (int i = 0; i < this.size.y; i++) {
       for (int j = 0; j < this.size.x; j++) {
-
         var x = j * boxSize;
         var y = i * boxSize;
 
-        var isSet = state[i][j];
-
-        if (enableTouch) {
-          _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), isSet ? paintFull : paintTransparent,
-              onTapDown: (tapDetail) {
-                onSetCell(i, j, !isSet);
-              });
-        } else if (isSet) {
+        if (state[i][j]) {
           _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), paintFull);
         }
       }
@@ -103,6 +94,13 @@ class GameOfLifePainter extends CustomPainter {
         _touchCanvas.drawLine(Offset(0.0, j), Offset(size.height, j), paintLine);
       }
     }
+
+    _touchCanvas.drawRect(Rect.fromLTWH(0, 0, this.size.x  * boxSize, this.size.y * boxSize), paintTransparent,
+        onTapDown: (tapDetail) {
+          var j = (tapDetail.localPosition.dx / boxSize).toInt();
+          var i = (tapDetail.localPosition.dy / boxSize).toInt();
+          onInvertCell(i, j);
+        });
   }
 
   @override
