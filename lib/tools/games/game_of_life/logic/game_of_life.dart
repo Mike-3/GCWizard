@@ -10,8 +10,9 @@ class GameOfLifeData {
   List<List<bool>> currentBoard = [];
   var step = 0;
   final Point<int> size;
+  late GameOfLifeRules rules;
 
-  GameOfLifeData(this.size, {List<List<bool>>? content}) {
+  GameOfLifeData(this.size, {GameOfLifeRules rules = , List<List<bool>>? content}) {
     _generateBoard(content);
   }
 
