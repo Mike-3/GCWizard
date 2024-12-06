@@ -79,95 +79,9 @@ class _GameOfLifeState extends State<GameOfLife> {
             }
             setState(() {});
         }),
-        GCWIntegerSpinner(
-          title: i18n(context, 'gameoflife_size'),
-          min: 2,
-          max: 2000,
-          value: _currentSize.x,
-          onChanged: (value) {
-            setState(() {
-              _currentSize = Point<int>(value, value);
-              _board = GameOfLifeData(_currentSize, _board.rules, content: _board.currentBoard);
-              _board.reset();
-            });
-          },
-        ),
-        GCWDropDown<GameOfLifeRules>(
-          title: i18n(context, 'gameoflife_rules'),
-          value: _board.rules,
-          items: _allRules.map((rules) {
-            if (rules.key == KEY_CUSTOM_RULES) return GCWDropDownMenuItem(value: rules, child: i18n(context, rules.key));
-
-            return GCWDropDownMenuItem(
-                value: rules,
-                child: i18n(context, rules.key),
-                subtitle:
-                    '${i18n(context, 'gameoflife_survive')}: ${_getSurvive(rules)} / ${i18n(context,
-                        'gameoflife_birth')}: ${_getBirth(rules)}');
-          }).toList(),
-          onChanged: (GameOfLifeRules value) {
-            setState(() {
-              _board.rules = value;
-              if (_board.rules.key == KEY_CUSTOM_RULES) {
-                _currentWrapWorld = _currentCustomInverse;
-              } else if (_board.rules.isInverse) {
-                _currentWrapWorld = true;
-              }
-              _board.reset();
-            });
-          },
-        ),
-        _board.rules.key == KEY_CUSTOM_RULES
-            ? Column(
-                children: [
-                  GCWTextField(
-                    title: i18n(context, 'gameoflife_survive'),
-                    controller: _currentCustomSurviveController,
-                    inputFormatters: [_maskInputFormatter],
-                    onChanged: (text) {
-                      setState(() {
-                        _currentCustomSurvive = text;
-                        _setBoardCustomRules();
-                        _board.reset();
-                      });
-                    },
-                  ),
-                  GCWTextField(
-                    title: i18n(context, 'gameoflife_birth'),
-                    controller: _currentCustomBirthController,
-                    inputFormatters: [_maskInputFormatter],
-                    onChanged: (text) {
-                      setState(() {
-                        _currentCustomBirth = text;
-                        _setBoardCustomRules();
-                        _board.reset();
-                      });
-                    },
-                  ),
-                  GCWOnOffSwitch(
-                    title: i18n(context, 'gameoflife_inverse'),
-                    value: _currentCustomInverse,
-                    onChanged: (value) {
-                      setState(() {
-                        _currentCustomInverse = value;
-                        _setBoardCustomRules();
-                        _board.reset();
-                      });
-                    },
-                  )
-                ],
-              )
-            : Container(),
-        GCWOnOffSwitch(
-          title: i18n(context, 'gameoflife_wrapworld'),
-          value: _currentWrapWorld,
-          onChanged: (value) {
-            setState(() {
-              _currentWrapWorld = value;
-              _board.reset();
-            });
-          },
-        ),
+        const SizedBox(height: 10),
+        _buildSize(),
+        _buildRules(),
         GCWPainterContainer(
           child: GameOfLifeBoard(
             state: _board.currentBoard,
@@ -250,6 +164,132 @@ class _GameOfLifeState extends State<GameOfLife> {
           },
         )
       ],
+    );
+  }
+
+  Widget _buildSize() {
+    var differentSize = _board.size.x != _board.size.y;
+    var flexValues = differentSize ? [2, 3] : [1, 3];
+
+    return Row(
+        children: <Widget>[
+        Expanded(
+          flex: 5,
+          child: GCWIntegerSpinner(
+            title: i18n(context, 'gameoflife_size'),
+            min: 2,
+            max: MAX_SIZE,
+            value: _currentSize.x,
+            onChanged: (value) {
+              setState(() {
+                _currentSize = differentSize ? Point<int>(value, _currentSize.y) : Point<int>(value, value);
+                _board = GameOfLifeData(_currentSize, _board.rules, content: _board.currentBoard);
+                _board.reset();
+              });
+            },
+            flexValues: flexValues,
+          )
+        ),
+        (differentSize)
+        ? Expanded(
+          flex: 3,
+          child: GCWIntegerSpinner(
+            min: 2,
+            max: MAX_SIZE,
+            value: _currentSize.y,
+            onChanged: (value) {
+              setState(() {
+                _currentSize = differentSize ? Point<int>(_currentSize.x, value) : Point<int>(value, value);
+                _board = GameOfLifeData(_currentSize, _board.rules, content: _board.currentBoard);
+                _board.reset();
+              });
+            },
+          )
+        ) : Container()
+      ]
+    );
+  }
+
+  Widget _buildRules() {
+    return Column(
+        children: <Widget>[
+          GCWDropDown<GameOfLifeRules>(
+            title: i18n(context, 'gameoflife_rules'),
+            value: _board.rules,
+            items: _allRules.map((rules) {
+              if (rules.key == KEY_CUSTOM_RULES) return GCWDropDownMenuItem(value: rules, child: i18n(context, rules.key));
+
+              return GCWDropDownMenuItem(
+                  value: rules,
+                  child: i18n(context, rules.key),
+                  subtitle:
+                  '${i18n(context, 'gameoflife_survive')}: ${_getSurvive(rules)} / ${i18n(context,
+                      'gameoflife_birth')}: ${_getBirth(rules)}');
+            }).toList(),
+            onChanged: (GameOfLifeRules value) {
+              setState(() {
+                _board.rules = value;
+                if (_board.rules.key == KEY_CUSTOM_RULES) {
+                  _currentWrapWorld = _currentCustomInverse;
+                } else if (_board.rules.isInverse) {
+                  _currentWrapWorld = true;
+                }
+                _board.reset();
+              });
+            },
+          ),
+          _board.rules.key == KEY_CUSTOM_RULES
+              ? Column(
+                children: [
+                  GCWTextField(
+                    title: i18n(context, 'gameoflife_survive'),
+                    controller: _currentCustomSurviveController,
+                    inputFormatters: [_maskInputFormatter],
+                    onChanged: (text) {
+                      setState(() {
+                        _currentCustomSurvive = text;
+                        _setBoardCustomRules();
+                        _board.reset();
+                      });
+                    },
+                  ),
+                  GCWTextField(
+                    title: i18n(context, 'gameoflife_birth'),
+                    controller: _currentCustomBirthController,
+                    inputFormatters: [_maskInputFormatter],
+                    onChanged: (text) {
+                      setState(() {
+                        _currentCustomBirth = text;
+                        _setBoardCustomRules();
+                        _board.reset();
+                      });
+                    },
+                  ),
+                  GCWOnOffSwitch(
+                    title: i18n(context, 'gameoflife_inverse'),
+                    value: _currentCustomInverse,
+                    onChanged: (value) {
+                      setState(() {
+                        _currentCustomInverse = value;
+                        _setBoardCustomRules();
+                        _board.reset();
+                      });
+                    },
+                  )
+                ],
+              )
+              : Container(),
+          GCWOnOffSwitch(
+            title: i18n(context, 'gameoflife_wrapworld'),
+            value: _currentWrapWorld,
+            onChanged: (value) {
+              setState(() {
+                _currentWrapWorld = value;
+                _board.reset();
+              });
+            },
+          ),
+          ]
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 part 'package:gc_wizard/tools/games/game_of_life/logic/game_of_life_rle.dart';
 
 const KEY_CUSTOM_RULES = 'gameoflife_custom';
+const MAX_SIZE = 2000;
 
 class GameOfLifeData {
   late List<List<List<bool>>> boards;
@@ -148,5 +149,3 @@ const List<GameOfLifeRules> DEFAULT_GAME_OF_LIFE_RULES = [
   GameOfLifeRules(survivals: {2, 3}, births: {3}, isInverse: true, key: 'gameoflife_inverseconway'),
   GameOfLifeRules(survivals: {1, 3, 5, 7}, births: {1, 3, 5, 7}, isInverse: true, key: 'gameoflife_inversecopy'),
 ];
-
-
