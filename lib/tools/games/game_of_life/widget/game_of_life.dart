@@ -24,15 +24,12 @@ class GameOfLife extends StatefulWidget {
   _GameOfLifeState createState() => _GameOfLifeState();
 }
 
-const _KEY_CUSTOM_RULES = 'gameoflife_custom';
-
 class _GameOfLifeState extends State<GameOfLife> {
   static var _currentSize = const Point<int>(12, 12);
   late GameOfLifeData _board;
 
   var _currentWrapWorld = false;
-  var _currentRules = 'gameoflife_conway';
-  late Map<String, GameOfLifeRules?> _allRules;
+  late List<GameOfLifeRules> _allRules;
   var _currentCustomSurvive = '';
   late TextEditingController _currentCustomSurviveController;
   var _currentCustomBirth = '';
@@ -48,11 +45,10 @@ class _GameOfLifeState extends State<GameOfLife> {
     _currentCustomSurviveController = TextEditingController(text: _currentCustomSurvive);
     _currentCustomBirthController = TextEditingController(text: _currentCustomBirth);
 
-    _allRules = Map<String, GameOfLifeRules?>.from(DEFAULT_GAME_OF_LIFE_RULES);
-    _allRules.removeWhere((key, value) => value == null);
-    _allRules.putIfAbsent(_KEY_CUSTOM_RULES, () => null);
+    _allRules = List<GameOfLifeRules>.from(DEFAULT_GAME_OF_LIFE_RULES);
+    _allRules.add(const GameOfLifeRules(key: KEY_CUSTOM_RULES));
 
-    _board = GameOfLifeData(_currentSize, _allRules[_currentRules] ?? const GameOfLifeRules());
+    _board = GameOfLifeData(_currentSize, _allRules.first);
   }
 
   @override
@@ -96,32 +92,32 @@ class _GameOfLifeState extends State<GameOfLife> {
             });
           },
         ),
-        GCWDropDown<String>(
+        GCWDropDown<GameOfLifeRules>(
           title: i18n(context, 'gameoflife_rules'),
-          value: _currentRules,
-          items: _allRules.keys.map((rules) {
-            if (rules == _KEY_CUSTOM_RULES) return GCWDropDownMenuItem(value: rules, child: i18n(context, rules));
+          value: _board.rules,
+          items: _allRules.map((rules) {
+            if (rules.key == KEY_CUSTOM_RULES) return GCWDropDownMenuItem(value: rules, child: i18n(context, rules.key));
 
             return GCWDropDownMenuItem(
                 value: rules,
-                child: i18n(context, rules),
+                child: i18n(context, rules.key),
                 subtitle:
-                    '${i18n(context, 'gameoflife_survive')}: ${_getSurvive(_allRules[rules]!)} / ${i18n(context, 'gameoflife_birth')}: ${_getBirth(_allRules[rules]!)}');
+                    '${i18n(context, 'gameoflife_survive')}: ${_getSurvive(rules)} / ${i18n(context,
+                        'gameoflife_birth')}: ${_getBirth(rules)}');
           }).toList(),
-          onChanged: (String value) {
+          onChanged: (GameOfLifeRules value) {
             setState(() {
-              _currentRules = value;
-              if (_currentRules == _KEY_CUSTOM_RULES) {
+              _board.rules = value;
+              if (_board.rules.key == KEY_CUSTOM_RULES) {
                 _currentWrapWorld = _currentCustomInverse;
-              } else if (_allRules[_currentRules]!.isInverse) {
+              } else if (_board.rules.isInverse) {
                 _currentWrapWorld = true;
               }
-              _setBoardRules();
               _board.reset();
             });
           },
         ),
-        _currentRules == _KEY_CUSTOM_RULES
+        _board.rules.key == KEY_CUSTOM_RULES
             ? Column(
                 children: [
                   GCWTextField(
@@ -131,7 +127,7 @@ class _GameOfLifeState extends State<GameOfLife> {
                     onChanged: (text) {
                       setState(() {
                         _currentCustomSurvive = text;
-                        _setBoardRules();
+                        _setBoardCustomRules();
                         _board.reset();
                       });
                     },
@@ -143,7 +139,7 @@ class _GameOfLifeState extends State<GameOfLife> {
                     onChanged: (text) {
                       setState(() {
                         _currentCustomBirth = text;
-                        _setBoardRules();
+                        _setBoardCustomRules();
                         _board.reset();
                       });
                     },
@@ -154,7 +150,7 @@ class _GameOfLifeState extends State<GameOfLife> {
                     onChanged: (value) {
                       setState(() {
                         _currentCustomInverse = value;
-                        _setBoardRules();
+                        _setBoardCustomRules();
                         _board.reset();
                       });
                     },
@@ -233,18 +229,22 @@ class _GameOfLifeState extends State<GameOfLife> {
           ],
         ),
         GCWButton(
-          text: _currentRules == _KEY_CUSTOM_RULES
+          text: _board.rules.key == KEY_CUSTOM_RULES
               ? (_currentCustomInverse ? i18n(context, 'gameoflife_fillall') : i18n(context, 'gameoflife_clearall'))
-              : (_allRules[_currentRules]!.isInverse
+              : (_board.rules.isInverse
                   ? i18n(context, 'gameoflife_fillall')
                   : i18n(context, 'gameoflife_clearall')),
           onPressed: () {
             setState(() {
-              var isInverse = (_currentRules == _KEY_CUSTOM_RULES && _currentCustomInverse) ||
-                  (_currentRules != _KEY_CUSTOM_RULES && _allRules[_currentRules]!.isInverse);
+              var isInverse = (_board.rules.key == KEY_CUSTOM_RULES && _currentCustomInverse) ||
+                  (_board.rules.key != KEY_CUSTOM_RULES && _board.rules.isInverse);
+
               _board.currentBoard = List<List<bool>>.generate(
                   _board.size.y, (index) => List<bool>.generate(_board.size.x, (index) => isInverse));
 
+              if (_board.rules.key == KEY_CUSTOM_RULES) {
+                _setBoardCustomRules();
+              }
               _board.reset();
             });
           },
@@ -298,19 +298,12 @@ class _GameOfLifeState extends State<GameOfLife> {
   }
 
 
-  Set<int> _toSet(String input) {
-    input = input.replaceAll(RegExp(r'[^0-8]'), '');
-    return input.split('').map((e) => int.parse(e)).toSet();
-  }
-
-  void _setBoardRules() {
-    if (_currentRules == _KEY_CUSTOM_RULES) {
+  void _setBoardCustomRules() {
+    if (_board.rules.key == KEY_CUSTOM_RULES) {
       _board.rules = GameOfLifeRules(
-          survivals: _toSet(_currentCustomSurvive),
-          births: _toSet(_currentCustomBirth),
+          survivals: GameOfLifeRules.toSet(_currentCustomSurvive),
+          births: GameOfLifeRules.toSet(_currentCustomBirth),
           isInverse: _currentCustomInverse);
-    } else {
-      _board.rules = _allRules[_currentRules] ?? const GameOfLifeRules();
     }
   }
 

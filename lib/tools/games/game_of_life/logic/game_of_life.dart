@@ -5,6 +5,8 @@ import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 
 part 'package:gc_wizard/tools/games/game_of_life/logic/game_of_life_rle.dart';
 
+const KEY_CUSTOM_RULES = 'gameoflife_custom';
+
 class GameOfLifeData {
   late List<List<List<bool>>> boards;
   List<List<bool>> currentBoard = [];
@@ -93,13 +95,14 @@ class GameOfLifeData {
   }
 }
 
-
 class GameOfLifeRules {
   final Set<int> survivals;
   final Set<int> births;
   final bool isInverse;
+  final String key;
 
-  const GameOfLifeRules({this.survivals = const {}, this.births = const {}, this.isInverse = false});
+  const GameOfLifeRules({this.survivals = const {}, this.births = const {}, this.isInverse = false,
+    this.key = KEY_CUSTOM_RULES});
 
   GameOfLifeRules inverseRules() {
     var inverseSurvivals = <int>{};
@@ -124,21 +127,26 @@ class GameOfLifeRules {
 
     return GameOfLifeRules(survivals: inverseSurvivals, births: inverseBirths);
   }
+
+  Set<int> toSet(String input) {
+    input = input.replaceAll(RegExp(r'[^0-8]'), '');
+    return input.split('').map((e) => int.parse(e)).toSet();
+  }
 }
 
-const Map<String, GameOfLifeRules> DEFAULT_GAME_OF_LIFE_RULES = {
-  'gameoflife_conway': GameOfLifeRules(survivals: {2, 3}, births: {3}),
-  'gameoflife_copy': GameOfLifeRules(survivals: {1, 3, 5, 7}, births: {1, 3, 5, 7}),
-  'gameoflife_3_3': GameOfLifeRules(survivals: {3}, births: {3}),
-  'gameoflife_13_3': GameOfLifeRules(survivals: {1, 3}, births: {3}),
-  'gameoflife_34_3': GameOfLifeRules(survivals: {3, 4}, births: {3}),
-  'gameoflife_35_3': GameOfLifeRules(survivals: {3, 5}, births: {3}),
-  'gameoflife_2_3': GameOfLifeRules(survivals: {2}, births: {3}),
-  'gameoflife_24_3': GameOfLifeRules(survivals: {2, 4}, births: {3}),
-  'gameoflife_245_3': GameOfLifeRules(survivals: {2, 4, 5}, births: {3}),
-  'gameoflife_125_36': GameOfLifeRules(survivals: {1, 2, 5}, births: {3, 6}),
-  'gameoflife_inverseconway': GameOfLifeRules(survivals: {2, 3}, births: {3}, isInverse: true),
-  'gameoflife_inversecopy': GameOfLifeRules(survivals: {1, 3, 5, 7}, births: {1, 3, 5, 7}, isInverse: true),
-};
+const List<GameOfLifeRules> DEFAULT_GAME_OF_LIFE_RULES = [
+  GameOfLifeRules(survivals: {2, 3}, births: {3}, key: 'gameoflife_conway'),
+  GameOfLifeRules(survivals: {1, 3, 5, 7}, births: {1, 3, 5, 7}, key: 'gameoflife_copy'),
+  GameOfLifeRules(survivals: {3}, births: {3}, key: 'gameoflife_3_3'),
+  GameOfLifeRules(survivals: {1, 3}, births: {3}, key: 'gameoflife_13_3'),
+  GameOfLifeRules(survivals: {3, 4}, births: {3}, key: 'gameoflife_34_3'),
+  GameOfLifeRules(survivals: {3, 5}, births: {3}, key: 'gameoflife_35_3'),
+  GameOfLifeRules(survivals: {2}, births: {3}, key: 'gameoflife_2_3'),
+  GameOfLifeRules(survivals: {2, 4}, births: {3}, key: 'gameoflife_24_3'),
+  GameOfLifeRules(survivals: {2, 4, 5}, births: {3}, key: 'gameoflife_245_3'),
+  GameOfLifeRules(survivals: {1, 2, 5}, births: {3, 6}, key: 'gameoflife_125_36'),
+  GameOfLifeRules(survivals: {2, 3}, births: {3}, isInverse: true, key: 'gameoflife_inverseconway'),
+  GameOfLifeRules(survivals: {1, 3, 5, 7}, births: {1, 3, 5, 7}, isInverse: true, key: 'gameoflife_inversecopy'),
+];
 
 
