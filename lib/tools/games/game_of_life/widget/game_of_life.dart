@@ -169,13 +169,10 @@ class _GameOfLifeState extends State<GameOfLife> {
 
   Widget _buildSize() {
     var differentSize = _board.size.x != _board.size.y;
-    var flexValues = differentSize ? [2, 3] : [1, 3];
 
-    return Row(
+    return Column(
         children: <Widget>[
-        Expanded(
-          flex: 5,
-          child: GCWIntegerSpinner(
+          GCWIntegerSpinner(
             title: i18n(context, 'gameoflife_size'),
             min: 2,
             max: MAX_SIZE,
@@ -187,24 +184,30 @@ class _GameOfLifeState extends State<GameOfLife> {
                 _board.reset();
               });
             },
-            flexValues: flexValues,
-          )
         ),
         (differentSize)
-        ? Expanded(
-          flex: 3,
-          child: GCWIntegerSpinner(
-            min: 2,
-            max: MAX_SIZE,
-            value: _currentSize.y,
-            onChanged: (value) {
-              setState(() {
-                _currentSize = differentSize ? Point<int>(_currentSize.x, value) : Point<int>(value, value);
-                _board = GameOfLifeData(_currentSize, _board.rules, content: _board.currentBoard);
-                _board.reset();
-              });
-            },
-          )
+        ? Row(
+            children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: Container()
+                ),
+                Expanded(
+                  flex: 3,
+                  child: GCWIntegerSpinner(
+                    min: 2,
+                    max: MAX_SIZE,
+                    value: _currentSize.y,
+                    onChanged: (value) {
+                      setState(() {
+                        _currentSize = differentSize ? Point<int>(_currentSize.x, value) : Point<int>(value, value);
+                        _board = GameOfLifeData(_currentSize, _board.rules, content: _board.currentBoard);
+                        _board.reset();
+                      });
+                    },
+                  )
+                )
+            ]
         ) : Container()
       ]
     );

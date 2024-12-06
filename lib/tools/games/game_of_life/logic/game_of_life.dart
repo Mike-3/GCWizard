@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 
@@ -91,7 +92,6 @@ class GameOfLifeData {
         if (currentBoard[i][j]) counter++;
       }
     }
-
     return counter;
   }
 }
@@ -129,7 +129,7 @@ class GameOfLifeRules {
     return GameOfLifeRules(survivals: inverseSurvivals, births: inverseBirths);
   }
 
-  Set<int> toSet(String input) {
+  static Set<int> toSet(String input) {
     input = input.replaceAll(RegExp(r'[^0-8]'), '');
     return input.split('').map((e) => int.parse(e)).toSet();
   }
