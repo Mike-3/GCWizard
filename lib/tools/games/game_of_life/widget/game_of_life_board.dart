@@ -84,11 +84,11 @@ class GameOfLifePainter extends CustomPainter {
     }
 
     if (max(this.size.x, this.size.y) <= 50) {
-      for (double i = 0; i <= this.size.x * boxSize + 0.0000001; i += boxSize) {
-        _touchCanvas.drawLine(Offset(i, 0.0), Offset(i, size.width), paintLine);
+      for (double j = 0; j <= this.size.x * boxSize + 0.0000001; j += boxSize) {
+        _touchCanvas.drawLine(Offset(j, 0.0), Offset(j, size.height), paintLine);
       }
-      for (double j = 0; j <= this.size.y * boxSize + 0.0000001; j += boxSize) {
-        _touchCanvas.drawLine(Offset(0.0, j), Offset(size.height, j), paintLine);
+      for (double i = 0; i <= this.size.y * boxSize + 0.0000001; i += boxSize) {
+        _touchCanvas.drawLine(Offset(0.0, i), Offset(size.width, i), paintLine);
       }
     }
 
