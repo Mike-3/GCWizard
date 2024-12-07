@@ -210,6 +210,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/hashes/hash_breaker/widget/
 import 'package:gc_wizard/tools/crypto_and_encodings/hashes/hashes/widget/hashes.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/hashes/hashes_identification/widget/hashes_identification.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/hashes/hashes_overview/widget/hashes_overview.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/hill/widget/hill.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/homophone/widget/homophone.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/houdini/widget/houdini.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/judoon/widget/judoon.dart';
@@ -999,6 +1000,17 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'hiddendata',
     ], licenses: const []),
+    GCWTool(tool: const Hill(), id: 'hill', categories: const [
+      ToolCategory.CRYPTOGRAPHY
+    ], searchKeys: const [
+      'hill',
+    ], licenses: [
+        ToolLicenseOnlineArticle(
+        context: context,
+        author: 'Rajput-Ji ',
+        title: 'Hill-Chiffre',
+        sourceUrl: 'https://web.archive.org/web/20201030134340/https://www.geeksforgeeks.org/hill-cipher/')
+    ]),
     GCWTool(tool: const Homophone(), id: 'homophone', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -1015,8 +1027,7 @@ void initializeRegistry(BuildContext context) {
       categories: const [ToolCategory.SCIENCE_AND_TECHNOLOGY],
       searchKeys: const [
         'iataicao',
-      ],
-    ),
+      ]),
     GCWTool(
       tool: const IceCodesSelection(),
       id: 'icecodes_selection',
