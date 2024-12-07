@@ -72,7 +72,7 @@ class _GameOfLifeState extends State<GameOfLife> {
               var __board = importRLE(value);
               if (__board != null) {
                 if (max(__board.size.x, __board.size.y) > MAX_SIZE) {
-                  showSnackBar(i18n(context, 'Size too large (>%s1)', parameters: [MAX_SIZE]), context);
+                  showSnackBar(i18n(context, 'gameoflife_size_too_large', parameters: [MAX_SIZE]), context);
                 } else {
                   _board = __board;
                   _currentSize = _board.size;
