@@ -7,6 +7,11 @@ class Stack<E> {
   /// get the top of the stack and delete it.
   E pop() => _list.removeLast();
 
+  /// get the top of the stack without deleting it.
+  E top() {
+    return _list.last;
+  }
+
   /// get the top of the stack.
   E get peek => _list.last;
 
