@@ -54,7 +54,6 @@ dependencies:
       url: https://github.com/masewo/r_scan.git
   scrollable_positioned_list: ^0.3.7
   shared_preferences: ^2.3.2
-  stack: ^0.2.1
   touchable: ^1.0.2
   tuple: ^2.0.1
   universal_html: ^2.2.4
