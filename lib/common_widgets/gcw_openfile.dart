@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 
@@ -377,6 +376,7 @@ Future<Uint8ListText> _downloadWithStream(Uri uri, SendPort? sendAsyncPort) asyn
           result = Uint8ListText('', Uint8List.fromList(_bytes));
         }
       }
+      return response;
     });
   } on TimeoutException catch (_) {
     result = Uint8ListText('common_loadfile_exception_responsestatus', Uint8List(0));
