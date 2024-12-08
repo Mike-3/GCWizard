@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output_text.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/upsidedown/logic/upsidedown.dart';
 import 'package:prefs/prefs.dart';
 
 import 'package:gc_wizard/application/settings/logic/preferences.dart';
@@ -22,7 +23,6 @@ class UpsideDownState extends State<UpsideDown> {
   String _currentInputEncode = '';
   String _currentInputDecode = '';
   GCWSwitchPosition _currentMode = GCWSwitchPosition.right;
-  double _fontSize = Prefs.getDouble(PREFERENCE_THEME_FONT_SIZE);
   GCWSwitchPosition _currentFlipMode = GCWSwitchPosition.left;
 
   @override
@@ -65,7 +65,6 @@ class UpsideDownState extends State<UpsideDown> {
         _currentMode == GCWSwitchPosition.right
             ? GCWTextField(
                 controller: _inputControllerDecode,
-                style: TextStyle(fontFamily: 'Quirkus', fontSize: _fontSize),
                 onChanged: (text) {
                   setState(() {
                     _currentInputDecode = text;
@@ -84,30 +83,16 @@ class UpsideDownState extends State<UpsideDown> {
   }
 
   Widget _buildOutput() {
+    String result = '';
     if (_currentMode == GCWSwitchPosition.right) {
       // decode
-      String result = _currentInputDecode;
-      if (_currentFlipMode == GCWSwitchPosition.right) {
-        result  = _currentInputDecode.split('').reversed.toList().join('');
-      }
-      return GCWDefaultOutput(
-        child: result, 
-      );
+      result = decodeUpsideDownText(_currentInputDecode, _currentFlipMode);
     } else {
       // encode
-      String result = _currentInputEncode;
-      if (_currentFlipMode == GCWSwitchPosition.right) {
-        result  = _currentInputEncode.split('').reversed.toList().join('');
-      }
-      return GCWDefaultOutput(
-            child: GCWOutputText(
-              text: result,
-              style: TextStyle(
-                  fontFamily: 'Quirkus',
-                  fontSize: _fontSize + 4,
-                  letterSpacing: 1),
-            )
-      );
+      result = encodeUpsideDownText(_currentInputEncode, _currentFlipMode);
     }
+    return GCWDefaultOutput(
+      child: result,
+    );
   }
 }
