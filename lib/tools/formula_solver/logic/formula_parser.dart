@@ -94,7 +94,7 @@ class FormulaParser {
       var precision = 0;
       if (numbers.length > 1) precision = numbers[1].toInt();
 
-      return round(numbers.first, precision: precision);
+      return round(numbers.first, precision: precision).toDouble();
     },
     'sindeg': (List<double> numbers) => sin(degreesToRadian(numbers.first)),
     'cosdeg': (List<double> numbers) => cos(degreesToRadian(numbers.first)),
@@ -174,9 +174,9 @@ class FormulaParser {
 
   // different minus/hyphens/dashes
   static const Map<String, String> alternateOperators = {
-    //'-': '—–˗−‒', // not required here, because normalized in common_utils.normalizeCharacters()
+    //'-': '—–˗−‒', // not required here, because normalized in normalizeCharacters()
     '/': ':÷⁄',
-    '*': '×•',
+    '*': '×\u2022\u00B7\u16EB\u2981\u25CF\u2218\u25E6',
   };
 
   FormulaParser({this.unlimitedExpanded = false}) {
@@ -299,6 +299,7 @@ class FormulaParser {
     formula = normalizeCharacters(formula);
     formula = normalizeMathematicalSymbols(formula);
     safedFormulasMap = {};
+    safedTextsMap = {};
 
     List<FormulaValue> preparedValues = _prepareValues(values);
 
@@ -479,7 +480,8 @@ class FormulaParser {
     List<FormulaValue> val = [];
     for (var element in values) {
       var key = element.key.trim();
-      var value = element.value;
+      var value = normalizeCharacters(element.value);
+      value = value.replaceAll(RegExp(r'\n'), ' ');
 
       if (value.isEmpty) {
         value = key;
