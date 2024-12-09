@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
-import 'package:gc_wizard/common_widgets/buttons/gcw_radiobuttonset.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/upsidedown/logic/upsidedown.dart';
 
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
@@ -21,8 +19,6 @@ class UpsideDownState extends State<UpsideDown> {
   String _currentInputEncode = '';
   String _currentInputDecode = '';
   GCWSwitchPosition _currentMode = GCWSwitchPosition.right;
-
-  int _currentActiveButton = 0;
 
   @override
   void initState() {
@@ -51,17 +47,7 @@ class UpsideDownState extends State<UpsideDown> {
             });
           },
         ),
-        GCWRadioButtonSet(
-            title: i18n(context, 'upsidedown_flip_mode'),
-            activeButton: _currentActiveButton,
-            buttons: ['upsidedown_flip_mode_h', 'upsidedown_flip_mode_v', 'upsidedown_flip_mode_hv'],
-            onChanged: (value) {
-              setState(() {
-                _currentActiveButton = value;
-              });
-            },
-        ),
-        _currentMode == GCWSwitchPosition.right
+         _currentMode == GCWSwitchPosition.right
             ? GCWTextField(
                 controller: _inputControllerDecode,
                 onChanged: (text) {
@@ -83,13 +69,12 @@ class UpsideDownState extends State<UpsideDown> {
 
   Widget _buildOutput() {
     String result = '';
-    print(_currentActiveButton);
     if (_currentMode == GCWSwitchPosition.right) {
       // decode
-      result = decodeUpsideDownText(_currentInputDecode, _currentActiveButton);
+      result = decodeUpsideDownText(_currentInputDecode);
     } else {
       // encode
-      result = encodeUpsideDownText(_currentInputEncode, _currentActiveButton);
+      result = encodeUpsideDownText(_currentInputEncode);
     }
     return GCWDefaultOutput(
       child: result,
