@@ -89,11 +89,10 @@ class _MajorSystemState extends State<MajorSystem> {
   }
 
   String _buildOutput() {
-    final majorSystem = MajorSystemClass(
+    return MajorSystemLogic(
       text: _currentInput,
       nounMode: _nounMode == GCWSwitchPosition.right,
-    );
-    return majorSystem.decrypt();
+    ).decrypt();
   }
 
   String _buildPlainTextOutput() {
