@@ -71,12 +71,12 @@ class GameOfLifePainter extends CustomPainter {
 
         paint.color = themeColors().secondary();
 
-        if (this.size > 50) paint.color = paint.color.withOpacity(0.0);
+        if (this.size > 50) paint.color = paint.color.withAlpha(0);
 
         _touchCanvas.drawLine(Offset(x, 0.0), Offset(x, size.width), paint);
         _touchCanvas.drawLine(Offset(0.0, y), Offset(size.height, y), paint);
 
-        paint.color = paint.color.withOpacity(0.0);
+        paint.color = paint.color.withAlpha(0);
         _touchCanvas.drawRect(Rect.fromLTWH(x, y, boxSize, boxSize), paint, onTapDown: (tapDetail) {
           onSetCell(i, j, !isSet);
         });
@@ -84,7 +84,7 @@ class GameOfLifePainter extends CustomPainter {
     }
 
     if (this.size > 50) {
-      paint.color = paint.color.withOpacity(0.0);
+      paint.color = paint.color.withAlpha(0);
     } else {
       paint.color = themeColors().secondary();
     }
