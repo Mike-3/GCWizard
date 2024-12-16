@@ -92,6 +92,7 @@ class _MajorSystemState extends State<MajorSystem> {
     return MajorSystemLogic(
       text: _currentInput,
       nounMode: _nounMode == GCWSwitchPosition.right,
+      currentLanguage: _currentLanguage
     ).decrypt();
   }
 
