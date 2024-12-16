@@ -677,7 +677,9 @@ class _GCWizardSCriptInterpreter {
       if (state.keywordToken == EOL ||
           state.token == EOP ||
           state.token == '\r\n' ||
-          state.token == '\n') break;
+          state.token == '\n') {
+        break;
+      }
       if (state.token != ',') {
         vname = state.token;
         //if (isNotAVariable(vname)) {
@@ -746,7 +748,9 @@ class _GCWizardSCriptInterpreter {
         if (state.keywordToken == EOL ||
             state.token == EOP ||
             state.token == '\r\n' ||
-            state.token == '\n') break;
+            state.token == '\n') {
+          break;
+        }
       } while (state.keywordToken != EOL ||
           state.token != EOP ||
           state.token != '\r\n' ||
