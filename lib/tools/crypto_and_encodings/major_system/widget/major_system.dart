@@ -5,7 +5,7 @@ import 'package:gc_wizard/common_widgets/dropdowns/gcw_dropdown.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output_text.dart';
-import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
+import 'package:gc_wizard/common_widgets/switches/gcw_onoff_switch.dart';
 import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/major_system/logic/major_system.dart';
 
@@ -19,7 +19,7 @@ class MajorSystem extends StatefulWidget {
 class _MajorSystemState extends State<MajorSystem> {
   late TextEditingController _inputController;
   late MajorSystemLanguage _currentLanguage;
-  late GCWSwitchPosition _nounMode;
+  late bool _nounMode;
 
   String _currentInput = '';
 
@@ -28,7 +28,7 @@ class _MajorSystemState extends State<MajorSystem> {
     super.initState();
     _inputController = TextEditingController(text: _currentInput);
     _currentLanguage = MajorSystemLanguage.DE;
-    _nounMode = GCWSwitchPosition.left;
+    _nounMode = false;
   }
 
   @override
@@ -65,17 +65,13 @@ class _MajorSystemState extends State<MajorSystem> {
         ),
         GCWTextDivider(
             text: i18n(context, 'major_system_settings_capitalized_only')),
-        GCWTwoOptionsSwitch(
-          leftValue: i18n(context, 'common_no'),
-          rightValue: i18n(context, 'common_yes'),
-          value: _nounMode,
-          onChanged: (value) {
-            setState(() {
-              _nounMode = value;
-            });
-          },
-        ),
-
+        GCWOnOffSwitch(
+            value: _nounMode,
+            onChanged: (value) {
+              setState(() {
+                _nounMode = value;
+              });
+            }),
         GCWOutput(
             title: i18n(context, 'major_system_output_plaintext'),
             child: GCWOutputText(
@@ -91,7 +87,7 @@ class _MajorSystemState extends State<MajorSystem> {
   String _buildOutput() {
     return MajorSystemLogic(
       text: _currentInput,
-      nounMode: _nounMode == GCWSwitchPosition.right,
+      nounMode: _nounMode,
       currentLanguage: _currentLanguage
     ).decrypt();
   }
@@ -99,7 +95,7 @@ class _MajorSystemState extends State<MajorSystem> {
   String _buildPlainTextOutput() {
     return MajorSystemLogic(
         text: _currentInput,
-        nounMode: _nounMode == GCWSwitchPosition.right,
+        nounMode: _nounMode,
         currentLanguage: _currentLanguage
     ).preparedText();
   }

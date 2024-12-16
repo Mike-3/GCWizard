@@ -46,7 +46,7 @@ class MajorSystemLogic {
     return words.join(' ').toLowerCase();
   }
 
-// returns a list of consonant groups like [d, r, m, nd, g, ht, m, s, chs]
+/// returns a list of consonant groups like [d, r, m, nd, g, ht, m, s, chs]
   List<String> _splitToConsonantGroups(String text) {
     return text
         .split(' ')
