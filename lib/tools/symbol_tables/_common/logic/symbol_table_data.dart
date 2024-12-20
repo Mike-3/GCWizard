@@ -189,7 +189,7 @@ class SymbolTableData {
     final bytes = await DefaultAssetBundle.of(context)
         .load(imageArchivePaths.firstWhere((path) => !path.contains('_encryption')));
     // Decode the Zip file
-    final Archive archive = extractZipArchive(bytes.buffer.asUint8List());
+    final archive = extractZipArchive(bytes.buffer.asUint8List());
 
     Archive? encryptionArchive;
     if (importEncryption) {

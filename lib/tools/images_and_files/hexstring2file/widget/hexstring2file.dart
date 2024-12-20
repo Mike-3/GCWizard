@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
-import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/theme/theme_colors.dart';
@@ -95,8 +94,7 @@ Widget hexDataOutput(BuildContext context, List<Uint8List> outData) {
           } catch (e) {}
         } else if (fileType == FileType.TAR) {
           try {
-            InputStream input = InputMemoryStream(_outData);
-            return (_archiveWidget(context, TarDecoder().decodeStream(input), fileType));
+            return (_archiveWidget(context, extractTarArchive(_outData), fileType));
           } catch (e) {}
         } else {
           return _fileWidget(context, fileType);
