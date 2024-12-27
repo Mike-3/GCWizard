@@ -585,13 +585,13 @@ Future<List<GCWFile>> extractArchive(GCWFile file) async {
   if (fileClass(file.fileType) != FileClass.ARCHIVE) return [];
 
   try {
-    var input = InputMemoryStream(file.bytes);
     switch (file.fileType) {
       case FileType.ZIP:
-        return _archiveToPlatformFileList(ZipDecoder().decodeStream(input));
+        return _archiveToPlatformFileList(extractZipArchive(file.bytes));
       case FileType.TAR:
-        return _archiveToPlatformFileList(TarDecoder().decodeStream(input));
+        return _archiveToPlatformFileList(extractTarArchive(file.bytes));
       case FileType.BZIP2:
+        var input = InputMemoryStream(file.bytes);
         var output = OutputMemoryStream();
         BZip2Decoder().decodeStream(input, output);
         var fileName = file.name ?? 'xxx';
@@ -599,13 +599,14 @@ Future<List<GCWFile>> extractArchive(GCWFile file) async {
         if (extension(fileName) != '.tar') fileName += '.tar';
         return {GCWFile(name: fileName, bytes: output.getBytes())}.toList();
       case FileType.GZIP:
+        var input = InputMemoryStream(file.bytes);
         var output = OutputMemoryStream();
         const GZipDecoder().decodeStream(input, output);
         return {
           GCWFile(name: changeExtension(file.name ?? 'xxx', '.gzip'), bytes: output.getBytes())
         }.toList();
       case FileType.RAR:
-        return await _extractRarArchive(file);
+        return await _extractRarArchive(file.bytes);
       default:
         return [];
     }
@@ -618,9 +619,13 @@ Archive extractZipArchive(Uint8List bytes) {
   return ZipDecoder().decodeStream(InputMemoryStream(bytes));
 }
 
-Future<List<GCWFile>> _extractRarArchive(GCWFile file, {String? password}) async {
+Archive extractTarArchive(Uint8List bytes) {
+  return TarDecoder().decodeStream(InputMemoryStream(bytes));
+}
+
+Future<List<GCWFile>> _extractRarArchive(Uint8List bytes, {String? password}) async {
   var fileList = <GCWFile>[];
-  var tmpFile = await _createTmpFile('rar', file.bytes);
+  var tmpFile = await _createTmpFile('rar', bytes);
   var directory = changeExtension(tmpFile.path, '');
 
   try {
