@@ -76,7 +76,7 @@ flutter:
   fonts:
     - family: Noto
       fonts:
-        - asset: lib/application/_common/assets/fonts/DejaVu/NotoSansRegular.ttf
+        - asset: lib/application/_common/assets/fonts/Noto/NotoSansRegular.ttf
     - family: MyFlutterApp
       fonts:
         - asset: lib/application/_common/assets/fonts/Icons/MyFlutterApp.ttf
