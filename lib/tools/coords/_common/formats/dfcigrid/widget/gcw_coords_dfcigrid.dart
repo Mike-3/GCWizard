@@ -8,7 +8,7 @@ class _GCWCoordWidgetInfoDfciGrid extends GCWCoordWidgetInfo {
   @override
   String get name => 'DFCI Grid';
   @override
-  String get example => 'W7392967941169';
+  String get example => 'GL02C3.1';
 
   @override
   _GCWCoordWidget mainWidget(
