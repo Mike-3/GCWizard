@@ -272,7 +272,9 @@ DateTime? JulianDateToHebrewCalendar(double jd) {
     pd = pd - 31;
     pm = 4;
   }
-  if (!validDateTime(cy, pm, pd)) return null;
+  if (!validDateTime(cy, pm, pd)) {
+    return null;
+  }
   int pjd = (gregorianCalendarToJulianDate(DateTime(cy, pm, pd)) + 0.5).floor();
   int jnyjd = pjd + 163;
 
