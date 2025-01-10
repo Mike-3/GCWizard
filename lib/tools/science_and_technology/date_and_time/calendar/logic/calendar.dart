@@ -163,7 +163,7 @@ List<int> jewDayAndMonthInYear(int days, int yearlength) {
   var oldSum = days;
   var newSum = days;
   var i = 0;
-  while (newSum > 0) {
+  while (newSum > 0 && i < 12) {
     oldSum = newSum;
     newSum = oldSum - mschema[i];
     i = i + 1;
