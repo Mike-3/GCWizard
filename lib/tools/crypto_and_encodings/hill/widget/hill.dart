@@ -184,9 +184,12 @@ class HillState extends State<Hill> {
       matrix = getViewKeyMatrix(_currentEncodeKey, _currentMatrixSize, _alphabet);
     }
 
-    var errorText = result.text;
+    var errorText = result.text.toLowerCase();
     if (errorText.isNotEmpty) {
       errorText = i18n(context, 'hill_' + errorText, ifTranslationNotExists: errorText);
+      if (_currentMode == GCWSwitchPosition.left && errorText == 'invalidkeymatrix') {
+        errorText = '\n' + i18n(context, 'hill_invalidkeymatrix_hint');
+      }
     }
 
     return Column(
