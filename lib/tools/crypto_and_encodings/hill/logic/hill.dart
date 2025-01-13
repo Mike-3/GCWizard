@@ -155,10 +155,6 @@ String getViewAlphabet(Map<String, String> alphabet) {
   var output = List<String>.filled(2, '', growable: true);
   var lineOffset = 0;
   for (var entry in alphabet.entries) {
-    if (output[lineOffset + 1].length > 35) {
-      output.addAll(['', '', '']);
-      lineOffset += 3;
-    }
     output[lineOffset + 0] += entry.key.padLeft(3, ' ');
     output[lineOffset + 1] += entry.value.padLeft(3, ' ');
   }
