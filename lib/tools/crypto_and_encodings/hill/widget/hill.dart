@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
+import 'package:gc_wizard/application/theme/theme.dart';
 import 'package:gc_wizard/common_widgets/gcw_expandable.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output.dart';
@@ -192,6 +193,15 @@ class HillState extends State<Hill> {
       }
     }
 
+    var __alphabet = getViewAlphabet(_alphabet);
+
+    final textSpan = TextSpan(
+      text: __alphabet,
+      style: gcwMonotypeTextStyle(),
+    );
+    final tp = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    tp.layout();
+
     return Column(
         children: <Widget>[
           GCWDefaultOutput(child: result.value),
@@ -203,11 +213,18 @@ class HillState extends State<Hill> {
               isMonotype: true)
           ),
           GCWOutput(
-              title: i18n(context, 'common_alphabet'),
-              child: GCWOutputText(
-                  text: getViewAlphabet(_alphabet),
-                  isMonotype: true)
-          )
+            title: i18n(context, 'common_alphabet'),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: tp.width + 45,
+                  child: GCWOutputText(
+                    text: __alphabet,
+                    isMonotype: true)
+                ),
+              )
+            ),
         ]
     );
   }
