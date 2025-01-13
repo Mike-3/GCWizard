@@ -2830,6 +2830,7 @@
   "hill_keyempty": "Error: Key is empty",
   "hill_invalidkey": "Error: Invalid key",
   "hill_invalidkeymatrix": "Error: Invalid key matrix (non-invertible, decodable)",
+  "hill_invalidkeymatrix_hint": "Use a different key",
   "hohoho_title": "Hohoho!",
   "hohoho_description": "The way, Santa likes to program",
   "hohoho_error_syntax_invalidprogram": "ERROR! SYNTAX: Invalid Program",
