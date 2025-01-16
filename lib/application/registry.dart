@@ -336,6 +336,7 @@ import 'package:gc_wizard/tools/science_and_technology/astronomy/seasons/widget/
 import 'package:gc_wizard/tools/science_and_technology/astronomy/shadow_length/widget/shadow_length.dart';
 import 'package:gc_wizard/tools/science_and_technology/astronomy/sun_position/widget/sun_position.dart';
 import 'package:gc_wizard/tools/science_and_technology/astronomy/sun_rise_set/widget/sun_rise_set.dart';
+import 'package:gc_wizard/tools/science_and_technology/ballistics/widget/ballistics.dart';
 import 'package:gc_wizard/tools/science_and_technology/beaufort/widget/beaufort.dart';
 import 'package:gc_wizard/tools/science_and_technology/binary/widget/binary.dart';
 import 'package:gc_wizard/tools/science_and_technology/blood_alcohol_content/widget/blood_alcohol_content.dart';
@@ -617,11 +618,37 @@ void initializeRegistry(BuildContext context) {
         id: 'babylonnumbers_selection',
         categories: const [ToolCategory.CRYPTOGRAPHY],
         searchKeys: const []),
+    GCWTool(tool: const Bacon(), id: 'bacon', categories: const [
+      ToolCategory.CRYPTOGRAPHY
+    ], searchKeys: const [
+      'bacon',
+      'binary',
+    ]),
     GCWTool(
         tool: const BaconSelection(),
         id: 'bacon_selection',
         categories: const [ToolCategory.CRYPTOGRAPHY],
         searchKeys: const []),
+    GCWTool(tool: const Ballistics(), id: 'ballistics', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'ballistics',
+    ],
+        licenses: [
+          ToolLicenseCodeLibrary(
+              context: context,
+              author: 'Thomas "KoenigDickbauch" Bornhaupt',
+              title: 'Weitwurf (Mopsos)',
+              privatePermission: ToolLicensePrivatePermission(
+                context: context,
+                medium: 'e-mail',
+                permissionYear: 2022,
+                permissionMonth: 9,
+                permissionDay: 12,
+              ),
+              sourceUrl: 'https://web.archive.org/web/20240811192840/http://mopsos.net/',
+              licenseType: ToolLicenseType.PRIVATE_PERMISSION)
+        ]),
     GCWTool(
         tool: const BaseSelection(),
         id: 'base_selection',
