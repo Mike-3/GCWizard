@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/theme/theme.dart';
+import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
 import 'package:gc_wizard/common_widgets/gcw_expandable.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output.dart';
@@ -15,10 +16,10 @@ class Hill extends StatefulWidget {
   const Hill({Key? key}) : super(key: key);
 
   @override
-  HillState createState() => HillState();
+  _HillState createState() => _HillState();
 }
 
-class HillState extends State<Hill> {
+class _HillState extends State<Hill> {
   late TextEditingController _encodeController;
   late TextEditingController _encodeKeyController;
   late TextEditingController _decodeController;
@@ -114,17 +115,31 @@ class HillState extends State<Hill> {
             });
           },
         ),
-        GCWTextField(
-          controller: _encodeKeyController,
-          hintText: i18n(context, 'common_key'),
-          onChanged: (text) {
-            setState(() {
-              _currentEncodeKey = text;
-            });
-          },
-        ),
-
-        ]);
+        Row(
+          children: [
+            Expanded(
+              flex: 4,
+              child: GCWTextField(
+                controller: _encodeKeyController,
+                hintText: i18n(context, 'common_key'),
+                onChanged: (text) {
+                  setState(() {
+                    _currentEncodeKey = text;
+                  });
+                },
+              ),
+            ),
+            GCWIconButton(
+                icon: Icons.auto_fix_high,
+                onPressed: () {
+                  setState(() {
+                    _currentEncodeKey = generateValidKey(_currentMatrixSize, buildAlphabet(_currentAlphabet));
+                    _encodeKeyController.text = _currentEncodeKey;
+                  });
+                }
+            ),
+        ])
+    ]);
   }
 
   Widget _buildOptions() {
@@ -187,9 +202,9 @@ class HillState extends State<Hill> {
 
     var errorText = result.text.toLowerCase();
     if (errorText.isNotEmpty) {
-      errorText = i18n(context, 'hill_' + errorText, ifTranslationNotExists: errorText);
+      errorText = i18n(context, 'hill_' + errorText, ifTranslationNotExists: result.text);
       if (_currentMode == GCWSwitchPosition.left && errorText == 'invalidkeymatrix') {
-        errorText = '\n' + i18n(context, 'hill_invalidkeymatrix_hint');
+        errorText += '\n' + i18n(context, 'hill_invalidkeymatrix_hint');
       }
     }
 
@@ -221,7 +236,7 @@ class HillState extends State<Hill> {
                   width: tp.width + 45,
                   child: GCWOutputText(
                     text: __alphabet,
-                    isMonotype: true)
+                    style: textSpan.style)
                 ),
               )
             ),
