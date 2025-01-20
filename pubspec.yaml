@@ -1,6 +1,6 @@
 name: gc_wizard
 description: GC Wizard
-version: 3.3.0+305
+version: 3.3.0+306
 publish_to: none
 
 environment:
