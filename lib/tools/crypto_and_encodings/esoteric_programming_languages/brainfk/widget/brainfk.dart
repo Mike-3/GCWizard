@@ -15,7 +15,7 @@ class Brainfk extends StatefulWidget {
   const Brainfk({Key? key, this.interpret, this.generate}) : super(key: key);
 
   @override
- _BrainfkState createState() => _BrainfkState();
+  _BrainfkState createState() => _BrainfkState();
 }
 
 class _BrainfkState extends State<Brainfk> {
@@ -30,7 +30,7 @@ class _BrainfkState extends State<Brainfk> {
   late TextEditingController _inputController_startLoop;
   late TextEditingController _inputController_endLoop;
 
-  BrainfkDerivatives _currentDerivate = BRAINFKDERIVATIVE_OOK;
+  BrainfkDerivatives _currentDerivative = BRAINFKDERIVATIVE_OOK;
 
   String _currentText = '';
   String _currentInput = '';
@@ -104,20 +104,26 @@ class _BrainfkState extends State<Brainfk> {
             ? Container()
             : Column(children: <Widget>[
                 GCWDropDown<BrainfkDerivatives>(
-                  value: _currentDerivate,
+                  value: _currentDerivative,
                   onChanged: (value) {
                     setState(() {
-                      _currentDerivate = value;
+                      _currentDerivative = value;
                     });
                   },
-                  items: BRAINFK_DERIVATIVES.entries.map((mode) {
+                  items: BRAINFK_DERIVATIVES_DETAILED.entries.map((mode) {
+                    var title = mode.value.title;
+                    if (mode.key == BRAINFKDERIVATIVE_CUSTOM) {
+                      title = i18n(context, 'common_custom');
+                    }
+
                     return GCWDropDownMenuItem(
                       value: mode.key,
-                      child: mode.value,
+                      child: title,
+                      subtitle: mode.value.description,
                     );
                   }).toList(),
                 ),
-                _currentDerivate == BRAINFKDERIVATIVE_CUSTOM
+                _currentDerivative == BRAINFKDERIVATIVE_CUSTOM
                     ? Column(children: [
                         GCWTextField(
                           controller: _inputController_shiftRight,
@@ -232,48 +238,46 @@ class _BrainfkState extends State<Brainfk> {
           return printErrorMessage(context, e.message);
         }
       } else {
-        if (_currentDerivate == BRAINFKDERIVATIVE_CUSTOM) {
+        if (_currentDerivative == BRAINFKDERIVATIVE_CUSTOM) {
           try {
             return BrainfkDerivatives(
-                    pointerShiftRightInstruction: _currentInput_shiftRight,
-                    pointerShiftLeftInstruction: _currentInput_shiftLeft,
-                    increaseValueInstruction: _currentInput_increaseValue,
-                    decreaseValueInstruction: _currentInput_decreaseValue,
-                    outputInstruction: _currentInput_output,
-                    inputInstruction: _currentInput_input,
-                    startLoopInstruction: _currentInput_startLoop,
-                    endLoopInstruction: _currentInput_endLoop,
-            )
-                .interpretBrainfkDerivatives(_currentText, input: _currentInput);
+              pointerShiftRightInstruction: _currentInput_shiftRight,
+              pointerShiftLeftInstruction: _currentInput_shiftLeft,
+              increaseValueInstruction: _currentInput_increaseValue,
+              decreaseValueInstruction: _currentInput_decreaseValue,
+              outputInstruction: _currentInput_output,
+              inputInstruction: _currentInput_input,
+              startLoopInstruction: _currentInput_startLoop,
+              endLoopInstruction: _currentInput_endLoop,
+            ).interpretBrainfkDerivatives(_currentText, input: _currentInput);
           } catch (e) {
             return printErrorMessage(context, 'brainfk_error_customundefined');
           }
         } else {
-          return _currentDerivate.interpretBrainfkDerivatives(_currentText, input: _currentInput);
+          return _currentDerivative.interpretBrainfkDerivatives(_currentText, input: _currentInput);
         }
       }
     } else {
       if (_currentOriginal == GCWSwitchPosition.left) {
         return widget.generate == null ? generateBrainfk(_currentText) : widget.generate!(_currentText);
       } else {
-        if (_currentDerivate == BRAINFKDERIVATIVE_CUSTOM) {
+        if (_currentDerivative == BRAINFKDERIVATIVE_CUSTOM) {
           try {
             return BrainfkDerivatives(
-                    pointerShiftRightInstruction: _currentInput_shiftRight,
-                    pointerShiftLeftInstruction: _currentInput_shiftLeft,
-                    increaseValueInstruction: _currentInput_increaseValue,
-                    decreaseValueInstruction: _currentInput_decreaseValue,
-                    outputInstruction: _currentInput_output,
-                    inputInstruction: _currentInput_input,
-                    startLoopInstruction: _currentInput_startLoop,
-                    endLoopInstruction: _currentInput_endLoop,
-            )
-                .generateBrainfkDerivative(_currentText);
+              pointerShiftRightInstruction: _currentInput_shiftRight,
+              pointerShiftLeftInstruction: _currentInput_shiftLeft,
+              increaseValueInstruction: _currentInput_increaseValue,
+              decreaseValueInstruction: _currentInput_decreaseValue,
+              outputInstruction: _currentInput_output,
+              inputInstruction: _currentInput_input,
+              startLoopInstruction: _currentInput_startLoop,
+              endLoopInstruction: _currentInput_endLoop,
+            ).generateBrainfkDerivative(_currentText);
           } catch (e) {
             return printErrorMessage(context, 'brainfk_error_customundefined');
           }
         } else {
-          return _currentDerivate.generateBrainfkDerivative(_currentText);
+          return _currentDerivative.generateBrainfkDerivative(_currentText);
         }
       }
     }

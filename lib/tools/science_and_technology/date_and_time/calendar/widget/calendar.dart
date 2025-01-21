@@ -75,7 +75,7 @@ class _CalendarState extends State<Calendar> {
               value: _currentTimeStamp,
               min: 1,
               max:
-                  8640000000000, //max days in seconds according to DateTime https://stackoverflow.com/questions/67144785/flutter-dart-datetime-max-min-value
+                  864000000000, //max days in seconds according to DateTime https://stackoverflow.com/questions/67144785/flutter-dart-datetime-max-min-value
               onChanged: (value) {
                 setState(() {
                   _currentTimeStamp = value;
@@ -117,11 +117,10 @@ class _CalendarState extends State<Calendar> {
   Widget _buildOutput() {
     Widget outputWidget;
     if (excelBug) {
-      outputWidget = Column(
-          children: <Widget>[GCWDefaultOutput(
-              child: i18n(context, 'excel_time_bug')
-          ),
-            _buildUrl('excel_time_bug_url')]);
+      outputWidget = Column(children: <Widget>[
+        GCWDefaultOutput(child: i18n(context, 'excel_time_bug')),
+        _buildUrl('excel_time_bug_url')
+      ]);
     } else {
       double jd = 0.0;
       var output = <String, Object?>{};

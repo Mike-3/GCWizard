@@ -11,16 +11,12 @@ class SymbolReplacerSymbolTableViewData {
   final String? description;
   SymbolReplacerSymbolTableData? data;
 
-  SymbolReplacerSymbolTableViewData({
-    required this.symbolKey,
-    required this.icon,
-    required this.toolName,
-    required this.description,
-    this.data});
+  SymbolReplacerSymbolTableViewData(
+      {required this.symbolKey, required this.icon, required this.toolName, required this.description, this.data});
 
   Future<SymbolReplacerSymbolTableData?> initialize(BuildContext context) async {
-    var originalData = SymbolTableData(context, symbolKey);
-    await originalData.initialize(importEncryption: false);
+    var originalData = SymbolTableData(symbolKey);
+    await originalData.initialize(context, importEncryption: false);
 
     data = SymbolReplacerSymbolTableData(originalData);
     return Future.value(data);

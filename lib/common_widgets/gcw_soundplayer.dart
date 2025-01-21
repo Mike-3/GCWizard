@@ -127,37 +127,37 @@ class _GCWSoundPlayerState extends State<GCWSoundPlayer> {
       children: [
         GCWIconButton(
           icon: isPlaying ? Icons.pause : Icons.play_arrow,
-          iconColor: _isLoaded ? null : themeColors().inActive(),
+          iconColor: _isLoaded ? null : themeColors().inactive(),
           onPressed: isPlaying ? () => _audioPlayerPause() : () => _audioPlayerPlay(),
         ),
         GCWIconButton(
           icon: Icons.stop,
-          iconColor: _isLoaded && !isStopped ? null : themeColors().inActive(),
+          iconColor: _isLoaded && !isStopped ? null : themeColors().inactive(),
           onPressed: isPlaying || isPaused ? () => _audioPlayerStop() : () => {},
         ),
         Expanded(
             child: Slider(
-              value: _currentSliderPosition,
-              min: 0.0,
-              max: 1.0,
-              onChangeStart: (value) {
-                setState(() {
-                  _audioPlayerPause();
-                });
-              },
-              onChanged: (value) {
-                setState(() {
-                  _currentSliderPosition = value;
-                });
-              },
-              onChangeEnd: (value) {
-                setState(() {
-                  _audioPlayerPlay(seek: true);
-                });
-              },
-              activeColor: themeColors().switchThumb2(),
-              inactiveColor: themeColors().switchTrack2(),
-            )),
+          value: _currentSliderPosition,
+          min: 0.0,
+          max: 1.0,
+          onChangeStart: (value) {
+            setState(() {
+              _audioPlayerPause();
+            });
+          },
+          onChanged: (value) {
+            setState(() {
+              _currentSliderPosition = value;
+            });
+          },
+          onChangeEnd: (value) {
+            setState(() {
+              _audioPlayerPlay(seek: true);
+            });
+          },
+          activeColor: themeColors().switchThumb2(),
+          inactiveColor: themeColors().switchTrack2(),
+        )),
         GCWText(text: _durationText())
       ],
     );

@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/general_codebreakers/vigenere_breaker/bigrams/logic/bigrams.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/general_codebreakers/vigenere_breaker/guballa/logic/breaker.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/general_codebreakers/vigenere_breaker/logic/external_libs/guballa/breaker.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/vigenere/logic/vigenere.dart';
 import 'package:gc_wizard/utils/complex_return_types.dart';
 
@@ -63,18 +63,15 @@ var _progressStep = 1;
 SendPort? _sendAsyncPort;
 
 Future<VigenereBreakerResult> break_cipherAsync(GCWAsyncExecuterParameters? jobData) async {
-  if (jobData?.parameters is! VigenereBreakerJobData) return VigenereBreakerResult(errorCode: VigenereBreakerErrorCode.OK);
+  if (jobData?.parameters is! VigenereBreakerJobData) {
+    return VigenereBreakerResult(errorCode: VigenereBreakerErrorCode.OK);
+  }
 
   _sendAsyncPort = jobData?.sendAsyncPort;
 
   var data = jobData!.parameters as VigenereBreakerJobData;
   var output = break_cipher(
-      data.input,
-      data.vigenereBreakerType,
-      data.alphabet,
-      data.keyLengthMin,
-      data.keyLengthMax,
-      data.ignoreNonLetters,
+      data.input, data.vigenereBreakerType, data.alphabet, data.keyLengthMin, data.keyLengthMax, data.ignoreNonLetters,
       counterFunction: progressCounter);
 
   jobData.sendAsyncPort?.send(output);

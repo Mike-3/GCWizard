@@ -17,18 +17,21 @@ abstract class AbstractMultiDecoderTool extends StatefulWidget {
       required this.onDecode,
       this.requiresKey = false,
       this.optionalKey = false,
-        required this.options}) : super(key: key);
+      required this.options})
+      : super(key: key);
 }
 
 class MultiDecoderToolDummy extends AbstractMultiDecoderTool {
   MultiDecoderToolDummy()
       : super(
-      key: null,
-      id: -1,
-      name: '',
-      internalToolName: '',
-      onDecode: (String input, String key) {return null;},
-      options: {});
+            key: null,
+            id: -1,
+            name: '',
+            internalToolName: '',
+            onDecode: (String input, String key) {
+              return null;
+            },
+            options: {});
 
   @override
   State<StatefulWidget> createState() => _MultiDecoderToolDummyState();
@@ -42,5 +45,5 @@ class _MultiDecoderToolDummyState extends State<MultiDecoderToolDummy> {
 }
 
 String? stringNullableTypeCheck(Object? value, String? defaultValue) {
-  return (isString(String) || value == null) ? value as String? : defaultValue;
+  return (isString(value) || value == null) ? value as String? : defaultValue;
 }

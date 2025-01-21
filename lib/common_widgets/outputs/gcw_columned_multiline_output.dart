@@ -15,20 +15,22 @@ class GCWColumnedMultilineOutput extends StatefulWidget {
   final bool hasHeader;
   final bool copyAll;
   final List<void Function()>? tappables;
+  final TextStyle? style;
   final double fontSize;
   final List<Widget>? firstRows;
 
   const GCWColumnedMultilineOutput(
       {Key? key,
-        required this.data,
-        this.flexValues = const [],
-        this.copyColumn,
-        this.suppressCopyButtons = false,
-        this.hasHeader = false,
-        this.copyAll = false,
-        this.tappables,
-        this.fontSize = 0.0,
-        this.firstRows})
+      required this.data,
+      this.flexValues = const [],
+      this.copyColumn,
+      this.suppressCopyButtons = false,
+      this.hasHeader = false,
+      this.copyAll = false,
+      this.tappables,
+      this.style,
+      this.fontSize = 0.0,
+      this.firstRows})
       : super(key: key);
 
   @override
@@ -38,15 +40,11 @@ class GCWColumnedMultilineOutput extends StatefulWidget {
 class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput> {
   @override
   Widget build(BuildContext context) {
-
     var rows = _columnedMultiLineOutputRows();
     if (widget.firstRows != null) rows.insertAll(0, widget.firstRows!);
 
-    return Column(
-      children: rows
-    );
+    return Column(children: rows);
   }
-
 
   List<Widget> _columnedMultiLineOutputRows() {
     var odd = true;
@@ -56,12 +54,13 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
     int index = 0;
     return widget.data.map((rowData) {
       Widget output;
+      var textStyle = widget.style ?? gcwTextStyle(fontSize: widget.fontSize);
 
       var columns = rowData
           .asMap()
           .map((index, column) {
-            var textStyle = gcwTextStyle(fontSize: widget.fontSize);
-            if (isFirst && widget.hasHeader) textStyle = textStyle.copyWith(fontWeight: FontWeight.bold);
+            var _textStyle = textStyle;
+            if (isFirst && widget.hasHeader) _textStyle = _textStyle.copyWith(fontWeight: FontWeight.bold);
 
             Widget child;
 
@@ -69,13 +68,14 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
               child = column;
             } else {
               if (widget.tappables == null || widget.tappables!.isEmpty) {
-                child = GCWText(text: column != null ? column.toString() : '', style: textStyle);
+                child = GCWText(text: column != null ? column.toString() : '', style: _textStyle);
               } else {
-                child = Text(column != null ? column.toString() : '', style: textStyle);
+                child = Text(column != null ? column.toString() : '', style: _textStyle);
               }
             }
 
-            return MapEntry(index, Expanded(flex: index < widget.flexValues.length ? widget.flexValues[index] : 1, child: child));
+            return MapEntry(
+                index, Expanded(flex: index < widget.flexValues.length ? widget.flexValues[index] : 1, child: child));
           })
           .values
           .toList();
@@ -111,8 +111,8 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
                             onPressed: () {
                               insertIntoGCWClipboard(context, copyText!);
                             },
-                  )     ,
-            )
+                          ),
+                  )
           ],
         ),
       );
@@ -125,7 +125,6 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
       odd = !odd;
 
       isFirst = false;
-
       if (widget.tappables != null) {
         return InkWell(
           onTap: widget.tappables![index++],

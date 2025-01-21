@@ -16,7 +16,7 @@ class SymbolTable extends StatefulWidget {
       : super(key: key);
 
   @override
- _SymbolTableState createState() => _SymbolTableState();
+  _SymbolTableState createState() => _SymbolTableState();
 }
 
 class _SymbolTableState extends State<SymbolTable> {
@@ -27,13 +27,13 @@ class _SymbolTableState extends State<SymbolTable> {
   void initState() {
     super.initState();
 
-    _data = defaultSymbolTableData(context);
+    _data = defaultSymbolTableData();
     _initialize();
   }
 
   Future<void> _initialize() async {
-    var symbolTableData = SymbolTableData(context, widget.symbolKey);
-    symbolTableData.initialize().then((value) {
+    var symbolTableData = SymbolTableData( widget.symbolKey);
+    symbolTableData.initialize(context).then((value) {
       setState(() {
         _data = symbolTableData;
       });

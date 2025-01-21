@@ -10,6 +10,7 @@ import 'package:gc_wizard/common_widgets/spinners/gcw_integer_spinner.dart';
 import 'package:gc_wizard/common_widgets/spinners/spinner_constants.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/day_of_the_year/logic/day_of_the_year.dart';
+import 'package:gc_wizard/utils/complex_return_types.dart';
 import 'package:gc_wizard/utils/datetime_utils.dart';
 import 'package:intl/intl.dart';
 
@@ -17,13 +18,13 @@ class DayOfTheYear extends StatefulWidget {
   const DayOfTheYear({Key? key}) : super(key: key);
 
   @override
- _DayOfTheYearState createState() => _DayOfTheYearState();
+  _DayOfTheYearState createState() => _DayOfTheYearState();
 }
 
 class _DayOfTheYearState extends State<DayOfTheYear> {
   var _currentMode = GCWSwitchPosition.right;
-  late DateTime _currentEncodeDate;
-  late DateTime _currentDecodeDate;
+  late DateTimeTZ _currentEncodeDate;
+  late DateTimeTZ _currentDecodeDate;
 
   late FocusNode _dayFocusNode;
   var _currentYear = 0;
@@ -31,15 +32,15 @@ class _DayOfTheYearState extends State<DayOfTheYear> {
 
   @override
   void initState() {
+    super.initState();
+
     DateTime now = DateTime.now();
-    _currentEncodeDate = DateTime(now.year, now.month, now.day);
-    _currentDecodeDate = DateTime(now.year, now.month, now.day);
+    _currentEncodeDate = DateTimeTZ(dateTimeUtc: DateTime.utc(now.year, now.month, now.day), timezone: now.timeZoneOffset);
+    _currentDecodeDate = DateTimeTZ(dateTimeUtc: DateTime.utc(now.year, now.month, now.day), timezone: now.timeZoneOffset);
     _dayFocusNode = FocusNode();
 
-    _currentYear = _currentEncodeDate.year;
-    _currentDayOfTheYear = dayNumber(_currentEncodeDate);
-
-    super.initState();
+    _currentYear = _currentEncodeDate.toLocalTime().year;
+    _currentDayOfTheYear = dayNumber(_currentEncodeDate.toLocalTime());
   }
 
   @override
@@ -73,7 +74,7 @@ class _DayOfTheYearState extends State<DayOfTheYear> {
         datetime: _currentDecodeDate,
         onChanged: (value) {
           setState(() {
-            _currentDecodeDate = value.datetime;
+            _currentDecodeDate = value;
           });
         },
       ),
@@ -130,7 +131,7 @@ class _DayOfTheYearState extends State<DayOfTheYear> {
     if (_currentMode == GCWSwitchPosition.right) {
       outputData = calculateDayInfos(_currentYear, _currentDayOfTheYear);
     } else {
-      outputData = calculateDateInfos(_currentDecodeDate);
+      outputData = calculateDateInfos(_currentDecodeDate.toLocalTime());
     }
 
     var dateFormat = DateFormat('yMd', Localizations.localeOf(context).toString());
@@ -154,23 +155,19 @@ class _DayOfTheYearState extends State<DayOfTheYear> {
 
     children.add(GCWOutput(
       title: 'ISO 8601',
-      child: GCWColumnedMultilineOutput(
-          data: [
-                  [i18n(context, 'dates_weekday_number'), outputData.weekday],
-                  [i18n(context, 'dates_week_number'), outputData.weekNumberIso],
-                ]
-          ),
+      child: GCWColumnedMultilineOutput(data: [
+        [i18n(context, 'dates_weekday_number'), outputData.weekday],
+        [i18n(context, 'dates_week_number'), outputData.weekNumberIso],
+      ]),
     ));
 
     children.add(GCWOutput(
-        title: i18n(context, 'dates_day_of_the_year_alternative'),
-        child: GCWColumnedMultilineOutput(
-            data: [
-                    [i18n(context, 'dates_weekday_number'), outputData.weekdayAlternate],
-                    [i18n(context, 'dates_week_number'), outputData.weekNumberAlternate],
-                  ]
-          ),
-        ));
+      title: i18n(context, 'dates_day_of_the_year_alternative'),
+      child: GCWColumnedMultilineOutput(data: [
+        [i18n(context, 'dates_weekday_number'), outputData.weekdayAlternate],
+        [i18n(context, 'dates_week_number'), outputData.weekNumberAlternate],
+      ]),
+    ));
 
     return Column(children: children);
   }

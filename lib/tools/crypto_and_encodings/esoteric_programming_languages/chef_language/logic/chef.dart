@@ -32,7 +32,7 @@ class _Chef {
     }
 
     // remove blank lines at end
-    while (recipe[recipe.length - 1].isEmpty){
+    while (recipe[recipe.length - 1].isEmpty) {
       recipe.removeAt(recipe.length - 1);
     }
 
@@ -68,7 +68,9 @@ class _Chef {
           recipe[i].startsWith("pre heat oven") ||
           recipe[i].startsWith("ofen auf") ||
           recipe[i].startsWith("method") ||
-          recipe[i].startsWith("zubereitung")) ingredientSection = false;
+          recipe[i].startsWith("zubereitung")) {
+        ingredientSection = false;
+      }
 
       if (recipe[i].startsWith("method") || recipe[i].startsWith("zubereitung")) methodSection = true;
 
@@ -123,11 +125,15 @@ class _Chef {
           recipe[i].startsWith("method") ||
           recipe[i].startsWith("zubereitung") ||
           recipe[i].startsWith("serves") ||
-          recipe[i].startsWith("portionen")) if (s0.isNotEmpty) recipe[i] = '\n' + recipe[i];
+          recipe[i].startsWith("portionen")) {
+        if (s0.isNotEmpty) {
+          recipe[i] = '\n' + recipe[i];
+        }
+      }
       s0 = recipe[i];
     }
     readRecipe = recipe.join('\n');
-    readRecipe= readRecipe.replaceAll(RegExp(r'\n(\n)+'), '\n\n');
+    readRecipe = readRecipe.replaceAll(RegExp(r'\n(\n)+'), '\n\n');
     recipe = readRecipe.split("\n\n");
     for (int i = 0; i < recipe.length; i++) {
       line = recipe[i];

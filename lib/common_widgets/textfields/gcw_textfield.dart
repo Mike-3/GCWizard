@@ -24,6 +24,7 @@ class GCWTextField extends StatefulWidget {
   final double? fontSize;
   final String title;
   final TextStyle? style;
+  final List<int> flexValues;
 
   const GCWTextField({
     Key? key,
@@ -44,6 +45,7 @@ class GCWTextField extends StatefulWidget {
     this.title = '',
     this.fontSize,
     this.style,
+    this.flexValues = const [],
   }) : super(key: key);
 
   @override
@@ -60,7 +62,8 @@ class _GCWTextFieldState extends State<GCWTextField> {
     if (widget.focusNode != null && widget.controller != null) {
       widget.focusNode?.addListener(() {
         if (widget.focusNode?.hasFocus == true) {
-          widget.controller?.selection = TextSelection(baseOffset: 0, extentOffset: widget.controller?.text.length ?? 0);
+          widget.controller?.selection =
+              TextSelection(baseOffset: 0, extentOffset: widget.controller?.text.length ?? 0);
         }
       });
     }
@@ -106,7 +109,7 @@ class _GCWTextFieldState extends State<GCWTextField> {
 
                           if (widget.inputFormatters != null) {
                             widget.inputFormatters?.forEach((formatter) {
-                              if (formatter is WrapperForMaskTextInputFormatter) {
+                              if (formatter is GCWMaskTextInputFormatter) {
                                 formatter.clear();
                               }
                             });
@@ -123,7 +126,8 @@ class _GCWTextFieldState extends State<GCWTextField> {
             maxLines: widget.maxLines,
             focusNode: widget.focusNode,
             autofocus: widget.autofocus ?? false,
-            style: widget.style ?? TextStyle(
+            style: widget.style ??
+                TextStyle(
                     fontSize: widget.fontSize ?? defaultFontSize(),
                     color: widget.filled == true ? colors.textFieldFillText() : colors.mainFont()),
             maxLengthEnforcement: MaxLengthEnforcement.enforced,
@@ -137,11 +141,11 @@ class _GCWTextFieldState extends State<GCWTextField> {
     return Row(
       children: [
         Expanded(
-            flex: 1,
+            flex: widget.flexValues.isNotEmpty ? widget.flexValues[0] : 1,
             child: GCWText(
               text: widget.title + ':',
             )),
-        Expanded(flex: 3, child: textField)
+        Expanded(flex: widget.flexValues.length > 1 ? widget.flexValues[1] : 3, child: textField)
       ],
     );
   }

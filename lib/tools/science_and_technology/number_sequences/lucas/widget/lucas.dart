@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/logic/number_sequence.dart';
-import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_check.dart';
+import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_checknumber.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_containsdigits.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_digits.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_nthnumber.dart';
@@ -23,5 +23,6 @@ class NumberSequenceLucasNthNumber extends NumberSequenceNthNumber {
 }
 
 class NumberSequenceLucasContainsDigits extends NumberSequenceContainsDigits {
-  const NumberSequenceLucasContainsDigits({Key? key}) : super(key: key, mode: NumberSequencesMode.LUCAS, maxIndex: 11111);
+  const NumberSequenceLucasContainsDigits({Key? key})
+      : super(key: key, mode: NumberSequencesMode.LUCAS, maxIndex: 11111);
 }

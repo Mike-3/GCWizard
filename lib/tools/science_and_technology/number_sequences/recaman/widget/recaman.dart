@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/logic/number_sequence.dart';
-import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_check.dart';
+import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_checknumber.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_containsdigits.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_digits.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_nthnumber.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_range.dart';
 
 class NumberSequenceRecamanCheckNumber extends NumberSequenceCheckNumber {
-  const NumberSequenceRecamanCheckNumber({Key? key}) : super(key: key, mode: NumberSequencesMode.RECAMAN, maxIndex: 11111);
+  const NumberSequenceRecamanCheckNumber({Key? key})
+      : super(key: key, mode: NumberSequencesMode.RECAMAN, maxIndex: 11111);
 }
 
 class NumberSequenceRecamanDigits extends NumberSequenceDigits {
@@ -19,9 +20,11 @@ class NumberSequenceRecamanRange extends NumberSequenceRange {
 }
 
 class NumberSequenceRecamanNthNumber extends NumberSequenceNthNumber {
-  const NumberSequenceRecamanNthNumber({Key? key}) : super(key: key, mode: NumberSequencesMode.RECAMAN, maxIndex: 11111);
+  const NumberSequenceRecamanNthNumber({Key? key})
+      : super(key: key, mode: NumberSequencesMode.RECAMAN, maxIndex: 11111);
 }
 
 class NumberSequenceRecamanContainsDigits extends NumberSequenceContainsDigits {
-  const NumberSequenceRecamanContainsDigits({Key? key}) : super(key: key, mode: NumberSequencesMode.RECAMAN, maxIndex: 1111);
+  const NumberSequenceRecamanContainsDigits({Key? key})
+      : super(key: key, mode: NumberSequencesMode.RECAMAN, maxIndex: 1111);
 }

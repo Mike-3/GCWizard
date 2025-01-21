@@ -4,15 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/app_builder.dart';
 import 'package:gc_wizard/application/settings/logic/preferences.dart';
 import 'package:gc_wizard/application/theme/theme_colors.dart';
-import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format_metadata.dart';
+import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format_constants.dart';
+import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format_definition.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/coordinates.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/ellipsoid.dart';
+import 'package:gc_wizard/tools/coords/map_view/widget/gcw_mapview.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/general_codebreakers/multi_decoder/persistence/json_provider.dart';
 import 'package:gc_wizard/tools/formula_solver/persistence/json_provider.dart';
 import 'package:gc_wizard/tools/science_and_technology/maya_calendar/logic/maya_calendar.dart';
 import 'package:gc_wizard/utils/alphabets.dart';
 import 'package:prefs/prefs.dart';
-import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format_constants.dart';
 
 enum PreferencesInitMode { STARTUP, REINIT_ALL, REINIT_SINGLE }
 
@@ -47,7 +48,8 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
       } else {
         break;
       }
-    default: break;
+    default:
+      break;
   }
 
   var _reinitAll = mode == PreferencesInitMode.REINIT_ALL;
@@ -60,7 +62,8 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
 
   if (reinitSinglePreference == PREFERENCE_ALPHABET_DEFAULT_ALPHABET ||
       _reinitAll ||
-      Prefs.get(PREFERENCE_ALPHABET_DEFAULT_ALPHABET) == null) {
+      Prefs.get(PREFERENCE_ALPHABET_DEFAULT_ALPHABET) == null ||
+      Prefs.getString(PREFERENCE_ALPHABET_DEFAULT_ALPHABET).isEmpty) {
     Prefs.setString(PREFERENCE_ALPHABET_DEFAULT_ALPHABET, alphabetAZ.key);
   }
 
@@ -124,22 +127,26 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
 
   if (reinitSinglePreference == PREFERENCE_COORD_DEFAULT_ELLIPSOID_NAME ||
       _reinitAll ||
-      Prefs.get(PREFERENCE_COORD_DEFAULT_ELLIPSOID_NAME) == null) {
+      Prefs.get(PREFERENCE_COORD_DEFAULT_ELLIPSOID_NAME) == null ||
+      Prefs.getString(PREFERENCE_COORD_DEFAULT_ELLIPSOID_NAME).isEmpty) {
     Prefs.setString(PREFERENCE_COORD_DEFAULT_ELLIPSOID_NAME, ELLIPSOID_NAME_WGS84);
   }
 
   if (reinitSinglePreference == PREFERENCE_COORD_DEFAULT_ELLIPSOID_TYPE ||
       _reinitAll ||
-      Prefs.get(PREFERENCE_COORD_DEFAULT_ELLIPSOID_TYPE) == null) {
+      Prefs.get(PREFERENCE_COORD_DEFAULT_ELLIPSOID_TYPE) == null ||
+      Prefs.getString(PREFERENCE_COORD_DEFAULT_ELLIPSOID_TYPE).isEmpty) {
     Prefs.setString(PREFERENCE_COORD_DEFAULT_ELLIPSOID_TYPE, EllipsoidType.STANDARD.toString());
   }
 
   if (reinitSinglePreference == PREFERENCE_COORD_DEFAULT_FORMAT ||
           _reinitAll ||
           Prefs.get(PREFERENCE_COORD_DEFAULT_FORMAT) == null ||
+          Prefs.getString(PREFERENCE_COORD_DEFAULT_FORMAT).isEmpty ||
           Prefs.getString(PREFERENCE_COORD_DEFAULT_FORMAT) == 'coords_deg' //backward compatibility: old name for DMM until v1.1.0
       ) {
-    Prefs.setString(PREFERENCE_COORD_DEFAULT_FORMAT, coordinateFormatMetadataByKey(CoordinateFormatKey.DMM).persistenceKey);
+    Prefs.setString(
+        PREFERENCE_COORD_DEFAULT_FORMAT, coordinateFormatDefinitionByKey(CoordinateFormatKey.DMM).persistenceKey);
   }
 
   if (reinitSinglePreference == PREFERENCE_COORD_DEFAULT_FORMAT_SUBTYPE ||
@@ -150,20 +157,22 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
 
   if (reinitSinglePreference == PREFERENCE_COORD_DEFAULT_HEMISPHERE_LATITUDE ||
       _reinitAll ||
-      Prefs.get(PREFERENCE_COORD_DEFAULT_HEMISPHERE_LATITUDE) == null) {
+      Prefs.get(PREFERENCE_COORD_DEFAULT_HEMISPHERE_LATITUDE) == null ||
+      Prefs.getString(PREFERENCE_COORD_DEFAULT_HEMISPHERE_LATITUDE).isEmpty) {
     Prefs.setString(PREFERENCE_COORD_DEFAULT_HEMISPHERE_LATITUDE, HemisphereLatitude.North.toString());
   }
 
   if (reinitSinglePreference == PREFERENCE_COORD_DEFAULT_HEMISPHERE_LONGITUDE ||
       _reinitAll ||
-      Prefs.get(PREFERENCE_COORD_DEFAULT_HEMISPHERE_LONGITUDE) == null) {
+      Prefs.get(PREFERENCE_COORD_DEFAULT_HEMISPHERE_LONGITUDE) == null ||
+      Prefs.getString(PREFERENCE_COORD_DEFAULT_HEMISPHERE_LONGITUDE).isEmpty) {
     Prefs.setString(PREFERENCE_COORD_DEFAULT_HEMISPHERE_LONGITUDE, HemisphereLongitude.East.toString());
   }
 
-  if (reinitSinglePreference == PREFERENCE_COORD_PRECISION_DMM ||
+  if (reinitSinglePreference == PREFERENCE_COORD_PRECISION_DMM_COPY ||
       _reinitAll ||
-      Prefs.get(PREFERENCE_COORD_PRECISION_DMM) == null) {
-    Prefs.setInt(PREFERENCE_COORD_PRECISION_DMM, 3);
+      Prefs.get(PREFERENCE_COORD_PRECISION_DMM_COPY) == null) {
+    Prefs.setInt(PREFERENCE_COORD_PRECISION_DMM_COPY, 3);
   }
 
   if (reinitSinglePreference == PREFERENCE_COORD_VARIABLECOORDINATE_FORMULAS ||
@@ -174,8 +183,15 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
 
   if (reinitSinglePreference == PREFERENCE_DEFAULT_LENGTH_UNIT ||
       _reinitAll ||
-      Prefs.get(PREFERENCE_DEFAULT_LENGTH_UNIT) == null) {
+      Prefs.get(PREFERENCE_DEFAULT_LENGTH_UNIT) == null ||
+      Prefs.getString(PREFERENCE_DEFAULT_LENGTH_UNIT).isEmpty) {
     Prefs.setString(PREFERENCE_DEFAULT_LENGTH_UNIT, 'm');
+  }
+
+  if (reinitSinglePreference == PREFERENCE_EAN_DEFAULT_OPENGTIN_APIKEY ||
+      _reinitAll ||
+      Prefs.get(PREFERENCE_EAN_DEFAULT_OPENGTIN_APIKEY) == null) {
+    Prefs.setString(PREFERENCE_EAN_DEFAULT_OPENGTIN_APIKEY, '');
   }
 
   var _favorites = Prefs.getStringList(PREFERENCE_FAVORITES);
@@ -210,21 +226,23 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
     Prefs.setInt(PREFERENCE_IMAGECOLORCORRECTIONS_MAXPREVIEWHEIGHT, 250);
   }
 
-  if (reinitSinglePreference == PREFERENCE_MAPVIEW_CIRCLE_COLORFILLED ||
-      _reinitAll ||
-      Prefs.get(PREFERENCE_MAPVIEW_CIRCLE_COLORFILLED) == null) {
-    Prefs.setBool(PREFERENCE_MAPVIEW_CIRCLE_COLORFILLED, false);
-  }
-
   if (reinitSinglePreference == PREFERENCE_MAPVIEW_MAPVIEWS ||
       _reinitAll ||
       Prefs.get(PREFERENCE_MAPVIEW_MAPVIEWS) == null) {
     Prefs.setStringList(PREFERENCE_MAPVIEW_MAPVIEWS, []);
   }
 
+  if (reinitSinglePreference == PREFERENCE_MAPVIEW_MARKER_ICON ||
+      _reinitAll ||
+      Prefs.get(PREFERENCE_MAPVIEW_MARKER_ICON) == null ||
+      Prefs.getString(PREFERENCE_MAPVIEW_MARKER_ICON).isEmpty) {
+    Prefs.setString(PREFERENCE_MAPVIEW_MARKER_ICON, MapMarkerIcon.CROSSLINES.name);
+  }
+
   if (reinitSinglePreference == PREFERENCE_MAYACALENDAR_CORRELATION ||
       _reinitAll ||
-      Prefs.get(PREFERENCE_MAYACALENDAR_CORRELATION) == null) {
+      Prefs.get(PREFERENCE_MAYACALENDAR_CORRELATION) == null ||
+      Prefs.getString(PREFERENCE_MAYACALENDAR_CORRELATION).isEmpty) {
     Prefs.setString(PREFERENCE_MAYACALENDAR_CORRELATION, THOMPSON);
   }
 
@@ -234,6 +252,12 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
     Prefs.setStringList(PREFERENCE_MULTIDECODER_TOOLS, []);
   } else {
     refreshMultiDecoderTools();
+  }
+
+  if (reinitSinglePreference == PREFERENCE_RANDOMIZER_LISTS ||
+      _reinitAll ||
+      Prefs.get(PREFERENCE_RANDOMIZER_LISTS) == null) {
+    Prefs.setString(PREFERENCE_RANDOMIZER_LISTS, '{}');
   }
 
   if (reinitSinglePreference == PREFERENCE_SYMBOLTABLES_COUNTCOLUMNS_PORTRAIT ||
@@ -263,10 +287,12 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
   if (reinitSinglePreference == PREFERENCE_TABS_LAST_VIEWED_TAB ||
       _reinitAll ||
       Prefs.get(PREFERENCE_TABS_LAST_VIEWED_TAB) == null) {
-    Prefs.setInt(PREFERENCE_TABS_LAST_VIEWED_TAB, 2);
+    Prefs.setInt(PREFERENCE_TABS_LAST_VIEWED_TAB, _favorites.isEmpty ? 0 : 2);
   }
 
-  if (reinitSinglePreference == PREFERENCE_THEME_COLOR || _reinitAll || Prefs.get(PREFERENCE_THEME_COLOR) == null) {
+  if (reinitSinglePreference == PREFERENCE_THEME_COLOR || _reinitAll ||
+      Prefs.get(PREFERENCE_THEME_COLOR) == null ||
+      Prefs.getString(PREFERENCE_THEME_COLOR).isEmpty) {
     Prefs.setString(PREFERENCE_THEME_COLOR, ThemeType.DARK.toString());
   }
 
@@ -281,7 +307,9 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
     Prefs.setDouble(PREFERENCE_THEME_FONT_SIZE, loadedFontSize);
   }
 
-  if (reinitSinglePreference == PREFERENCE_TOOL_COUNT || _reinitAll || Prefs.get(PREFERENCE_TOOL_COUNT) == null) {
+  if (reinitSinglePreference == PREFERENCE_TOOL_COUNT || _reinitAll ||
+      Prefs.get(PREFERENCE_TOOL_COUNT) == null ||
+      Prefs.getString(PREFERENCE_TOOL_COUNT).isEmpty) {
     Prefs.setString(PREFERENCE_TOOL_COUNT, '{}');
   }
 
@@ -318,7 +346,8 @@ void _initDefaultSettings(PreferencesInitMode mode, {String reinitSinglePreferen
         afterRestorePreferences(context);
       }
       break;
-    default: break;
+    default:
+      break;
   }
 }
 

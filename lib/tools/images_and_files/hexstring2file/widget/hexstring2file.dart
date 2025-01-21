@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
-import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/theme/theme_colors.dart';
@@ -21,7 +20,7 @@ class HexString2File extends StatefulWidget {
   const HexString2File({Key? key}) : super(key: key);
 
   @override
- _HexString2FileState createState() => _HexString2FileState();
+  _HexString2FileState createState() => _HexString2FileState();
 }
 
 class _HexString2FileState extends State<HexString2File> {
@@ -43,7 +42,7 @@ class _HexString2FileState extends State<HexString2File> {
             trailing: GCWIconButton(
               icon: Icons.save,
               size: IconButtonSize.SMALL,
-              iconColor: _outData == null ? themeColors().inActive() : null,
+              iconColor: _outData == null ? themeColors().inactive() : null,
               onPressed: () {
                 _outData == null ? null : _exportFile(context, _outData!);
               },
@@ -71,7 +70,6 @@ class _HexString2FileState extends State<HexString2File> {
 }
 
 Widget hexDataOutput(BuildContext context, List<Uint8List> outData) {
-
   var children = outData.map((Uint8List _outData) {
     var file = GCWFile(bytes: _outData);
 
@@ -92,13 +90,11 @@ Widget hexDataOutput(BuildContext context, List<Uint8List> outData) {
         var fileType = file.fileType;
         if (fileType == FileType.ZIP) {
           try {
-            InputStream input = InputStream(_outData.buffer.asByteData());
-            return (_archiveWidget(context, ZipDecoder().decodeBuffer(input), fileType));
+            return (_archiveWidget(context, extractZipArchive(_outData), fileType));
           } catch (e) {}
         } else if (fileType == FileType.TAR) {
           try {
-            InputStream input = InputStream(_outData.buffer.asByteData());
-            return (_archiveWidget(context, TarDecoder().decodeBuffer(input), fileType));
+            return (_archiveWidget(context, extractTarArchive(_outData), fileType));
           } catch (e) {}
         } else {
           return _fileWidget(context, fileType);

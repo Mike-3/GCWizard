@@ -1,10 +1,9 @@
 import 'dart:math';
-import 'package:collection/collection.dart';
 
+import 'package:collection/collection.dart';
 import 'package:gc_wizard/utils/alphabets.dart';
 import 'package:gc_wizard/utils/collection_utils.dart';
 import 'package:gc_wizard/utils/constants.dart';
-
 
 class AlphabetValues {
   late Map<String, String> _alphabet;
@@ -15,7 +14,7 @@ class AlphabetValues {
   }
 
   /*
-  Because of: https://github.com/S-Man42/GCWizard/issues/102;
+  Because of: https://github.com/GCWizard/GCWizard/issues/102;
   WebVersion always generates SS for ß. That's because JavaScript's toUpperCase() does this.
 
   To avoid behaviour differences between Dart and JavaScript, here is a toUpperCase() function
@@ -23,7 +22,8 @@ class AlphabetValues {
    */
   String _toUpperCase(String text) {
     return text.split('').map((character) {
-      if (character != '\u00DF') { //ß
+      if (character != '\u00DF') {
+        //ß
         return character.toUpperCase();
       } else {
         return character;

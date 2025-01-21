@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:gc_wizard/tools/coords/distance_and_bearing/logic/distance_and_bearing.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/ellipsoid.dart';
+import 'package:gc_wizard/tools/coords/distance_and_bearing/logic/distance_and_bearing.dart';
 import 'package:latlong2/latlong.dart';
 
 class Interval {
@@ -103,7 +103,9 @@ class CoordinateCell {
     if (point.latitudeInRad > latInterval.a &&
         point.latitudeInRad < latInterval.b &&
         point.longitudeInRad > lonInterval.a &&
-        point.longitudeInRad < lonInterval.b) return Interval(a: 0.0, b: 360.0);
+        point.longitudeInRad < lonInterval.b) {
+      return Interval(a: 0.0, b: 360.0);
+    }
 
     var cornerAA = LatLng(radianToDeg(latInterval.a), radianToDeg(lonInterval.a));
     var cornerAB = LatLng(radianToDeg(latInterval.a), radianToDeg(lonInterval.b));
