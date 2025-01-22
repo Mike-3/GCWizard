@@ -105,7 +105,7 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
   for (int i=0; i<nb_pcb; i++) {
     int pivot_column=capacity+1;
     for (int j=0; j<capacity; j++) {
-      if(((matrixH[((offset*32*i+j)/32).toInt()] >> (31-(offset*32*i+j)%32)) & 1) != 0) {
+      if(((matrixH[((offset*32*i+j)~/32)] >> (31-(offset*32*i+j)%32)) & 1) != 0) {
         pivot_column=j;
         break;
       }
@@ -123,7 +123,7 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
       for (int j=0; j<nb_pcb; j++) {
         // ToDo stimmt meine Umsetzung ?
         // ((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1) -> ungerade 1, gerade 0
-        if (((((matrixH[(off_index+j*offset).toInt()] >> (31-off_index1)) & 1)!=0) && (j!=0) ) != i) {
+        if (((matrixH[off_index + j * offset] >> (31 - off_index1)) & 1) != 0 && j != i) {
           //subtract pivot row GF(2)
           for (int k=0;k<offset;k++) {
             matrixH[k+offset*j] ^= matrixH[k+offset*i];
