@@ -20,7 +20,7 @@ Future<Tuple2<String?, String>?> scanBytes(Uint8List bytes) async {
 	}
 
 	//find and decode JABCode in the image
-	int decode_status;
+	int? decode_status;
 	var result = decodeJABCode(bitmap, NORMAL_DECODE);
 	var decoded_data = result?.item1;
 	decode_status = result?.item2;
@@ -41,7 +41,7 @@ Future<Tuple2<String?, String>?> scanBytes(Uint8List bytes) async {
 		// JAB_REPORT_INFO(("The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
 	}
 
-	return Future.value(Tuple2<String, String> (String.fromCharCodes(decoded_data.data), null));
+	return Future.value(Tuple2<String, String> (String.fromCharCodes(decoded_data.data), ''));
 }
 
 /// Generating Jab Code
@@ -60,5 +60,5 @@ Future<Uint8List?> generateJabCode(String? code,
 	var result = generateJABCode(enc, data) ;
 	if (result != 0) return null;
 
-	return saveImage(enc.bitmap, border);
+	return saveImage(enc.bitmap!, border);
 }

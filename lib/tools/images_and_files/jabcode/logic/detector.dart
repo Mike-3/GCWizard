@@ -2200,8 +2200,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
   // }
 
   //get slave symbol side size from its metadata
-  slave_symbol.side_size.x = VERSION2SIZE(slave_symbol.metadata.side_version.x);
-  slave_symbol.side_size.y = VERSION2SIZE(slave_symbol.metadata.side_version.y);
+  slave_symbol.side_size!.x = VERSION2SIZE(slave_symbol.metadata!.side_version!.x);
+  slave_symbol.side_size!.y = VERSION2SIZE(slave_symbol.metadata!.side_version!.y);
 
   //docked horizontally
   double distx01 = host_symbol.pattern_positions[1].x - host_symbol.pattern_positions[0].x;
@@ -2231,8 +2231,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
       alpha1 = atan2(disty01, distx01);
       alpha2 = atan2(disty32, distx32);
       sign = 1;
-      docked_side_size   = slave_symbol.side_size.y;
-      undocked_side_size = slave_symbol.side_size.x;
+      docked_side_size   = slave_symbol.side_size!.y;
+      undocked_side_size = slave_symbol.side_size!.x;
       ap1 = AP0;	//ap[0]
       ap2 = AP3;	//ap[3]
       ap3 = AP1;	//ap[1]
@@ -2252,8 +2252,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
       alpha1 = atan2(disty32, distx32);
       alpha2 = atan2(disty01, distx01);
       sign = -1;
-      docked_side_size   = slave_symbol.side_size.y;
-      undocked_side_size = slave_symbol.side_size.x;
+      docked_side_size   = slave_symbol.side_size!.y;
+      undocked_side_size = slave_symbol.side_size!.x;
       ap1 = AP2;	//ap[2]
       ap2 = AP1;	//ap[1]
       ap3 = AP3;	//ap[3]
@@ -2280,8 +2280,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
       alpha1 = atan2(disty12, distx12);
       alpha2 = atan2(disty03, distx03);
       sign = 1;
-      docked_side_size   = slave_symbol.side_size.x;
-      undocked_side_size = slave_symbol.side_size.y;
+      docked_side_size   = slave_symbol.side_size!.x;
+      undocked_side_size = slave_symbol.side_size!.y;
       ap1 = AP1;	//ap[1]
       ap2 = AP0;	//ap[0]
       ap3 = AP2;	//ap[2]
@@ -2308,8 +2308,8 @@ int _findSlaveSymbol(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol 
       alpha1 = atan2(disty03, distx03);
       alpha2 = atan2(disty12, distx12);
       sign = -1;
-      docked_side_size   = slave_symbol.side_size.x;
-      undocked_side_size = slave_symbol.side_size.y;
+      docked_side_size   = slave_symbol.side_size!.x;
+      undocked_side_size = slave_symbol.side_size!.y;
       ap1 = AP3;	//ap[3]
       ap2 = AP2;	//ap[2]
       ap3 = AP0;	//ap[0]
@@ -2623,30 +2623,30 @@ int _confirmSymbolSize(List<jab_bitmap> ch, List<jab_finder_pattern> fps, jab_de
  	int first_ap_pos;
 
 	//side version x: scan the line between FP0 and FP1
-  first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.x, fps[0], fps[1]);
-  int side_version_x = _confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
+  first_ap_pos = _detectFirstAP(ch, symbol.metadata!.side_version!.x, fps[0], fps[1]);
+  int side_version_x = _confirmSideVersion(symbol.metadata!.side_version!.x, first_ap_pos);
   if(side_version_x == 0) { //if failed, try the line between FP3 and FP2
-    first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.x, fps[3], fps[2]);
-    side_version_x = _confirmSideVersion(symbol.metadata.side_version.x, first_ap_pos);
+    first_ap_pos = _detectFirstAP(ch, symbol.metadata!.side_version!.x, fps[3], fps[2]);
+    side_version_x = _confirmSideVersion(symbol.metadata!.side_version!.x, first_ap_pos);
     if(side_version_x == 0) {
       return JAB_FAILURE;
     }
   }
-  symbol.metadata.side_version.x = side_version_x;
-  symbol.side_size.x = VERSION2SIZE(side_version_x);
+  symbol.metadata!.side_version!.x = side_version_x;
+  symbol.side_size!.x = VERSION2SIZE(side_version_x);
 
   //side version y: scan the line between FP0 and FP3
-  first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.y, fps[0], fps[3]);
-  int side_version_y = _confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
+  first_ap_pos = _detectFirstAP(ch, symbol.metadata!.side_version!.y, fps[0], fps[3]);
+  int side_version_y = _confirmSideVersion(symbol.metadata!.side_version!.y, first_ap_pos);
   if(side_version_y == 0) { //if failed, try the line between FP1 and FP2
-    first_ap_pos = _detectFirstAP(ch, symbol.metadata.side_version.y, fps[1], fps[2]);
-    side_version_y = _confirmSideVersion(symbol.metadata.side_version.y, first_ap_pos);
+    first_ap_pos = _detectFirstAP(ch, symbol.metadata!.side_version!.y, fps[1], fps[2]);
+    side_version_y = _confirmSideVersion(symbol.metadata!.side_version!.y, first_ap_pos);
     if(side_version_y == 0) {
       return JAB_FAILURE;
     }
   }
-  symbol.metadata.side_version.y = side_version_y;
-  symbol.side_size.y = VERSION2SIZE(side_version_y);
+  symbol.metadata!.side_version!.y = side_version_y;
+  symbol.side_size!.y = VERSION2SIZE(side_version_y);
 
   return JAB_SUCCESS;
 }
@@ -2661,19 +2661,19 @@ int _confirmSymbolSize(List<jab_bitmap> ch, List<jab_finder_pattern> fps, jab_de
 */
 jab_bitmap? _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol symbol, List<jab_finder_pattern> fps) {
 	//if no alignment pattern available, abort
-  if(symbol.metadata.side_version.x < 6 && symbol.metadata.side_version.y < 6) {
+  if(symbol.metadata!.side_version!.x < 6 && symbol.metadata!.side_version!.y < 6) {
 		return null; //No alignment pattern is available
 	}
 
 	//For default mode, first confirm the symbol side size
-	if(symbol.metadata.default_mode)   {
+	if(symbol.metadata!.default_mode)   {
     if(_confirmSymbolSize(ch, fps, symbol) == JAB_FAILURE) {
       return null; //The symbol size can not be recognized.
     }
   }
 
-  int side_ver_x_index = symbol.metadata.side_version.x - 1;
-	int side_ver_y_index = symbol.metadata.side_version.y - 1;
+  int side_ver_x_index = symbol.metadata!.side_version!.x - 1;
+	int side_ver_y_index = symbol.metadata!.side_version!.y - 1;
 	int number_of_ap_x = jab_ap_num[side_ver_x_index];
   int number_of_ap_y = jab_ap_num[side_ver_y_index];
 
@@ -2805,8 +2805,8 @@ jab_bitmap? _sampleSymbolByAlignmentPattern(jab_bitmap bitmap, List<jab_bitmap> 
 	}
 
 	//allocate the buffer for the sampled matrix of the symbol
-  int width = symbol.side_size.x;
-	int height= symbol.side_size.y;
+  int width = symbol.side_size!.x;
+	int height= symbol.side_size!.y;
 	int mtx_bytes_per_pixel = (bitmap.bits_per_pixel / 8).toInt();
 	int mtx_bytes_per_row = width * mtx_bytes_per_pixel;
 
@@ -3047,8 +3047,8 @@ int _detectMaster(jab_bitmap bitmap, List<jab_bitmap> ch, jab_decoded_symbol mas
 	} else if(decode_result < 0) {	//fatal error occurred
 		return JAB_FAILURE;
 	} else { //if decoding using only finder patterns failed, try decoding using alignment patterns
-  master_symbol.side_size.x = VERSION2SIZE(master_symbol.metadata.side_version.x);
-  master_symbol.side_size.y = VERSION2SIZE(master_symbol.metadata.side_version.y);
+  master_symbol.side_size!.x = VERSION2SIZE(master_symbol.metadata!.side_version!.x);
+  master_symbol.side_size!.y = VERSION2SIZE(master_symbol.metadata!.side_version!.y);
   matrix = _sampleSymbolByAlignmentPattern(bitmap, ch, master_symbol, fps);
   if(matrix == null) {
     return JAB_FAILURE;
@@ -3088,13 +3088,13 @@ Tuple3<jab_bitmap?, jab_decoded_symbol, jab_decoded_symbol> _detectSlave(jab_bit
   //calculate perspective transform matrix
   var pt = getPerspectiveTransform(slave_symbol.pattern_positions[0], slave_symbol.pattern_positions[1],
                                                           slave_symbol.pattern_positions[2], slave_symbol.pattern_positions[3],
-                                                          slave_symbol.side_size);
+                                                          slave_symbol.side_size!);
   // if(pt == null) {
   //   return null;
   // }
 
   //sample slave symbol
-  jab_bitmap? matrix = sampleSymbol(bitmap, pt, slave_symbol.side_size);
+  jab_bitmap? matrix = sampleSymbol(bitmap, pt, slave_symbol.side_size!);
   if(matrix == null) {
     return Tuple3<jab_bitmap?, jab_decoded_symbol, jab_decoded_symbol>(null, host_symbol, slave_symbol); //Sampling slave symbol %d failed", slave_symbol.index
   }
@@ -3114,10 +3114,10 @@ Tuple3<jab_bitmap?, jab_decoded_symbol, jab_decoded_symbol> _detectSlave(jab_bit
 */
 Tuple2<int, int> _decodeDockedSlaves(jab_bitmap bitmap, List<jab_bitmap> ch, List<jab_decoded_symbol> symbols, int host_index, int total) {
   var docked_positions = List<int>.filled(4, 0);
-  docked_positions[0] = symbols[host_index].metadata.docked_position & 0x08;
-  docked_positions[1] = symbols[host_index].metadata.docked_position & 0x04;
-  docked_positions[2] = symbols[host_index].metadata.docked_position & 0x02;
-  docked_positions[3] = symbols[host_index].metadata.docked_position & 0x01;
+  docked_positions[0] = symbols[host_index].metadata!.docked_position & 0x08;
+  docked_positions[1] = symbols[host_index].metadata!.docked_position & 0x04;
+  docked_positions[2] = symbols[host_index].metadata!.docked_position & 0x02;
+  docked_positions[3] = symbols[host_index].metadata!.docked_position & 0x01;
 
   for(int j=0; j<4; j++) {
     if(docked_positions[j] > 0 && total<MAX_SYMBOL_NUMBER) {
@@ -3208,7 +3208,7 @@ Tuple2<jab_data?, int>? _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_d
 	//concatenate the decoded data
   int total_data_length = 0;
   for(int i=0; i<total; i++) {
-    total_data_length += symbols[i].data.length;
+    total_data_length += symbols[i].data!.length;
   }
   var decoded_bits = jab_data(); //(jab_data *)malloc(sizeof(jab_data) + total_data_length * sizeof(jab_char));
 	decoded_bits.data = Uint8List(total_data_length);
@@ -3218,11 +3218,11 @@ Tuple2<jab_data?, int>? _decodeJABCodeEx(jab_bitmap bitmap, int mode, List<jab_d
   // }
   int offset = 0;
   for(int i=0; i<total; i++) {
-    var src = symbols[i].data.data;
+    var src = symbols[i].data!.data;
     var dst = decoded_bits.data;
     // dst += offset;
-    dst.setRange(offset, symbols[i].data.length, src); // memcpy(dst, src, symbols[i].data.length);
-    offset += symbols[i].data.length;
+    dst.setRange(offset, symbols[i].data!.length, src); // memcpy(dst, src, symbols[i].data.length);
+    offset += symbols[i].data!.length;
   }
   decoded_bits.length = total_data_length;
   //decode data
