@@ -5,7 +5,7 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:tuple/tuple.dart';
 
-var testDirPath = 'test/resources/jabcode/';
+var testDirPath = 'test/tools/images_and_files/jabcode/';
 
 void main() {
 

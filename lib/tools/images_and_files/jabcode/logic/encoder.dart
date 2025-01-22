@@ -170,11 +170,11 @@ void _convert_dec_to_bin(int dec, Uint8List bin, int start_position, int length)
  @param symbol_number the number of symbols
  @return the created encode parameter object | null: fatal error (out of memory)
 */
-jab_encode? createEncode(int color_number, int symbol_number) {
+jab_encode createEncode(int color_number, int symbol_number) {
   var enc = jab_encode();
-  if(enc == null) {
-    return null;
-  }
+  // if(enc == null) {
+  //   return null;
+  // }
 
   if(color_number != 4  && color_number != 8   && color_number != 16 &&
      color_number != 32 && color_number != 64 && color_number != 128 && color_number != 256)
@@ -193,36 +193,36 @@ jab_encode? createEncode(int color_number, int symbol_number) {
 
   //set default color palette
   enc.palette = Int8List(color_number * 3);
-  if(enc.palette == null) {
-    // reportError("Memory allocation for palette failed");
-    return null;
-  }
-  _setDefaultPalette(enc.color_number, enc.palette);
+  // if(enc.palette == null) {
+  //   // reportError("Memory allocation for palette failed");
+  //   return null;
+  // }
+  _setDefaultPalette(enc.color_number, enc.palette!);
   //allocate memory for symbol versions
-  enc.symbol_versions = List<jab_vector2d>.filled(symbol_number, null);
-  if(enc.symbol_versions == null) {
-    // reportError("Memory allocation for symbol versions failed");
-    return null;
-  }
+  enc.symbol_versions = List<jab_vector2d>.filled(symbol_number, jab_vector2d(0,0));
+  // if(enc.symbol_versions == null) {
+  //   // reportError("Memory allocation for symbol versions failed");
+  //   return null;
+  // }
   //set default error correction levels
   enc.symbol_ecc_levels = Int8List(symbol_number);
-  if(enc.symbol_ecc_levels == null) {
-    // reportError("Memory allocation for ecc levels failed");
-    return null;
-  }
+  // if(enc.symbol_ecc_levels == null) {
+  //   // reportError("Memory allocation for ecc levels failed");
+  //   return null;
+  // }
   _setDefaultEccLevels(enc.symbol_number, enc.symbol_ecc_levels);
   //allocate memory for symbol positions
   enc.symbol_positions= Int32List(symbol_number);
-  if(enc.symbol_positions == null) {
-    // reportError("Memory allocation for symbol positions failed");
-    return null;
-  }
+  // if(enc.symbol_positions == null) {
+  //   // reportError("Memory allocation for symbol positions failed");
+  //   return null;
+  // }
   //allocate memory for symbols
-  enc.symbols = List<jab_symbol>.filled(symbol_number, null);
-  if(enc.symbols == null) {
-    // reportError("Memory allocation for symbols failed");
-    return null;
-  }
+  enc.symbols = List<jab_symbol>.filled(symbol_number, jab_symbol());
+  // if(enc.symbols == null) {
+  //   // reportError("Memory allocation for symbols failed");
+  //   return null;
+  // }
   return enc;
 }
 
@@ -384,10 +384,10 @@ List<int>? _analyzeInputData(jab_data input, int encoded_length) {
   }
 
   var encode_seq = List<int>.filled((curr_seq_counter+1+ (is_shift ? 1: 0)), 0);
-  if(encode_seq == null) {
-    // reportError("Memory allocation for encode sequence failed");
-    return null;
-  }
+  // if(encode_seq == null) {
+  //   // reportError("Memory allocation for encode sequence failed");
+  //   return null;
+  // }
 
   //check if byte mode is used more than 15 times in sequence
   //.>length will be increased by 13
@@ -600,10 +600,10 @@ void _getOptimalECC(int capacity, int net_data_length, List<int> wcwr) {
 jab_data? _encodeData(jab_data data, int encoded_length,List<int> encode_seq) {
   var encoded_data = jab_data();//List<jab_data>.filled ()jab_data *)malloc(sizeof(jab_data) + encoded_length*sizeof(jab_char));
   encoded_data.data = Uint8List(encoded_length);
-  if(encoded_data == null) {
-    // reportError("Memory allocation for encoded data failed");
-    return null;
-  }
+  // if(encoded_data == null) {
+  //   // reportError("Memory allocation for encoded data failed");
+  //   return null;
+  // }
   encoded_data.length = encoded_length;
 
   int counter=0;
@@ -1423,13 +1423,13 @@ int _createBitmap(jab_encode enc, jab_code cp) {
   int bytes_per_pixel = BITMAP_CHANNEL_COUNT;
   int bytes_per_row = width * bytes_per_pixel;
   enc.bitmap = jab_bitmap(); //(jab_bitmap *)calloc(1, sizeof(jab_bitmap) + width*height*bytes_per_pixel*sizeof(jab_byte));
-  enc.bitmap.pixel = Uint8List( width*height*bytes_per_pixel);
+  enc.bitmap!.pixel = Uint8List( width*height*bytes_per_pixel);
 
-  enc.bitmap.width = width;
-  enc.bitmap.height= height;
-  enc.bitmap.bits_per_channel = BITMAP_BITS_PER_CHANNEL;
-  enc.bitmap.channel_count = BITMAP_CHANNEL_COUNT;
-  enc.bitmap.bits_per_pixel = enc.bitmap.bits_per_channel * enc.bitmap.channel_count;
+  enc.bitmap!.width = width;
+  enc.bitmap!.height= height;
+  enc.bitmap!.bits_per_channel = BITMAP_BITS_PER_CHANNEL;
+  enc.bitmap!.channel_count = BITMAP_CHANNEL_COUNT;
+  enc.bitmap!.bits_per_pixel = enc.bitmap!.bits_per_channel * enc.bitmap!.channel_count;
 
 
   //place symbols in bitmap
@@ -1454,10 +1454,10 @@ int _createBitmap(jab_encode enc, jab_code cp) {
         int p_index = enc.symbols[k].matrix[(y-starty)*symbol_width + (x-startx)];
         for(int i=y*cp.dimension; i<(y*cp.dimension+cp.dimension); i++) {
           for(int j=x*cp.dimension; j<(x*cp.dimension+cp.dimension); j++) {
-            enc.bitmap.pixel[i*bytes_per_row + j*bytes_per_pixel]     = enc.palette[p_index * 3];	//R
-            enc.bitmap.pixel[i*bytes_per_row + j*bytes_per_pixel + 1] = enc.palette[p_index * 3 + 1];//B
-            enc.bitmap.pixel[i*bytes_per_row + j*bytes_per_pixel + 2] = enc.palette[p_index * 3 + 2];//G
-            enc.bitmap.pixel[i*bytes_per_row + j*bytes_per_pixel + 3] = 255; 							//A
+            enc.bitmap!.pixel[i*bytes_per_row + j*bytes_per_pixel]     = enc.palette![p_index * 3];	//R
+            enc.bitmap!.pixel[i*bytes_per_row + j*bytes_per_pixel + 1] = enc.palette![p_index * 3 + 1];//B
+            enc.bitmap!.pixel[i*bytes_per_row + j*bytes_per_pixel + 2] = enc.palette![p_index * 3 + 2];//G
+            enc.bitmap!.pixel[i*bytes_per_row + j*bytes_per_pixel + 3] = 255; 							//A
           }
         }
       }
@@ -1509,7 +1509,7 @@ int _setMasterSymbolVersion(jab_encode enc, jab_data encoded_data) {
   enc.symbols[0].wcwr[1] = ecclevel2wcwr[enc.symbol_ecc_levels[0]][1];
 
 	//determine the minimum square symbol to fit data
-	int capacity, net_capacity;
+	int capacity = 0, net_capacity;
 	int found_flag = JAB_FAILURE;
 	for (int i=1; i<=32; i++) {
 		enc.symbol_versions[0].x = i;
@@ -1585,9 +1585,9 @@ void _updateSlaveMetadataE(jab_encode enc, int host_index, int slave_index) {
 	//skip the flag bit
 	offset--;
 	//skip host metadata S
-	if(host_index == 0)
-		offset -= 4;
-	else {
+	if(host_index == 0) {
+	  offset -= 4;
+	} else {
 	  offset -= 3;
 	}
 	//skip other slave symbol's metadata
@@ -1708,10 +1708,10 @@ int _fitDataIntoSymbols(jab_encode enc, jab_data encoded_data) {
     enc.symbols[i].data = jab_data(); //(jab_data *)calloc(1, sizeof(jab_data) + pn_length*sizeof(jab_char));
     enc.symbols[i].data.data = Uint8List(pn_length);
     enc.symbols[i].data.data.fillRange(0, pn_length, 1);
-    if(enc.symbols[i].data == null) {
-			// reportError("Memory allocation for data payload in symbol failed");
-			return JAB_FAILURE;
-		}
+    // if(enc.symbols[i].data == null) {
+		// 	// reportError("Memory allocation for data payload in symbol failed");
+		// 	return JAB_FAILURE;
+		// }
 		enc.symbols[i].data.length = pn_length;
 		//set data
     enc.symbols[i].data.data.setRange(0, s_data_length, encoded_data.data.sublist(assigned_data_length)); // _memcpy(enc.symbols[i].data.data, &encoded_data.data[assigned_data_length], s_data_length);
@@ -1810,7 +1810,7 @@ int _initSymbols(jab_encode enc){
 int _setSlaveMetadata(jab_encode enc) {
 	//set slave metadata variables
 	for(int i=1; i<enc.symbol_number; i++) {
-		int SS, SE, V, E1=0, E2=0;
+		int SS, SE, V = 0, E1 = 0, E2 = 0;
 		int metadata_length = 2; //Part I length
 		//SS and V
 		if(enc.symbol_versions[i].x != enc.symbol_versions[enc.symbols[i].host].x) {
@@ -1837,10 +1837,10 @@ int _setSlaveMetadata(jab_encode enc) {
 		//write slave metadata
 		enc.symbols[i].metadata = jab_data(); // (jab_data *)malloc(sizeof(jab_data) + metadata_length*sizeof(jab_char));
     enc.symbols[i].metadata.data = Uint8List(metadata_length);
-		if(enc.symbols[i].metadata == null) {
-			// reportError("Memory allocation for metadata in slave symbol failed");
-			return JAB_FAILURE;
-		}
+		// if(enc.symbols[i].metadata == null) {
+		// 	// reportError("Memory allocation for metadata in slave symbol failed");
+		// 	return JAB_FAILURE;
+		// }
 		enc.symbols[i].metadata.length = metadata_length;
 		//Part I
 		enc.symbols[i].metadata.data[0] = SS;
@@ -1866,9 +1866,9 @@ int _setSlaveMetadata(jab_encode enc) {
 */
 int generateJABCode(jab_encode enc, jab_data data) {
   //Check data
-  if(data == null) {
-    return 2;
-  }
+  // if(data == null) {
+  //   return 2;
+  // }
   if(data.length == 0) {
     return 2;
   }
@@ -1879,7 +1879,7 @@ int generateJABCode(jab_encode enc, jab_data data) {
   }
 
   //get the optimal encoded length and encoding sequence
-  int encoded_length;
+  int encoded_length = 0;
   var encode_seq = _analyzeInputData(data, encoded_length);
   if(encode_seq == null) {
     return 1; //Analyzing input data failed
@@ -1928,9 +1928,9 @@ int generateJABCode(jab_encode enc, jab_data data) {
 
   //mask all symbols in the code
   var cp = _getCodePara(enc);
-  if(cp == JAB_FAILURE) {
-    return 1;
-  }
+  // if(cp == JAB_FAILURE) {
+  //   return 1;
+  // }
   if(_isDefaultMode(enc) == JAB_SUCCESS) {	//default mode
     maskSymbols(enc, DEFAULT_MASKING_REFERENCE, null, null);
   } else {

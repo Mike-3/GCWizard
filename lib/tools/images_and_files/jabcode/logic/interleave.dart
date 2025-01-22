@@ -10,8 +10,8 @@
 
 import 'dart:typed_data';
 
-import 'package:gc_wizard/tools/images_and_files/jabcode/logic//pseudo_random.dart';
-import 'package:gc_wizard/tools/images_and_files/jabcode/logic//jabcode_h.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/pseudo_random.dart';
+import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 const INTERLEAVE_SEED = 226759;
 

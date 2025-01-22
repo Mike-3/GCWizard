@@ -134,27 +134,27 @@ class jab_encode {
  Decoded metadata
 */
 class jab_metadata {
-	bool default_mode;
-	int Nc;
-	int mask_type;
-	int docked_position;
-	jab_vector2d side_version;
-	jab_vector2d ecl;
+	bool default_mode = false;
+	int Nc = 0;
+	int mask_type = 0;
+	int docked_position = 0;
+	jab_vector2d? side_version;
+	jab_vector2d? ecl;
 }
 
 /*
  Decoded symbol
 */
 class jab_decoded_symbol {
-	int index;
-	int host_index;
-	int host_position;
-	jab_vector2d side_size;
-	double module_size;
-	var pattern_positions = List<jab_point>.filled(4, null); //4
-	jab_metadata metadata;
-	var slave_metadata = List<jab_metadata>.filled(4, null); //4
-	Int8List palette;
-	jab_data data;
+	int index = 0;
+	int host_index = 0 ;
+	int host_position = 0 ;
+	jab_vector2d? side_size;
+	double module_size = 0;
+	var pattern_positions = List<jab_point>.filled(4, jab_point(0,0)); //4
+	jab_metadata? metadata;
+	List<jab_metadata?> slave_metadata = List<jab_metadata?>.filled(4, null); //4
+	Int8List? palette;
+	jab_data? data;
 }
 
