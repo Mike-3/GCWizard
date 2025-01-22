@@ -141,7 +141,7 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
   for(int i= matrix_rank;i<nb_pcb;i++) {
     if(column_arrangement[i] > 0) {
       for (int j=0;j < nb_pcb;j++) {
-        if (processed_column[j] == 0) {
+        if (processed_column[j] == false) {
           column_arrangement[j]=column_arrangement[i];
           column_arrangement[i]=0;
           processed_column[j] = true;
@@ -159,7 +159,7 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
 
   int loop1=0;
   for (int kl=0;kl< nb_pcb;kl++) {
-    if((processed_column[kl] == 0) && (loop1 < loop-loop2)) {
+    if((processed_column[kl] == false) && (loop1 < loop-loop2)) {
       column_arrangement[kl]=column_arrangement[swap_col[2*loop1]];
       processed_column[kl] = true;
       swap_col[2*loop1+1] = kl;
@@ -169,7 +169,7 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
 
   loop1=0;
   for (int kl=0;kl< nb_pcb;kl++) {
-    if(processed_column[kl]==0) {
+    if(processed_column[kl]==false) {
       column_arrangement[kl]=zero_lines_nb[loop1];
       loop1++;
     }
@@ -414,7 +414,7 @@ jab_data? encodeLDPC(jab_data data, List<int> coderate_params) {
  @return item1  bool is_correct /
  @return item2 error correction succeeded | 0: fatal error (out of memory)
 */
-Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, int height, int max_iter, int start_pos) {
+Tuple2<bool, int> _decodeMessage(List<int> data, List<int> matrix, int length, int height, int max_iter, int start_pos) {
   var max_val=List<int>.filled(length, 0); // ()int *)calloc(length, sizeof(int));
   var equal_max=List<int>.filled(length, 0); //(int *)calloc(length, sizeof(int));
   var prev_index=List<int>.filled(length, 0); //(int *)calloc(length, sizeof(int));
@@ -499,7 +499,7 @@ Tuple2<bool, int> _decodeMessage(Uint8List data, List<int> matrix, int length, i
  @param wr the number of '1's in a row
  @return the decoded data length | 0: fatal error (out of memory)
 */
-int decodeLDPChd(Uint8List data, int length, int wc, int wr) {
+int decodeLDPChd(List<int> data, int length, int wc, int wr) {
   int matrix_rank=0;
   int max_iter=25;
   int Pn;

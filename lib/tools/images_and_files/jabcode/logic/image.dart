@@ -9,9 +9,7 @@
 
 import 'dart:typed_data';
 
-import 'package:gc_wizard/logic/tools/images_and_files/qr_code.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
-import 'package:gc_wizard/widgets/utils/file_utils.dart';
 import 'package:image/image.dart' as Image;
 
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
@@ -53,7 +51,7 @@ Future<Uint8List?> saveImage(jab_bitmap bitmap, double border) async {
 	for (int y=0; y<bitmap.height;y++) {
 		for (int x=0; x<bitmap.width;x++) {
 			var offset = y*bytes_per_row + x*bytes_per_pixel;
-			var pixel = Image.Color.fromRGB(bitmap.pixel[offset+0],
+			var pixel = Image.ColorUint8.rgb(bitmap.pixel[offset+0],
 																			bitmap.pixel[offset+1],
 																			bitmap.pixel[offset+2]);
 
@@ -62,8 +60,8 @@ Future<Uint8List?> saveImage(jab_bitmap bitmap, double border) async {
 	}
 
 	var data = encodeTrimmedPng(_image);
-	if (border > 0)
-		data = await addBorder(data, border: border);
-
+	// if (border > 0) {
+	// 	data = await addBorder(data, border: border);
+	// }
 	return Future.value(data);
 }

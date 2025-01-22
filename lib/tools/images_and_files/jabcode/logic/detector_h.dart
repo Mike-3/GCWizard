@@ -20,7 +20,7 @@ const MAX_FINDER_PATTERNS = 500;
 const PI =					3.14159265;
 const CROSS_AREA_WIDTH	= 14;	//the width of the area across the host and slave symbols
 
-double DIST(x1, y1, x2, y2) {
+double DIST(double x1, double y1, double x2, double y2) {
 	return (sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)));
 }
 
@@ -37,18 +37,19 @@ enum jab_detect_mode {
  Finder pattern
 */
 class jab_finder_pattern {
-	int		type = 0;
-	double		module_size = 0.0;
-	var		center = jab_point(0.0,0.0);			//coordinates of the center
-	int		found_count = 0;
-	int 	direction = 0;
+	int type = 0;
+	double module_size = 0.0;
+	var center = jab_point(0.0,0.0);			//coordinates of the center
+	int found_count = 0;
+	int direction = 0;
 
-	void import(jab_alignment_pattern alignment_pattern) {
+	jab_finder_pattern import(jab_alignment_pattern alignment_pattern) {
 		type= alignment_pattern.type;
 		module_size= alignment_pattern.module_size;
 		center= alignment_pattern.center;
 		found_count= alignment_pattern.found_count;
 		direction= alignment_pattern.direction;
+		return this;
 	}
 }
 
@@ -56,18 +57,19 @@ class jab_finder_pattern {
   Alignment pattern
 */
 class jab_alignment_pattern {
-	int		type = 0;
-	double		module_size = 0.0;
-	var		center = jab_point(0.0, 0.0);			//coordinates of the center
-	int		found_count = 0;
-	int 	direction = 0;
+	int type = 0;
+	double module_size = 0.0;
+	var center = jab_point(0.0, 0.0);			//coordinates of the center
+	int found_count = 0;
+	int direction = 0;
 
-	void import(jab_finder_pattern finder_pattern) {
+	jab_alignment_pattern import(jab_finder_pattern finder_pattern) {
 		type= finder_pattern.type;
 		module_size= finder_pattern.module_size;
 		center= finder_pattern.center;
 		found_count= finder_pattern.found_count;
 		direction= finder_pattern.direction;
+		return this;
 	}
 }
 

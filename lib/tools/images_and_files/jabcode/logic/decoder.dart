@@ -134,7 +134,7 @@ void _interpolatePalette(Int8List palette, int color_number) {
  @param y the y coordinate of the color module
 */
 void _writeColorPalette(jab_bitmap matrix, jab_decoded_symbol symbol, int p_index, int color_index, int x, int y) {
-	int color_number = pow(2, symbol.metadata.Nc + 1);
+	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
 	int mtx_bytes_per_pixel = matrix.bits_per_pixel ~/ 8;
   int mtx_bytes_per_row = matrix.width * mtx_bytes_per_pixel;
 
@@ -201,7 +201,7 @@ Tuple2<jab_vector2d, jab_vector2d> _getColorPalettePosInFP(int p_index, int matr
  @return item4 y the y coordinate of the start module
 */
 Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, int module_count, int x, int y) {
-	int color_number = pow(2, symbol.metadata.Nc + 1);
+	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
 	symbol.palette = Int8List(color_number * 3 * COLOR_PALETTE_NUMBER); //(Int8*)malloc(color_number * sizeof(Int8) * 3 * COLOR_PALETTE_NUMBER);
 
 	//read colors from finder patterns
@@ -284,7 +284,7 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
  @return JAB_SUCCESS | FATAL_ERROR
 */
 int _readColorPaletteInSlave(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map) {
-	int color_number = pow(2, symbol.metadata.Nc + 1);
+	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
 	symbol.palette.clear();
 
 	//read colors from alignment patterns
@@ -393,7 +393,7 @@ int _getNearestPalette(jab_bitmap matrix, int x, int y) {
  @param y the y coordinate of the module
  @return the decoded value
 */
-int _decodeModuleHD(jab_bitmap matrix, Int8List palette, int color_number, List<double> norm_palette, List<double> pal_ths, int x, int y) {
+int _decodeModuleHD(jab_bitmap matrix, Int8List? palette, int color_number, List<double> norm_palette, List<double> pal_ths, int x, int y) {
 	//get the nearest palette
 	int p_index = _getNearestPalette(matrix, x, y);
 
@@ -694,7 +694,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 	}
 
 	//decode encoded Nc
-	var bits = List<int>.filled(2, null);
+	var bits = List<int>.filled(2, 0);
 	bits[0] = _decodeNcModuleColor(module_color[0], module_color[1]);	//the first 3 bits
 	bits[1] = _decodeNcModuleColor(module_color[2], module_color[3]);	//the last 3 bits
 	if(bits[0] > 7 || bits[1] > 7) {
@@ -742,7 +742,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 	int V, E;
 	int V_length = 10, E_length = 6;
 
-	num color_number = pow(2, symbol.metadata.Nc + 1);
+	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
 	int bits_per_module = log(color_number) ~/ log(2);
 
 	//read part2
@@ -834,7 +834,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
  @return the decoded data | NULL if failed
 */
 jab_data _readRawModuleData(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths) {
-	int color_number = pow(2, symbol.metadata.Nc + 1);
+	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
 	int module_count = 0;
 	var data = jab_data() ;//(jab_data*)malloc(sizeof(jab_data) + matrix.width * matrix.height * sizeof(jab_char));
 
@@ -978,18 +978,18 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 
 	//read raw data
 	var raw_module_data = _readRawModuleData(matrix, symbol, data_map, norm_palette, pal_ths);
-	if(raw_module_data == null) {
-		return FATAL_ERROR;
-	}
+	// if(raw_module_data == null) {
+	// 	return FATAL_ERROR;
+	// }
 
 	//demask
-	demaskSymbol(raw_module_data, data_map, symbol.side_size, symbol.metadata.mask_type, pow(2, symbol.metadata.Nc + 1));
+	demaskSymbol(raw_module_data, data_map, symbol.side_size, symbol.metadata.mask_type, pow(2, symbol.metadata.Nc + 1).toInt());
 
 	//change to one-bit-per-byte representation
 	var raw_data = _rawModuleData2RawData(raw_module_data, symbol.metadata.Nc + 1);
-	if(raw_data == null) {
-		return FATAL_ERROR;
-	}
+	// if(raw_data == null) {
+	// 	return FATAL_ERROR;
+	// }
 
 	//calculate Pn and Pg
 	int wc = symbol.metadata.ecl.x;
@@ -1061,9 +1061,9 @@ void _normalizeColorPalette(jab_decoded_symbol symbol, List<double> norm_palette
  @return JAB_SUCCESS | JAB_FAILURE | FATAL_ERROR
 */
 int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol) {
-	if(matrix == null) {
-		return FATAL_ERROR;
-	}
+	// if(matrix == null) {
+	// 	return FATAL_ERROR;
+	// }
 
 	//create data map
 	var data_map = Int8List(matrix.width*matrix.height);// (Int8*)calloc(1, matrix.width*matrix.height*sizeof(Int8));
@@ -1103,7 +1103,7 @@ int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	}
 
 	//normalize the RGB values in color palettes
-	int color_number = pow(2, symbol.metadata.Nc + 1);
+	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
 	var norm_palette = List<double>.filled(color_number * 4 * COLOR_PALETTE_NUMBER, 0);	//each color contains 4 normalized values, i.e. R, G, B and Luminance
 	_normalizeColorPalette(symbol, norm_palette, color_number);
 
@@ -1134,7 +1134,7 @@ int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol) {
  @param symbol the slave symbol
  @return JAB_SUCCESS | JAB_FAILURE | FATAL_ERROR
 */
-int decodeSlave(jab_bitmap matrix, jab_decoded_symbol symbol) {
+int decodeSlave(jab_bitmap? matrix, jab_decoded_symbol symbol) {
 	if(matrix == null) {
 		return FATAL_ERROR; //Invalid slave symbol matrix
 	}
@@ -1148,7 +1148,7 @@ int decodeSlave(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	}
 
 	//normalize the RGB values in color palettes
-	int color_number = pow(2, symbol.metadata.Nc + 1);
+	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
 	var norm_palette = List<double>.filled(color_number * 4 * COLOR_PALETTE_NUMBER, 0);	//each color contains 4 normalized values, i.e. R, G, B and Luminance
 	_normalizeColorPalette(symbol, norm_palette, color_number);
 
@@ -1185,7 +1185,7 @@ Tuple2<int, int> _readData(jab_data data, int start, int length) {
  @return the data message
 */
 jab_data? decodeData(jab_data bits) {
-	var decoded_bytes = Uint8List(bits.length); //Int8 *)malloc(bits.length * sizeof(Int8));
+	Uint8List decoded_bytes = Uint8List(bits.length); //Int8 *)malloc(bits.length * sizeof(Int8));
 	var mode = jab_encode_mode.Upper;
 	var pre_mode = jab_encode_mode.None;
 	int index = 0;	//index of input bits
@@ -1265,7 +1265,7 @@ jab_data? decodeData(jab_data bits) {
 							break;
 						default:
 							// reportError("Invalid value decoded");
-							decoded_bytes = null ;//free(decoded_bytes);
+							// decoded_bytes = null ;//free(decoded_bytes);
 							return null;
 					}
 				}

@@ -40,7 +40,7 @@ jab_bitmap? sampleSymbol(jab_bitmap bitmap, jab_perspective_transform pt, jab_ve
 	int bmp_bytes_per_pixel = bitmap.bits_per_pixel ~/ 8;
 	int bmp_bytes_per_row = bitmap.width * bmp_bytes_per_pixel;
 
-	var points = List<jab_point>.filled(side_size.x, null);
+	var points = List<jab_point>.filled(side_size.x, jab_point(0, 0));
 	for(int i=0; i<side_size.y; i++) {
 		for(int j=0; j<side_size.x; j++) {
 			points[j].x = j + 0.5;

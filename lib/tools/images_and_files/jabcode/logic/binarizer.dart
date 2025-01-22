@@ -218,9 +218,9 @@ Tuple3<int, int, int> getMinMax(Uint8List rgb) {
  @param blk_ths the black color thresholds for RGB channels
  @return JAB_SUCCESS | JAB_FAILURE
 */
-int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double> blk_ths) {
+int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double>? blk_ths) {
 	for(int i=0; i<3; i++) {
-		rgb[i] = jab_bitmap(); //(jab_bitmap*)calloc(1, sizeof(jab_bitmap) + bitmap.width*bitmap.height*sizeof(jab_byte));
+		// rgb[i] = jab_bitmap(); //(jab_bitmap*)calloc(1, sizeof(jab_bitmap) + bitmap.width*bitmap.height*sizeof(jab_byte));
 		rgb[i].pixel= Uint8List(bitmap.width*bitmap.height);
 
 		rgb[i].width = bitmap.width;
