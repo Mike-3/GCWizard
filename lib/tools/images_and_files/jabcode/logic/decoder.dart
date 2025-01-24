@@ -407,7 +407,7 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List? palette, int color_number, List
 	rgb[2] = matrix.pixel[mtx_offset + 2];
 
 	int index1 = 0;
-	int index2 = 0;
+	// int index2 = 0;
 
 	//check black module
 	if(rgb[0] < pal_ths[p_index*3 + 0] && rgb[1] < pal_ths[p_index*3 + 1] && rgb[2] < pal_ths[p_index*3 + 2]) {
@@ -437,13 +437,13 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List? palette, int color_number, List
 			if(diff < min1) {
 				//copy min1 to min2
 				min2 = min1;
-				index2 = index1;
+				// index2 = index1;
 				//update min1
 				min1 = diff;
 				index1 = i;
 			} else if(diff < min2) {
 				min2 = diff;
-				index2 = i;
+				// index2 = i;
 			}
 		}
 

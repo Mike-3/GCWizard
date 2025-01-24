@@ -25,7 +25,7 @@ const _w3 = 3;
  @param color_number the number of module colors
  @return the penalty score
 */
-int applyRule1(List<int> matrix, int width, int height, int color_number) {
+int _applyRule1(List<int> matrix, int width, int height, int color_number) {
 	int fp0_c1, fp0_c2;
 	int fp1_c1, fp1_c2;
 	int fp2_c1, fp2_c2;
@@ -112,7 +112,7 @@ int applyRule1(List<int> matrix, int width, int height, int color_number) {
  @param height the symbol matrix height
  @return the penalty score
 */
-int applyRule2(List<int> matrix, int width, int height) {
+int _applyRule2(List<int> matrix, int width, int height) {
 	int score = 0;
 	for(int i=0; i<height-1; i++) {
 		for(int j=0; j<width-1; j++) {
@@ -137,7 +137,7 @@ int applyRule2(List<int> matrix, int width, int height) {
  @param height the symbol matrix height
  @return the penalty score
 */
-int applyRule3(List<int> matrix, int width, int height) {
+int _applyRule3(List<int> matrix, int width, int height) {
 	int score = 0;
 	for(int k=0; k<2; k++) {
 		int maxi, maxj;
@@ -187,8 +187,8 @@ int applyRule3(List<int> matrix, int width, int height) {
  @param color_number the number of module colors
  @return the penalty score
 */
-int evaluateMask(List<int> matrix, int width, int height, int color_number) {
-	return applyRule1(matrix, width, height, color_number) + applyRule2(matrix, width, height) + applyRule3(matrix, width, height);
+int _evaluateMask(List<int> matrix, int width, int height, int color_number) {
+	return _applyRule1(matrix, width, height, color_number) + _applyRule2(matrix, width, height) + _applyRule3(matrix, width, height);
 }
 
 /*
@@ -282,7 +282,7 @@ int maskCode(jab_encode enc, jab_code cp) {
 		int penalty_score = 0;
 		maskSymbols(enc, t, masked, cp);
 		//calculate the penalty score
-		penalty_score = evaluateMask(masked, cp.code_size.x, cp.code_size.y, enc.color_number);
+		penalty_score = _evaluateMask(masked, cp.code_size.x, cp.code_size.y, enc.color_number);
 
 		if(penalty_score < min_penalty_score) {
 			mask_type = t;

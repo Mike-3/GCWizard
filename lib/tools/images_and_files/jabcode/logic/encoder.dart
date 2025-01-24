@@ -23,6 +23,10 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/ldpc.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/mask.dart';
 
+void _memcpy(Uint8List dst, int dst_offset, Uint8List src, int src_offset, int length) {
+  dst.replaceRange(dst_offset, dst_offset + length, src.getRange(src_offset, src_offset + length));
+}
+
 /*
  Generate color palettes with more than 8 colors
  @param color_number the number of colors
@@ -234,7 +238,7 @@ jab_encode createEncode(int color_number, int symbol_number) {
 */
 List<int>? _analyzeInputData(jab_data input, int encoded_length) {
   int encode_seq_length=ENC_MAX;
-  var seq = Uint8List(input.length); //(jab_char *)malloc(sizeof(jab_char)*input.length);
+  // var seq = Uint8List(input.length); //(jab_char *)malloc(sizeof(jab_char)*input.length);
   var curr_seq_len= List<int>.filled((input.length+2)*14, 0);
   var prev_mode=List<int>.filled(((2*input.length+2)*14), 0);
 
@@ -887,10 +891,6 @@ void _placeMasterMetadataPartII(jab_encode enc) {
     x = result.item1;
     y = result.item2;
   }
-}
-
-void _memcpy(Uint8List dst, int dst_offset, Uint8List src, int src_offset, int length) {
-  dst.replaceRange(dst_offset, dst_offset + length, src.getRange(src_offset, src_offset + length));
 }
 
 /*

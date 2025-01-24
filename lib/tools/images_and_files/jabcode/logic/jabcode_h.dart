@@ -53,7 +53,7 @@ class jab_vector2d {
 	int	x;
 	int	y;
 
-	jab_vector2d(this.x, this.y) {}
+	jab_vector2d(this.x, this.y);
 }
 
 /*
@@ -63,7 +63,7 @@ class jab_point {
 	double	x;
 	double	y;
 
-	jab_point(this.x, this.y) {}
+	jab_point(this.x, this.y);
 }
 
 /*
