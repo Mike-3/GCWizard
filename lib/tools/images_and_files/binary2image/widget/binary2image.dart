@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/navigation/no_animation_material_page_route.dart';
-import 'package:gc_wizard/common_widgets/dialogs/gcw_exported_file_dialog.dart';
 import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output.dart';
@@ -14,9 +13,7 @@ import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
 import 'package:gc_wizard/common_widgets/image_viewers/gcw_imageview.dart';
 import 'package:gc_wizard/tools/images_and_files/binary2image/logic/binary2image.dart';
 import 'package:gc_wizard/tools/images_and_files/qr_code/logic/qr_code.dart';
-import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
-import 'package:gc_wizard/utils/ui_dependent_utils/file_widget_utils.dart';
 import 'package:gc_wizard/utils/ui_dependent_utils/image_utils/image_utils.dart';
 
 class Binary2Image extends StatefulWidget {
@@ -138,15 +135,8 @@ class _Binary2ImageState extends State<Binary2Image> {
       GCWImageView(imageData: GCWImageViewData(GCWFile(bytes: _outData!)),
         
       ),
-      //Image.memory(_outData!),
       _codeData != null ? GCWOutput(title: i18n(context, 'binary2image_code_data'), child: _codeData) : Container(),
     ]);
-  }
-
-  Future<void> _exportFile(BuildContext context, Uint8List data) async {
-    await saveByteDataToFile(context, data, buildFileNameWithDate('img_', FileType.PNG)).then((value) {
-      if (value) showExportedFileDialog(context, contentWidget: imageContent(context, data));
-    });
   }
 }
 
