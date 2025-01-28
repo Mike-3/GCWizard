@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:gc_wizard/utils/ui_dependent_utils/textinputformatter_utils.dart';
 import 'package:gc_wizard/utils/variable_string_expander.dart';
 
 class VariableStringTextInputFormatter extends TextInputFormatter {
@@ -13,11 +14,7 @@ class VariableStringTextInputFormatter extends TextInputFormatter {
     var newSanitized = newValue.text.trim();
 
     if (_exp.hasMatch(newSanitized.toLowerCase())) {
-      return TextEditingValue(
-        text: newSanitized, selection: TextSelection.fromPosition(
-          TextPosition(offset: newSanitized.length),
-        ),
-      );
+      return newValueEditingValue(newValue, newSanitized);
     }
 
     return oldValue;
