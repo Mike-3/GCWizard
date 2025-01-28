@@ -1,6 +1,6 @@
 name: gc_wizard
 description: GC Wizard
-version: 3.4.0+309
+version: 3.3.2+309
 publish_to: none
 
 environment:
@@ -176,7 +176,11 @@ flutter:
     - lib/tools/symbol_tables/_common/assets/cyrillic_numbers/
     - lib/tools/symbol_tables/_common/assets/daedric/
     - lib/tools/symbol_tables/_common/assets/dagger/
-    - lib/tools/symbol_tables/_common/assets/dancing_men/
+    - lib/tools/symbol_tables/_common/assets/dancing_men_otiginal/
+    - lib/tools/symbol_tables/_common/assets/dancing_men_v1/
+    - lib/tools/symbol_tables/_common/assets/dancing_men_v2/
+    - lib/tools/symbol_tables/_common/assets/dancing_men_v3/
+    - lib/tools/symbol_tables/_common/assets/dancing_men_v4/
     - lib/tools/symbol_tables/_common/assets/deafblind/
     - lib/tools/symbol_tables/_common/assets/devanagari_numerals/
     - lib/tools/symbol_tables/_common/assets/dinotopia/
@@ -292,6 +296,8 @@ flutter:
     - lib/tools/symbol_tables/_common/assets/mandalorian/
     - lib/tools/symbol_tables/_common/assets/marain/
     - lib/tools/symbol_tables/_common/assets/marain_v2/
+    - lib/tools/symbol_tables/_common/assets/mary_stuart_babington/
+    - lib/tools/symbol_tables/_common/assets/mary_stuart_castelnau/
     - lib/tools/symbol_tables/_common/assets/matoran/
     - lib/tools/symbol_tables/_common/assets/maya_calendar_haab_codices/
     - lib/tools/symbol_tables/_common/assets/maya_calendar_haab_inscripts/
