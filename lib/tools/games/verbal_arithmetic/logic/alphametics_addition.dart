@@ -25,11 +25,10 @@ VerbalArithmeticOutput? _solveAlphameticAdd(Equation equation) {
   _solutions.clear();
 
   __solveAlphametics(equationData, letters, digits, mapping, usedDigits);
-  // for (var solution in solutions) {
-      var out = equation.getOutput(_solutions.first);
-      var _equation = equation.formatedEquation;
-      print('Lösung gefunden: $_equation. $out'); //$mapping
-  // }
+  var out = _solutions.isEmpty ? '' : equation.getOutput(_solutions.first);
+  var _equation = equation.formatedEquation;
+  print('Lösung gefunden: $_equation. $out'); //$mapping
+
   print('Lösung gefunden: ' + _solutions.length.toString());
   if (_solutions.isEmpty) {
     var _equation = equation.formatedEquation;
@@ -41,10 +40,10 @@ VerbalArithmeticOutput? _solveAlphameticAdd(Equation equation) {
 List<HashMap<String, int>> _solutions = [];
 
 bool __solveAlphametics(EquationData equationData, List<String> letters, List<int> digits,
-    Map<String, int> letterToDigit, Set<int> usedDigits) {
+    Map<String, int> mapping, Set<int> usedDigits) {
   if (letters.isEmpty) {
-    if (_isValid(letterToDigit, equationData)) {
-      _solutions.add(HashMap<String, int>.from(letterToDigit));
+    if (__evaluateEquation(mapping, equationData)) {
+      _solutions.add(HashMap<String, int>.from(mapping));
       return true;
     }
     return false;
@@ -65,14 +64,14 @@ bool __solveAlphametics(EquationData equationData, List<String> letters, List<in
     _currentCombination++;
     _sendProgress();
 
-    letterToDigit[currentLetter] = digit;
+    mapping[currentLetter] = digit;
     usedDigits.add(digit);
 
-    if (__solveAlphametics(equationData, letters, digits, letterToDigit, usedDigits)) {
+    if (__solveAlphametics(equationData, letters, digits, mapping, usedDigits)) {
       if (!_allSolutions || _solutions.length >= MAX_SOLUTIONS) return true;
     }
 
-    letterToDigit.remove(currentLetter);
+    mapping.remove(currentLetter);
     usedDigits.remove(digit);
   }
 
@@ -92,7 +91,7 @@ Map<String, int> _letterFrequency(List<String> words) {
 }
 
 /// check whether a digit assignment is correct.
-bool _isValid(Map<String, int> letterToDigit, EquationData equationData) {
+bool __evaluateEquation(Map<String, int> letterToDigit, EquationData equationData) {
   int sum = 0;
 
   for (var word in equationData.leftSide) {
