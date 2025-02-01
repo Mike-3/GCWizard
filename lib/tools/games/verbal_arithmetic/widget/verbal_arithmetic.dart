@@ -49,7 +49,7 @@ class _VerbalArithmeticState extends State<VerbalArithmetic> {
   SymbolMatrixGrid _currentAlphameticsMatrix = SymbolMatrixGrid(0, 0);
   SymbolMatrixGrid _currentSymbolMatrixGridMatrix = SymbolMatrixGrid(0, 0);
   late SymbolMatrixGrid _currentMatrix;
-  List<List<TextEditingController?>> _textEditingControllerArray = [];
+  final List<List<TextEditingController?>> _textEditingControllerArray = [];
   bool _currentExpanded = false;
 
   @override
@@ -59,8 +59,6 @@ class _VerbalArithmeticState extends State<VerbalArithmetic> {
 
     _inputNumberGridController = TextEditingController(text: _currentSymbolMatrixInput);
     _inputAlphameticsController = TextEditingController(text: _currentAlphameticsInput);
-
-    _resizeMatrix();
   }
 
   @override
@@ -96,7 +94,7 @@ class _VerbalArithmeticState extends State<VerbalArithmetic> {
             GCWDropDownMenuItem(
                 value: _ViewMode.AlphameticGrid,
                 child: i18n(context, 'verbal_arithmetic_alphametic') + ' ' + i18n(context, 'verbal_arithmetic_grid'),
-                subtitle: 'A * C = C\n+   -\nB * A = B\n=   =\nC   B',
+                subtitle: 'A * C = C\n+     -\nB * A = B\n=     =\nC     B',
                 maxSubtitleLines: 5
             ),
             GCWDropDownMenuItem(
@@ -127,7 +125,6 @@ class _VerbalArithmeticState extends State<VerbalArithmetic> {
         _buildOptionWidget(),
         _buildInput(),
         _buildSubmitButton(),
-        _buildTestButton(),
         _buildOutput()
       ]);
   }
@@ -294,42 +291,43 @@ class _VerbalArithmeticState extends State<VerbalArithmetic> {
 
   void _createOutput(VerbalArithmeticOutput? output) {
     if (output == null) {
-      _currentOutput = null; //invalid data
-      return;
-    }
-    if (output.error.isNotEmpty) {
-      _currentOutput = GCWDefaultOutput(child:
-      i18n(context, 'verbal_arithmetic_' + output.error.toLowerCase(), ifTranslationNotExists: output.error));
-    } else if (output.solutions.isEmpty) {
-      _currentOutput =  GCWDefaultOutput(child: i18n(context, 'verbal_arithmetic_solutionnotfound'));
+      _currentOutput = GCWDefaultOutput(child: i18n(context, 'verbal_arithmetic_invalidequation'));
+
     } else {
-      Widget solutionWidget = Container();
-      var equationData = output.solutions.map((solution) {
-        return [output.equations.map((equation) => equation.getOutput(solution)).join('\n')];
-      }).toList();
-
-      if (output.solutions.length == 1) {
-        var solution = output.solutions.first.entries.toList();
-        solution.sort(((a, b) => a.key.compareTo(b.key)));
-        var columnData = solution.map((entry) => [entry.key, entry.value]).toList();
-        solutionWidget = GCWColumnedMultilineOutput(data: columnData, flexValues: const [3, 1],
-            copyColumn: 1, copyAll: true);
+      if (output.error.isNotEmpty) {
+        _currentOutput = GCWDefaultOutput(child:
+        i18n(context, 'verbal_arithmetic_' + output.error.toLowerCase(), ifTranslationNotExists: output.error));
+      } else if (output.solutions.isEmpty) {
+        _currentOutput =  GCWDefaultOutput(child: i18n(context, 'verbal_arithmetic_solutionnotfound'));
       } else {
-        if (output.solutions.length >= MAX_SOLUTIONS) {
-          equationData.insert (0, [i18n(context, 'sudokusolver_maximumsolutions')]);
-         } else {
-          equationData.insert (0, [i18n(context, 'common_count') + ': ' + output.solutions.length.toString()]);
-        }
-      }
-      var equationWidget = GCWColumnedMultilineOutput(data: equationData, copyColumn: 0, copyAll: true,
-        hasHeader: output.solutions.length > 1);
+        Widget solutionWidget = Container();
+        var equationData = output.solutions.map((solution) {
+          return [output.equations.map((equation) => equation.getOutput(solution)).join('\n')];
+        }).toList();
 
-      _currentOutput = Column(
-          children: <Widget>[
-            GCWDefaultOutput(child: solutionWidget),
-            GCWDefaultOutput(child: equationWidget),
-          ]
-      );
+        if (output.solutions.length == 1) {
+          var solution = output.solutions.first.entries.toList();
+          solution.sort(((a, b) => a.key.compareTo(b.key)));
+          var columnData = solution.map((entry) => [entry.key, entry.value]).toList();
+          solutionWidget = GCWColumnedMultilineOutput(data: columnData, flexValues: const [3, 1],
+              copyColumn: 1, copyAll: true);
+        } else {
+          if (output.solutions.length >= MAX_SOLUTIONS) {
+            equationData.insert(0, [i18n(context, 'sudokusolver_maximumsolutions')]);
+          } else {
+            equationData.insert(0, [i18n(context, 'common_count') + ': ' + output.solutions.length.toString()]);
+          }
+        }
+        var equationWidget = GCWColumnedMultilineOutput(data: equationData, copyColumn: 0, copyAll: true,
+            hasHeader: output.solutions.length > 1);
+
+        _currentOutput = Column(
+            children: <Widget>[
+              GCWDefaultOutput(child: solutionWidget),
+              GCWDefaultOutput(child: equationWidget),
+            ]
+        );
+      }
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -344,13 +342,6 @@ class _VerbalArithmeticState extends State<VerbalArithmetic> {
       },
     );
   }
-  Widget _buildTestButton() {
-    return GCWSubmitButton(
-      onPressed: () async {
-        print(_currentMatrix.buildEquations().join('\n'));
-      },
-    );
-  }
 
   void _parseClipboard(String text) {
     setState(() {
@@ -360,12 +351,7 @@ class _VerbalArithmeticState extends State<VerbalArithmetic> {
       } else {
         _currentMatrix = matrix;
       }
-      if (_currentMode == _ViewMode.AlphameticGrid) {
-        _currentAlphameticsMatrix = _currentMatrix;
-      } else if (_currentMode == _ViewMode.SymbolMatrixGrid) {
-        _currentSymbolMatrixGridMatrix = _currentMatrix;
-      }
-      _resizeMatrix();
+      _syncMatrix();
     });
   }
 
@@ -497,42 +483,36 @@ class _VerbalArithmeticState extends State<VerbalArithmetic> {
     );
   }
 
-  void _resizeMatrix() {
-    _currentMatrix = SymbolMatrixGrid(_currentMatrix.rowCount, _currentMatrix.columnCount, oldMatrix: _currentMatrix);
-    _buildTextEditingControllerArray();
+  void _setMinGridScale(double minScale) {
+    _currentGridScale = max(minScale, (_tableMinWidth() / maxScreenWidth(context)));
   }
 
-  void _buildTextEditingControllerArray() {
-    var matrix =<List<TextEditingController?>>[];
-    for(var y = 0; y < _currentMatrix.getRowsCount(); y++) {
-      matrix.add(List<TextEditingController?>.filled(_currentMatrix.getColumnsCount(), null));
-    }
+  void _resizeMatrix() {
+    _currentMatrix = SymbolMatrixGrid(_currentMatrix.rowCount, _currentMatrix.columnCount, oldMatrix: _currentMatrix);
+    _syncMatrix();
+  }
 
-    for(var y = 0; y < min(matrix.length, _textEditingControllerArray.length); y++) {
-      for (var x = 0; x < min(matrix[y].length, _textEditingControllerArray[y].length); x++) {
-        matrix[y][x] = _textEditingControllerArray[y][x];
-      }
-
-      for(var y = matrix.length; y < _textEditingControllerArray.length; y++) {
-        for (var x = matrix[0].length; x < _textEditingControllerArray[y].length; x++) {
-          _textEditingControllerArray[y][x]?.dispose();
-        }
-      }
+  void _syncMatrix() {
+    if (_currentMode == _ViewMode.AlphameticGrid) {
+      _currentAlphameticsMatrix = _currentMatrix;
+    } else if (_currentMode == _ViewMode.SymbolMatrixGrid) {
+      _currentSymbolMatrixGridMatrix = _currentMatrix;
     }
-    _textEditingControllerArray = matrix;
   }
 
   TextEditingController? _getTextEditingController(int rowIndex, int columnIndex, String text) {
+    while (_textEditingControllerArray.length <= rowIndex) {
+      _textEditingControllerArray.add(<TextEditingController?>[]);
+    }
+    while (_textEditingControllerArray[rowIndex].length <= columnIndex) {
+      _textEditingControllerArray[rowIndex].add(null);
+    }
     if (_textEditingControllerArray[rowIndex][columnIndex] == null) {
       _textEditingControllerArray[rowIndex][columnIndex] = TextEditingController();
     }
     _textEditingControllerArray[rowIndex][columnIndex]!.text = text;
 
     return _textEditingControllerArray[rowIndex][columnIndex];
-  }
-
-  void _setMinGridScale(double minScale) {
-    _currentGridScale = max(minScale, (_tableMinWidth() / maxScreenWidth(context)));
   }
 
   void _onDoCalculation() async {
