@@ -1,5 +1,6 @@
 
 
+import 'package:collection/collection.dart';
 import 'package:gc_wizard/tools/games/sudoku/logic/sudoku_solver.dart';
 
 List<List<List<int>>> solutions = [];
@@ -11,6 +12,7 @@ class TridokuSolver {
 
   TridokuSolver(List<List<int>> grid) {
     // board = List<List<SudokuBoardValue?>>.generate(9, (index) => List<SudokuBoardValue?>.generate((index * 2) + 1, (index) => null));
+    solutions = [];
     board = [];
     int columnWidth(int row) => (row * 2) + 1;
     for (int row = 0; row < 9; row++) {
@@ -66,14 +68,52 @@ class TridokuSolver {
   // Überprüft, ob eine Zahl in der Zeile zulässig ist
   bool isValidInAreas(SudokuBoardValue entry, int number) {
     var toChecked = areas.where((area) => area.contains(entry));
-    var valid = toChecked.any((area) => !area.any((field) => field.value == number && field != entry));
+    var valid = toChecked.any((area) => area.any((field) => field.value == number && field != entry));
 
-    return valid;
+    var rowIndex = board.indexOf(board.firstWhere((row) => row.contains(entry)));
+    var columnIndex = board[rowIndex].indexOf(entry);
+
+if (rowIndex == 5 && columnIndex == 0 && number == 1) {
+  var value1 = areas.elementAt(4).any((field) => field.value == number && field != entry);
+  var value2 = areas.elementAt(11).any((field) => field.value == number && field != entry);
+  var ares = toChecked.map((area) => areas.toList().indexOf(area)).toList().toString();
+  print(areas.elementAt(4).map((entry) => entry.value).toList().toString() + ' ' + valid.toString() + ' ' + ares);
+  print(areas.elementAt(11).map((entry) => entry.value).toList().toString() + ' ' + valid.toString() + ' ' + ares);
+  if (!value1 && !value2) {
+    print('000');
+  }
+}
+    // if (rowIndex == 0 && columnIndex == 0) {
+    //   print(toChecked.map((area) => areas.toList().indexOf(area)).toList());
+    // }
+    return !valid;
+  }
+
+  bool isValidInContact(SudokuBoardValue entry, int number) {
+    var rowIndex = board.indexOf(board.firstWhere((row) => row.contains(entry)));
+    var columnIndex = board[rowIndex].indexOf(entry);
+
+    bool isValidEntry(int _rowIndex, int _columnIndex) {
+      if (_rowIndex < 0 || _rowIndex >= board.length) {
+        return false;
+      } else if (_columnIndex < 0 || _columnIndex >= board[_rowIndex].length) {
+        return false;
+      }
+      return true;
+    }
+    for (int row = rowIndex - 1; row <= rowIndex + 1; row++) {
+      for (int col = columnIndex - 2; col <= columnIndex + 2; col++) {
+        if (isValidEntry(row, col) && board[row][col] != entry) {
+          if (board[row][col].value == number) return false;
+        }
+      }
+    }
+    return true;
   }
 
   // Überprüft, ob das Einfügen der Zahl in die Zelle zulässig ist
   bool isValidPlacement(SudokuBoardValue entry, int number) {
-    return isValidInAreas(entry, number);
+    return isValidInAreas(entry, number) && isValidInContact(entry, number);
   }
 
   // Backtracking-Algorithmus zur Ermittlung aller Lösungen
@@ -88,6 +128,7 @@ class TridokuSolver {
               if (solve()) {
                 // Sobald eine Lösung gefunden wurde, speichern
                 solutions.add(board.map((row) => List<int>.from(row.map((entry) => entry.value).toList()).toList()).toList());
+                return true;
               }
 
               board[row][col].value = 0; // Rücksetzen (Backtracking)
@@ -104,7 +145,7 @@ class TridokuSolver {
   void printTriangleGrid(List<List<int>> grid) {
     for (int row = 0; row < grid.length; row++) {
       // Einrücken für die dreieckige Darstellung
-      String indent = ' ' * (grid.length - row - 1);
+      String indent = '  ' * (grid.length - row - 1);
       print(indent + grid[row].map((val) => val.toString()).join(' '));
     }
   }
@@ -113,7 +154,7 @@ class TridokuSolver {
 void main() {
   // Tridoku Puzzle mit variabler Anzahl an Feldern pro Zeile (jeweils 2 Felder mehr pro Zeile)
   List<List<int>> puzzle = [
-    [5],                    // 1. Zeile: 1 Feld
+    [0],                    // 1. Zeile: 1 Feld
     [0, 0, 0],              // 2. Zeile: 3 Felder
     [5, 6, 0, 0, 8],        // 3. Zeile: 5 Felder
     [0, 0, 2, 0, 0, 3, 0],  // 4. Zeile: 7 Felder
