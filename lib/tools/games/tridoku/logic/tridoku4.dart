@@ -131,6 +131,67 @@ if (rowIndex == 5 && columnIndex == 0 && number == 1) {
     return true;
   }
 
+  void printContacs(int rowIndex, int columnIndex) {
+
+    bool isValidEntry(int _rowIndex, int _columnIndex) {
+      if (_rowIndex < 0 || _rowIndex >= board.length) {
+        return false;
+      } else if (_columnIndex < 0 || _columnIndex >= board[_rowIndex].length) {
+        return false;
+      }
+      return true;
+    }
+    var a = <SudokuBoardValue>[];
+    var colno = -1;
+    var rowo = columnIndex % 2 == 0 ? 0 : -1;
+    var rowu = columnIndex % 2 == 0 ? 1 : 0;
+
+    for (int row = rowIndex + rowo; row <= rowIndex + rowu; row++) {
+      var colo = columnIndex % 2 == 0 ? 0 : -1;
+      var colu = columnIndex % 2 == 0 ? 1 : 0;
+      if (row < rowIndex) {
+        colo = -1;
+        colu = -1;
+      } else if (row > rowIndex) {
+        colo = 1;
+        colu = 1;
+      } else {
+        colo = 1;
+        colu = -1;
+      }
+
+
+      var x = (row % 2 == 1? 2 : 1);
+      for (int col = columnIndex +colu; col <= columnIndex+ colo; col++) {
+        if (isValidEntry(row, col)) { // && board[row][col] != entry
+          a.add( board[row][col]);
+          // if (board[row][col].value == number) return false;
+        }
+      }
+      colno += 1;
+    }
+
+    var alph = switchMapKeyValue(alphabet_AZ);
+    // for (var a in areas){
+      var t = (rowIndex+ 1).toString()  + alph[columnIndex + 1]!+ ' ';
+      a.toList().forEach((entry) {
+        var rowIndex = board.indexOf(board.firstWhere((row) => row.contains(entry)));
+        var columnIndex = board[rowIndex].indexOf(entry);
+
+        t += "'" +(rowIndex+1).toString() + alph[columnIndex + 1].toString()+ "',";
+      });
+      print(t);
+    // });
+  }
+
+  void tt() {
+    for (int row = 0; row < board.length; row++) {
+      for (int col = 0; col < board[row].length; col++) {
+        printContacs(row, col);
+      }
+    }
+  }
+
   // Überprüft, ob das Einfügen der Zahl in die Zelle zulässig ist
   bool isValidPlacement(SudokuBoardValue entry, int number) {
     return isValidInAreas(entry, number) && isValidInContact(entry, number);
@@ -138,6 +199,8 @@ if (rowIndex == 5 && columnIndex == 0 && number == 1) {
 
   // Backtracking-Algorithmus zur Ermittlung aller Lösungen
   bool solve() {
+    tt();
+    return false;
     for (int row = 0; row < board.length; row++) {
       for (int col = 0; col < board[row].length; col++) {
         if (board[row][col].value == 0) {
@@ -173,7 +236,7 @@ if (rowIndex == 5 && columnIndex == 0 && number == 1) {
 
 void main() {
   // Tridoku Puzzle mit variabler Anzahl an Feldern pro Zeile (jeweils 2 Felder mehr pro Zeile)
-  List<List<int>> puzzle = [
+  List<List<int>> puzzle = [ //https://logic-masters.de/Raetselportal/Raetsel/zeigen.php?id=00056L
     [0],                    // 1. Zeile: 1 Feld
     [0, 0, 0],              // 2. Zeile: 3 Felder
     [5, 6, 0, 0, 8],        // 3. Zeile: 5 Felder
