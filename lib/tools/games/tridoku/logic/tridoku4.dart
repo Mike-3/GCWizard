@@ -2,6 +2,8 @@
 
 import 'package:collection/collection.dart';
 import 'package:gc_wizard/tools/games/sudoku/logic/sudoku_solver.dart';
+import 'package:gc_wizard/utils/alphabets.dart';
+import 'package:gc_wizard/utils/collection_utils.dart';
 
 List<List<List<int>>> solutions = [];
 
@@ -37,20 +39,26 @@ class TridokuSolver {
 
     void addTriangle(int startRow, int startColum) {
       var triangele = <SudokuBoardValue>[];
+      var t = '';
       for (int row = startRow; row < startRow + 3; row++) {
         for (int col = startColum; col < startColum + columnWidth(row - startRow); col++) {
           triangele.add(board[row][col]);
+          t += 'board[$row][$col],';
         }
       }
+       print(t);
       areas.add(triangele);
     }
     void addTriangleM(int startRow, int startColum) {
       var triangele = <SudokuBoardValue>[];
+      var t = '';
       for (int row = startRow; row < startRow + 3; row++) {
         for (int col = startColum; col < startColum + columnWidth(2 - row - startRow); col++) {
           triangele.add(board[row][col]);
+          t += 'board[$row][$col],';
         }
       }
+       print(t);
       areas.add(triangele);
     }
     addTriangle(0, 0);
@@ -60,9 +68,21 @@ class TridokuSolver {
     addTriangle(6, 12);
     addTriangle(6, 6);
 
-    addTriangleM(3, 1);
-    addTriangleM(6, 1);
-    addTriangleM(6, 7);
+    // addTriangleM(3, 1);
+    // addTriangleM(6, 1);
+    // addTriangleM(6, 7);
+
+    var alph = switchMapKeyValue(alphabet_AZ);
+    for (var a in areas){
+      var t = '';
+      a.toList().forEach((entry) {
+        var rowIndex = board.indexOf(board.firstWhere((row) => row.contains(entry)));
+        var columnIndex = board[rowIndex].indexOf(entry);
+
+        t += (rowIndex+1).toString() + alph[columnIndex + 1].toString()+ ',';
+      });
+      print(t);
+    }
   }
 
   // Überprüft, ob eine Zahl in der Zeile zulässig ist
@@ -77,10 +97,10 @@ if (rowIndex == 5 && columnIndex == 0 && number == 1) {
   var value1 = areas.elementAt(4).any((field) => field.value == number && field != entry);
   var value2 = areas.elementAt(11).any((field) => field.value == number && field != entry);
   var ares = toChecked.map((area) => areas.toList().indexOf(area)).toList().toString();
-  print(areas.elementAt(4).map((entry) => entry.value).toList().toString() + ' ' + valid.toString() + ' ' + ares);
-  print(areas.elementAt(11).map((entry) => entry.value).toList().toString() + ' ' + valid.toString() + ' ' + ares);
+  // print(areas.elementAt(4).map((entry) => entry.value).toList().toString() + ' ' + valid.toString() + ' ' + ares);
+  // print(areas.elementAt(11).map((entry) => entry.value).toList().toString() + ' ' + valid.toString() + ' ' + ares);
   if (!value1 && !value2) {
-    print('000');
+    // print('000');
   }
 }
     // if (rowIndex == 0 && columnIndex == 0) {
