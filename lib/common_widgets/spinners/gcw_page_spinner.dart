@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
 
-class GCWEntrySpinner extends StatefulWidget {
+class GCWPageSpinner extends StatefulWidget {
   final void Function(int) onChanged;
   final String? text;
   final String? textExtension;
@@ -13,7 +13,7 @@ class GCWEntrySpinner extends StatefulWidget {
   final bool suppressOverflow;
   final Widget? trailing;
 
-  const GCWEntrySpinner(
+  const GCWPageSpinner(
       {Key? key,
       required this.onChanged,
       this.text,
@@ -27,10 +27,10 @@ class GCWEntrySpinner extends StatefulWidget {
       : super(key: key);
 
   @override
-  _GCWEntrySpinnerState createState() => _GCWEntrySpinnerState();
+  _GCWPageSpinnerState createState() => _GCWPageSpinnerState();
 }
 
-class _GCWEntrySpinnerState extends State<GCWEntrySpinner> {
+class _GCWPageSpinnerState extends State<GCWPageSpinner> {
   var _currentIndex = 1;
 
   @override
