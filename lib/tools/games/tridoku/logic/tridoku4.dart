@@ -24,18 +24,18 @@ class TridokuSolver {
       }
     }
     // white
-    areas.add([board[1][1], board[2][1], board[2][2], board[2][3], board[3][1], board[3][2], board[3][3], board[3][4], board[3][5]]);
-    areas.add([board[5][3], board[5][4], board[5][5], board[5][6], board[5][7], board[6][5], board[6][5], board[6][7], board[7][7]]);
-    areas.add([board[6][1], board[6][2], board[7][1], board[7][2], board[7][3], board[7][4], board[8][1], board[8][3], board[8][5]]);
-    areas.add([board[6][10], board[6][11], board[7][10], board[7][11], board[7][12], board[7][13], board[8][11], board[8][13], board[8][15]]);
-    // blue
-    areas.add([board[0][0], board[1][0], board[2][0], board[3][0], board[4][0], board[5][0], board[6][0], board[7][0], board[8][0]]);
-    areas.add([board[8][0], board[8][2], board[8][4], board[8][6], board[8][8], board[8][10], board[8][12], board[8][14], board[8][16]]);
-    areas.add([board[0][0], board[1][2], board[2][4], board[3][6], board[4][8], board[5][10], board[6][12], board[7][14], board[8][16]]);
-    // yellow
-    areas.add([board[4][0], board[4][1], board[4][2], board[4][3], board[4][4], board[4][5], board[4][6], board[4][7], board[4][8]]);
-    areas.add([board[4][0], board[5][1], board[5][2], board[6][3], board[6][4], board[7][5], board[7][6], board[8][7], board[8][8]]);
-    areas.add([board[4][8], board[5][8], board[5][9], board[6][8], board[6][9], board[7][8], board[7][9], board[8][8], board[8][9]]);
+    // areas.add([board[1][1], board[2][1], board[2][2], board[2][3], board[3][1], board[3][2], board[3][3], board[3][4], board[3][5]]);
+    // areas.add([board[5][3], board[5][4], board[5][5], board[5][6], board[5][7], board[6][5], board[6][5], board[6][7], board[7][7]]);
+    // areas.add([board[6][1], board[6][2], board[7][1], board[7][2], board[7][3], board[7][4], board[8][1], board[8][3], board[8][5]]);
+    // areas.add([board[6][10], board[6][11], board[7][10], board[7][11], board[7][12], board[7][13], board[8][11], board[8][13], board[8][15]]);
+    // // blue
+    // areas.add([board[0][0], board[1][0], board[2][0], board[3][0], board[4][0], board[5][0], board[6][0], board[7][0], board[8][0]]);
+    // areas.add([board[8][0], board[8][2], board[8][4], board[8][6], board[8][8], board[8][10], board[8][12], board[8][14], board[8][16]]);
+    // areas.add([board[0][0], board[1][2], board[2][4], board[3][6], board[4][8], board[5][10], board[6][12], board[7][14], board[8][16]]);
+    // // yellow
+    // areas.add([board[4][0], board[4][1], board[4][2], board[4][3], board[4][4], board[4][5], board[4][6], board[4][7], board[4][8]]);
+    // areas.add([board[4][0], board[5][1], board[5][2], board[6][3], board[6][4], board[7][5], board[7][6], board[8][7], board[8][8]]);
+    // areas.add([board[4][8], board[5][8], board[5][9], board[6][8], board[6][9], board[7][8], board[7][9], board[8][8], board[8][9]]);
 
     void addTriangle(int startRow, int startColum) {
       var triangele = <SudokuBoardValue>[];
@@ -61,16 +61,37 @@ class TridokuSolver {
        print(t);
       areas.add(triangele);
     }
-    addTriangle(0, 0);
-    addTriangle(3, 0);
-    addTriangle(6, 0);
-    addTriangle(3, 6);
-    addTriangle(6, 12);
-    addTriangle(6, 6);
+    // addTriangle(0, 0);
+    // addTriangle(3, 0);
+    // addTriangle(6, 0);
+    // addTriangle(3, 6);
+    // addTriangle(6, 12);
+    // addTriangle(6, 6);
 
     // addTriangleM(3, 1);
     // addTriangleM(6, 1);
     // addTriangleM(6, 7);
+
+    void addHexagon(int startRow, int startColum) {
+      var triangele = <SudokuBoardValue>[];
+      var t = '';
+      for (int row = startRow; row <= startRow + 1; row++) {
+        for (int col = startColum +(row - startRow); col < startColum + 3+(row - startRow); col++) {
+          if (row >= board.length || col >= board[row].length) return;
+          triangele.add(board[row][col]);
+          t += 'board[$row][$col],';
+        }
+      }
+      print(t);
+      areas.add(triangele);
+    }
+
+    for (int row = 1; row < 9; row+=2) {
+      for (int col = 0; col < (row*2)+1; col+=2) {
+        addHexagon(row, col);
+      }
+    }
+
 
     var alph = switchMapKeyValue(alphabet_AZ);
     for (var a in areas){
