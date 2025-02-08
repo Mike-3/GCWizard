@@ -1301,21 +1301,34 @@ void initializeRegistry(BuildContext context) {
         tool: const MajorSystem(),
         id: 'major_system',
         isBeta: true,
-        categories: const [
-          ToolCategory.CRYPTOGRAPHY
-        ],
-        searchKeys: const [
-          'major_system',
-        ]),
-    GCWTool(
-        tool: const MathematicalConstants(),
-        id: 'mathematical_constants',
-        categories: const [
-          ToolCategory.SCIENCE_AND_TECHNOLOGY
-        ],
-        searchKeys: const [
-          'mathematical_constants',
-        ]),
+        categories: const [ ToolCategory.CRYPTOGRAPHY ],
+        searchKeys: const [ 'major_system', ]
+    ),
+    GCWTool(tool: const MathematicalConstants(), id: 'mathematical_constants', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'mathematical_constants',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Physical Measurement Laboratory of NIST',
+          title: 'Fundamental Physical Constants',
+          sourceUrl:
+          'https://web.archive.org/web/20240926130440/https://physics.nist.gov/cuu/Constants/index.html',
+          licenseType: ToolLicenseType.PUBLIC_DOMAIN),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'en.wikipedia.org and contributors',
+          title: '6174',
+          sourceUrl:
+          'https://en.wikipedia.org/w/index.php?title=6174&oldid=1273658196'),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'en.wikipedia.org and contributors',
+          title: "Kaprekar's routine",
+          sourceUrl:
+          'https://en.wikipedia.org/w/index.php?title=Kaprekar%27s_routine&oldid=1274436905')
+    ]),
     GCWTool(
         tool: const MayaCalendarSelection(),
         categories: const [ToolCategory.CRYPTOGRAPHY],
@@ -1508,15 +1521,19 @@ void initializeRegistry(BuildContext context) {
       'pi',
       'irrationalnumbers',
     ]),
-    GCWTool(
-        tool: const PhysicalConstants(),
-        id: 'physical_constants',
-        categories: const [
-          ToolCategory.SCIENCE_AND_TECHNOLOGY
-        ],
-        searchKeys: const [
-          'physical_constants',
-        ]),
+    GCWTool(tool: const PhysicalConstants(), id: 'physical_constants', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'physical_constants',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Physical Measurement Laboratory of NIST',
+          title: 'Fundamental Physical Constants',
+          sourceUrl:
+          'https://web.archive.org/web/20240926130440/https://physics.nist.gov/cuu/Constants/index.html',
+          licenseType: ToolLicenseType.PUBLIC_DOMAIN),
+    ]),
     GCWTool(tool: Playfair(), id: 'playfair', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
