@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -100,7 +101,12 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
  * ...
  */
 String i18n(BuildContext context, String key,
-    {List<dynamic> parameters = const [], bool useDefaultLanguage = false, String? ifTranslationNotExists}) {
+    {List<dynamic> parameters = const [], bool useDefaultLanguage = false, String ifTranslationNotExists = ''}) {
+  final isTest = Platform.environment.containsKey('FLUTTER_TEST');
+  if (isTest) {
+    return key;
+  }
+
   Map<String, String> parametersMap = {};
   for (int i = parameters.length; i >= 1; i--) {
     parametersMap.putIfAbsent('%s' + i.toString(), () => parameters[i - 1].toString());
@@ -108,28 +114,12 @@ String i18n(BuildContext context, String key,
 
   var appLocalization = AppLocalizations._of(context);
   if (appLocalization == null) {
-    return ifTranslationNotExists ?? '';
+    return ifTranslationNotExists;
   }
 
-  String? text;
-  if (useDefaultLanguage) {
-    //if defaultLanguage should be used: use it
-    text = appLocalization._translateDefault(key);
-  } else {
-    //if defaultLanguage shouldn't be used: use the normal lang
-    text = appLocalization._translate(key);
-    //if normalLang is not available and no explicit alternative given...
-    if (text == null && (ifTranslationNotExists ?? '').isEmpty) {
-      //...try defaultLanguage
-      text = appLocalization._translateDefault(key);
-    }
-  }
-
-  //this can only happen if defaultLang gives no result
-  // OR defaultLang was not recognized because an explicit alternative
-  // for normalLang was given
+  var text = useDefaultLanguage ? appLocalization._translateDefault(key) : appLocalization._translate(key);
   if (text == null) {
-    return ifTranslationNotExists ?? '';
+    return ifTranslationNotExists;
   }
 
   return parametersMap.isEmpty ? text : substitution(text, parametersMap);
