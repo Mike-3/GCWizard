@@ -32,31 +32,31 @@ final List<List<String>> _unitlist = [
   ['5A','5B','5C','5D','5E','5F','5G','5H','5I'], // yellow
   ['5A','6B','6C','7D','7E','8F','8G','9H','9I'],
   ['5I','6I','6J','7I','7J','8I','8J','9I','9J'],
-//   ['1A','2A','2B','2C','3A','3B','3C','3D','3E'], // triangle
-//   ['4A','5A','5B','5C','6A','6B','6C','6D','6E'],
-//   ['7A','8A','8B','8C','9A','9B','9C','9D','9E'],
-//   ['4G','5G','5H','5I','6G','6H','6I','6J','6K'],
-//   ['7M','8M','8N','8O','9M','9N','9O','9P','9Q'],
-//   ['7G','8G','8H','8I','9G','9H','9I','9J','9K'],
-   ['4B','4C','4D','4E','4F','5D','5E','5F','6F'],
-//   ['7B','7C','7D','7E','7F','8D','8E','8F','9F'],
-//   ['7H','7I','7J','7K','7L','8J','8K','8L','9L'],
-// ['2A','2B','2C','3B','3C','3D'], // Hexagons
-// ['4A','4B','4C','5B','5C','5D'],
-// ['4C','4D','4E','5D','5E','5F'],
-// ['4E','4F','4G','5F','5G','5H'],
-// ['6A','6B','6C','7B','7C','7D'],
-// ['6C','6D','6E','7D','7E','7F'],
-// ['6E','6F','6G','7F','7G','7H'],
-// ['6G','6H','6I','7H','7I','7J'],
-// ['6I','6J','6K','7J','7K','7L'],
-// ['8A','8B','8C','9B','9C','9D'],
-// ['8C','8D','8E','9D','9E','9F'],
-// ['8E','8F','8G','9F','9G','9H'],
-// ['8G','8H','8I','9H','9I','9J'],
-// ['8I','8J','8K','9J','9K','9L'],
-// ['8K','8L','8M','9L','9M','9N'],
-// ['8M','8N','8O','9N','9O','9P'],
+  ['1A','2A','2B','2C','3A','3B','3C','3D','3E'], // triangle
+  ['4A','5A','5B','5C','6A','6B','6C','6D','6E'],
+  ['7A','8A','8B','8C','9A','9B','9C','9D','9E'],
+  ['4G','5G','5H','5I','6G','6H','6I','6J','6K'],
+  ['7M','8M','8N','8O','9M','9N','9O','9P','9Q'],
+  ['7G','8G','8H','8I','9G','9H','9I','9J','9K'],
+  ['4B','4C','4D','4E','4F','5D','5E','5F','6F'],
+  ['7B','7C','7D','7E','7F','8D','8E','8F','9F'],
+  ['7H','7I','7J','7K','7L','8J','8K','8L','9L'],
+['2A','2B','2C','3B','3C','3D'], // Hexagons
+['4A','4B','4C','5B','5C','5D'],
+['4C','4D','4E','5D','5E','5F'],
+['4E','4F','4G','5F','5G','5H'],
+['6A','6B','6C','7B','7C','7D'],
+['6C','6D','6E','7D','7E','7F'],
+['6E','6F','6G','7F','7G','7H'],
+['6G','6H','6I','7H','7I','7J'],
+['6I','6J','6K','7J','7K','7L'],
+['8A','8B','8C','9B','9C','9D'],
+['8C','8D','8E','9D','9E','9F'],
+['8E','8F','8G','9F','9G','9H'],
+['8G','8H','8I','9H','9I','9J'],
+['8I','8J','8K','9J','9K','9L'],
+['8K','8L','8M','9L','9M','9N'],
+['8M','8N','8O','9N','9O','9P'],
 
 
 // ['1A','2B'], // fields
@@ -197,22 +197,24 @@ Map<String, String>? _assign(Map<String, String> values, String s, String d) {
 }
 
 Map<String, String>? _eliminate(Map<String, String> values, String s, String d) {
-  print(s + '12: ' + values[s].toString());
+  // print(s + '12: ' + values[s].toString());
   if (!values[s]!.contains(d)) return values;
-  print(s + '2: ' + values[s].toString());
+  // print(s + '2: ' + values[s].toString());
   values[s] = values[s]!.replaceAll(d, ''); // Zahl aus Lösungsmöglichkeit für eine Zelle entfernen
+  print(s + ' remove: $d ' + values[s].toString());
   if (values[s]!.isEmpty) {
     return null; // keine gültige Lösung
   } else if (values[s]!.length == 1) {
-    print(s + '3: ' + values[s].toString());
+    // print(s + '3: ' + values[s].toString());
+    print(s + ' solution: ' + values[s].toString());
     var d2 = values[s]!; // Lösung für die Zelle gefunden
     if (!_all(_peers[s]!.map((s2) => _eliminate(values, s2, d2)))) return null;
   }
 
-  print(s + '4: ' + _units[s]!.toString());
+  // print(s + '4: ' + _units[s]!.toString());
   for (List<String> u in _units[s]!) {
     var dplaces = u.where((s) => values[s]!.contains(d));
-    print(s + '5: ' + dplaces.toString());
+    // print(s + '5: ' + dplaces.toString());
     if (dplaces.isEmpty) {
       return null;
     } else if (dplaces.length == 1) {
