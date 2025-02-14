@@ -33,7 +33,7 @@ const Map<String, int> colorMap = {
   '#': 0xFFE0E0E0, //Colors.grey.shade300
 };
 
-DrawableImageData? binary2image(String input, bool squareFormat, bool inverse, {int customLines = 0}) {
+DrawableImageData? binary2image(String input, bool squareFormat, bool inverse) {
   var filter = _buildFilter(input);
   if (filter.length < 2) return null;
 
@@ -52,7 +52,7 @@ DrawableImageData? binary2image(String input, bool squareFormat, bool inverse, {
     input = input.replaceAll(RegExp('[ ]'), '\n');
   }
 
-  return binary2Image(input, customLines: customLines);
+  return binary2Image(input);
 }
 
 String _buildFilter(String input) {
@@ -103,22 +103,13 @@ String _filterInput(String input, String filter) {
   return input.replaceAll(RegExp('[^$filter]'), '');
 }
 
-DrawableImageData? binary2Image(String input, {int customLines = 0} ) {
+DrawableImageData? binary2Image(String input) {
   if (input.isEmpty) return null;
 
-  List<String> lines = [];
+  var lines = input.split('\n');
 
-  if (customLines == 0) {
-    lines = input.split('\n');
-    if (lines.length == 1) {
-      lines.addAll(List<String>.filled(50, lines[0]));
-    }
-  } else {
-    int rows = input.length ~/ customLines;
-    for (int i = 0; i < customLines; i++) {
-      lines.add(input.substring(i * rows, i * rows + rows));
-    }
+  if (lines.length == 1) {
+    lines.addAll(List<String>.filled(50, lines[0]));
   }
-
   return DrawableImageData(lines, colorMap);
 }

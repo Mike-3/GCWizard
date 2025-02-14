@@ -3,7 +3,6 @@ import 'package:gc_wizard/tools/coords/_common/logic/external_libs/karney.geogra
 import 'package:gc_wizard/tools/coords/_common/logic/external_libs/pkohut.geoformulas/geoformulas.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/intervals/coordinate_cell.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/intervals/interval_calculator.dart';
-import 'package:gc_wizard/utils/coordinate_utils.dart' as utils;
 import 'package:latlong2/latlong.dart';
 
 LatLng projection(LatLng coord, double bearingDeg, double distance, Ellipsoid ellipsoid) {
@@ -30,13 +29,13 @@ LatLng projectionVincenty(LatLng coord, double bearing, double distance, Ellipso
 }
 
 class _ReverseProjectionCalculator extends IntervalCalculator {
-  _ReverseProjectionCalculator(_ReverseProjectionIntervalParameters parameters, Ellipsoid ells) : super(parameters, ells) {
+  _ReverseProjectionCalculator(ReverseProjectionParameters parameters, Ellipsoid ells) : super(parameters, ells) {
     eps = 1e-10;
   }
 
   @override
   bool checkCell(CoordinateCell cell, IntervalCalculatorParameters parameters) {
-    var params = parameters as _ReverseProjectionIntervalParameters;
+    var params = parameters as ReverseProjectionParameters;
 
     Interval distanceToCoord = cell.distanceTo(params.coordinate);
     Interval bearingToCoord = cell.bearingTo(params.coordinate);
@@ -56,64 +55,16 @@ class _ReverseProjectionCalculator extends IntervalCalculator {
   }
 }
 
-// Note (MAL 01/2025): Due to limitation in Karneys approach
-//     This old, incredibly not performant and not deterministic approach is still
-//     available to catch the edge cases. Combined together the both approaches
-//     give a good, but not perfect result.
-List<LatLng> _reverseProjectionInterval(LatLng coord, double bearing, double distance, Ellipsoid ellipsoid) {
+List<LatLng> reverseProjection(LatLng coord, double bearing, double distance, Ellipsoid ellipsoid) {
   bearing = normalizeBearing(bearing);
 
-  return _ReverseProjectionCalculator(_ReverseProjectionIntervalParameters(coord, bearing, distance), ellipsoid).check();
+  return _ReverseProjectionCalculator(ReverseProjectionParameters(coord, bearing, distance), ellipsoid).check();
 }
 
-class _ReverseProjectionIntervalParameters extends IntervalCalculatorParameters {
+class ReverseProjectionParameters extends IntervalCalculatorParameters {
   LatLng coordinate;
   double bearing;
   double distance;
 
-  _ReverseProjectionIntervalParameters(this.coordinate, this.bearing, this.distance);
+  ReverseProjectionParameters(this.coordinate, this.bearing, this.distance);
 }
-
-LatLng? reverseProjection(LatLng coord, double bearing, double distance, Ellipsoid ellipsoid) {
-  bearing = utils.normalizeBearing(bearing);
-
-  if (distance == 0.0) {
-    return coord;
-  }
-
-  if (bearing == 0 || bearing == 180) {
-    bearing = utils.normalizeBearing(bearing - 180);
-    return projection(coord, bearing, distance, ellipsoid);
-  }
-
-  LatLng? projected;
-
-  try {
-    // Try Karney's Newton approach
-    projected = reverseAzimuthalProjection(coord, bearing, distance, ellipsoid);
-    var start = projection(projected, bearing, distance, ellipsoid);
-
-    if (!utils.equalsLatLng(coord, start, tolerance: 1e-10)) {
-      throw Exception();
-    }
-  } catch (e) {
-    // Otherwise try interval arithmetics
-
-    projected = null;
-
-    var projectedInterval = _reverseProjectionInterval(coord, bearing, distance, ellipsoid);
-
-    for (LatLng ll in projectedInterval) {
-      var x = projection(ll, bearing, distance, ellipsoid);
-
-      if (utils.equalsLatLng(coord, x, tolerance: 1e-8)) {
-        projected = ll;
-        break;
-      }
-    }
-  }
-
-  return projected;
-}
-
-

@@ -111,8 +111,7 @@ class _GameOfLifeState extends State<GameOfLife> {
               },
             ),
             GCWIconButton(
-              icon: Icons.arrow_forward_ios,
-              rotateDegrees: 180,
+              icon: Icons.arrow_back_ios,
               onPressed: () {
                 setState(() {
                   _backwards();

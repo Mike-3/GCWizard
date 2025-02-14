@@ -184,15 +184,12 @@ class _GCWKeyValueEditor extends State<GCWKeyValueEditor> {
   }
 
   String? _toJson() {
-    return toKeyValueJson(widget.entries);
+    var list = widget.entries.map((e) {
+      return jsonEncode({'key': e.key, 'value': e.value});
+    }).toList();
+
+    if (list.isEmpty) return null;
+
+    return jsonEncode(list);
   }
-}
-
-String? toKeyValueJson(List<KeyValueBase> entries) {
-  var list = entries.map((e) {
-    return jsonEncode({'key': e.key, 'value': e.value});
-  }).toList();
-
-  if (list.isEmpty) return null;
-  return jsonEncode(list);
 }

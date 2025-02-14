@@ -126,7 +126,7 @@ Widget _buildMenuItemChild<T>(GCWDropDownMenuItem<T> item) {
             child: Text(
               item.subtitle.toString(),
               style: gcwDescriptionTextStyle(),
-              maxLines: item.maxSubtitleLines ?? 2,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             )),
       ]),
@@ -139,11 +139,10 @@ class GCWDropDownMenuItem<T> {
   final Object child;
   final String? subtitle;
   final TextStyle? style;
-  final int? maxSubtitleLines;
 
   late T? _internalValue;
 
-  GCWDropDownMenuItem({required this.value, required this.child, this.subtitle, this.style, this.maxSubtitleLines}) {
+  GCWDropDownMenuItem({required this.value, required this.child, this.subtitle, this.style}) {
     _internalValue = this.value;
   }
 }
