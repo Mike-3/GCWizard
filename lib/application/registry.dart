@@ -10119,6 +10119,28 @@ void initializeRegistry(BuildContext context) {
                   'https://commons.wikimedia.org/w/index.php?title=Wind_speed&oldid=760157124',
               licenseType: ToolLicenseType.CCBYSA4)
         ]),
+    GCWSymbolTableTool(symbolKey: 'wind_mill_signals_v1', symbolSearchStrings: const [
+      'symbol_wind_mill_signals_v1',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Unknown',
+          title: 'Braunsmühle Webpage',
+          sourceUrl: 'https://web.archive.org/web/20221103091143/https://www.braunsmuehle.de/muehle/technik/Muehlensprache-Die-Stellung-der-Fluegel--25/',
+          licenseType: ToolLicenseType.FREE_TO_USE,
+          customComment: 'Allowed by web admin via personal email 9.10.2024'),
+    ]),
+    GCWSymbolTableTool(symbolKey: 'wind_mill_signals_v2', symbolSearchStrings: const [
+      'symbol_wind_mill_signals_v2',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Unknown authors',
+          title: 'https://geocachen.be',
+          sourceUrl: 'https://web.archive.org/web/20241004220413/https://geocachen.be/geocaching/geocache-puzzels-oplossen/molentaal/',
+          licenseType: ToolLicenseType.FREE_TO_USE,
+          customComment: 'Pending'), // todo ask for License
+    ]),
     GCWSymbolTableTool(symbolKey: 'wingdings', symbolSearchStrings: const [
       'symbol_wingdings',
     ], licenses: [
