@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "de.sman42.gc_wizard"
+        applicationId = "de.sman42.gc_wizard_alpha"
 
         minSdk = 21
         targetSdk = 34
