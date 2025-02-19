@@ -57,6 +57,13 @@ void main() {
         'mann-b1um=33'}.toList(),
         'expectedOutput' : {'SCHLE9FE': 30, 'B1UM': 18, 'SCHNE5': 28, 'MANN': 51}
       },
+      {'formulas' : {
+        'A+A*A=72',
+        'A+3*B+5*B=3*C+2*D',
+        'A+4*C=C+20',
+        '2*A+C-2=3*D'}.toList(),
+        'expectedOutput' : {'A': 8, 'C': 4, 'D': 6, 'B': 2}
+      },
     ];
 
     for (var elem in _inputsToExpected) {

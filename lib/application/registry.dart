@@ -29,6 +29,7 @@ import 'package:gc_wizard/application/category_views/selector_lists/dates_select
 import 'package:gc_wizard/application/category_views/selector_lists/dna_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/e_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/easter_selection.dart';
+import 'package:gc_wizard/application/category_views/selector_lists/elements_of_geocaching_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/esoteric_programminglanguages_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/games_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/general_codebreakers_selection.dart';
@@ -231,6 +232,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/morbit/widget/morbit.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/morse/widget/morse.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/navajo/widget/navajo.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/navajo/widget/navajo_list.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nema/widget/nema.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_converter/widget/numeral_words_converter.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_identify_languages/widget/numeral_words_identify_languages.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_lists/widget/numeral_words_lists.dart';
@@ -401,6 +403,7 @@ import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/silver
 import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/sqrt2/widget/sqrt2.dart';
 import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/sqrt3/widget/sqrt3.dart';
 import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/sqrt5/widget/sqrt5.dart';
+import 'package:gc_wizard/tools/science_and_technology/kaprekar/widget/kaprekar.dart';
 import 'package:gc_wizard/tools/science_and_technology/keyboard/keyboard_layout/widget/keyboard_layout.dart';
 import 'package:gc_wizard/tools/science_and_technology/keyboard/keyboard_numbers/widget/keyboard_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/lcm/widget/lcm.dart';
@@ -439,7 +442,9 @@ import 'package:gc_wizard/tools/science_and_technology/number_sequences/weird_nu
 import 'package:gc_wizard/tools/science_and_technology/numeral_bases/widget/numeral_bases.dart';
 import 'package:gc_wizard/tools/science_and_technology/paperformat/widget/paperformat.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/atomic_numbers_to_text/widget/atomic_numbers_to_text.dart';
+import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table/widget/elements_of_geocaching.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table/widget/periodic_table.dart';
+import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table_data_view/widget/elements_of_geocaching_data_view.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table_data_view/widget/periodic_table_data_view.dart';
 import 'package:gc_wizard/tools/science_and_technology/physical_constants/widget/physical_constants.dart';
 import 'package:gc_wizard/tools/science_and_technology/piano/widget/piano.dart';
@@ -886,6 +891,16 @@ void initializeRegistry(BuildContext context) {
       'dtmf',
     ]),
     GCWTool(
+        tool: const ElementsOfGeocachingSelection(),
+        id: 'elementsofgeocaching_selection',
+        categories: const [
+          ToolCategory.SCIENCE_AND_TECHNOLOGY
+        ],
+        searchKeys: const [
+          'periodictable',
+          'elementsofgeocaching',
+        ]),
+    GCWTool(
         tool: const EnclosedAreas(),
         id: 'enclosedareas',
         categories: const [
@@ -1216,6 +1231,26 @@ void initializeRegistry(BuildContext context) {
       'rotation',
       'kamasutra',
     ]),
+    GCWTool(tool: const Kaprekar(), id: 'kaprekar', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'mathematical_constants',
+      'kaprekar',
+    ],
+    licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'en.wikipedia.org and contributors',
+          title: '6174',
+          sourceUrl:
+          'https://en.wikipedia.org/w/index.php?title=6174&oldid=1273658196'),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'en.wikipedia.org and contributors',
+          title: "Kaprekar's routine",
+          sourceUrl:
+          'https://en.wikipedia.org/w/index.php?title=Kaprekar%27s_routine&oldid=1274436905')
+    ],),
     GCWTool(tool: const Kenny(), id: 'kenny', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -1280,21 +1315,34 @@ void initializeRegistry(BuildContext context) {
         tool: const MajorSystem(),
         id: 'major_system',
         isBeta: true,
-        categories: const [
-          ToolCategory.CRYPTOGRAPHY
-        ],
-        searchKeys: const [
-          'major_system',
-        ]),
-    GCWTool(
-        tool: const MathematicalConstants(),
-        id: 'mathematical_constants',
-        categories: const [
-          ToolCategory.SCIENCE_AND_TECHNOLOGY
-        ],
-        searchKeys: const [
-          'mathematical_constants',
-        ]),
+        categories: const [ ToolCategory.CRYPTOGRAPHY ],
+        searchKeys: const [ 'major_system', ]
+    ),
+    GCWTool(tool: const MathematicalConstants(), id: 'mathematical_constants', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'mathematical_constants',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Physical Measurement Laboratory of NIST',
+          title: 'Fundamental Physical Constants',
+          sourceUrl:
+          'https://web.archive.org/web/20240926130440/https://physics.nist.gov/cuu/Constants/index.html',
+          licenseType: ToolLicenseType.PUBLIC_DOMAIN),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'en.wikipedia.org and contributors',
+          title: '6174',
+          sourceUrl:
+          'https://en.wikipedia.org/w/index.php?title=6174&oldid=1273658196'),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'en.wikipedia.org and contributors',
+          title: "Kaprekar's routine",
+          sourceUrl:
+          'https://en.wikipedia.org/w/index.php?title=Kaprekar%27s_routine&oldid=1274436905')
+    ]),
     GCWTool(
         tool: const MayaCalendarSelection(),
         categories: const [ToolCategory.CRYPTOGRAPHY],
@@ -1370,6 +1418,48 @@ void initializeRegistry(BuildContext context) {
           title: 'Navajo Code Talkers\' Dictionary REVISED 15 JUNE 1945',
           sourceUrl:
               'https://web.archive.org/web/20240722205845/https://www.history.navy.mil/research/library/online-reading-room/title-list-alphabetically/n/navajo-code-talker-dictionary.html')
+    ]),
+    GCWTool(tool: const NEMA(), id: 'nema', categories: const [
+      ToolCategory.CRYPTOGRAPHY
+    ], searchKeys: const [
+      'nema',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+        context: context,
+        author: 'en.wikipedia.org and contributors',
+        title: 'NEMA (machine)',
+        licenseType: ToolLicenseType.CCBYSA4,
+        licenseUrl:
+        'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+        sourceUrl:
+        'https://en.wikipedia.org/w/index.php?title=NEMA_(machine)&oldid=1239630258',
+      ),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author:
+          'Walter Schmid',
+          title: 'Die Chiffriermaschine Nema',
+          year: 2005,
+          month: 2,
+          sourceUrl:
+          'https://web.archive.org/web/20250211181906/https://www.cryptomuseum.com/pub/files/WS_nema.pdf',
+      privatePermission: ToolLicensePrivatePermission(
+          context: context,
+          medium: 'E-Mail',
+          permissionAuthor: 'Walter Schmid',
+          permissionYear: 2025,
+          permissionMonth: 2,
+          permissionDay: 11)),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author:
+          'Geoff Sullivan, Frode Weierud',
+          title: 'The Swiss NEMA Cipher Machine',
+          year: 1999,
+          month: 10,
+          sourceUrl:
+          'https://web.archive.org/web/20250209205344/https://cryptocellar.org/pubs/nema.pdf',
+          ),
     ]),
     GCWTool(
         tool: const NonogramSolver(),
@@ -1487,15 +1577,19 @@ void initializeRegistry(BuildContext context) {
       'pi',
       'irrationalnumbers',
     ]),
-    GCWTool(
-        tool: const PhysicalConstants(),
-        id: 'physical_constants',
-        categories: const [
-          ToolCategory.SCIENCE_AND_TECHNOLOGY
-        ],
-        searchKeys: const [
-          'physical_constants',
-        ]),
+    GCWTool(tool: const PhysicalConstants(), id: 'physical_constants', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'physical_constants',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Physical Measurement Laboratory of NIST',
+          title: 'Fundamental Physical Constants',
+          sourceUrl:
+          'https://web.archive.org/web/20240926130440/https://physics.nist.gov/cuu/Constants/index.html',
+          licenseType: ToolLicenseType.PUBLIC_DOMAIN),
+    ]),
     GCWTool(tool: Playfair(), id: 'playfair', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -3566,6 +3660,20 @@ void initializeRegistry(BuildContext context) {
           'esearch',
         ]),
 
+    //Elements of Geocaching Selection ***********************************************************************
+    GCWTool(tool: const ElementsOfGeocaching(), id: 'elementsofgeocaching', searchKeys: const [
+    ], licenses: [
+      stl._toolLicenseElementsOfGeocachingGeocacherMagazine,
+      stl._toolLicenseElementsOfGeocachingGeocachenBE,
+    ],),
+    GCWTool(tool: const ElementsOfGeocachingDataView(atomicNumber: 1), id: 'elementsofgeocaching_dataview',
+        searchKeys: const [
+      'elementsofgeocaching_dataview',
+    ], licenses: [
+        stl._toolLicenseElementsOfGeocachingGeocacherMagazine,
+        stl._toolLicenseElementsOfGeocachingGeocachenBE,
+      ],),
+
     //Easter Selection ***************************************************************************************
     GCWTool(
         tool: const EasterDate(),
@@ -5616,6 +5724,8 @@ void initializeRegistry(BuildContext context) {
         tool: const AtomicNumbersToText(),
         id: 'atomicnumberstotext',
         searchKeys: const [
+          'periodictable',
+          'elementsofgeocaching',
           'periodictable_atomicnumbers',
         ]),
 
@@ -7937,17 +8047,6 @@ void initializeRegistry(BuildContext context) {
               'https://fontmeme.com/fonts/illuminati-dirigens-cipher-berlin-version-font/',
           licenseType: ToolLicenseType.FREE_TO_USE)
     ]),
-    GCWSymbolTableTool(symbolKey: 'intergalactic', symbolSearchStrings: const [
-      'symbol_intergalactic',
-    ], licenses: [
-      ToolLicenseFont(
-          context: context,
-          author: 'Aaqil A. Azhar (Foneer)',
-          title: 'Robotica SGA',
-          sourceUrl:
-              'https://web.archive.org/web/20240730195127/https://fontstruct.com/fontstructions/show/2324755/robotica-sga',
-          licenseType: ToolLicenseType.NON_COMMERCIAL)
-    ]),
     GCWSymbolTableTool(symbolKey: 'interlac', symbolSearchStrings: const [
       'symbol_interlac',
     ], licenses: [
@@ -9381,6 +9480,23 @@ void initializeRegistry(BuildContext context) {
               'https://web.archive.org/web/20210306061331/https://www.1001fonts.com/sprykski-font.html',
           licenseType: ToolLicenseType.PERSONAL_USE)
     ]),
+    GCWSymbolTableTool(symbolKey: 'standardgalacticalphabet', symbolSearchStrings: const [
+      'symbol_standardgalacticalphabet',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Keen Wiki and contributors',
+          title: 'Standard Galactic Alphabet',
+          sourceUrl:
+          'https://web.archive.org/web/20250130012447/https://keenwiki.shikadi.net/wiki/Standard_Galactic_Alphabet'),
+      ToolLicenseFont(
+          context: context,
+          author: 'Aaqil A. Azhar (Foneer)',
+          title: 'Robotica SGA',
+          sourceUrl:
+          'https://web.archive.org/web/20240730195127/https://fontstruct.com/fontstructions/show/2324755/robotica-sga',
+          licenseType: ToolLicenseType.NON_COMMERCIAL)
+    ]),
     GCWSymbolTableTool(symbolKey: 'steinheil', symbolSearchStrings: const [
       'symbol_steinheil',
       'telegraph',
@@ -10009,6 +10125,28 @@ void initializeRegistry(BuildContext context) {
                   'https://commons.wikimedia.org/w/index.php?title=Wind_speed&oldid=760157124',
               licenseType: ToolLicenseType.CCBYSA4)
         ]),
+    GCWSymbolTableTool(symbolKey: 'wind_mill_signals_v1', symbolSearchStrings: const [
+      'symbol_wind_mill_signals_v1',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Unknown',
+          title: 'Braunsmühle Webpage',
+          sourceUrl: 'https://web.archive.org/web/20221103091143/https://www.braunsmuehle.de/muehle/technik/Muehlensprache-Die-Stellung-der-Fluegel--25/',
+          licenseType: ToolLicenseType.FREE_TO_USE,
+          customComment: 'Allowed by web admin via personal email 9.10.2024'),
+    ]),
+    GCWSymbolTableTool(symbolKey: 'wind_mill_signals_v2', symbolSearchStrings: const [
+      'symbol_wind_mill_signals_v2',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Unknown authors',
+          title: 'https://geocachen.be',
+          sourceUrl: 'https://web.archive.org/web/20241004220413/https://geocachen.be/geocaching/geocache-puzzels-oplossen/molentaal/',
+          licenseType: ToolLicenseType.FREE_TO_USE,
+          customComment: 'Pending'), // todo ask for License
+    ]),
     GCWSymbolTableTool(symbolKey: 'wingdings', symbolSearchStrings: const [
       'symbol_wingdings',
     ], licenses: [
@@ -10017,7 +10155,7 @@ void initializeRegistry(BuildContext context) {
           author: 'commons.wikimedia.org and contributors',
           title: 'Wingdings',
           sourceUrl:
-              'https://commons.wikimedia.org/w/index.php?title=Wind_speed&oldid=760157124',
+              'https://commons.wikimedia.org/wiki/File:Wingdings.png',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN)
     ]),
     GCWSymbolTableTool(

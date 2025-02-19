@@ -259,13 +259,16 @@ import 'package:gc_wizard/tools/science_and_technology/hexadecimal/widget/hexade
 import 'package:gc_wizard/tools/science_and_technology/iata_icao_search/widget/iata_icao_search.dart';
 import 'package:gc_wizard/tools/science_and_technology/ieee754/widget/ieee754.dart';
 import 'package:gc_wizard/tools/science_and_technology/ip_codes/widget/ip_codes.dart';
+import 'package:gc_wizard/tools/science_and_technology/kaprekar/widget/kaprekar.dart';
 import 'package:gc_wizard/tools/science_and_technology/lcm/widget/lcm.dart';
 import 'package:gc_wizard/tools/science_and_technology/mathematical_constants/widget/mathematical_constants.dart';
 import 'package:gc_wizard/tools/science_and_technology/music_notes/music_notes/widget/music_notes.dart';
 import 'package:gc_wizard/tools/science_and_technology/numeral_bases/widget/numeral_bases.dart';
 import 'package:gc_wizard/tools/science_and_technology/paperformat/widget/paperformat.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/atomic_numbers_to_text/widget/atomic_numbers_to_text.dart';
+import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table/widget/elements_of_geocaching.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table/widget/periodic_table.dart';
+import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table_data_view/widget/elements_of_geocaching_data_view.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table_data_view/widget/periodic_table_data_view.dart';
 import 'package:gc_wizard/tools/science_and_technology/physical_constants/widget/physical_constants.dart';
 import 'package:gc_wizard/tools/science_and_technology/piano/widget/piano.dart';
@@ -420,37 +423,48 @@ class _MainViewState extends State<MainView> {
 
     var toolList = (_isSearching && _searchText.isNotEmpty) ? _getSearchedList() : null;
 
-    return DefaultTabController(
-      length: 3,
-      initialIndex: Prefs.getBool(PREFERENCE_TABS_USE_DEFAULT_TAB)
-          ? Prefs.getInt(PREFERENCE_TABS_DEFAULT_TAB)
-          : Prefs.getInt(PREFERENCE_TABS_LAST_VIEWED_TAB),
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-            bottom: TabBar(
-              onTap: (value) {
-                Prefs.setInt(PREFERENCE_TABS_LAST_VIEWED_TAB, value);
-              },
-              tabs: const [
-                Tab(icon: Icon(Icons.category)),
-                Tab(icon: Icon(Icons.list)),
-                Tab(icon: Icon(Icons.star)),
-              ],
-            ),
-            leading: _buildIcon(),
-            title: _buildTitleAndSearchTextField(),
-            actions: <Widget>[_buildSearchActionButton()]),
-        drawer: buildMainMenu(context),
-        body: TabBarView(
-          children: [
-            GCWToolList(toolList: toolList ?? _categoryList),
-            GCWToolList(toolList: toolList ?? _mainToolList),
-            GCWToolList(toolList: toolList ?? Favorites.favoritedGCWTools()),
-          ],
+    if (!(_isSearching && _searchText.isNotEmpty)) {
+      return DefaultTabController(
+        length: 3,
+        initialIndex: Prefs.getBool(PREFERENCE_TABS_USE_DEFAULT_TAB)
+            ? Prefs.getInt(PREFERENCE_TABS_DEFAULT_TAB)
+            : Prefs.getInt(PREFERENCE_TABS_LAST_VIEWED_TAB),
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+              bottom: TabBar(
+                onTap: (value) {
+                  Prefs.setInt(PREFERENCE_TABS_LAST_VIEWED_TAB, value);
+                },
+                tabs: const [
+                  Tab(icon: Icon(Icons.category)),
+                  Tab(icon: Icon(Icons.list)),
+                  Tab(icon: Icon(Icons.star)),
+                ],
+              ),
+              leading: _buildIcon(),
+              title: _buildTitleAndSearchTextField(),
+              actions: <Widget>[_buildSearchActionButton()]),
+          drawer: buildMainMenu(context),
+          body: TabBarView(
+            children: [
+              GCWToolList(toolList: toolList ?? _categoryList),
+              GCWToolList(toolList: toolList ?? _mainToolList),
+              GCWToolList(toolList: toolList ?? Favorites.favoritedGCWTools()),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+              leading: _buildIcon(),
+              title: _buildTitleAndSearchTextField(),
+              actions: <Widget>[_buildSearchActionButton()]
+          ),
+          drawer: buildMainMenu(context),
+          body: GCWToolList(toolList: toolList!));
+    }
   }
 
   NoAnimationMaterialPageRoute<GCWTool>? _checkDeepLink() {
@@ -612,6 +626,8 @@ void _initStaticToolList() {
       className(const EasterSelection()),
       className(const EarwigoTextDeobfuscation()),
       className(const EdelcrantzTelegraph()),
+      className(const ElementsOfGeocaching()),
+      className(const ElementsOfGeocachingDataView(atomicNumber: 1)),
       className(const EllipsoidTransform()),
       className(const EnclosedAreas()),
       className(const Enigma()),
@@ -666,6 +682,7 @@ void _initStaticToolList() {
       className(const IteratedCrossSumRangeFrequency()),
       className(const Judoon()),
       className(const Kamasutra()),
+      className(const Kaprekar()),
       className(const KarolRobot()),
       className(const Kenny()),
       className(const KeyboardSelection()),

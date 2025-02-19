@@ -70,7 +70,7 @@ bool __solveCryptogram(List<Equation> equations, HashMap<String, int> mapping, L
 
   if (remainingVariables.isEmpty) {
     if (_evaluateEquation(mapping, equations)) {
-      _solutions.add(mapping);
+      _solutions.add(HashMap<String, int>.from(mapping));
       if (!_allSolutions || _solutions.length >= MAX_SOLUTIONS) return true;
     }
     return false;
