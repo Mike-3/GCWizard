@@ -18,10 +18,10 @@ class LogicalBoard extends StatefulWidget {
       : super(key: key);
 
   @override
-  _LogicalBoardState createState() => _LogicalBoardState();
+  LogicalBoardState createState() => LogicalBoardState();
 }
 
-class _LogicalBoardState extends State<LogicalBoard> {
+class LogicalBoardState extends State<LogicalBoard> {
   late TextEditingController _currentInputController;
   final _currentValueFocusNode = FocusNode();
 

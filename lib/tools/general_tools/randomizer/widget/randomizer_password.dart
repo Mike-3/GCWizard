@@ -174,7 +174,7 @@ class _RandomizerPasswordState extends State<RandomizerPassword> {
         children: [
           GCWColumnedMultilineOutput(
             data: out.map((String pswd) => [pswd, _entropy(pswd)]).toList(),
-            flexValues: const [2,1],
+            flexValues: [2,1],
             copyColumn: 0,
           )
         ],

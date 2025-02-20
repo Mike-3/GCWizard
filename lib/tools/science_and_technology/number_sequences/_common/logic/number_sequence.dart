@@ -45,7 +45,6 @@ import 'package:gc_wizard/tools/science_and_technology/number_sequences/busybeav
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/happy_numbers/logic/list_happy_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/lucky_numbers/logic/list_lucky_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/lychrel/logic/list_lychrel_numbers.dart';
-import 'package:gc_wizard/tools/science_and_technology/number_sequences/memorable_primes/logic/list_permutable_primes.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/mersenne_exponents/logic/list_mersenne_exponents.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/mersenne_primes/logic/list_mersenne_primes.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/perfect_numbers/logic/list_perfect_numbers.dart';
@@ -87,8 +86,6 @@ const Map<NumberSequencesMode, String> NUMBERSEQUENCE_TITLE = {
   NumberSequencesMode.SUBLIME_NUMBERS: 'numbersequence_sublimenumbers_title',
   NumberSequencesMode.LYCHREL: 'numbersequence_lychrel_title',
   NumberSequencesMode.PERMUTABLE_PRIMES: 'numbersequence_permutableprimes_title',
-  NumberSequencesMode.MEMORABLE_PRIMES: 'numbersequence_memorableprimes_title',
-  NumberSequencesMode.MEMORABLE_PRIMES_INDEXES: 'numbersequence_memorableprimesindexes_title',
   NumberSequencesMode.LUCKY_NUMBERS: 'numbersequence_luckynumbers_title',
   NumberSequencesMode.HAPPY_NUMBERS: 'numbersequence_happynumbers_title',
   NumberSequencesMode.BUSY_BEAVER: 'numbersequence_busy_beaver_title',
@@ -126,8 +123,6 @@ enum NumberSequencesMode {
   SUBLIME_NUMBERS,
   LYCHREL,
   PERMUTABLE_PRIMES,
-  MEMORABLE_PRIMES,
-  MEMORABLE_PRIMES_INDEXES,
   LUCKY_NUMBERS,
   HAPPY_NUMBERS,
   BUSY_BEAVER,
