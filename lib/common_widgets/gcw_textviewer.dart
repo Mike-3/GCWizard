@@ -50,7 +50,7 @@ void openInTextViewer(BuildContext context, String text) {
           builder: (context) => GCWTool(
                 tool: GCWTextViewer(text: text),
                 toolName: i18n(context, 'textviewer_title'),
-                id: '',
+                id: 'textviewer',
                 suppressHelpButton: true,
               )));
 }
