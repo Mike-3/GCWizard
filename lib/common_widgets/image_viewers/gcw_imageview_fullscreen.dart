@@ -122,6 +122,6 @@ void openInFullScreen(BuildContext context, Uint8List imgData, Color bgColor) {
                 toolName: i18n(context, 'imageview_fullscreen_title'),
                 defaultLanguageToolName: i18n(context, 'imageview_fullscreen_title', useDefaultLanguage: true),
                 suppressHelpButton: true,
-                id: '',
+                id: 'imageview_fullscreen',
               )));
 }

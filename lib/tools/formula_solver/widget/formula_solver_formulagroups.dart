@@ -115,7 +115,7 @@ class _FormulaSolverFormulaGroupsState extends State<FormulaSolverFormulaGroups>
         toolName: '${entry.name} - ${i18n(context, 'formulasolver_formulas')}',
         helpSearchString: 'formulasolver_formulas',
         defaultLanguageToolName: '${entry.name} - ${i18n(context, 'formulasolver_formulas', useDefaultLanguage: true)}',
-        id: '',
+        id: 'formulasolver',
       );
     } else {
       return null;
