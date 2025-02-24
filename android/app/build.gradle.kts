@@ -1,4 +1,4 @@
-import java.io.FileInputStream
+gc_wizard_alphagc_wizard_alphaimport java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "de.sman42.gc_wizard"
+        applicationId = "de.sman42.gc_wizard_alpha"
 
         minSdk = 21
         targetSdk = 34
