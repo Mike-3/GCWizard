@@ -1,4 +1,4 @@
-gc_wizard_alphagc_wizard_alphaimport java.io.FileInputStream
+import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
