@@ -4,14 +4,13 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/detector.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/encoder.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/image.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
-import 'package:tuple/tuple.dart';
 
 /*
  JABCode reader main function
  @return item1 decoded data
  @return item2 0: success | 255: not detectable | other non-zero: decoding failed
 */
-Future<Tuple2<String?, String>?> scanBytes(Uint8List bytes) async {
+Future<({String? data, String? decode_status})?> scanBytes(Uint8List bytes) async {
 	//load image
 	var bitmap = readImage(bytes);
 
@@ -22,25 +21,25 @@ Future<Tuple2<String?, String>?> scanBytes(Uint8List bytes) async {
 	//find and decode JABCode in the image
 	int? decode_status;
 	var result = decodeJABCode(bitmap, NORMAL_DECODE);
-	var decoded_data = result?.item1;
-	decode_status = result?.item2;
+	var decoded_data = result?.decoded_data;
+	decode_status = result?.status;
 	if(decoded_data == null) {
 		// reportError("Decoding JABCode failed");
 		if(decode_status != null) {
-			return Future.value(Tuple2<String?, String>(null, decode_status.toString())); //(symbols[0].module_size + 0.5).toInt();
+			return Future.value((data: null, decode_status: decode_status.toString())); //(symbols[0].module_size + 0.5).toInt();
 		} else {
-			return Future.value(Tuple2<String?, String>(null, 255.toString()));
+			return Future.value((data: null, decode_status: 255.toString()));
 		}
 	}
 
 	//output warning if the code is only partly decoded with COMPATIBLE_DECODE mode
 	if(decode_status == 2) {
-		return Future.value(const Tuple2<String?, String> (null,
-				"The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
+		return Future.value((data: null,
+			decode_status:"The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
 		// JAB_REPORT_INFO(("The code is only partly decoded. Some slave symbols have not been decoded and are ignored."));
 	}
 
-	return Future.value(Tuple2<String, String> (String.fromCharCodes(decoded_data.data), ''));
+	return Future.value((data: String.fromCharCodes(decoded_data.data), decode_status: ''));
 }
 
 /// Generating Jab Code

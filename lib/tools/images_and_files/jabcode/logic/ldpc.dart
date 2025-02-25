@@ -13,7 +13,6 @@
 import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:tuple/tuple.dart';
 
 import 'pseudo_random.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
@@ -81,7 +80,7 @@ List<int> _createMatrixA(int wc, int wr, int capacity) {
  @return item1 0: success | 1: fatal error (out of memory)
  @return item2 matrix_rank the rank of the matrix
 */
-Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank, int capacity, bool encode) {
+({bool success, int matrix_rank}) _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank, int capacity, bool encode) {
   int loop=0;
   int nb_pcb;
   if(wr<4) {
@@ -208,7 +207,7 @@ Tuple2<int, int> _GaussJordan(List<int> matrixA, int wc, int wr, int matrix_rank
     matrixA.setRange(0, offset*nb_pcb, matrixH); //memcpy(,,offset*nb_pcb*sizeof(int));
   }
 
-  return Tuple2<int, int>(0, matrix_rank);
+  return (success: true, matrix_rank: matrix_rank);
 }
 
 /*
@@ -334,8 +333,8 @@ jab_data? encodeLDPC(jab_data data, List<int> coderate_params) {
 
   bool encode=true;
   var result = _GaussJordan(matrixA, wc, wr, Pg_sub_block, matrix_rank,encode);
-  matrix_rank = result.item2;
-  if(result.item1 == 1) {
+  matrix_rank = result.matrix_rank;
+  if(!result.success) {
     return null;
   }
 
@@ -377,8 +376,8 @@ jab_data? encodeLDPC(jab_data data, List<int> coderate_params) {
     // }
 
     var result = _GaussJordan(matrixA, wc, wr, Pg_sub_block, matrix_rank,encode);
-    matrix_rank = result.item2;
-    if(result.item1 == 1) {
+    matrix_rank = result.matrix_rank;
+    if(!result.success) {
       return null;
     }
 
@@ -414,7 +413,7 @@ jab_data? encodeLDPC(jab_data data, List<int> coderate_params) {
  @return item1  bool is_correct /
  @return item2 error correction succeeded | 0: fatal error (out of memory)
 */
-Tuple2<bool, int> _decodeMessage(List<int> data, List<int> matrix, int length, int height, int max_iter, int start_pos) {
+({bool is_correct, bool success}) _decodeMessage(List<int> data, List<int> matrix, int length, int height, int max_iter, int start_pos) {
   var max_val=List<int>.filled(length, 0); // ()int *)calloc(length, sizeof(int));
   var equal_max=List<int>.filled(length, 0); //(int *)calloc(length, sizeof(int));
   var prev_index=List<int>.filled(length, 0); //(int *)calloc(length, sizeof(int));
@@ -488,7 +487,7 @@ Tuple2<bool, int> _decodeMessage(List<int> data, List<int> matrix, int length, i
     }
   }
 
-  return Tuple2<bool, int>(is_correct, 1);
+  return (is_correct: is_correct, success : true);
 }
 
 /*
@@ -552,8 +551,8 @@ int decodeLDPChd(List<int> data, int length, int wc, int wr) {
   // }
   bool encode=false;
   var result = _GaussJordan(matrixA, wc, wr, Pg_sub_block, matrix_rank, encode);
-  matrix_rank = result.item2;
-  if(result.item1 != 0) {
+  matrix_rank = result.matrix_rank;
+  if(!result.success) {
     return 0; //Gauss Jordan Elimination in LDPC encoder failed.
   }
 
@@ -570,8 +569,8 @@ int decodeLDPChd(List<int> data, int length, int wc, int wr) {
       // }
       bool encode=false;
       var result = _GaussJordan(matrixA1, wc, wr, Pg_sub_block, matrix_rank, encode);
-      matrix_rank = result.item2;
-      if(result.item1!= 0) {
+      matrix_rank = result.matrix_rank;
+      if(!result.success) {
         return 0; //Gauss Jordan Elimination in LDPC encoder failed.
       }
       //ldpc decoding
@@ -592,8 +591,8 @@ int decodeLDPChd(List<int> data, int length, int wc, int wr) {
       if(!is_correct) {
         int start_pos=iter*old_Pg_sub;
         var result = _decodeMessage(data, matrixA1, Pg_sub_block, matrix_rank, max_iter,start_pos);
-        is_correct=result.item1;
-        if(result.item2 == 0) {
+        is_correct=result.is_correct;
+        if(!result.success) {
           return 0;
         }
       }
@@ -632,8 +631,8 @@ int decodeLDPChd(List<int> data, int length, int wc, int wr) {
       if (!is_correct) {
         int start_pos=iter*old_Pg_sub;
         var result =_decodeMessage(data, matrixA, Pg_sub_block, matrix_rank, max_iter, start_pos);
-        is_correct=result.item1;
-        if(result.item2 == 0) {
+        is_correct=result.is_correct;
+        if(!result.success) {
           return 0;
         }
 

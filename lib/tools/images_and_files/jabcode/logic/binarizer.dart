@@ -14,7 +14,6 @@ import 'dart:core';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
-import 'package:tuple/tuple.dart';
 
 
 const BLOCK_SIZE_POWER = 5;
@@ -85,7 +84,7 @@ void _getHistogram(jab_bitmap bitmap, int channel, List<int> hist) {
  @return item1 the min index
  @return item2 the max index
 */
-Tuple2<int, int> _getHistMaxMin(List<int> hist, int ths) {
+({int min, int max}) _getHistMaxMin(List<int> hist, int ths) {
 	//get min
 	var min = 0;
 	for(int i=0; i<256; i++) {
@@ -102,7 +101,7 @@ Tuple2<int, int> _getHistMaxMin(List<int> hist, int ths) {
 			break;
 		}
 	}
-	return Tuple2<int, int>(min, max);
+	return (min: min, max: max);
 }
 
 /*
@@ -133,28 +132,28 @@ void balanceRGB(jab_bitmap bitmap) {
 		for(int j=0; j<bitmap.width; j++) {
 			int offset = i * bytes_per_row + j * bytes_per_pixel;
 			//R channel
-			if		(bitmap.pixel[offset + 0] < r.item1) {
+			if		(bitmap.pixel[offset + 0] < r.min) {
 			  bitmap.pixel[offset + 0] = 0;
-			} else if (bitmap.pixel[offset + 0] > r.item2) {
+			} else if (bitmap.pixel[offset + 0] > r.max) {
 			  bitmap.pixel[offset + 0] = 255;
 			} else {
-			  bitmap.pixel[offset + 0] = ((bitmap.pixel[offset + 0] - r.item1) / (r.item2 - r.item1) * 255.0).toInt();
+			  bitmap.pixel[offset + 0] = ((bitmap.pixel[offset + 0] - r.min) / (r.max - r.min) * 255.0).toInt();
 			}
 			//G channel
-			if		(bitmap.pixel[offset + 1] < g.item1) {
+			if		(bitmap.pixel[offset + 1] < g.min) {
 			  bitmap.pixel[offset + 1] = 0;
-			} else if (bitmap.pixel[offset + 1] > g.item2) {
+			} else if (bitmap.pixel[offset + 1] > g.max) {
 			  bitmap.pixel[offset + 1] = 255;
 			} else {
-			  bitmap.pixel[offset + 1] = ((bitmap.pixel[offset + 1] - g.item1) / (g.item2 - g.item1) * 255.0).toInt();
+			  bitmap.pixel[offset + 1] = ((bitmap.pixel[offset + 1] - g.min) / (g.max - g.min) * 255.0).toInt();
 			}
 			//B channel
-			if		(bitmap.pixel[offset + 2] < b.item1) {
+			if		(bitmap.pixel[offset + 2] < b.max) {
 			  bitmap.pixel[offset + 2] = 0;
-			} else if	(bitmap.pixel[offset + 2] > b.item2) {
+			} else if	(bitmap.pixel[offset + 2] > b.max) {
 			  bitmap.pixel[offset + 2] = 255;
 			} else {
-			  bitmap.pixel[offset + 2] = ((bitmap.pixel[offset + 2] - b.item1) / (b.item2 - b.item1) * 255.0).toInt();
+			  bitmap.pixel[offset + 2] = ((bitmap.pixel[offset + 2] - b.min) / (b.max - b.min) * 255.0).toInt();
 			}
 		}
 	}
@@ -166,7 +165,8 @@ void balanceRGB(jab_bitmap bitmap) {
  @return item1 the average value
  @return item2 the variance value
 */
-Tuple2<double, double> getAveVar(Uint8List rgb) {
+
+({double ave, double vari}) getAveVar(Uint8List rgb) {
 	//calculate mean
 	var ave = (rgb[0] + rgb[1] + rgb[2]) / 3;
 	//calculate variance
@@ -174,7 +174,7 @@ Tuple2<double, double> getAveVar(Uint8List rgb) {
 	for(var i=0; i<3; i++) {
 		sum += (rgb[i] - ave) * (rgb[i] - ave);
 	}
-	return Tuple2<double, double>(ave, sum / 3);
+	return (ave: ave, vari: sum / 3);
 }
 
 /*
@@ -193,7 +193,7 @@ void _swap(int index1, int index2, List<int> list) {
  @return item2 index middle value
  @return item3 index max value
 */
-Tuple3<int, int, int> getMinMax(Uint8List rgb) {
+({int min, int middle, int max}) getMinMax(Uint8List rgb) {
 	const index_min = 0;
 	const index_mid = 1;
 	const index_max = 2;
@@ -208,7 +208,7 @@ Tuple3<int, int, int> getMinMax(Uint8List rgb) {
 	  _swap(index_mid, index_max, index);
 	}
 
-	return Tuple3<int, int, int>(index[index_min], index[index_mid], index[index_max]);
+	return (min: index[index_min], middle: index[index_mid], max: index[index_max]);
 }
 
 /*
@@ -297,23 +297,23 @@ int binarizerRGB(jab_bitmap bitmap, List<jab_bitmap> rgb, List<double>? blk_ths)
 
 			// double ave, vari;
 			var result = getAveVar(bitmap.pixel.sublist(offset, offset + 4));
-			double std = sqrt(result.item2);	//standard deviation
+			double std = sqrt(result.vari);	//standard deviation
 			var result1 = getMinMax(bitmap.pixel.sublist(offset, offset + 4));
-			std /= bitmap.pixel[offset + result1.item3].toDouble();	//normalize std
+			std /= bitmap.pixel[offset + result1.max].toDouble();	//normalize std
 
 			if(std < ths_std && (bitmap.pixel[offset + 0] > rgb_ths[0] && bitmap.pixel[offset + 1] > rgb_ths[1] && bitmap.pixel[offset + 2] > rgb_ths[2])) {
 				rgb[0].pixel[i*bitmap.width + j] = 255;
 				rgb[1].pixel[i*bitmap.width + j] = 255;
 				rgb[2].pixel[i*bitmap.width + j] = 255;
 			} else {
-				rgb[result1.item3].pixel[i*bitmap.width + j] = 255; //index_max
-				rgb[result1.item1].pixel[i*bitmap.width + j] = 0; //index_min
-				double r1 = bitmap.pixel[offset + result1.item2] / bitmap.pixel[offset + result1.item1];
-				double r2 = bitmap.pixel[offset + result1.item3] / bitmap.pixel[offset + result1.item2];
+				rgb[result1.max].pixel[i*bitmap.width + j] = 255; //index_max
+				rgb[result1.min].pixel[i*bitmap.width + j] = 0; //index_min
+				double r1 = bitmap.pixel[offset + result1.middle] / bitmap.pixel[offset + result1.min];
+				double r2 = bitmap.pixel[offset + result1.max] / bitmap.pixel[offset + result1.middle];
 				if(r1 > r2) {
-				  rgb[result1.item2].pixel[i*bitmap.width + j] = 255; //index_mid
+				  rgb[result1.middle].pixel[i*bitmap.width + j] = 255; //index_mid
 				} else {
-				  rgb[result1.item2].pixel[i*bitmap.width + j] = 0; //index_mid
+				  rgb[result1.middle].pixel[i*bitmap.width + j] = 0; //index_mid
 				}
 			}
 		}
