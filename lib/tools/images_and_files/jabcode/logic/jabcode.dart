@@ -27,8 +27,7 @@ Future<Tuple2<String?, String>?> scanBytes(Uint8List bytes) async {
 	if(decoded_data == null) {
 		// reportError("Decoding JABCode failed");
 		if(decode_status != null) {
-			return Future.value(Tuple2<String?, String>(
-					null, 0.toString())); //(symbols[0].module_size + 0.5).toInt();
+			return Future.value(Tuple2<String?, String>(null, decode_status.toString())); //(symbols[0].module_size + 0.5).toInt();
 		} else {
 			return Future.value(Tuple2<String?, String>(null, 255.toString()));
 		}

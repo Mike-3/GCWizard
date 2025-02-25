@@ -6,8 +6,8 @@ import 'package:gc_wizard/application/theme/theme_colors.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
 import 'package:gc_wizard/common_widgets/dialogs/gcw_exported_file_dialog.dart';
 import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
+import 'package:gc_wizard/common_widgets/gcw_snackbar.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
-import 'package:gc_wizard/common_widgets/gcw_toast.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/spinners/gcw_integer_spinner.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
@@ -16,7 +16,6 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 import 'package:gc_wizard/utils/ui_dependent_utils/file_widget_utils.dart';
-import 'package:intl/intl.dart';
 
 class JabCode extends StatefulWidget {
   final GCWFile? platformFile;
@@ -63,7 +62,7 @@ class JabCodeState extends State<JabCode> {
                 supportedFileTypes: SUPPORTED_IMAGE_TYPES,
                 onLoaded: (_file) {
                   if (_file == null) {
-                    showToast(i18n(context, 'common_loadfile_exception_notloaded'));
+                    showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
                     return;
                   }
 
@@ -114,7 +113,7 @@ class JabCodeState extends State<JabCode> {
                 : GCWIconButton(
                     icon: Icons.save,
                     size: IconButtonSize.SMALL,
-                    iconColor: _outDataEncrypt == null ? themeColors().inActive() : null,
+                    iconColor: _outDataEncrypt == null ? themeColors().inactive() : null,
                     onPressed: () {
                       _outDataEncrypt == null ? null : _exportFile(context, _outDataEncrypt!);
                     },
@@ -141,7 +140,7 @@ class JabCodeState extends State<JabCode> {
         //   currentInput = currentInput.substring(0, maxLength);
         //   showToast(i18n(context, 'qr_code_length_limited', parameters: [maxLength.toString()]));
         // }
-        lastCurrentInputLength = _currentInput == null ? 0 : _currentInput.length;
+        lastCurrentInputLength = _currentInput.length;
 
         // generateBarCode(currentInput, moduleSize: _currentModulSize, border: 2 * _currentModulSize).then((qr_code) {
         //   setState(() {
@@ -153,10 +152,10 @@ class JabCodeState extends State<JabCode> {
 
         scanBytes(_outData!).then((data) {
           setState(() {
-            String text;
-            if (data == null || data.item1.isEmpty) {
+            String text = '';
+            if (data == null || data.item1 == null|| data.item1!.isEmpty) {
               text = i18n(context, 'jab_code_nothingfound');
-              if (data?.item2 != null) text +="\n" + data?.item2;
+              if (data?.item2 != null) text +="\n" + data!.item2;
             }
             _outDataDecrypt = text;
           });

@@ -134,15 +134,15 @@ void _interpolatePalette(Int8List palette, int color_number) {
  @param y the y coordinate of the color module
 */
 void _writeColorPalette(jab_bitmap matrix, jab_decoded_symbol symbol, int p_index, int color_index, int x, int y) {
-	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
+	int color_number = pow(2, symbol.metadata!.Nc + 1).toInt();
 	int mtx_bytes_per_pixel = matrix.bits_per_pixel ~/ 8;
   int mtx_bytes_per_row = matrix.width * mtx_bytes_per_pixel;
 
 	int palette_offset = color_number * 3 * p_index;
 	int mtx_offset = y * mtx_bytes_per_row + x * mtx_bytes_per_pixel;
-	symbol.palette[palette_offset + color_index*3 + 0] = matrix.pixel[mtx_offset + 0];
-	symbol.palette[palette_offset + color_index*3 + 1] = matrix.pixel[mtx_offset + 1];
-	symbol.palette[palette_offset + color_index*3 + 2] = matrix.pixel[mtx_offset + 2];
+	symbol.palette![palette_offset + color_index*3 + 0] = matrix.pixel[mtx_offset + 0];
+	symbol.palette![palette_offset + color_index*3 + 1] = matrix.pixel[mtx_offset + 1];
+	symbol.palette![palette_offset + color_index*3 + 2] = matrix.pixel[mtx_offset + 2];
 }
 
 /*
@@ -201,7 +201,7 @@ Tuple2<jab_vector2d, jab_vector2d> _getColorPalettePosInFP(int p_index, int matr
  @return item4 y the y coordinate of the start module
 */
 Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, int module_count, int x, int y) {
-	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
+	int color_number = pow(2, symbol.metadata!.Nc + 1).toInt();
 	symbol.palette = Int8List(color_number * 3 * COLOR_PALETTE_NUMBER); //(Int8*)malloc(color_number * sizeof(Int8) * 3 * COLOR_PALETTE_NUMBER);
 
 	//read colors from finder patterns
@@ -271,7 +271,7 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
 
 	//interpolate the palette if there are more than 64 colors
 	if(color_number > 64) {
-		_interpolatePalette(symbol.palette, color_number);
+		_interpolatePalette(symbol.palette!, color_number);
 	}
 	return Tuple4<int, int, int, int>(JAB_SUCCESS, module_count, x, y);
 }
@@ -284,8 +284,8 @@ Tuple4<int, int, int, int> _readColorPaletteInMaster(jab_bitmap matrix, jab_deco
  @return JAB_SUCCESS | FATAL_ERROR
 */
 int _readColorPaletteInSlave(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map) {
-	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
-	symbol.palette.clear();
+	int color_number = pow(2, symbol.metadata!.Nc + 1).toInt();
+	symbol.palette!.clear();
 
 	//read colors from alignment patterns
 	int color_index;			//the color index number in color palette
@@ -344,7 +344,7 @@ int _readColorPaletteInSlave(jab_bitmap matrix, jab_decoded_symbol symbol, Int8L
 
 	//interpolate the palette if there are more than 64 colors
 	if(color_number > 64) {
-		_interpolatePalette(symbol.palette, color_number);
+		_interpolatePalette(symbol.palette!, color_number);
 	}
 	return JAB_SUCCESS;
 }
@@ -370,10 +370,10 @@ int _getNearestPalette(jab_bitmap matrix, int x, int y) {
 	py[3] = matrix.height- DISTANCE_TO_BORDER;
 
 	//calculate the nearest palette
-	double min = DIST(0, 0, matrix.width, matrix.height);
+	double min = DIST(0, 0, matrix.width.toDouble(), matrix.height.toDouble());
 	int p_index = 0;
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++) {
-		double dist = DIST(x, y, px[i], py[i]);
+		double dist = DIST(x.toDouble(), y.toDouble(), px[i].toDouble(), py[i].toDouble());
 		if(dist < min) {
 			min = dist;
 			p_index = i;
@@ -407,7 +407,7 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List? palette, int color_number, List
 	rgb[2] = matrix.pixel[mtx_offset + 2];
 
 	int index1 = 0;
-	int index2 = 0;
+	// int index2 = 0;
 
 	//check black module
 	if(rgb[0] < pal_ths[p_index*3 + 0] && rgb[1] < pal_ths[p_index*3 + 1] && rgb[2] < pal_ths[p_index*3 + 2]) {
@@ -437,13 +437,13 @@ int _decodeModuleHD(jab_bitmap matrix, Int8List? palette, int color_number, List
 			if(diff < min1) {
 				//copy min1 to min2
 				min2 = min1;
-				index2 = index1;
+				// index2 = index1;
 				//update min1
 				min1 = diff;
 				index1 = i;
 			} else if(diff < min2) {
 				min2 = diff;
-				index2 = i;
+				// index2 = i;
 			}
 		}
 
@@ -581,9 +581,9 @@ Tuple2<int, int> getNextMetadataModuleInMaster(int matrix_height, int matrix_wid
 */
 int _decodeSlaveMetadata(jab_decoded_symbol host_symbol, int docked_position, jab_data data, int offset) {
 	//set metadata from host symbol
-	host_symbol.slave_metadata[docked_position].Nc = host_symbol.metadata.Nc;
-	host_symbol.slave_metadata[docked_position].mask_type = host_symbol.metadata.mask_type;
-	host_symbol.slave_metadata[docked_position].docked_position = 0;
+	host_symbol.slave_metadata[docked_position]!.Nc = host_symbol.metadata!.Nc;
+	host_symbol.slave_metadata[docked_position]!.mask_type = host_symbol.metadata!.mask_type;
+	host_symbol.slave_metadata[docked_position]!.docked_position = 0;
 
 	//decode metadata
 	int index = offset;
@@ -593,12 +593,12 @@ int _decodeSlaveMetadata(jab_decoded_symbol host_symbol, int docked_position, ja
 	if(index < 0) return DECODE_METADATA_FAILED;
 	SS = data.data[index--];//SS
 	if(SS == 0) {
-		host_symbol.slave_metadata[docked_position].side_version = host_symbol.metadata.side_version;
+		host_symbol.slave_metadata[docked_position]!.side_version = host_symbol.metadata!.side_version;
 	}
 	if(index < 0) return DECODE_METADATA_FAILED;
 	SE = data.data[index--];//SE
 	if(SE == 0) {
-		host_symbol.slave_metadata[docked_position].ecl = host_symbol.metadata.ecl;
+		host_symbol.slave_metadata[docked_position]!.ecl = host_symbol.metadata!.ecl;
 	}
 	//decode part2 if it exists
 	if(SS == 1) {
@@ -609,11 +609,11 @@ int _decodeSlaveMetadata(jab_decoded_symbol host_symbol, int docked_position, ja
 		}
 		int side_version = V + 1;
 		if(docked_position == 2 || docked_position == 3) {
-			host_symbol.slave_metadata[docked_position].side_version.y = host_symbol.metadata.side_version.y;
-			host_symbol.slave_metadata[docked_position].side_version.x = side_version;
+			host_symbol.slave_metadata[docked_position]!.side_version!.y = host_symbol.metadata!.side_version!.y;
+			host_symbol.slave_metadata[docked_position]!.side_version!.x = side_version;
 		} else {
-			host_symbol.slave_metadata[docked_position].side_version.x = host_symbol.metadata.side_version.x;
-			host_symbol.slave_metadata[docked_position].side_version.y = side_version;
+			host_symbol.slave_metadata[docked_position]!.side_version!.x = host_symbol.metadata!.side_version!.x;
+			host_symbol.slave_metadata[docked_position]!.side_version!.y = side_version;
 		}
 	}
 	if(SE == 1) {
@@ -623,17 +623,17 @@ int _decodeSlaveMetadata(jab_decoded_symbol host_symbol, int docked_position, ja
 		for(int i=0; i<3; i++) {
 			E += data.data[index--] << (2 - i);
 		}
-		host_symbol.slave_metadata[docked_position].ecl.x = E + 3;	//wc = E_part1 + 3
+		host_symbol.slave_metadata[docked_position]!.ecl!.x = E + 3;	//wc = E_part1 + 3
 		//get wr (the second half of E)
 		E = 0;
 		for(int i=0; i<3; i++) {
 			E += data.data[index--] << (2 - i);
 		}
-		host_symbol.slave_metadata[docked_position].ecl.y = E + 4;	//wr = E_part2 + 4
+		host_symbol.slave_metadata[docked_position]!.ecl!.y = E + 4;	//wr = E_part2 + 4
 
 		//check wc and wr
-		int wc = host_symbol.slave_metadata[docked_position].ecl.x;
-		int wr = host_symbol.slave_metadata[docked_position].ecl.y;
+		int wc = host_symbol.slave_metadata[docked_position]!.ecl!.x;
+		int wr = host_symbol.slave_metadata[docked_position]!.ecl!.y;
 		if(wc >= wr) {
 			return DECODE_METADATA_FAILED;
 		}
@@ -716,7 +716,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartI(jab_bitmap matrix, jab_dec
 		return Tuple4<int, int, int, int>(JAB_FAILURE, module_count, x, y);
 	}
 	//parse part1
-	symbol.metadata.Nc = (part1[0] << 2) + (part1[1] << 1) + part1[2];
+	symbol.metadata!.Nc = (part1[0] << 2) + (part1[1] << 1) + part1[2];
 
 	return Tuple4<int, int, int, int>(JAB_SUCCESS, module_count, x, y);
 }
@@ -742,7 +742,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 	int V, E;
 	int V_length = 10, E_length = 6;
 
-	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
+	int color_number = pow(2, symbol.metadata!.Nc + 1).toInt();
 	int bits_per_module = log(color_number) ~/ log(2);
 
 	//read part2
@@ -780,13 +780,13 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 	for(int i=0; i<V_length/2; i++) {
 		V += part2[i] << (V_length/2 - 1 - i).toInt();
 	}
-	symbol.metadata.side_version.x = V + 1;
+	symbol.metadata!.side_version!.x = V + 1;
 	//get vertical side version
 	V = 0;
 	for(int i=0; i<V_length/2; i++) {
 		V += part2[(i+V_length/2).toInt()] << (V_length/2 - 1 - i).toInt();
 	}
-	symbol.metadata.side_version.y = V + 1;
+	symbol.metadata!.side_version!.y = V + 1;
 
 	//read E
 	int bit_index = V_length;
@@ -795,29 +795,29 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
 	for(int i=bit_index; i<(bit_index+E_length/2); i++) {
 		E += part2[i] << (E_length/2 - 1 - (i - bit_index)).toInt();
 	}
-	symbol.metadata.ecl.x = E + 3;		//wc = E_part1 + 3
+	symbol.metadata!.ecl!.x = E + 3;		//wc = E_part1 + 3
 	//get wr (the second half of E)
 	E = 0;
 	for(int i=bit_index; i<(bit_index+E_length/2); i++) {
 		E += part2[(i+E_length/2).toInt()] << (E_length/2 - 1 - (i - bit_index)).toInt();
 	}
-	symbol.metadata.ecl.y = E + 4;		//wr = E_part2 + 4
+	symbol.metadata!.ecl!.y = E + 4;		//wr = E_part2 + 4
 
 	//read MSK
 	bit_index = V_length + E_length;
-	symbol.metadata.mask_type = (part2[bit_index+0] << 2) + (part2[bit_index+1] << 1) + part2[bit_index+2];
+	symbol.metadata!.mask_type = (part2[bit_index+0] << 2) + (part2[bit_index+1] << 1) + part2[bit_index+2];
 
-	symbol.metadata.docked_position = 0;
+	symbol.metadata!.docked_position = 0;
 
 	//check side version
-	symbol.side_size.x = VERSION2SIZE(symbol.metadata.side_version.x);
-	symbol.side_size.y = VERSION2SIZE(symbol.metadata.side_version.y);
-	if(matrix.width != symbol.side_size.x || matrix.height != symbol.side_size.y) {
+	symbol.side_size!.x = VERSION2SIZE(symbol.metadata!.side_version!.x);
+	symbol.side_size!.y = VERSION2SIZE(symbol.metadata!.side_version!.y);
+	if(matrix.width != symbol.side_size!.x || matrix.height != symbol.side_size!.y) {
 		return Tuple4<int, int, int, int>(JAB_FAILURE, module_count, x, y);
 	}
 	//check wc and wr
-	int wc = symbol.metadata.ecl.x;
-	int wr = symbol.metadata.ecl.y;
+	int wc = symbol.metadata!.ecl!.x;
+	int wr = symbol.metadata!.ecl!.y;
 	if(wc >= wr) {
 		return Tuple4<int, int, int, int>(DECODE_METADATA_FAILED, module_count, x, y);
 	}
@@ -834,7 +834,7 @@ Tuple4<int, int, int, int> _decodeMasterMetadataPartII(jab_bitmap matrix, jab_de
  @return the decoded data | NULL if failed
 */
 jab_data _readRawModuleData(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_map, List<double> norm_palette, List<double> pal_ths) {
-	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
+	int color_number = pow(2, symbol.metadata!.Nc + 1).toInt();
 	int module_count = 0;
 	var data = jab_data() ;//(jab_data*)malloc(sizeof(jab_data) + matrix.width * matrix.height * sizeof(jab_char));
 
@@ -953,14 +953,14 @@ void _fillDataMap(Int8List data_map, int width, int height, int type) {
 */
 void _loadDefaultMasterMetadata(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	//set default metadata values
-	symbol.metadata.default_mode = true;
-	symbol.metadata.Nc = DEFAULT_MODULE_COLOR_MODE;
-	symbol.metadata.ecl.x = ecclevel2wcwr[DEFAULT_ECC_LEVEL][0];
-	symbol.metadata.ecl.y = ecclevel2wcwr[DEFAULT_ECC_LEVEL][1];
-	symbol.metadata.mask_type = DEFAULT_MASKING_REFERENCE;
-	symbol.metadata.docked_position = 0;							//no default value
-	symbol.metadata.side_version.x = SIZE2VERSION(matrix.width);	//no default value
-	symbol.metadata.side_version.y = SIZE2VERSION(matrix.height);	//no default value
+	symbol.metadata!.default_mode = true;
+	symbol.metadata!.Nc = DEFAULT_MODULE_COLOR_MODE;
+	symbol.metadata!.ecl!.x = ecclevel2wcwr[DEFAULT_ECC_LEVEL][0];
+	symbol.metadata!.ecl!.y = ecclevel2wcwr[DEFAULT_ECC_LEVEL][1];
+	symbol.metadata!.mask_type = DEFAULT_MASKING_REFERENCE;
+	symbol.metadata!.docked_position = 0;							//no default value
+	symbol.metadata!.side_version!.x = SIZE2VERSION(matrix.width);	//no default value
+	symbol.metadata!.side_version!.y = SIZE2VERSION(matrix.height);	//no default value
 }
 
 /*
@@ -983,17 +983,17 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	// }
 
 	//demask
-	demaskSymbol(raw_module_data, data_map, symbol.side_size, symbol.metadata.mask_type, pow(2, symbol.metadata.Nc + 1).toInt());
+	demaskSymbol(raw_module_data, data_map, symbol.side_size!, symbol.metadata!.mask_type, pow(2, symbol.metadata!.Nc + 1).toInt());
 
 	//change to one-bit-per-byte representation
-	var raw_data = _rawModuleData2RawData(raw_module_data, symbol.metadata.Nc + 1);
+	var raw_data = _rawModuleData2RawData(raw_module_data, symbol.metadata!.Nc + 1);
 	// if(raw_data == null) {
 	// 	return FATAL_ERROR;
 	// }
 
 	//calculate Pn and Pg
-	int wc = symbol.metadata.ecl.x;
-	int wr = symbol.metadata.ecl.y;
+	int wc = symbol.metadata!.ecl!.x;
+	int wr = symbol.metadata!.ecl!.y;
 	int Pg = ((raw_data.length / wr) * wr).toInt();	//max_gross_payload = floor(capacity / wr) * wr
 	int Pn = Pg * (wr - wc) ~/ wr;				//code_rate = 1 - wc/wr = (wr - wc)/wr, max_net_payload = max_gross_payload * code_rate
 
@@ -1002,7 +1002,7 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	deinterleaveData(raw_data);
 
 	//decode ldpc
-	if(decodeLDPChd(raw_data.data, Pg, symbol.metadata.ecl.x, symbol.metadata.ecl.y) != Pn) {
+	if(decodeLDPChd(raw_data.data, Pg, symbol.metadata!.ecl!.x, symbol.metadata!.ecl!.y) != Pn) {
 		return JAB_FAILURE;
 	}
 
@@ -1014,16 +1014,16 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	//skip the flag bit
 	metadata_offset--;
 	//set docked positions in host metadata
-	symbol.metadata.docked_position = 0;
+	symbol.metadata!.docked_position = 0;
 	for(int i=0; i<4; i++) {
 		if(type == 1)	{//if host is a slave symbol
 			if(i == symbol.host_position) continue; //skip host position
 		}
-		symbol.metadata.docked_position += raw_data.data[metadata_offset--] << (3 - i);
+		symbol.metadata!.docked_position += raw_data.data[metadata_offset--] << (3 - i);
 	}
 	//decode metadata for docked slave symbols
 	for(int i=0; i<4; i++) {
-		if((symbol.metadata.docked_position & (0x08 >> i)) != 0) {
+		if((symbol.metadata!.docked_position & (0x08 >> i)) != 0) {
 			int read_bit_length = _decodeSlaveMetadata(symbol, i, raw_data, metadata_offset);
 			if(read_bit_length == DECODE_METADATA_FAILED) {
 				// free(raw_data);
@@ -1039,18 +1039,18 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 
 	// symbol.data.length = net_data_length;
 	// memcpy(symbol.data.data, raw_data.data, net_data_length);
-	symbol.data.data.insertAll(0, raw_data.data);
+	symbol.data!.data.insertAll(0, raw_data.data);
 
 	return JAB_SUCCESS;
 }
 
 void _normalizeColorPalette(jab_decoded_symbol symbol, List<double> norm_palette, int color_number) {
 	for(int i=0; i<(color_number * COLOR_PALETTE_NUMBER); i++) {
-		double rgb_max = (max(symbol.palette[i*3 + 0], max(symbol.palette[i*3 + 1], symbol.palette[i*3 + 2]))).toDouble();
-		norm_palette[i*4 + 0] = symbol.palette[i*3 + 0] / rgb_max;
-		norm_palette[i*4 + 1] = symbol.palette[i*3 + 1] / rgb_max;
-		norm_palette[i*4 + 2] = symbol.palette[i*3 + 2] / rgb_max;
-		norm_palette[i*4 + 3] = ((symbol.palette[i*3 + 0] + symbol.palette[i*3 + 1] + symbol.palette[i*3 + 2]) / 3.0) / 255.0;
+		double rgb_max = (max(symbol.palette![i*3 + 0], max(symbol.palette![i*3 + 1], symbol.palette![i*3 + 2]))).toDouble();
+		norm_palette[i*4 + 0] = symbol.palette![i*3 + 0] / rgb_max;
+		norm_palette[i*4 + 1] = symbol.palette![i*3 + 1] / rgb_max;
+		norm_palette[i*4 + 2] = symbol.palette![i*3 + 2] / rgb_max;
+		norm_palette[i*4 + 3] = ((symbol.palette![i*3 + 0] + symbol.palette![i*3 + 1] + symbol.palette![i*3 + 2]) / 3.0) / 255.0;
 	}
 }
 
@@ -1103,14 +1103,14 @@ int decodeMaster(jab_bitmap matrix, jab_decoded_symbol symbol) {
 	}
 
 	//normalize the RGB values in color palettes
-	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
+	int color_number = pow(2, symbol.metadata!.Nc + 1).toInt();
 	var norm_palette = List<double>.filled(color_number * 4 * COLOR_PALETTE_NUMBER, 0);	//each color contains 4 normalized values, i.e. R, G, B and Luminance
 	_normalizeColorPalette(symbol, norm_palette, color_number);
 
 	//get the palette RGB thresholds
 	var pal_ths = List<double>.filled(3 * COLOR_PALETTE_NUMBER, 0);
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++) {
-		_getPaletteThreshold(symbol.palette.sublist((color_number*3)*i), color_number, pal_ths.sublist(i*3)); //symbol.palette + (color_number*3)*i, color_number, pal_ths[i*3])
+		_getPaletteThreshold(symbol.palette!.sublist((color_number*3)*i), color_number, pal_ths.sublist(i*3)); //symbol.palette + (color_number*3)*i, color_number, pal_ths[i*3])
 	}
 
 	//decode metadata PartII
@@ -1148,14 +1148,14 @@ int decodeSlave(jab_bitmap? matrix, jab_decoded_symbol symbol) {
 	}
 
 	//normalize the RGB values in color palettes
-	int color_number = pow(2, symbol.metadata.Nc + 1).toInt();
+	int color_number = pow(2, symbol.metadata!.Nc + 1).toInt();
 	var norm_palette = List<double>.filled(color_number * 4 * COLOR_PALETTE_NUMBER, 0);	//each color contains 4 normalized values, i.e. R, G, B and Luminance
 	_normalizeColorPalette(symbol, norm_palette, color_number);
 
 	//get the palette RGB thresholds
 	var pal_ths = List<double>.filled(3 * COLOR_PALETTE_NUMBER, 0);
 	for(int i=0; i<COLOR_PALETTE_NUMBER; i++) {
-		_getPaletteThreshold(symbol.palette.sublist(i*3), color_number, pal_ths.sublist(i*3)); //symbol.palette + i*3; &pal_ths[i*3]
+		_getPaletteThreshold(symbol.palette!.sublist(i*3), color_number, pal_ths.sublist(i*3)); //symbol.palette + i*3; &pal_ths[i*3]
 	}
 
 	//decode slave symbol

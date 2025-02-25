@@ -18,8 +18,8 @@ import 'package:tuple/tuple.dart';
 import 'pseudo_random.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
-const LPDC_METADATA_SEED =	38545;
-const LPDC_MESSAGE_SEED =	785465;
+const _LPDC_METADATA_SEED =	38545;
+const _LPDC_MESSAGE_SEED =	785465;
 
 /*
  Create matrix A for message data
@@ -54,7 +54,7 @@ List<int> _createMatrixA(int wc, int wr, int capacity) {
   }
   //Permutate the columns and fill the remaining matrix
   //generate matrixA by following Gallagers algorithm
-  setSeed(LPDC_MESSAGE_SEED);
+  setSeed(_LPDC_MESSAGE_SEED);
   for (int i=1; i<wc; i++) {
     int off_index=i*(capacity/wr).toInt();
     for (int j=0;j<capacity;j++) {
@@ -227,7 +227,7 @@ List<int> _createMetadataMatrixA(int wc, int capacity) {
   for (int i=0;i<capacity;i++) {
     permutation[i]=i;
   }
-  setSeed(LPDC_METADATA_SEED);
+  setSeed(_LPDC_METADATA_SEED);
   int nb_once=(capacity*nb_pcb/wc+3.0).toInt();
   nb_once=nb_once~/nb_pcb;
   //Fill matrix randomly
