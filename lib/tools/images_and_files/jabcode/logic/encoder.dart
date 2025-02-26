@@ -399,8 +399,8 @@ List<int>? _analyzeInputData(jab_data input, int encoded_length) {
   int seq_len=0;
   int modeswitch=0;
   encode_seq[curr_seq_counter]=current_mode;//prev_mode[(curr_seq_counter)*14+current_mode];//prev_mode[(curr_seq_counter+is_shift-1)*14+current_mode];
-  seq_len+=character_size[encode_seq[curr_seq_counter]%7];
-  for (int i=curr_seq_counter;i>0;i--) {
+  seq_len += character_size[encode_seq[curr_seq_counter]%7];
+  for (int i=curr_seq_counter; i>0; i--) {
     if (encode_seq[i]==13 || encode_seq[i]==6) {
       counter++;
     } else {
@@ -863,8 +863,8 @@ void _placeMasterMetadataPartII(jab_encode enc) {
   for(int i=0; i<module_offset; i++) {
     module_count++;
     var result = getNextMetadataModuleInMaster(enc.symbols[0].side_size.y, enc.symbols[0].side_size.x, module_count, x, y);
-    x = result.item1;
-    y = result.item2;
+    x = result.x;
+    y = result.y;
   }
 	//update PartII
 	int partII_bit_start = MASTER_METADATA_PART1_LENGTH;
@@ -888,8 +888,8 @@ void _placeMasterMetadataPartII(jab_encode enc) {
     enc.symbols[0].matrix[y*enc.symbols[0].side_size.x + x] = color_index;
     module_count++;
     var result = getNextMetadataModuleInMaster(enc.symbols[0].side_size.y, enc.symbols[0].side_size.x, module_count, x, y);
-    x = result.item1;
-    y = result.item2;
+    x = result.x;
+    y = result.y;
   }
 }
 
@@ -1131,8 +1131,8 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
           enc.symbols[index].data_map[y*enc.symbols[index].side_size.x + x] = 0;
           module_count++;
           var result = getNextMetadataModuleInMaster(enc.symbols[index].side_size.y, enc.symbols[index].side_size.x, module_count, x, y);
-          x = result.item1;
-          y = result.item2;
+          x = result.x;
+          y = result.y;
         }
         metadata_index += 3;
       }
@@ -1143,29 +1143,29 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
       enc.symbols[index].data_map[y*enc.symbols[index].side_size.x+x] = 0;
       module_count++;
       var result = getNextMetadataModuleInMaster(enc.symbols[index].side_size.y, enc.symbols[index].side_size.x, module_count, x, y);
-      x = result.item1;
-      y = result.item2;
+      x = result.x;
+      y = result.y;
 
       enc.symbols[index].matrix  [y*enc.symbols[index].side_size.x+x] = palette_index[master_palette_placement_index[1][i]%enc.color_number];
       enc.symbols[index].data_map[y*enc.symbols[index].side_size.x+x] = 0;
       module_count++;
       result = getNextMetadataModuleInMaster(enc.symbols[index].side_size.y, enc.symbols[index].side_size.x, module_count, x, y);
-      x = result.item1;
-      y = result.item2;
+      x = result.x;
+      y = result.y;
 
       enc.symbols[index].matrix  [y*enc.symbols[index].side_size.x+x] = palette_index[master_palette_placement_index[2][i]%enc.color_number];
       enc.symbols[index].data_map[y*enc.symbols[index].side_size.x+x] = 0;
       module_count++;
       result = getNextMetadataModuleInMaster(enc.symbols[index].side_size.y, enc.symbols[index].side_size.x, module_count, x, y);
-      x = result.item1;
-      y = result.item2;
+      x = result.x;
+      y = result.y;
 
       enc.symbols[index].matrix  [y*enc.symbols[index].side_size.x+x] = palette_index[master_palette_placement_index[3][i]%enc.color_number];
       enc.symbols[index].data_map[y*enc.symbols[index].side_size.x+x] = 0;
       module_count++;
       result = getNextMetadataModuleInMaster(enc.symbols[index].side_size.y, enc.symbols[index].side_size.x, module_count, x, y);
-      x = result.item1;
-      y = result.item2;
+      x = result.x;
+      y = result.y;
     }
     //metadata PartII
     if(_isDefaultMode(enc) == JAB_FAILURE) {
@@ -1183,8 +1183,8 @@ int _createMatrix(jab_encode enc, int index, jab_data ecc_encoded_data){
         enc.symbols[index].data_map[y*enc.symbols[index].side_size.x + x] = 0;
         module_count++;
         var result = getNextMetadataModuleInMaster(enc.symbols[index].side_size.y, enc.symbols[index].side_size.x, module_count, x, y);
-        x = result.item1;
-        y = result.item2;
+        x = result.x;
+        y = result.y;
       }
     }
     } else { //place color palette in slave symbol
