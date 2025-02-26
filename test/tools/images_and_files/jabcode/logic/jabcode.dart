@@ -16,9 +16,9 @@ void main() {
     ];
 
     for (var elem in _inputsToExpected) {
-      test('input: ${elem['input']}', () {
+      test('input: ${elem['input']}', () async {
         Uint8List content = _getFileData(elem['input'] as String);
-        var _actual = scanBytes(content);
+        var _actual = await scanBytes(content);
         expect(_actual, elem['expectedOutput']);
       });
     }

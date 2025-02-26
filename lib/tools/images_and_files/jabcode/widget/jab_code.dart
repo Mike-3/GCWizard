@@ -153,9 +153,9 @@ class JabCodeState extends State<JabCode> {
         scanBytes(_outData!).then((data) {
           setState(() {
             String text = '';
-            if (data == null || data.item1 == null|| data.item1!.isEmpty) {
+            if (data?.data == null || data!.data!.isEmpty) {
               text = i18n(context, 'jab_code_nothingfound');
-              if (data?.item2 != null) text +="\n" + data!.item2;
+              if (data?.decode_status != null) text +="\n" + data!.decode_status!;
             }
             _outDataDecrypt = text;
           });
