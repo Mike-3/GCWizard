@@ -100,79 +100,79 @@ bool _checkModuleSize2(double size1, double size2) {
       //previous pixel and current pixel
       int prev;
       int curr;
-    if(row >= 0) {		//horizontal scan
-      prev = ch.pixel[row*ch.width + (p-1)];
-      curr = ch.pixel[row*ch.width + p];
-    } else if(col >= 0)	{ //vertical scan
-      prev = ch.pixel[(p-1)*ch.width + col];
-      curr = ch.pixel[p*ch.width + col];
-    } else {
-      return (jab_result: JAB_FAILURE, start: start, end: end, center: center, module_size: module_size, skip: skip);
-    }
+      if(row >= 0) {		//horizontal scan
+        prev = ch.pixel[row*ch.width + (p-1)];
+        curr = ch.pixel[row*ch.width + p];
+      } else if(col >= 0)	{ //vertical scan
+        prev = ch.pixel[(p-1)*ch.width + col];
+        curr = ch.pixel[p*ch.width + col];
+      } else {
+        return (jab_result: JAB_FAILURE, start: start, end: end, center: center, module_size: module_size, skip: skip);
+      }
 
-        //the pixel has the same color as the preceding pixel
-        if(curr == prev) {
-            state_count[cur_state]++;
-        }
-        //the pixel has different color from the preceding pixel
-        if(curr != prev || p == max-1) {
-          //change state
-          if(cur_state < state_number-1) {
-            //check if the current state is valid
-            if(state_count[cur_state] < 3) {
-              if(cur_state == 0) {
-                  state_count[cur_state]=1;
-                  start = p;
-              } else {
-                //combine the current state to the previous one and continue the previous state
-                state_count[cur_state-1] += state_count[cur_state];
-                state_count[cur_state] = 0;
-                cur_state--;
-                state_count[cur_state]++;
-              }
+      //the pixel has the same color as the preceding pixel
+      if(curr == prev) {
+          state_count[cur_state]++;
+      }
+      //the pixel has different color from the preceding pixel
+      if(curr != prev || p == max-1) {
+        //change state
+        if(cur_state < state_number-1) {
+          //check if the current state is valid
+          if(state_count[cur_state] < 3) {
+            if(cur_state == 0) {
+                state_count[cur_state]=1;
+                start = p;
             } else {
-              //enter the next state
-              cur_state++;
-              state_count[cur_state]++;
-            }
-
-          //find a candidate
-          } else {
-            if(state_count[cur_state] < 3) {
               //combine the current state to the previous one and continue the previous state
               state_count[cur_state-1] += state_count[cur_state];
               state_count[cur_state] = 0;
               cur_state--;
               state_count[cur_state]++;
-              continue;
             }
-            //check if it is a valid finder pattern
-            var result = _checkPatternCross(state_count);
-            if(result.jab_result == JAB_SUCCESS) {
-                module_size = result.module_size;
-                end = p+1;
-                if(skip!=0)  skip = state_count[0];
-                int end_pos;
-                if(p == (max - 1) && curr == prev) {
-                  end_pos = p + 1;
-                } else {
-                  end_pos = p;
-                }
-                center = (end_pos - state_count[4] - state_count[3]) - state_count[2] / 2.0;
-                return (jab_result: JAB_SUCCESS, start: start, end: end, center: center, module_size: module_size, skip: skip);
+          } else {
+            //enter the next state
+            cur_state++;
+            state_count[cur_state]++;
+          }
 
-            } else { //check failed, update state_count
-
-              start += state_count[0];
-              for(int k=0; k<state_number-1; k++) {
-                  state_count[k] = state_count[k+1];
+        //find a candidate
+        } else {
+          if(state_count[cur_state] < 3) {
+            //combine the current state to the previous one and continue the previous state
+            state_count[cur_state-1] += state_count[cur_state];
+            state_count[cur_state] = 0;
+            cur_state--;
+            state_count[cur_state]++;
+            continue;
+          }
+          //check if it is a valid finder pattern
+          var result = _checkPatternCross(state_count);
+          if(result.jab_result == JAB_SUCCESS) {
+              module_size = result.module_size;
+              end = p+1;
+              if(skip!=0)  skip = state_count[0];
+              int end_pos;
+              if(p == (max - 1) && curr == prev) {
+                end_pos = p + 1;
+              } else {
+                end_pos = p;
               }
-              state_count[state_number-1] = 1;
-              cur_state = state_number-1;
+              center = (end_pos - state_count[4] - state_count[3]) - state_count[2] / 2.0;
+              return (jab_result: JAB_SUCCESS, start: start, end: end, center: center, module_size: module_size, skip: skip);
+
+          } else { //check failed, update state_count
+
+            start += state_count[0];
+            for(int k=0; k<state_number-1; k++) {
+                state_count[k] = state_count[k+1];
             }
+            state_count[state_number-1] = 1;
+            cur_state = state_number-1;
           }
         }
       }
+    }
   }
   end = max;
   return (jab_result: JAB_FAILURE, start: start, end: end, center: center, module_size: module_size, skip: skip);
