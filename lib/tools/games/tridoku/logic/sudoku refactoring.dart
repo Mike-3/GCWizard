@@ -189,24 +189,25 @@ Map<String, String> _grid_values(List<List<int>> grid) {
 Map<String, String>? _assign(Map<String, String> values, String s, String d) {
   var other_values = values[s]!.replaceAll(d, ''); // Zahl aus Lösungsmöglichkeit für eine Zelle entfernen
 // print(other_values.split('').toList().toString() + ' ' + values[s].toString());
-  print(s + '1: ' + values[s].toString()+ ' ' + other_values.toString());
+  print(s + ' 1: ' + values[s].toString() + ' ' + other_values.toString());
   var t = (other_values.split('').map((d2) => _eliminate(values, s, d2)));
   if (_all(t)) return values;
   // if (_all(other_values.split('').map((d2) => _eliminate(values, s, d2)))) return values;
+  print(s + ' :  null');
   return null;
 }
 
 Map<String, String>? _eliminate(Map<String, String> values, String s, String d) {
   // print(s + '12: ' + values[s].toString());
   if (!values[s]!.contains(d)) return values;
-  // print(s + '2: ' + values[s].toString());
+  print(s + ' 2: ' + values[s].toString());
   values[s] = values[s]!.replaceAll(d, ''); // Zahl aus Lösungsmöglichkeit für eine Zelle entfernen
-  print(s + ' remove: $d ' + values[s].toString());
+  print(s + '_2: ' + values[s].toString());
   if (values[s]!.isEmpty) {
     return null; // keine gültige Lösung
   } else if (values[s]!.length == 1) {
-    // print(s + '3: ' + values[s].toString());
-    print(s + ' solution: ' + values[s].toString());
+    print(s + ' 3: ' + values[s].toString());
+    //print(s + ' solution: ' + values[s].toString());
     var d2 = values[s]!; // Lösung für die Zelle gefunden
     if (!_all(_peers[s]!.map((s2) => _eliminate(values, s2, d2)))) return null;
   }
@@ -239,9 +240,10 @@ List<List<List<int>>>? solve(List<List<int>> grid, {int? maxSolutions}) {
 
   for (Map<String, String> result in results) {
     List<List<int>> output = [];
+    int columnWidth(int row) => (row * 2) + 1;
     for (int i = 0; i < 9; i++) {
       var column = <int>[];
-      for (int j = 0; j < 9; j++) {
+      for (int j = 0; j < columnWidth(i); j++) {
         column.add(int.parse(result[_rows[i] + _cols[j]]!));
       }
       output.add(column);

@@ -49,7 +49,7 @@ Map<String, String> _grid_values(List<List<int>> grid) {
 /// Constraint Propagation
 Map<String, String>? _assign(Map<String, String> values, String s, String d) {
   var other_values = values[s]!.replaceAll(d, '');
-  print(s + '1: ' + values[s].toString() + ' ' + other_values.toString());
+  print(s + ' 1: ' + values[s].toString() + ' ' + other_values.toString());
   if (_all(other_values.split('').map((d2) => _eliminate(values, s, d2)))) return values;
   print(s + ' :  null');
   return null;
@@ -57,12 +57,13 @@ Map<String, String>? _assign(Map<String, String> values, String s, String d) {
 
 Map<String, String>? _eliminate(Map<String, String> values, String s, String d) {
   if (!values[s]!.contains(d)) return values;
-  print(s + '2: ' + values[s].toString());
+  print(s + ' 2: ' + values[s].toString());
   values[s] = values[s]!.replaceAll(d, '');
+  print(s + '_2: ' + values[s].toString());
   if (values[s]!.isEmpty) {
     return null;
   } else if (values[s]!.length == 1) {
-    print(s + '3: ' + values[s].toString());
+    print(s + ' 3: ' + values[s].toString());
     var d2 = values[s]!;
     if (!_all(_peers[s]!.map((s2) => _eliminate(values, s2, d2)))) return null;
   }
@@ -142,6 +143,8 @@ bool _all(Iterable<Map<String, String>?> seq) => seq.every((e) => e != null);
 void main() {
   // https://www.geocaching.com/seek/cache_details.aspx?wp=GC4NJH1&title=#:~:text=Die%20Regeln%20des%20Tridoku%20sind,%C3%A4u%C3%9Feren%20schraffierten%20Dreiecks%20angeordnet%20werden.
   List<List<int>> puzzle = [[4, 5, 0, 0, 0, 0, 0, 6, 0], [0, 0, 7, 9, 4, 0, 0, 0, 0], [0, 8, 0, 0, 0, 1, 0, 0, 7], [0, 0, 1, 0, 0, 0, 0, 0, 5], [0, 0, 8, 7, 0, 0, 4, 0, 0], [0, 6, 9, 4, 3, 0, 0, 0, 1], [0, 1, 0, 5, 6, 0, 0, 7, 2], [2, 0, 0, 1, 0, 0, 0, 0, 3], [0, 0, 0, 3, 0, 2, 0, 0, 0]];
+
+  print(_unitlist);
   solve(puzzle);
   // print(solve(puzzle));
 }
