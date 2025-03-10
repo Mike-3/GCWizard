@@ -1,4 +1,6 @@
 // ported and adjusted for Dart2+ from https://github.com/dartist/sudoku_solver
+import 'package:collection/collection.dart';
+
 /**
     Copyright (c) 2013, Demis Bellot
     Copyright (c) 2013, Adam Singer
@@ -14,7 +16,8 @@
 int _MAX_SOLUTIONS = 1000;
 int _FOUND_SOLUTIONS = 0;
 
-List<String> _cross(String A, String B) => A.split('').expand((a) => B.split('').map((b) => a + b)).toList();
+List<String> _cross(String A, String B) => A.split('').expandIndexed((index, a) => B.substring(0, _columnCount(index)).split('').map((b) => a + b)).toList();
+int _columnCount(int row) => (row * 2) + 1;
 
 const String _digits = '123456789';
 const String _rows = '123456789';
@@ -41,22 +44,22 @@ final List<List<String>> _unitlist = [
   ['4B','4C','4D','4E','4F','5D','5E','5F','6F'],
   ['7B','7C','7D','7E','7F','8D','8E','8F','9F'],
   ['7H','7I','7J','7K','7L','8J','8K','8L','9L'],
-// ['2A','2B','2C','3B','3C','3D'], // Hexagons
-// ['4A','4B','4C','5B','5C','5D'],
-// ['4C','4D','4E','5D','5E','5F'],
-// ['4E','4F','4G','5F','5G','5H'],
-// ['6A','6B','6C','7B','7C','7D'],
-// ['6C','6D','6E','7D','7E','7F'],
-// ['6E','6F','6G','7F','7G','7H'],
-// ['6G','6H','6I','7H','7I','7J'],
-// ['6I','6J','6K','7J','7K','7L'],
-// ['8A','8B','8C','9B','9C','9D'],
-// ['8C','8D','8E','9D','9E','9F'],
-// ['8E','8F','8G','9F','9G','9H'],
-// ['8G','8H','8I','9H','9I','9J'],
-// ['8I','8J','8K','9J','9K','9L'],
-// ['8K','8L','8M','9L','9M','9N'],
-// ['8M','8N','8O','9N','9O','9P'],
+['2A','2B','2C','3B','3C','3D'], // Hexagons
+['4A','4B','4C','5B','5C','5D'],
+['4C','4D','4E','5D','5E','5F'],
+['4E','4F','4G','5F','5G','5H'],
+['6A','6B','6C','7B','7C','7D'],
+['6C','6D','6E','7D','7E','7F'],
+['6E','6F','6G','7F','7G','7H'],
+['6G','6H','6I','7H','7I','7J'],
+['6I','6J','6K','7J','7K','7L'],
+['8A','8B','8C','9B','9C','9D'],
+['8C','8D','8E','9D','9E','9F'],
+['8E','8F','8G','9F','9G','9H'],
+['8G','8H','8I','9H','9I','9J'],
+['8I','8J','8K','9J','9K','9L'],
+['8K','8L','8M','9L','9M','9N'],
+['8M','8N','8O','9N','9O','9P'],
 
 
 // ['1A','2B'], // fields
@@ -158,8 +161,9 @@ Map<String, String>? _parse_grid(List<List<int>> grid) {
   //var s1= s0.first.fold(<String, Set<String>>{}, (map, kv) => map..putIfAbsent(kv.key, () => kv.value));
 // print(s0);
   var s4 = _squares.map((String s) => <String>[s, _digits]);
+  print(s4);
   var s5 = s4.fold(<String, String>{}, (map, kv) => map..putIfAbsent(kv[0], () => kv[1]));
-
+print(s5);
   Map<String, String> values = _squares
       .map((String s) => <String>[s, _digits])
       .fold(<String, String>{}, (map, kv) => map..putIfAbsent(kv[0], () => kv[1]));
@@ -175,9 +179,8 @@ Map<String, String>? _parse_grid(List<List<int>> grid) {
 
 Map<String, String> _grid_values(List<List<int>> grid) {
   Map<String, String> gridMap = {};
-  int columnWidth(int row) => (row * 2) + 1;
   for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < columnWidth(i); j++) {
+    for (int j = 0; j < _columnCount(i); j++) {
       gridMap.putIfAbsent(_rows[i] + _cols[j], () => grid[i][j].toString());
     }
   }
@@ -240,10 +243,9 @@ List<List<List<int>>>? solve(List<List<int>> grid, {int? maxSolutions}) {
 
   for (Map<String, String> result in results) {
     List<List<int>> output = [];
-    int columnWidth(int row) => (row * 2) + 1;
     for (int i = 0; i < 9; i++) {
       var column = <int>[];
-      for (int j = 0; j < columnWidth(i); j++) {
+      for (int j = 0; j < _columnCount(i); j++) {
         column.add(int.parse(result[_rows[i] + _cols[j]]!));
       }
       output.add(column);
