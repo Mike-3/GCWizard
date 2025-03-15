@@ -44,7 +44,8 @@ final List<List<String>> _unitlist = [
   ['4B','4C','4D','4E','4F','5D','5E','5F','6F'],
   ['7B','7C','7D','7E','7F','8D','8E','8F','9F'],
   ['7H','7I','7J','7K','7L','8J','8K','8L','9L'],
-  ['2A','2B','2C','3B','3C','3D']
+  ['3A','3B','3C','4B','4C','4D'],
+  ['3C','3D','3E','4D','4E','4F'],
  // ['2A','2B','2C','3B','3C','3D'], // Hexagons
 // ['4A','4B','4C','5B','5C','5D'],
 // ['4C','4D','4E','5D','5E','5F'],
@@ -162,9 +163,9 @@ Map<String, String>? _parse_grid(List<List<int>> grid) {
   //var s1= s0.first.fold(<String, Set<String>>{}, (map, kv) => map..putIfAbsent(kv.key, () => kv.value));
 // print(s0);
   var s4 = _squares.map((String s) => <String>[s, _digits]);
-  print(s4);
+  // print(s4);
   var s5 = s4.fold(<String, String>{}, (map, kv) => map..putIfAbsent(kv[0], () => kv[1]));
-print(s5);
+// print(s5);
   Map<String, String> values = _squares
       .map((String s) => <String>[s, _digits])
       .fold(<String, String>{}, (map, kv) => map..putIfAbsent(kv[0], () => kv[1]));
@@ -195,6 +196,8 @@ Map<String, String>? _assign(Map<String, String> values, String s, String d) {
 // print(other_values.split('').toList().toString() + ' ' + values[s].toString());
   print(s + ' 1: ' + values[s].toString() + ' ' + other_values.toString());
   var t = (other_values.split('').map((d2) => _eliminate(values, s, d2)));
+  // print(s + ' t: '+ _all(t).toString());
+   // print(s + ' t: '+ (t ?? '').toString());
   if (_all(t)) return values;
   // if (_all(other_values.split('').map((d2) => _eliminate(values, s, d2)))) return values;
   print(s + ' :  null');
@@ -206,11 +209,11 @@ Map<String, String>? _eliminate(Map<String, String> values, String s, String d) 
   if (!values[s]!.contains(d)) return values;
   // print(s + ' 2: ' + values[s].toString());
   values[s] = values[s]!.replaceAll(d, ''); // Zahl aus Lösungsmöglichkeit für eine Zelle entfernen
-  print(s + '_2: ' + values[s].toString());
+  // print(s + '_2: ' + values[s].toString());
   if (values[s]!.isEmpty) {
     return null; // keine gültige Lösung
   } else if (values[s]!.length == 1) {
-    print(s + ' 3: ' + values[s].toString());
+    // print(s + ' 3: ' + values[s].toString());
     //print(s + ' solution: ' + values[s].toString());
     var d2 = values[s]!; // Lösung für die Zelle gefunden
     if (!_all(_peers[s]!.map((s2) => _eliminate(values, s2, d2)))) return null;
@@ -318,6 +321,17 @@ void main() {
     [0, 0, 5, 3, 7, 0, 0, 1, 0, 0, 6, 5, 4, 0, 0],
     [0, 1, 0, 4, 0, 0, 0, 6, 0, 0, 4, 0, 2, 0, 0, 3, 0],
   ];
+ // puzzle1 = [ //https://logic-masters.de/Raetselportal/Raetsel/zeigen.php?chlang=en&id=000DEM
+ //    [6],
+ //    [1, 3, 4],
+ //    [7, 2, 5, 8, 9],
+ //    [5, 6, 3, 1, 7, 2, 1],
+ //    [3, 6, 1, 4, 0, 0, 7, 5, 2],
+ //    [4, 0, 0, 7, 2, 5, 0, 0, 8, 6, 3],
+ //    [0, 6, 2, 0, 5, 0, 0, 3, 0, 1, 7, 2, 8],
+ //    [2, 7, 5, 3, 7, 0, 2, 1, 5, 0, 6, 5, 4, 6, 7],
+ //    [0, 1, 3, 4, 6, 0, 0, 6, 7, 3, 4, 8, 2, 9, 1, 3, 5],
+ //  ];
   print(solve(puzzle1)?.length.toString());
 
   // (solve([[0, 0, 0, 0, 0, 4, 3, 0, 7], [9, 0, 0, 0, 6, 0, 0, 0, 0], [7, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 5, 0, 0, 7, 9, 4], [0, 6, 5, 0, 0, 0, 0, 0, 0], [0, 0, 0, 8, 0, 3, 0, 0, 0], [0, 5, 4, 0, 0, 0, 0, 6, 0], [0, 0, 0, 0, 0, 0, 0, 5, 9], [0, 0, 3, 4, 0, 8, 0, 0, 0]]));
