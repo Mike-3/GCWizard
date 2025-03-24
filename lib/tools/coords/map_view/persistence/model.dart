@@ -65,13 +65,14 @@ class MapPointDAO {
   String coordinateFormat;
   bool isVisible;
   String color;
+  WaypointType? type;
   double? radius;
   bool circleColorSameAsColor;
   String? circleColor;
   bool? isEditable;
 
   MapPointDAO(this.uuid, this.name, this.latitude, this.longitude, this.coordinateFormat, this.isVisible, this.color,
-      this.radius, this.circleColorSameAsColor, this.circleColor, this.isEditable);
+      this.type, this.radius, this.circleColorSameAsColor, this.circleColor, this.isEditable);
 
   Map<String, Object?> toMap() => {
         'uuid': uuid,
@@ -81,6 +82,7 @@ class MapPointDAO {
         'coordinateFormat': coordinateFormat,
         'isVisible': isVisible,
         'color': color,
+        'type': type.toString(),
         'radius': radius,
         'circleColorSameAsColor': circleColorSameAsColor,
         'circleColor': circleColor,
@@ -95,6 +97,7 @@ class MapPointDAO {
         coordinateFormat = toStringOrNull(json['coordinateFormat']) ?? defaultCoordinateFormatPersistenceKey,
         isVisible = toBoolOrNull(json['isVisible']) ?? true,
         color = toStringOrNull(json['color']) ?? colorToHexString(COLOR_MAP_POINT),
+        type = WaypointType.fromString(toStringOrNull(json['type'])),
         radius = toDoubleOrNull(json['radius']),
         circleColorSameAsColor = toBoolOrNull(json['circleColorSameAsColor']) ?? true,
         circleColor = toStringOrNull(json['circleColor']) ?? colorToHexString(COLOR_MAP_POINT),

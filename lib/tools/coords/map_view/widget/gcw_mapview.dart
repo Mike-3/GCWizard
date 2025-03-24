@@ -984,6 +984,7 @@ class _GCWMapViewState extends State<GCWMapView> {
   Widget _buildPopup(Marker marker) {
     ThemeColors colors = themeColors();
     _GCWMarker gcwMarker = marker as _GCWMarker;
+    String _gcwMarkerString = gcwMarker.mapPoint.type.toString();
 
     var height = 100.0;
     if (widget.isEditable) height += 50; // for FROM/TO Line Buttons
@@ -1032,15 +1033,21 @@ class _GCWMapViewState extends State<GCWMapView> {
                     : Container(),
                 gcwMarker.coordinateDescription == null
                     ? Container()
-                    : Container(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        transform: widget.isEditable && !_isOwnPosition(gcwMarker.mapPoint)
-                            ? Matrix4.translationValues(-10.0, 0.0, 0.0)
-                            : null,
-                        child: GCWText(
-                            text: gcwMarker.coordinateDescription!,
-                            style: gcwDialogTextStyle().copyWith(fontWeight: FontWeight.bold)),
-                      ),
+                    : Expanded(
+                      child: Container(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          transform: widget.isEditable && !_isOwnPosition(gcwMarker.mapPoint)
+                              ? Matrix4.translationValues(-10.0, 0.0, 0.0)
+                              : null,
+                          child: Text(
+                              (_gcwMarkerString.isNotEmpty)
+                                  ? '${gcwMarker.coordinateDescription!} ($_gcwMarkerString)'
+                                  : gcwMarker.coordinateDescription!,
+                              style: gcwDialogTextStyle().copyWith(fontWeight: FontWeight.bold),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis),
+                        ),
+                    ),
               ],
             ),
             Container(margin: const EdgeInsets.only(bottom: 5)),
