@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gc_wizard/application/_common/gcw_package_info.dart';
 import 'package:gc_wizard/application/category_views/favorites.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/babylon_numbers_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/base_selection.dart';
@@ -387,12 +388,16 @@ class _MainViewState extends State<MainView> {
       }
 
       if (countAppOpened > 0 && (countAppOpened == 10 || countAppOpened % _SHOW_SUPPORT_HINT_EVERY_N == 0)) {
-        showGCWAlertDialog(
-          context,
-          i18n(context, 'common_support_title'),
-          i18n(context, 'common_support_text', parameters: [Prefs.getInt(PREFERENCE_APP_COUNT_OPENED)]),
-          () => launchUrl(Uri.parse(i18n(context, 'common_support_link'))),
-        );
+        _checkForGoldVersion().then((value) {
+          if (!value) {
+            showGCWAlertDialog(
+              context,
+              i18n(context, 'common_support_title'),
+              i18n(context, 'common_support_text', parameters: [Prefs.getInt(PREFERENCE_APP_COUNT_OPENED)]),
+                  () => launchUrl(Uri.parse(i18n(context, 'common_support_link'))),
+            );
+          }
+        });
       }
     });
   }
@@ -403,6 +408,11 @@ class _MainViewState extends State<MainView> {
     _searchController.dispose();
 
     super.dispose();
+  }
+
+  Future<bool> _checkForGoldVersion() async {
+    await GCWPackageInfo.init();
+    return GCWPackageInfo.getInstance().appName.toLowerCase().contains('gold');
   }
 
   @override
@@ -637,7 +647,7 @@ void _initStaticToolList() {
       className(const EquilateralTriangle()),
       className(const ESelection()),
       className(const FormatConverter()),
-      className(const FormulaSolverFormulaGroups()),
+      className(FormulaSolverFormulaGroups()),
       className(const FourteenSegments()),
       className(const Fox()),
       className(const Gade()),
@@ -843,7 +853,7 @@ void _initStaticToolList() {
     return [
       className(const CoordsSelection()),
       className(const CryptographySelection()),
-      className(const FormulaSolverFormulaGroups()),
+      className(FormulaSolverFormulaGroups()),
       className(const GamesSelection()),
       className(const GeneralCodebreakersSelection()),
       className(const ImagesAndFilesSelection()),
