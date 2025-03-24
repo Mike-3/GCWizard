@@ -378,7 +378,7 @@ class _MainViewState extends State<MainView> {
           cancelButton: false);
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async{
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       var countAppOpened = Prefs.getInt(PREFERENCE_APP_COUNT_OPENED);
 
       if (countAppOpened > 1 && Prefs.getString(PREFERENCE_CHANGELOG_DISPLAYED) != CHANGELOG.keys.first) {
