@@ -31,6 +31,8 @@ enum FileType {
   WMV,
   WAV,
   MP3,
+  MP4,
+  WEBM,
   OGG,
   SND,
   FDL,
@@ -48,7 +50,7 @@ enum FileType {
   LUA,
 }
 
-enum FileClass { IMAGE, ARCHIVE, SOUND, DATA, TEXT, BINARY }
+enum FileClass { IMAGE, ARCHIVE, SOUND, DATA, TEXT, BINARY, VIDEO }
 
 class FileTypeInfo {
   final List<String> extensions;
@@ -235,6 +237,20 @@ const Map<FileType, FileTypeInfo> _FILE_TYPES = {
     'audio/mpeg3',
     'audio/x-mpeg-3'
   ], file_class: FileClass.SOUND),
+  FileType.MP4: FileTypeInfo(extensions: [
+    'mp4'
+  ], magic_bytes: <List<int>>[
+      [0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D]
+    ], mime_types: [
+      'video/mp4', 'audio/mp4'
+   ], file_class: FileClass.VIDEO),
+  FileType.WEBM: FileTypeInfo(extensions: [
+    'webm'
+  ], magic_bytes: <List<int>>[
+    [0x1A, 0x45, 0xDF, 0xA3]
+    ], mime_types: [
+      'video/webm'
+  ], file_class: FileClass.VIDEO),
   FileType.OGG: FileTypeInfo(extensions: [
     'ogg',
     'oga'
@@ -490,7 +506,7 @@ Future<File> _createTmpFile(String extension, Uint8List bytes) async {
   return File(filePath).writeAsBytes(bytes);
 }
 
-Future<bool> _createDirectory(String directory) async {
+Future<bool> createDirectory(String directory) async {
   try {
     await Directory(directory).create(recursive: true);
     return true;
@@ -499,7 +515,7 @@ Future<bool> _createDirectory(String directory) async {
   }
 }
 
-Future<bool> _deleteDirectory(String directory) async {
+Future<bool> deleteDirectory(String directory) async {
   try {
     await Directory(directory).delete(recursive: true);
     return true;
@@ -629,7 +645,7 @@ Future<List<GCWFile>> _extractRarArchive(Uint8List bytes, {String? password}) as
   var directory = changeExtension(tmpFile.path, '');
 
   try {
-    await _createDirectory(directory);
+    await createDirectory(directory);
     await UnrarFile.extract_rar(tmpFile.path, directory + '/', password: password);
 
     Directory(directory).listSync(recursive: true).whereType<File>().map((entity) async {
@@ -639,7 +655,7 @@ Future<List<GCWFile>> _extractRarArchive(Uint8List bytes, {String? password}) as
   } catch (e) {}
 
   _deleteFile(tmpFile.path);
-  _deleteDirectory(directory);
+  deleteDirectory(directory);
 
   return fileList;
 }

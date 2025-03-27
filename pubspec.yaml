@@ -64,6 +64,10 @@ dependencies:
   uuid: ^4.5.1
   url_launcher: ^6.3.1
   utility: ^1.0.3
+  video_compress: ^3.0.0
+  video_player: ^2.4.7
+  video_thumbnail: ^0.5.3
+  ffmpeg_kit_flutter: ^5.1.0-LTS
   week_of_year: ^2.0.0
   xml: ^6.3.0
 
