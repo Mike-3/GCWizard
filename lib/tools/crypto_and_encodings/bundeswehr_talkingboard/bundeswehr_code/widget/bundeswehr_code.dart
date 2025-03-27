@@ -44,7 +44,7 @@ class _BundeswehrTalkingBoardObfuscationState
   TABLE_SOURCE _tableSource = TABLE_SOURCE.NONE;
 
   BundeswehrTalkingBoardAuthentificationTable? _tableNumeralCode;
-  final List<String> _tableAuthentificationCode = [
+  static const List<String> _tableAuthentificationCode = [
     '00',
     '01',
     '02',
