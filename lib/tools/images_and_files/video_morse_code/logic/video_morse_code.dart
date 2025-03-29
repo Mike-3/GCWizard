@@ -80,13 +80,13 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, int interva
 }
 
 Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall,
-    int startTime,
-    int endTime,
+    int? startTime,
+    int? endTime,
     IVideoCompress videoCompress,
     Point<double> topLeft,
     Point<double> bottomRight,
     Function isCancelled,
-    { required SendPort sendAsyncPort}) async {
+    {SendPort? sendAsyncPort}) async {
 
   String tmpDir = (await getTemporaryDirectory()).path;
   var videoDir = '$tmpDir/video';
@@ -119,7 +119,8 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   List<int> durationList = [];
   List<double> luminanceList = [];
   var videoInfo = await VideoCompress.getMediaInfo(videoPath);
-  endTime = (endTime == null ? videoInfo.duration.toInt() : min(endTime, videoInfo.duration.toInt()));
+  if (videoInfo.duration == null) return {};
+  endTime = (endTime == null ? videoInfo.duration!.toInt() : min(endTime, videoInfo.duration!.toInt()));
   var timeStamp = (startTime == null ? 0 : min(startTime, endTime));
   var _total =  (endTime - timeStamp) / intervall;
   int _progressStep = max((_total / 100).toInt(), 1);
@@ -162,7 +163,7 @@ var time = DateTime.now();
 }
 
 
-Future<Uint8List> _createThumbnailImage(String videoPath, int timeStampMs, IVideoCompress videoCompress ) async {
+Future<Uint8List?> _createThumbnailImage(String videoPath, int timeStampMs, IVideoCompress videoCompress ) async {
   return VideoThumbnail.thumbnailData(
     video: videoPath,
     maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
