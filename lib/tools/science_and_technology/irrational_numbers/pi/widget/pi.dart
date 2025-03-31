@@ -5,13 +5,13 @@ import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/irrati
 import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/pi/logic/pi.dart';
 
 class PiNthDecimal extends IrrationalNumbersNthDecimal {
-  const PiNthDecimal({Key? key}) : super(key: key, irrationalNumber: PI);
+  const PiNthDecimal({super.key}) : super(irrationalNumber: PI);
 }
 
 class PiDecimalRange extends IrrationalNumbersDecimalRange {
-  const PiDecimalRange({Key? key}) : super(key: key, irrationalNumber: PI);
+  const PiDecimalRange({super.key}) : super(irrationalNumber: PI);
 }
 
 class PiSearch extends IrrationalNumbersSearch {
-  const PiSearch({Key? key}) : super(key: key, irrationalNumber: PI);
+  const PiSearch({super.key}) : super(irrationalNumber: PI);
 }

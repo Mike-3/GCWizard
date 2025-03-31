@@ -4,9 +4,8 @@ import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/unix_time/logic/unix_time.dart';
 
 class UnixTime extends EpochTime {
-  const UnixTime({Key? key})
+  const UnixTime({super.key})
       : super(
-            key: key,
             min: 0,
             max: 864000000000, //max days in seconds according to DateTime https://stackoverflow.com/questions/67144785/flutter-dart-datetime-max-min-value
             epochType: EPOCH_TIMES.UNIX,

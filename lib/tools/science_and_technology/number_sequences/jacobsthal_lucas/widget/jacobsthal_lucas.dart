@@ -7,26 +7,26 @@ import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_range.dart';
 
 class NumberSequenceJacobsthalLucasCheckNumber extends NumberSequenceCheckNumber {
-  const NumberSequenceJacobsthalLucasCheckNumber({Key? key})
-      : super(key: key, mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxIndex: 111111);
+  const NumberSequenceJacobsthalLucasCheckNumber({super.key})
+      : super(mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxIndex: 111111);
 }
 
 class NumberSequenceJacobsthalLucasDigits extends NumberSequenceDigits {
-  const NumberSequenceJacobsthalLucasDigits({Key? key})
-      : super(key: key, mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxDigits: 1111);
+  const NumberSequenceJacobsthalLucasDigits({super.key})
+      : super(mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxDigits: 1111);
 }
 
 class NumberSequenceJacobsthalLucasRange extends NumberSequenceRange {
-  const NumberSequenceJacobsthalLucasRange({Key? key})
-      : super(key: key, mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxIndex: 111111);
+  const NumberSequenceJacobsthalLucasRange({super.key})
+      : super(mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxIndex: 111111);
 }
 
 class NumberSequenceJacobsthalLucasNthNumber extends NumberSequenceNthNumber {
-  const NumberSequenceJacobsthalLucasNthNumber({Key? key})
-      : super(key: key, mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxIndex: 111111);
+  const NumberSequenceJacobsthalLucasNthNumber({super.key})
+      : super(mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxIndex: 111111);
 }
 
 class NumberSequenceJacobsthalLucasContainsDigits extends NumberSequenceContainsDigits {
-  const NumberSequenceJacobsthalLucasContainsDigits({Key? key})
-      : super(key: key, mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxIndex: 11111);
+  const NumberSequenceJacobsthalLucasContainsDigits({super.key})
+      : super(mode: NumberSequencesMode.JACOBSTHAL_LUCAS, maxIndex: 11111);
 }

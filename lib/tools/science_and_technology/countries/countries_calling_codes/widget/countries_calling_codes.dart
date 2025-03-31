@@ -3,5 +3,5 @@ import 'package:gc_wizard/tools/science_and_technology/countries/countries/widge
 import 'package:gc_wizard/tools/science_and_technology/countries/logic/countries.dart';
 
 class CountriesCallingCodes extends Countries {
-  CountriesCallingCodes({Key? key}) : super(key: key, fields: [CountryProperties.callingcode]);
+  CountriesCallingCodes({super.key}) : super(fields: [CountryProperties.callingcode]);
 }

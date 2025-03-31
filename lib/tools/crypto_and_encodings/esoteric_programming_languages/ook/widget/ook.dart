@@ -3,9 +3,8 @@ import 'package:gc_wizard/tools/crypto_and_encodings/esoteric_programming_langua
 import 'package:gc_wizard/tools/crypto_and_encodings/esoteric_programming_languages/brainfk/widget/brainfk.dart';
 
 class Ook extends Brainfk {
-  Ook({Key? key})
+  Ook({super.key})
       : super(
-            key: key,
             interpret: BRAINFKDERIVATIVE_SHORTOOK.interpretBrainfkDerivatives,
             generate: BRAINFKDERIVATIVE_OOK.generateBrainfkDerivative);
 }

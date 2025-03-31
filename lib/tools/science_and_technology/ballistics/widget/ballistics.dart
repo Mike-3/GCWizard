@@ -21,7 +21,7 @@ import 'package:gc_wizard/tools/science_and_technology/unit_converter/logic/unit
 import 'package:gc_wizard/tools/science_and_technology/ballistics/logic/ballistics.dart';
 
 class Ballistics extends StatefulWidget {
-  const Ballistics({Key? key}) : super(key: key);
+  const Ballistics({super.key});
 
   @override
   BallisticsState createState() => BallisticsState();

@@ -7,22 +7,22 @@ import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/widget/numbersequences_range.dart';
 
 class NumberSequenceLucasCheckNumber extends NumberSequenceCheckNumber {
-  const NumberSequenceLucasCheckNumber({Key? key}) : super(key: key, mode: NumberSequencesMode.LUCAS, maxIndex: 111111);
+  const NumberSequenceLucasCheckNumber({super.key}) : super(mode: NumberSequencesMode.LUCAS, maxIndex: 111111);
 }
 
 class NumberSequenceLucasDigits extends NumberSequenceDigits {
-  const NumberSequenceLucasDigits({Key? key}) : super(key: key, mode: NumberSequencesMode.LUCAS, maxDigits: 1111);
+  const NumberSequenceLucasDigits({super.key}) : super(mode: NumberSequencesMode.LUCAS, maxDigits: 1111);
 }
 
 class NumberSequenceLucasRange extends NumberSequenceRange {
-  const NumberSequenceLucasRange({Key? key}) : super(key: key, mode: NumberSequencesMode.LUCAS, maxIndex: 111111);
+  const NumberSequenceLucasRange({super.key}) : super(mode: NumberSequencesMode.LUCAS, maxIndex: 111111);
 }
 
 class NumberSequenceLucasNthNumber extends NumberSequenceNthNumber {
-  const NumberSequenceLucasNthNumber({Key? key}) : super(key: key, mode: NumberSequencesMode.LUCAS, maxIndex: 111111);
+  const NumberSequenceLucasNthNumber({super.key}) : super(mode: NumberSequencesMode.LUCAS, maxIndex: 111111);
 }
 
 class NumberSequenceLucasContainsDigits extends NumberSequenceContainsDigits {
-  const NumberSequenceLucasContainsDigits({Key? key})
-      : super(key: key, mode: NumberSequencesMode.LUCAS, maxIndex: 11111);
+  const NumberSequenceLucasContainsDigits({super.key})
+      : super(mode: NumberSequencesMode.LUCAS, maxIndex: 11111);
 }

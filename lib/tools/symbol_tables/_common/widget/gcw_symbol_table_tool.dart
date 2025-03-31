@@ -10,17 +10,15 @@ class GCWSymbolTableTool extends GCWTool {
 
 
   GCWSymbolTableTool({
-    Key? key,
+    super.key,
     required this.symbolKey,
     required this.symbolSearchStrings,
-    List<ToolLicenseEntry>? licenses,
+    super.licenses,
   }) : super(
-            key: key,
             tool: SymbolTable(symbolKey: symbolKey),
             id: 'symboltables_' + symbolKey,
             autoScroll: false,
             iconPath: SYMBOLTABLES_ASSETPATH + symbolKey + '/logo.png',
             helpSearchString: 'symboltables_selection_title',
-            searchKeys: ['symbol'] + symbolSearchStrings,
-            licenses: licenses);
+            searchKeys: ['symbol'] + symbolSearchStrings);
 }

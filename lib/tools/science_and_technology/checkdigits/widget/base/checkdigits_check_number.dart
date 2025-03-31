@@ -17,9 +17,9 @@ class CheckDigitsCheckNumber extends StatefulWidget {
   final CheckDigitsMode mode;
 
   const CheckDigitsCheckNumber({
-    Key? key,
+    super.key,
     required this.mode,
-  }) : super(key: key);
+  });
 
   @override
   CheckDigitsCheckNumberState createState() => CheckDigitsCheckNumberState();

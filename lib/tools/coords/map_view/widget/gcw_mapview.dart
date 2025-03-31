@@ -73,8 +73,7 @@ class GCWMapView extends StatefulWidget {
   late List<GCWMapPolyline> polylines;
   final bool isEditable;
 
-  GCWMapView({Key? key, required this.points, List<GCWMapPolyline>? polylines, this.isEditable = false})
-      : super(key: key) {
+  GCWMapView({super.key, required this.points, List<GCWMapPolyline>? polylines, this.isEditable = false}) {
     this.polylines = polylines ?? [];
   }
 
@@ -1253,11 +1252,11 @@ class _GCWMarker extends Marker {
   _GCWMarker({
     this.coordinateDescription,
     required this.mapPoint,
-    required Widget child,
-    required double width,
-    required double height,
-    required Alignment alignment
-  }) : super(point: mapPoint.point, child: child, width: width, height: height, alignment: alignment);
+    required super.child,
+    required super.width,
+    required super.height,
+    required Alignment super.alignment
+  }) : super(point: mapPoint.point);
 }
 
 class _GCWTappablePolyline extends Polyline {

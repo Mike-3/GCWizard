@@ -43,9 +43,8 @@ const String _apiSpecification = '''
 ''';
 
 class Base64 extends AbstractBase {
-  Base64({Key? key})
+  Base64({super.key})
       : super(
-            key: key,
             encode: encodeBase64,
             decode: decodeBase64,
             searchMultimedia: true,

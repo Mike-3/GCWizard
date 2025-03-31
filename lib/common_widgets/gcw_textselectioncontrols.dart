@@ -124,7 +124,7 @@ void handleSelectAll1(TextSelectionDelegate delegate) {
 
 class _GCWTextSelectionToolbar extends StatefulWidget {
   const _GCWTextSelectionToolbar({
-    Key? key,
+    super.key,
     required this.anchorAbove,
     required this.anchorBelow,
     this.clipboardStatus,
@@ -136,7 +136,7 @@ class _GCWTextSelectionToolbar extends StatefulWidget {
 
     /// Custom
     required this.handleGCWPasteButton,
-  }) : super(key: key);
+  });
 
   final Offset anchorAbove;
   final Offset anchorBelow;

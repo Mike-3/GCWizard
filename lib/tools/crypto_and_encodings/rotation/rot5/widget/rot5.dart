@@ -30,5 +30,5 @@ const String _apiSpecification = '''
 ''';
 
 class Rot5 extends AbstractRotation {
-  Rot5({Key? key}) : super(key: key, rotate: Rotator().rot5, apiSpecification: _apiSpecification);
+  Rot5({super.key}) : super(rotate: Rotator().rot5, apiSpecification: _apiSpecification);
 }

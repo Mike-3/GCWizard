@@ -3,9 +3,8 @@ import 'package:gc_wizard/tools/science_and_technology/segment_display/_common/l
 import 'package:gc_wizard/tools/science_and_technology/segment_display/_common/widget/segment_display.dart';
 
 class SevenSegments extends SegmentDisplay {
-  const SevenSegments({Key? key})
+  const SevenSegments({super.key})
       : super(
-          key: key,
           type: SegmentDisplayType.SEVEN,
         );
 }

@@ -5,13 +5,13 @@ import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/irrati
 import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/irrationalnumbers_search/widget/irrationalnumbers_search.dart';
 
 class ENthDecimal extends IrrationalNumbersNthDecimal {
-  const ENthDecimal({Key? key}) : super(key: key, irrationalNumber: E);
+  const ENthDecimal({super.key}) : super(irrationalNumber: E);
 }
 
 class EDecimalRange extends IrrationalNumbersDecimalRange {
-  const EDecimalRange({Key? key}) : super(key: key, irrationalNumber: E);
+  const EDecimalRange({super.key}) : super(irrationalNumber: E);
 }
 
 class ESearch extends IrrationalNumbersSearch {
-  const ESearch({Key? key}) : super(key: key, irrationalNumber: E);
+  const ESearch({super.key}) : super(irrationalNumber: E);
 }

@@ -5,13 +5,13 @@ import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/irrati
 import 'package:gc_wizard/tools/science_and_technology/irrational_numbers/silver_ratio/logic/silver_ratio.dart';
 
 class SilverRatioNthDecimal extends IrrationalNumbersNthDecimal {
-  const SilverRatioNthDecimal({Key? key}) : super(key: key, irrationalNumber: SilverRatio);
+  const SilverRatioNthDecimal({super.key}) : super(irrationalNumber: SilverRatio);
 }
 
 class SilverRatioDecimalRange extends IrrationalNumbersDecimalRange {
-  const SilverRatioDecimalRange({Key? key}) : super(key: key, irrationalNumber: SilverRatio);
+  const SilverRatioDecimalRange({super.key}) : super(irrationalNumber: SilverRatio);
 }
 
 class SilverRatioSearch extends IrrationalNumbersSearch {
-  const SilverRatioSearch({Key? key}) : super(key: key, irrationalNumber: SilverRatio);
+  const SilverRatioSearch({super.key}) : super(irrationalNumber: SilverRatio);
 }
