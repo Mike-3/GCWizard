@@ -63,8 +63,7 @@ const _CHAPPE_RELATIVE_DISPLAY_WIDTH = 180;
 const _CHAPPE_RELATIVE_DISPLAY_HEIGHT = 200;
 
 class _ChappeTelegraphSegmentDisplay extends NSegmentDisplay {
-  _ChappeTelegraphSegmentDisplay(
-      {super.key,
+  _ChappeTelegraphSegmentDisplay({
         required super.segments,
         super.readOnly,
         super.onChanged})

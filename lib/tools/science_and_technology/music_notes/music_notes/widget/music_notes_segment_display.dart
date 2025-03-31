@@ -50,8 +50,7 @@ const _NOTES_RELATIVE_DISPLAY_WIDTH_OUTPUT = 160;
 const _NOTES_RELATIVE_DISPLAY_HEIGHT = 445;
 
 class _NotesSegmentDisplay extends NSegmentDisplay {
-  _NotesSegmentDisplay(
-      {super.key,
+  _NotesSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

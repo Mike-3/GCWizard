@@ -19,7 +19,6 @@ const _STEINHEIL_RADIUS = 10;
 class _SteinheilSegmentDisplay extends NSegmentDisplay {
 
   _SteinheilSegmentDisplay({
-    super.key,
     required super.segments,
     super.readOnly,
     super.onChanged})

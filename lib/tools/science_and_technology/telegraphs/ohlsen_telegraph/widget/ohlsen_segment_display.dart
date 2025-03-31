@@ -26,8 +26,7 @@ const _OHLSEN_RELATIVE_DISPLAY_HEIGHT = 160;
 const _OHLSEN_RADIUS = 10.0;
 
 class _OhlsenSegmentDisplay extends NSegmentDisplay {
-  _OhlsenSegmentDisplay(
-      {super.key,
+  _OhlsenSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

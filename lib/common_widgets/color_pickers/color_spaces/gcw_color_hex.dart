@@ -4,7 +4,7 @@ class _GCWColorHexCode extends StatefulWidget {
   final void Function(HexCode) onChanged;
   final HexCode? color;
 
-  const _GCWColorHexCode({super.key, required this.onChanged, this.color});
+  const _GCWColorHexCode({required this.onChanged, this.color});
 
   @override
   _GCWColorHexCodeState createState() => _GCWColorHexCodeState();

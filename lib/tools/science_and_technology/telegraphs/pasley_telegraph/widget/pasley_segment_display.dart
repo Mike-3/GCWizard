@@ -14,8 +14,7 @@ const _PASLEY_RELATIVE_DISPLAY_WIDTH = 180;
 const _PASLEY_RELATIVE_DISPLAY_HEIGHT = 200;
 
 class _PasleyTelegraphSegmentDisplay extends NSegmentDisplay {
-  _PasleyTelegraphSegmentDisplay(
-      {super.key,
+  _PasleyTelegraphSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

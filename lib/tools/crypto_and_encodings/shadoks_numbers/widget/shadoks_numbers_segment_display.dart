@@ -21,8 +21,7 @@ double _relativeY(Size size, double y) {
 }
 
 class _ShadoksNumbersSegmentDisplay extends NSegmentDisplay {
-  _ShadoksNumbersSegmentDisplay(
-      {super.key,
+  _ShadoksNumbersSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

@@ -18,8 +18,7 @@ const _PREDATOR_RELATIVE_DISPLAY_WIDTH = 170; //110;
 const _PREDATOR_RELATIVE_DISPLAY_HEIGHT = 300; //100;
 
 class _PredatorSegmentDisplay extends NSegmentDisplay {
-  _PredatorSegmentDisplay(
-      {super.key,
+  _PredatorSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

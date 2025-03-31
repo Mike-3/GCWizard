@@ -27,7 +27,7 @@ void _showFormulaReplaceDialog(BuildContext context, List<Formula> formulas,
 class _FormulaReplace extends StatefulWidget {
   final List<Formula> formulas;
 
-  const _FormulaReplace({super.key, required this.formulas});
+  const _FormulaReplace({required this.formulas});
 
   @override
   _FormulaReplaceState createState() => _FormulaReplaceState();

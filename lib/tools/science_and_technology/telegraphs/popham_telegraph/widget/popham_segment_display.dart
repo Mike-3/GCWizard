@@ -19,8 +19,7 @@ const _POPHAM_RELATIVE_DISPLAY_WIDTH = 110;
 const _POPHAM_RELATIVE_DISPLAY_HEIGHT = 130;
 
 class _PophamTelegraphSegmentDisplay extends NSegmentDisplay {
-  _PophamTelegraphSegmentDisplay(
-      {super.key,
+  _PophamTelegraphSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

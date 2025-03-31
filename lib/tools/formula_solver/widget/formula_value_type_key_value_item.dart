@@ -2,7 +2,6 @@ part of 'package:gc_wizard/tools/formula_solver/widget/formula_solver_formulagro
 
 class _FormulaValueTypeKeyValueItem extends GCWKeyValueItem {
   _FormulaValueTypeKeyValueItem({
-    super.key,
     required super.keyValueEntry,
     required super.odd,
     required super.validateEditedKey,

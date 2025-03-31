@@ -18,8 +18,7 @@ const _EDELCRANTZ_RELATIVE_DISPLAY_HEIGHT = 150;
 const _EDELCRANTZ_RADIUS = 10.0;
 
 class _EdelcrantzSegmentDisplay extends NSegmentDisplay {
-  _EdelcrantzSegmentDisplay(
-      {super.key,
+  _EdelcrantzSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

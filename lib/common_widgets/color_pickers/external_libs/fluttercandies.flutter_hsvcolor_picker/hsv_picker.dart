@@ -10,7 +10,7 @@ class _SliderPicker extends StatefulWidget {
   final List<Color>? colors;
 
   const _SliderPicker(
-      {super.key, this.min = 0.0, this.max = 1.0, required this.value, required this.onChanged, this.colors})
+      {this.min = 0.0, this.max = 1.0, required this.value, required this.onChanged, this.colors})
       : assert(value >= min && value <= max);
 
   @override
@@ -136,7 +136,7 @@ class _HSVPicker extends StatefulWidget {
   final HSVColor color;
   final ValueChanged<HSVColor> onChanged;
 
-  const _HSVPicker({super.key, required this.color, required this.onChanged});
+  const _HSVPicker({required this.color, required this.onChanged});
 
   @override
   _HSVPickerState createState() => _HSVPickerState();

@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:gc_wizard/application/tools/tool_licenses/widget/tool_license_types.dart';
 import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/logic/symbol_table_data.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/symbol_table.dart';

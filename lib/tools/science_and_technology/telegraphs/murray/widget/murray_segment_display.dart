@@ -7,8 +7,7 @@ const _MURRAY_RELATIVE_DISPLAY_HEIGHT = 110;
 const _MURRAY_RADIUS = 10.0;
 
 class _MurraySegmentDisplay extends NSegmentDisplay {
-  _MurraySegmentDisplay(
-      {super.key,
+  _MurraySegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

@@ -26,8 +26,7 @@ const _INITIAL_SEGMENTS = <String, bool>{
 
 class _CistercianNumbersSegmentDisplay extends NSegmentDisplay {
   _CistercianNumbersSegmentDisplay(
-      {super.key,
-      required super.segments,
+      {required super.segments,
       bool readOnly = false,
       super.onChanged})
       : super(

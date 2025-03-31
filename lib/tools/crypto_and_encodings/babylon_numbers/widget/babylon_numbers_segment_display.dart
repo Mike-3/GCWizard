@@ -31,8 +31,7 @@ double _relativeY(Size size, double y) {
 const _TRANSPARENT_COLOR = Color.fromARGB(0, 0, 0, 0);
 
 class _BabylonNumbersSegmentDisplay extends NSegmentDisplay {
-  _BabylonNumbersSegmentDisplay(
-      {super.key,
+  _BabylonNumbersSegmentDisplay({
       required super.segments,
       bool readOnly = false,
       super.onChanged})

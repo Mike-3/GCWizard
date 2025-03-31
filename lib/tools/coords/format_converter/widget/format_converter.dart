@@ -171,7 +171,7 @@ class _FormatConverterState extends State<FormatConverter> {
 
 class _GCWCoordsFormatSelectorAll extends GCWCoordsFormatSelector {
   const _GCWCoordsFormatSelectorAll(
-      {super.key, required super.onChanged, required super.format})
+      {required super.onChanged, required super.format})
       : super(input: false);
 
   @override

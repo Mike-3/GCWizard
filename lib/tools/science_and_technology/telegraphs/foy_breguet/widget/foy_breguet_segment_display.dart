@@ -21,8 +21,7 @@ const _CHAPPE_RELATIVE_DISPLAY_WIDTH = 180;
 const _CHAPPE_RELATIVE_DISPLAY_HEIGHT = 200;
 
 class _FoyBreguetTelegraphSegmentDisplay extends NSegmentDisplay {
-  _FoyBreguetTelegraphSegmentDisplay(
-      {super.key,
+  _FoyBreguetTelegraphSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

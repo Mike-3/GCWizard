@@ -17,8 +17,7 @@ const _SEMAPHORE_RELATIVE_DISPLAY_WIDTH = 360; //110;
 const _SEMAPHORE_RELATIVE_DISPLAY_HEIGHT = 260; //100;
 
 class _SemaphoreSegmentDisplay extends NSegmentDisplay {
-  _SemaphoreSegmentDisplay(
-      {super.key,
+  _SemaphoreSegmentDisplay({
       required super.segments,
       super.readOnly,
       super.onChanged})

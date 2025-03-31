@@ -4,7 +4,7 @@ class _ColorHSV extends StatefulWidget {
   final void Function(HSV) onChanged;
   final HSV? color;
 
-  const _ColorHSV({super.key, required this.onChanged, this.color});
+  const _ColorHSV({required this.onChanged, this.color});
 
   @override
   _ColorHSVState createState() => _ColorHSVState();

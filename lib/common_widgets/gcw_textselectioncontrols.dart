@@ -124,7 +124,6 @@ void handleSelectAll1(TextSelectionDelegate delegate) {
 
 class _GCWTextSelectionToolbar extends StatefulWidget {
   const _GCWTextSelectionToolbar({
-    super.key,
     required this.anchorAbove,
     required this.anchorBelow,
     this.clipboardStatus,
