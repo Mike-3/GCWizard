@@ -1263,14 +1263,7 @@ class _GCWTappablePolyline extends Polyline {
   GCWMapSimpleGeometry child;
 
   _GCWTappablePolyline(
-      {required List<LatLng> points, required double strokeWidth, required Color color, required this.child,
-        Object? hitValue})
-      : super(
-          points: points,
-          strokeWidth: strokeWidth,
-          color: color,
-          hitValue: hitValue
-        );
+      {required super.points, required super.strokeWidth, required super.color, required this.child});
 }
 
 class _GCWMapPopupController {

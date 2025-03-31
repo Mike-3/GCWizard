@@ -362,9 +362,9 @@ class CheckDigitsCheckNumberState extends State<CheckDigitsCheckNumber> {
           lineElements = line.split('=');
           if (lineElements.length == 2) {
             if (lineElements[0] == 'content') {
-              data.add([lineElements[0], OPENGTINDB_CONTENTS[lineElements[1]].toString()]);
+              data.add([lineElements[0], OPENGTINDB_CONTENTS[lineElements[1] as int].toString()]);
             } else if (lineElements[0] == 'packs') {
-              data.add([lineElements[0], OPENGTINDB_PACKS[lineElements[1]].toString()]);
+              data.add([lineElements[0], OPENGTINDB_PACKS[lineElements[1] as int].toString()]);
             } else {
               data.add([lineElements[0], lineElements[1]]);
             }

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:gc_wizard/tools/science_and_technology/checkdigits/logic/checkdigits.dart';
 import 'package:gc_wizard/tools/science_and_technology/checkdigits/widget/base/checkdigits_calculate_checkdigit.dart';
 import 'package:gc_wizard/tools/science_and_technology/checkdigits/widget/base/checkdigits_calculate_missingdigit.dart';
