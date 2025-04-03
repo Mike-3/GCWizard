@@ -1,5 +1,4 @@
 import "package:flutter_test/flutter_test.dart";
-import 'package:gc_wizard/tools/coords/_common/logic/default_coord_getter.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/ellipsoid.dart';
 import 'package:gc_wizard/tools/science_and_technology/astronomy/_common/logic/julian_date.dart';
 import 'package:gc_wizard/tools/science_and_technology/astronomy/sun_position/logic/sun_position.dart' as logic;import 'package:gc_wizard/utils/complex_return_types.dart';
@@ -24,7 +23,7 @@ void main() {
         'minute': 9,
         'second': 0,
         'utc': 2,
-        'coords': LatLng(52.43115, 13.4337),
+        'coords': const LatLng(52.43115, 13.4337),
         'expectedOutputAzimuth': 247.35,
         'expectedOutputAltitude': 45.24,
       },
@@ -36,7 +35,7 @@ void main() {
         'minute': 53,
         'second': 42,
         'utc': -10,
-        'coords': LatLng(21.3, -157.85),
+        'coords': const LatLng(21.3, -157.85),
         'expectedOutputAzimuth': 190.01,
         'expectedOutputAltitude': 68.24,
       },
@@ -48,7 +47,7 @@ void main() {
         'minute': 53,
         'second': 42,
         'utc': 11,
-        'coords': LatLng(-38.13455, 145.371093),
+        'coords': const LatLng(-38.13455, 145.371093),
         'expectedOutputAzimuth': 13.2,
         'expectedOutputAltitude': 51.65,
       },
@@ -60,7 +59,7 @@ void main() {
         'minute': 53,
         'second': 42,
         'utc': -3,
-        'coords': LatLng(-55.07836, -67.851562),
+        'coords': const LatLng(-55.07836, -67.851562),
         'expectedOutputAzimuth': 13.78,
         'expectedOutputAltitude': 34.45,
       },

@@ -8,7 +8,7 @@ class TupperFormulaBoard extends StatefulWidget {
   final void Function(List<List<bool>>) onChanged;
   final List<List<bool>> state;
 
-  const TupperFormulaBoard({Key? key, required this.onChanged, required this.state}) : super(key: key);
+  const TupperFormulaBoard({super.key, required this.onChanged, required this.state});
 
   @override
   _TupperFormulaBoardState createState() => _TupperFormulaBoardState();
