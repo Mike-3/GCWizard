@@ -2650,14 +2650,26 @@ void initializeRegistry(BuildContext context) {
     //Braille Selection ****************************************************************
     GCWTool(tool: const Braille(), id: 'braille', searchKeys: const [
       'braille',
+      'symbol_fakoo'
     ], licenses: const []),
     GCWTool(
         tool: const BrailleDotNumbers(),
         id: 'brailledotnumbers',
         searchKeys: const [
           'braille',
+          'symbol_fakoo'
         ],
-        licenses: const []),
+        licenses: [
+          ToolLicenseOnlineArticle(
+              context: context,
+              author: 'Alexander Fakoó',
+              title: '9-Punkt-Decoder',
+              sourceUrl:
+                'https://web.archive.org/web/20240415000000*/https://fakoo.de/fakoo/9-punkt-decoder.html',
+              licenseType: ToolLicenseType.CCBYNCND40,
+              licenseUrl:
+                'https://web.archive.org/web/20240415000000*/https://creativecommons.org/licenses/by-nc-nd/4.0/deed.de')
+    ]),
 
     //CCITT Selection **********************************************************************************************
     GCWTool(

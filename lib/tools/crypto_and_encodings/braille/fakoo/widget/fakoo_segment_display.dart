@@ -7,21 +7,22 @@ import 'package:gc_wizard/tools/science_and_technology/segment_display/_common/w
 
 const _INITIAL_SEGMENTS = <String, bool>{
   '1': false,
-  '4': false,
   '2': false,
-  '5': false,
   '3': false,
+  '4': false,
+  '5': false,
   '6': false,
   '7': false,
-  '8': false
+  '8': false,
+  '9': false
 };
 
-const _EUROBRAILLE_RELATIVE_DISPLAY_WIDTH = 50;
-const _EUROBRAILLE_RELATIVE_DISPLAY_HEIGHT = 130;
-const _EUROBRAILLE_RADIUS = 12;
+const _FAKOO_RELATIVE_DISPLAY_WIDTH = 65;
+const _FAKOO_RELATIVE_DISPLAY_HEIGHT = 100;
+const _FAKOO_RADIUS = 10;
 
-class BrailleEuroSegmentDisplay extends NSegmentDisplay {
-  BrailleEuroSegmentDisplay(
+class FakooSegmentDisplay extends NSegmentDisplay {
+  FakooSegmentDisplay(
       {super.key,
       required super.segments,
       super.readOnly,
@@ -42,19 +43,20 @@ class BrailleEuroSegmentDisplay extends NSegmentDisplay {
                 '4': [35, 20],
                 '5': [35, 50],
                 '6': [35, 80],
-                '7': [15, 110],
-                '8': [35, 110]
+                '7': [55, 20],
+                '8': [55, 50],
+                '9': [55, 80]
               };
 
               circles.forEach((key, value) {
                 paint.color = segmentActive(currentSegments, key) ? SEGMENTS_COLOR_ON : SEGMENTS_COLOR_OFF;
 
-                var pointSize = size.height / _EUROBRAILLE_RELATIVE_DISPLAY_HEIGHT * _EUROBRAILLE_RADIUS;
+                var pointSize = size.height / _FAKOO_RELATIVE_DISPLAY_HEIGHT * _FAKOO_RADIUS;
 
                 canvas.touchCanvas.drawCircle(
-                    Offset(size.width / _EUROBRAILLE_RELATIVE_DISPLAY_WIDTH * value[0],
-                        size.height / _EUROBRAILLE_RELATIVE_DISPLAY_HEIGHT * value[1]),
-                    size.height / _EUROBRAILLE_RELATIVE_DISPLAY_HEIGHT * _EUROBRAILLE_RADIUS,
+                    Offset(size.width / _FAKOO_RELATIVE_DISPLAY_WIDTH * value[0],
+                        size.height / _FAKOO_RELATIVE_DISPLAY_HEIGHT * value[1]),
+                    pointSize,
                     paint, onTapDown: (tapDetail) {
                   setSegmentState(key, !segmentActive(currentSegments, key));
                 });
@@ -68,8 +70,8 @@ class BrailleEuroSegmentDisplay extends NSegmentDisplay {
 
                 textPainter.paint(
                     canvas.canvas,
-                    Offset(size.width / _EUROBRAILLE_RELATIVE_DISPLAY_WIDTH * value[0] - textPainter.width * 0.5,
-                        size.height / _EUROBRAILLE_RELATIVE_DISPLAY_HEIGHT * value[1] - textPainter.height * 0.5));
+                    Offset(size.width / _FAKOO_RELATIVE_DISPLAY_WIDTH * value[0] - textPainter.width * 0.5,
+                        size.height / _FAKOO_RELATIVE_DISPLAY_HEIGHT * value[1] - textPainter.height * 0.5));
               });
             });
 }
