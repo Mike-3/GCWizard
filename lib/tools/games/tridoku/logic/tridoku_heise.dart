@@ -1,7 +1,46 @@
+import 'dart:math';
+import 'dart:typed_data';
+
 class Sudoku {
   List<List<int>> board;
 
   Sudoku(this.board);
+
+  final List<List<Point<int>>> _unitlist = [
+    <Point<int>>[Point<int>(0,0), Point<int>(1,0), Point<int>(2,0), Point<int>(3,0), Point<int>(4,0), Point<int>(5,0), Point<int>(6,0), Point<int>(7,0), Point<int>(8,0)], // outer sides
+     <Point<int>>[Point<int>(8,0), Point<int>(8,2), Point<int>(8,4), Point<int>(8,6), Point<int>(8,8), Point<int>(8,10), Point<int>(8,12), Point<int>(8,14), Point<int>(8,16)],
+  <Point<int>>[Point<int>(0,0), Point<int>(1,2), Point<int>(2,4), Point<int>(3,6), Point<int>(4,8), Point<int>(5,10), Point<int>(6,12), Point<int>(7,14), Point<int>(8,16)],
+  <Point<int>>[Point<int>(4,0), Point<int>(4,1), Point<int>(4,2), Point<int>(4,3), Point<int>(4,4), Point<int>(4,5), Point<int>(4,6), Point<int>(4,7), Point<int>(4,8)], // inner triangles
+  <Point<int>>[Point<int>(4,0), Point<int>(5,1), Point<int>(5,2), Point<int>(6,3), Point<int>(6,4), Point<int>(7,5), Point<int>(7,6), Point<int>(8,7), Point<int>(8,8)],
+  <Point<int>>[Point<int>(4,8), Point<int>(5,8), Point<int>(5,9), Point<int>(6,8), Point<int>(6,9), Point<int>(7,8), Point<int>(7,9), Point<int>(8,8), Point<int>(8,9)],
+  <Point<int>>[Point<int>(0,0), Point<int>(1,0), Point<int>(1,1), Point<int>(1,2), Point<int>(2,0), Point<int>(2,1), Point<int>(2,2), Point<int>(2,3), Point<int>(2,4)], // triangle
+  <Point<int>>[Point<int>(3,0), Point<int>(4,0), Point<int>(4,1), Point<int>(4,2), Point<int>(5,0), Point<int>(5,1), Point<int>(5,2), Point<int>(5,3), Point<int>(5,4)],
+  <Point<int>>[Point<int>(6,0), Point<int>(7,0), Point<int>(7,1), Point<int>(7,2), Point<int>(8,0), Point<int>(8,1), Point<int>(8,2), Point<int>(8,3), Point<int>(8,4)],
+  <Point<int>>[Point<int>(3,6), Point<int>(4,6), Point<int>(4,7), Point<int>(4,8), Point<int>(5,6), Point<int>(5,7), Point<int>(5,8), Point<int>(5,9), Point<int>(5,10)],
+  <Point<int>>[Point<int>(6,12), Point<int>(7,12), Point<int>(7,13), Point<int>(7,14), Point<int>(8,12), Point<int>(8,13), Point<int>(8,14), Point<int>(8,15), Point<int>(8,16)],
+  <Point<int>>[Point<int>(6,6), Point<int>(7,6), Point<int>(7,7), Point<int>(7,8), Point<int>(8,6), Point<int>(8,7), Point<int>(8,8), Point<int>(8,9), Point<int>(8,10)],
+  <Point<int>>[Point<int>(3,1), Point<int>(3,2), Point<int>(3,3), Point<int>(3,4), Point<int>(3,5), Point<int>(4,3), Point<int>(4,4), Point<int>(4,5), Point<int>(5,5)],
+  <Point<int>>[Point<int>(6,1), Point<int>(6,2), Point<int>(6,3), Point<int>(6,4), Point<int>(6,5), Point<int>(7,3), Point<int>(7,4), Point<int>(7,5), Point<int>(8,5)],
+  <Point<int>>[Point<int>(6,7), Point<int>(6,8), Point<int>(6,9), Point<int>(6,10), Point<int>(6,11), Point<int>(7,9), Point<int>(7,10), Point<int>(7,11), Point<int>(8,11)],
+  <Point<int>>[Point<int>(2,0), Point<int>(2,1), Point<int>(2,2), Point<int>(3,1), Point<int>(3,2), Point<int>(3,3)],
+  <Point<int>>[Point<int>(2,2), Point<int>(2,3), Point<int>(2,4), Point<int>(3,3), Point<int>(3,4), Point<int>(3,5)],
+// List<,Point<int>>[Point<int>(1,0), Point<int>(1,1), Point<int>(1,2), Point<int>(2,1), Point<int>(2,2), Point<int>(2,3), // Hexagons
+// List<,Point<int>>[Point<int>(3,0), Point<int>(3,1), Point<int>(3,2), Point<int>(4,1), Point<int>(4,2), Point<int>(4,3),
+// List<,Point<int>>[Point<int>(3,2), Point<int>(3,3), Point<int>(3,4), Point<int>(4,3), Point<int>(4,4), Point<int>(4,5),
+// List<,Point<int>>[Point<int>(3,4), Point<int>(3,5), Point<int>(3,6), Point<int>(4,5), Point<int>(4,6), Point<int>(4,7),
+// List<,Point<int>>[Point<int>(5,0), Point<int>(5,1), Point<int>(5,2), Point<int>(6,1), Point<int>(6,2), Point<int>(6,3),
+// List<,Point<int>>[Point<int>(5,2), Point<int>(5,3), Point<int>(5,4), Point<int>(6,3), Point<int>(6,4), Point<int>(6,5),
+// List<,Point<int>>[Point<int>(5,4), Point<int>(5,5), Point<int>(5,6), Point<int>(6,5), Point<int>(6,6), Point<int>(6,7),
+// List<,Point<int>>[Point<int>(5,6), Point<int>(5,7), Point<int>(5,8), Point<int>(6,7), Point<int>(6,8), Point<int>(6,9),
+// List<,Point<int>>[Point<int>(5,8), Point<int>(5,9), Point<int>(5,10), Point<int>(6,9), Point<int>(6,10), Point<int>(6,11),
+// List<,Point<int>>[Point<int>(7,0), Point<int>(7,1), Point<int>(7,2), Point<int>(8,1), Point<int>(8,2), Point<int>(8,3),
+// List<,Point<int>>[Point<int>(7,2), Point<int>(7,3), Point<int>(7,4), Point<int>(8,3), Point<int>(8,4), Point<int>(8,5),
+// List<,Point<int>>[Point<int>(7,4), Point<int>(7,5), Point<int>(7,6), Point<int>(8,5), Point<int>(8,6), Point<int>(8,7),
+// List<,Point<int>>[Point<int>(7,6), Point<int>(7,7), Point<int>(7,8), Point<int>(8,7), Point<int>(8,8), Point<int>(8,9),
+// List<,Point<int>>[Point<int>(7,8), Point<int>(7,9), Point<int>(7,10), Point<int>(8,9), Point<int>(8,10), Point<int>(8,11),
+// List<,Point<int>>[Point<int>(7,10), Point<int>(7,11), Point<int>(7,12), Point<int>(8,11), Point<int>(8,12), Point<int>(8,13),
+// List<,Point<int>>[Point<int>(7,12), Point<int>(7,13), Point<int>(7,14), Point<int>(8,13), Point<int>(8,14), Point<int>(8,15),
+    ];
 
   void printBoard() {
     for (int i = 0; i < 9; i++) {
@@ -12,21 +51,22 @@ class Sudoku {
   int _columnCount(int row) => (row * 2) + 1;
 
   bool numberIsValid(int row, int column, int number) {
-    for (int i = 0; i < 9; i++) {
-      if (board[row][i] == number || board[i][column] == number) {
+    // _unitlist.where((pList) => pList.contains(Point<int>(row, column))).forEach((pList) {
+    //   if (pList.any((point) => board[point.y][point.x]  == number)) return false;
+    // });
+    // printBoard();
+    var lists = _unitlist.where((pList) => pList.contains(Point<int>(row, column)));
+    for (var pList in lists) {
+      // print(pList.toString());
+      // if (pList.any((point) => board[point.y][point.x] == number)) return false;
+      if (pList.any((point) {
+        // print(point.toString() + ' ' + board[point.x].length.toString());
+        return board[point.x][point.y] == number;
+      })) {
         return false;
       }
     }
 
-    int startRow = (row ~/ 3) * 3;
-    int startCol = (column ~/ 3) * 3;
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-        if (board[startRow + i][startCol + j] == number) {
-          return false;
-        }
-      }
-    }
     return true;
   }
 
