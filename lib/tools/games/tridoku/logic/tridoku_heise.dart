@@ -22,9 +22,9 @@ class Sudoku {
   <Point<int>>[Point<int>(3,1), Point<int>(3,2), Point<int>(3,3), Point<int>(3,4), Point<int>(3,5), Point<int>(4,3), Point<int>(4,4), Point<int>(4,5), Point<int>(5,5)],
   <Point<int>>[Point<int>(6,1), Point<int>(6,2), Point<int>(6,3), Point<int>(6,4), Point<int>(6,5), Point<int>(7,3), Point<int>(7,4), Point<int>(7,5), Point<int>(8,5)],
   <Point<int>>[Point<int>(6,7), Point<int>(6,8), Point<int>(6,9), Point<int>(6,10), Point<int>(6,11), Point<int>(7,9), Point<int>(7,10), Point<int>(7,11), Point<int>(8,11)],
-   <Point<int>>[Point<int>(2,0), Point<int>(2,1), Point<int>(2,2), Point<int>(3,1), Point<int>(3,2), Point<int>(3,3)],
-   <Point<int>>[Point<int>(2,2), Point<int>(2,3), Point<int>(2,4), Point<int>(3,3), Point<int>(3,4), Point<int>(3,5)],
  <Point<int>>[Point<int>(1,0), Point<int>(1,1), Point<int>(1,2), Point<int>(2,1), Point<int>(2,2), Point<int>(2,3)], // Hexagons
+    <Point<int>>[Point<int>(2,0), Point<int>(2,1), Point<int>(2,2), Point<int>(3,1), Point<int>(3,2), Point<int>(3,3)],
+    <Point<int>>[Point<int>(2,2), Point<int>(2,3), Point<int>(2,4), Point<int>(3,3), Point<int>(3,4), Point<int>(3,5)],
  <Point<int>>[Point<int>(3,0), Point<int>(3,1), Point<int>(3,2), Point<int>(4,1), Point<int>(4,2), Point<int>(4,3)],
  <Point<int>>[Point<int>(3,2), Point<int>(3,3), Point<int>(3,4), Point<int>(4,3), Point<int>(4,4), Point<int>(4,5)],
  <Point<int>>[Point<int>(3,4), Point<int>(3,5), Point<int>(3,6), Point<int>(4,5), Point<int>(4,6), Point<int>(4,7)],
