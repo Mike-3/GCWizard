@@ -59,8 +59,9 @@ class Sudoku {
           list.add(Point<int>(r, c));
         }
       }
-      if (list.isNotEmpty) {
+      if (list.length > 1) {
         lists.add(list);
+        print('row: $row column: $column ' + list.toString());
       }
     }
 
