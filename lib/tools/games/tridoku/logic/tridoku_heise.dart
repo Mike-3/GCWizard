@@ -77,7 +77,7 @@ class Sudoku {
 
     addCells([
       for (int c = column - 1; c < column + 1; c++) [row, c],
-      for (int c = column; c <= column + 2; c++) [row, c],
+      for (int c = column; c <= column + 2; c++) [row + 1, c],
     ]);
 
     return lists;
