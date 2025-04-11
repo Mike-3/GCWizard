@@ -50,67 +50,71 @@ class Sudoku {
   int _columnCount(int row) => (row * 2) + 1;
 
   List<List<Point<int>>> hexagons(int row, int column) {
-    var lists = <List<Point<int>>>[];
-    var list = <Point<int>>[];
+    final lists = <List<Point<int>>>[];
 
-    void addCell(int r, int c) {
-      if (r > 0 && r < 9 && c > 0 && c < _columnCount(r)) list.add(Point<int>(r,c));
-    }
-    void addCells(List<Point<int>> list ) {
-      if (list.isNotEmpty)  lists.add(list);
+    void addCells(List<List<int>> coords) {
+      final list = <Point<int>>[];
+      for (final [r, c] in coords) {
+        if (r > 0 && r < 9 && c > 0 && c < _columnCount(r)) {
+          list.add(Point<int>(r, c));
+        }
+      }
+      if (list.isNotEmpty) {
+        lists.add(list);
+      }
     }
 
-    for (int c = column - 3; c < column - 1; c++) {
-      addCell(row - 1, c);
-    }
-    for (int c = column - 2; c <= column; c++) {
-      addCell(row , c);
-    }
-    addCells(list);
+    addCells([
+      for (int c = column - 3; c < column - 1; c++) [row - 1, c],
+      for (int c = column - 2; c <= column; c++) [row, c],
+    ]);
 
-    list = <Point<int>>[];
-    for (int c = column - 1; c < column + 1; c++) {
-      addCell(row - 1, c);
-    }
-    for (int c = column; c <= column + 2; c++) {
-      addCell(row , c);
-    }
-    addCells(list);
+    addCells([
+      for (int c = column - 1; c < column + 1; c++) [row - 1, c],
+      for (int c = column; c <= column + 2; c++) [row, c],
+    ]);
 
-    list = <Point<int>>[];
-    for (int c = column - 1; c < column + 1; c++) {
-      addCell(row, c);
-    }
-    for (int c = column; c <= column + 2; c++) {
-      addCell(row , c);
-    }
-    addCells(list);
+    addCells([
+      for (int c = column - 1; c < column + 1; c++) [row, c],
+      for (int c = column; c <= column + 2; c++) [row, c],
+    ]);
 
     return lists;
   }
 
   bool numberIsValid(int row, int column, int number) {
-    // _unitlist.where((pList) => pList.contains(Point<int>(row, column))).forEach((pList) {
-    //   if (pList.any((point) => board[point.y][point.x]  == number)) return false;
-    // });
-    // printBoard();
-    var lists = _unitlist.where((pList) => pList.contains(Point<int>(row, column)));
-    for (var pList in lists) {
-       // print(pList.toString());
-      if (pList.any((point) => board[point.x][point.y] == number)) return false;
-      // if (pList.any((point) {
-      //   // print(point.toString() + ' ' + board[point.x].length.toString());
-      //   return board[point.x][point.y] == number;
-      // })) {
-      //   return false;
-      // }
-    }
-    lists = hexagons(row, column);
-    for (var pList in lists) {
-      if (pList.any((point) => board[point.x][point.y] == number)) return false;
-    }
-    return true;
+    final point = Point<int>(row, column);
+    final unitLists = [
+      ..._unitlist.where((list) => list.contains(point)),
+      ...hexagons(row, column),
+    ];
+
+    return unitLists.every((list) =>
+        list.every((p) => board[p.x][p.y] != number));
   }
+
+  // bool numberIsValid(int row, int column, int number) {
+  //   // _unitlist.where((pList) => pList.contains(Point<int>(row, column))).forEach((pList) {
+  //   //   if (pList.any((point) => board[point.y][point.x]  == number)) return false;
+  //   // });
+  //   // printBoard();
+  //   var lists = _unitlist.where((pList) => pList.contains(Point<int>(row, column)));
+  //   for (var pList in lists) {
+  //      // print(pList.toString());
+  //     if (pList.any((point) => board[point.x][point.y] == number)) return false;
+  //     // if (pList.any((point) {
+  //     //   // print(point.toString() + ' ' + board[point.x].length.toString());
+  //     //   return board[point.x][point.y] == number;
+  //     // })) {
+  //     //   return false;
+  //     // }
+  //   }
+  //   lists = hexagons(row, column);
+  //   for (var pList in lists) {
+  //     if (pList.any((point) => board[point.x][point.y] == number)) return false;
+  //   }
+  //   return true;
+  // }
 
   Stream<bool> solve() async* {
     for (int r = 0; r < 9; r++) {
