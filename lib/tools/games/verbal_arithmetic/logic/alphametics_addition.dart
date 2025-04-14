@@ -18,19 +18,22 @@ VerbalArithmeticOutput? _solveAlphameticAdd(Equation equation) {
   List<String> letters = equation.usedMembers.toList()
     ..sort((a, b) => frequencyMap[b]!.compareTo(frequencyMap[a]!));
 
-  List<int> digits = List.generate(10, (i) => i);
+  List<int> availableDigits = List.generate(10, (i) => i);
+  for (var match in RegExp(r'\d').allMatches(equation.equation)) {
+    availableDigits.remove(int.parse(match.group(0).toString()));
+  }
   var mapping = HashMap<String, int>();
   Set<int> usedDigits = {};
 
   _solutions.clear();
 
-  __solveAlphametics(equationData, letters, digits, mapping, usedDigits);
+  __solveAlphametics(equationData, letters, availableDigits, mapping, usedDigits);
   return VerbalArithmeticOutput(equations: [equation], solutions: _solutions, error: '');
 }
 
 List<HashMap<String, int>> _solutions = [];
 
-bool __solveAlphametics(EquationData equationData, List<String> letters, List<int> digits,
+bool __solveAlphametics(EquationData equationData, List<String> letters, List<int> availableDigits,
     Map<String, int> mapping, Set<int> usedDigits) {
   if (letters.isEmpty) {
     if (__evaluateEquation(mapping, equationData)) {
@@ -43,7 +46,7 @@ bool __solveAlphametics(EquationData equationData, List<String> letters, List<in
   String currentLetter = letters.first;
   letters.removeAt(0);
 
-  for (var digit in digits) {
+  for (var digit in availableDigits) {
     if (usedDigits.contains(digit)) continue;
 
     // Avoid leading zeros.
@@ -58,7 +61,7 @@ bool __solveAlphametics(EquationData equationData, List<String> letters, List<in
     mapping[currentLetter] = digit;
     usedDigits.add(digit);
 
-    if (__solveAlphametics(equationData, letters, digits, mapping, usedDigits)) {
+    if (__solveAlphametics(equationData, letters, availableDigits, mapping, usedDigits)) {
       if (!_allSolutions || _solutions.length >= MAX_SOLUTIONS) return true;
     }
 
@@ -86,7 +89,8 @@ bool __evaluateEquation(Map<String, int> letterToDigit, EquationData equationDat
   for (var word in equationData.leftSide) {
     int wordValue = 0;
     for (var letter in word.split('')) {
-      wordValue = wordValue * 10 + (letterToDigit[letter] ?? 0);
+      wordValue = wordValue * 10 +
+          (letterToDigit[letter] ?? (RegExp(r'^[0-9]+$').hasMatch(letter) ? int.parse(letter) : 0));
     }
     sum += wordValue;
   }
@@ -95,7 +99,8 @@ bool __evaluateEquation(Map<String, int> letterToDigit, EquationData equationDat
   for (var word in equationData.rightSide) {
     int wordValue = 0;
     for (var letter in word.split('')) {
-      wordValue = wordValue * 10 + (letterToDigit[letter] ?? 0);
+      wordValue = wordValue * 10 +
+          (letterToDigit[letter] ?? (RegExp(r'^[0-9]+$').hasMatch(letter) ? int.parse(letter) : 0));
     }
     resultValue += wordValue;
   }

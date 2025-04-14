@@ -26,10 +26,12 @@ void main() {
       {'input' : ['DO + YOU + FEEL = LUCKY'], 'expectedOutput' : '57 + 870 + 9441 = 10368'},
       {'input' : ['ELEVEN + NINE + FIVE + FIVE = THIRTY'], 'expectedOutput' : '797275 + 5057 + 4027 + 4027 = 810386'},
       {'input' : ['abcde * A = eeeeee'], 'expectedOutput' : '79365 * 7 = 555555'},
-      {'input' : ['abcde * 7 = eeeeee'], 'expectedOutput' : '79365 * 7 = 555555'},
-      {'input' : ['abcde * A = 5eeeee'], 'expectedOutput' : '79365 * 7 = 555555'},
+      {'input' : ['abcde * 7 = eeeeee'], 'expectedOutput' : ''},
+      {'input' : ['abcde * A = 5eeeee'], 'expectedOutput' : ''},
       {'input' : ['A = A'], 'allSolutions': true, 'expectedOutput' : '1 = 1', 'expectedOutputCount' : 9},
       {'input' : ['A = A'], 'allSolutions': true, 'allowLeadingZeros': true, 'expectedOutput' : '0 = 0', 'expectedOutputCount' : 10},
+      {'input' : ['a9bc - 4bdc = de5f'], 'expectedOutput' : '7982 - 4832 = 3150'},
+      {'input' : ['7a12 + bcd = 7bd7'], 'expectedOutput' : '7012 + 345 = 7357'},
 
       {'input' : [
         'ABCB+DEAF=GFFB',
