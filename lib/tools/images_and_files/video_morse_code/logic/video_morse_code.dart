@@ -2,7 +2,8 @@ import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:ffmpeg_kit_flutter/return_code.dart';
+
+
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:image/image.dart' as Image;
@@ -11,6 +12,7 @@ import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 // import 'package:ffmpeg_kit_flutter_min_gpl/ media_information.dart';
+import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -23,15 +25,15 @@ class VideoMorseCodeJobData {
   final Point<double>? topLeft;
   /// coordinates of bottom-right area to examine (0.0-1.0)
   final Point<double>? bottomRight;
-  VideoPlayerController _controller;
-
-
+  final Function? isCancelled;
+  // VideoPlayerController _controller;
 
   VideoMorseCodeJobData(this.videoPath, this.intervall,
         { required this.startTime,
           required this.endTime,
           this.topLeft,
-          this.bottomRight});
+          this.bottomRight,
+          this.isCancelled});
 }
 
 Future<Map<String, dynamic>?> analyseVideoMorseCodeAsync(GCWAsyncExecuterParameters? jobData) async {
@@ -43,10 +45,10 @@ Future<Map<String, dynamic>?> analyseVideoMorseCodeAsync(GCWAsyncExecuterParamet
       endTime:  data.endTime,
       topLeft: data.topLeft,
       bottomRight: data.bottomRight,
-      isCancelled: jobData.isCancelled,
+      isCancelled: data.isCancelled,
       sendAsyncPort: jobData.sendAsyncPort);
 
-  if (jobData.sendAsyncPort != null) jobData.sendAsyncPort.send(output);
+  if (jobData.sendAsyncPort != null) jobData.sendAsyncPort?.send(output);
 
   return output;
 }
@@ -57,7 +59,7 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, int interva
       required int endTime,
       Point<double>? topLeft,
       Point<double>? bottomRight,
-      required Function isCancelled,
+      Function? isCancelled,
       SendPort? sendAsyncPort}) async {
 
   var videoCompress = VideoCompress;
@@ -85,7 +87,7 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
     IVideoCompress videoCompress,
     Point<double> topLeft,
     Point<double> bottomRight,
-    Function isCancelled,
+    Function? isCancelled,
     {SendPort? sendAsyncPort}) async {
 
   String tmpDir = (await getTemporaryDirectory()).path;
@@ -216,21 +218,21 @@ double _findThreshold(List<double> luminanceList, double min, double max) {
 
   return threshold;
 
-  // # Guarantee the while loop gets entered at least once.
-  var last_threshold = threshold + tolerance + 1;
-
-  // # Find the "best" threshold.
-  while ((threshold - last_threshold).abs() > tolerance) {
-    var lowList = luminanceList.where((signal) => signal < threshold);
-    if (lowList.length  == 0) return last_threshold;
-    var low = (lowList.reduce((a, b) => a + b))/ lowList.length;  //signal[signal < threshold].mean();
-    var highList = luminanceList.where((signal) => signal >= threshold);
-    if (highList.length  == 0) return last_threshold;
-    var high = (lowList.reduce((a, b) => a + b))/ highList.length; //signal[signal >= threshold].mean();
-    last_threshold = threshold;
-    threshold = low + ((high - low) / 2);
-  }
-  return threshold;
+  // // # Guarantee the while loop gets entered at least once.
+  // var last_threshold = threshold + tolerance + 1;
+  //
+  // // # Find the "best" threshold.
+  // while ((threshold - last_threshold).abs() > tolerance) {
+  //   var lowList = luminanceList.where((signal) => signal < threshold);
+  //   if (lowList.length  == 0) return last_threshold;
+  //   var low = (lowList.reduce((a, b) => a + b))/ lowList.length;  //signal[signal < threshold].mean();
+  //   var highList = luminanceList.where((signal) => signal >= threshold);
+  //   if (highList.length  == 0) return last_threshold;
+  //   var high = (lowList.reduce((a, b) => a + b))/ highList.length; //signal[signal >= threshold].mean();
+  //   last_threshold = threshold;
+  //   threshold = low + ((high - low) / 2);
+  // }
+  // return threshold;
 }
 
 
