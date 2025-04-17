@@ -18,10 +18,7 @@ VerbalArithmeticOutput? _solveAlphameticAdd(Equation equation) {
   List<String> letters = equation.usedMembers.toList()
     ..sort((a, b) => frequencyMap[b]!.compareTo(frequencyMap[a]!));
 
-  List<int> availableDigits = List.generate(10, (i) => i);
-  for (var match in RegExp(r'\d').allMatches(equation.equation)) {
-    availableDigits.remove(int.parse(match.group(0).toString()));
-  }
+  var availableDigits = _availableDigits(equation.equation);
   var mapping = HashMap<String, int>();
   Set<int> usedDigits = {};
 
