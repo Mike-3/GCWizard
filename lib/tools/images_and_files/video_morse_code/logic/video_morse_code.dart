@@ -2,14 +2,12 @@ import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
-
-
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:image/image.dart' as Image;
 import 'package:tuple/tuple.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:video_player/video_player.dart';
+// import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 // import 'package:ffmpeg_kit_flutter_min_gpl/ media_information.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
@@ -25,7 +23,7 @@ class VideoMorseCodeJobData {
   final Point<double>? topLeft;
   /// coordinates of bottom-right area to examine (0.0-1.0)
   final Point<double>? bottomRight;
-  final Function? isCancelled;
+  final bool Function()? isCancelled;
   // VideoPlayerController _controller;
 
   VideoMorseCodeJobData(this.videoPath, this.intervall,
@@ -36,7 +34,19 @@ class VideoMorseCodeJobData {
           this.isCancelled});
 }
 
-Future<Map<String, dynamic>?> analyseVideoMorseCodeAsync(GCWAsyncExecuterParameters? jobData) async {
+class VideoMorseCodeOutput {
+  List<Uint8List> images;
+  List<int> durations;
+  List<double> luminances;
+  int? duration;
+  double minLuminance;
+  double maxLuminance;
+  double blackLevel;
+
+  VideoMorseCodeOutput(this.images, this.durations, this.luminances, this.duration, this.minLuminance, this.maxLuminance, this.blackLevel);
+}
+
+Future<VideoMorseCodeOutput?> analyseVideoMorseCodeAsync(GCWAsyncExecuterParameters? jobData) async {
   if (jobData?.parameters is! VideoMorseCodeJobData) return null;
 
   var data = jobData!.parameters as VideoMorseCodeJobData;
@@ -54,12 +64,12 @@ Future<Map<String, dynamic>?> analyseVideoMorseCodeAsync(GCWAsyncExecuterParamet
 }
 
 
-Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, int intervall,
+Future<VideoMorseCodeOutput?> analyseVideoMorseCode(String videoPath, int intervall,
     { required int startTime,
       required int endTime,
       Point<double>? topLeft,
       Point<double>? bottomRight,
-      Function? isCancelled,
+      bool Function()? isCancelled,
       SendPort? sendAsyncPort}) async {
 
   var videoCompress = VideoCompress;
@@ -81,13 +91,13 @@ Future<Map<String, dynamic>> analyseVideoMorseCode(String videoPath, int interva
         sendAsyncPort: sendAsyncPort);
 }
 
-Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int intervall,
+Future<VideoMorseCodeOutput?> _createThumbnailImages(String videoPath, int intervall,
     int? startTime,
     int? endTime,
     IVideoCompress videoCompress,
     Point<double> topLeft,
     Point<double> bottomRight,
-    Function? isCancelled,
+    bool Function()? isCancelled,
     {SendPort? sendAsyncPort}) async {
 
   String tmpDir = (await getTemporaryDirectory()).path;
@@ -121,7 +131,7 @@ Future<Map<String, dynamic>> _createThumbnailImages(String videoPath, int interv
   List<int> durationList = [];
   List<double> luminanceList = [];
   var videoInfo = await VideoCompress.getMediaInfo(videoPath);
-  if (videoInfo.duration == null) return {};
+  if (videoInfo.duration == null) return null;
   endTime = (endTime == null ? videoInfo.duration!.toInt() : min(endTime, videoInfo.duration!.toInt()));
   var timeStamp = (startTime == null ? 0 : min(startTime, endTime));
   var _total =  (endTime - timeStamp) / intervall;
@@ -150,18 +160,16 @@ var time = DateTime.now();
 
   print("Duration: " + DateTime.now().difference(time).inSeconds.toString());
 
-  var out = Map<String, dynamic>();
-  out.addAll({"duration": videoInfo.duration?.toInt()});
-  out.addAll({"images": imageList});
-  out.addAll({"durations": durationList});
-  out.addAll({"luminance": luminanceList});
-
   var minMax = _minMaxLuminance(luminanceList);
-  out.addAll({"minLuminance": minMax.item1});
-  out.addAll({"maxLuminance": minMax.item2});
-  out.addAll({"blackLevel": _findThreshold (luminanceList, minMax.item1, minMax.item2 )});
-
-  return out;
+  return VideoMorseCodeOutput(
+      imageList,
+      durationList,
+      luminanceList,
+      videoInfo.duration?.toInt(),
+      minMax.item1,
+      minMax.item2,
+      _findThreshold (luminanceList, minMax.item1, minMax.item2 )
+  );
 }
 
 
