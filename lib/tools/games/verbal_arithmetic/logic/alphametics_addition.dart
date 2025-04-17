@@ -89,7 +89,8 @@ bool __evaluateEquation(Map<String, int> letterToDigit, EquationData equationDat
   for (var word in equationData.leftSide) {
     int wordValue = 0;
     for (var letter in word.split('')) {
-      wordValue = wordValue * 10 + (letterToDigit[letter] ?? 0);
+      wordValue = wordValue * 10 +
+          (letterToDigit[letter] ?? (RegExp(r'^[0-9]+$').hasMatch(letter) ? int.parse(letter) : 0));
     }
     sum += wordValue;
   }
@@ -98,7 +99,8 @@ bool __evaluateEquation(Map<String, int> letterToDigit, EquationData equationDat
   for (var word in equationData.rightSide) {
     int wordValue = 0;
     for (var letter in word.split('')) {
-      wordValue = wordValue * 10 + (letterToDigit[letter] ?? 0);
+      wordValue = wordValue * 10 +
+          (letterToDigit[letter] ?? (RegExp(r'^[0-9]+$').hasMatch(letter) ? int.parse(letter) : 0));
     }
     resultValue += wordValue;
   }
