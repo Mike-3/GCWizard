@@ -2017,7 +2017,27 @@ void initializeRegistry(BuildContext context) {
               title: "Reliable Two-Dimensional Graphing Methods for Mathematical Formulae with Two Free Variables",
               sourceUrl:
               'https://web.archive.org/web/20250122201114/https://www.dgp.toronto.edu/~mooncake/papers/SIGGRAPH2001_Tupper.pdf',
-              )
+              ),
+          ToolLicenseOnlineArticle(
+            context: context,
+            author: 'Ellen Rudolph',
+            title: "Verallgemeinerung von Tupper's self referential formula",
+            year: 2021,
+            month: 5,
+            day: 12,
+            publisher: 'Universität Bremen',
+            sourceUrl:
+            'https://web.archive.org/web/20250320184629/https://www.uni-bremen.de/fileadmin/user_upload/fachbereiche/fb3/analysis/feb-tupper-formula.pdf',
+            licenseType: ToolLicenseType.PRIVATE_PERMISSION,
+              privatePermission: ToolLicensePrivatePermission(
+                context: context,
+                medium: 'e-Mail',
+                permissionYear: 2025,
+                permissionMonth: 4,
+                permissionDay: 1,
+                permissionAuthor: 'Ellen Rudolph',
+              ),
+          )
         ]),
     GCWTool(tool: const UFI(), id: 'ufi', categories: const [
       ToolCategory.CRYPTOGRAPHY,
@@ -2639,7 +2659,17 @@ void initializeRegistry(BuildContext context) {
           'braille',
           'symbol_fakoo'
         ],
-        licenses: const []),
+        licenses: [
+          ToolLicenseOnlineArticle(
+              context: context,
+              author: 'Alexander Fakoó',
+              title: '9-Punkt-Decoder',
+              sourceUrl:
+                'https://web.archive.org/web/20240415000000*/https://fakoo.de/fakoo/9-punkt-decoder.html',
+              licenseType: ToolLicenseType.CCBYNCND40,
+              licenseUrl:
+                'https://web.archive.org/web/20240415000000*/https://creativecommons.org/licenses/by-nc-nd/4.0/deed.de')
+    ]),
 
     //CCITT Selection **********************************************************************************************
     GCWTool(

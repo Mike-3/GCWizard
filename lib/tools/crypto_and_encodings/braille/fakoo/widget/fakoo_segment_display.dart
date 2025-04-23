@@ -17,9 +17,9 @@ const _INITIAL_SEGMENTS = <String, bool>{
   '9': false
 };
 
-const _FAKOO_RELATIVE_DISPLAY_WIDTH = 70;
+const _FAKOO_RELATIVE_DISPLAY_WIDTH = 65;
 const _FAKOO_RELATIVE_DISPLAY_HEIGHT = 100;
-const _FAKOO_RADIUS = 10.0;
+const _FAKOO_RADIUS = 10;
 
 class FakooSegmentDisplay extends NSegmentDisplay {
   FakooSegmentDisplay(
@@ -36,7 +36,7 @@ class FakooSegmentDisplay extends NSegmentDisplay {
               var SEGMENTS_COLOR_ON = segment_color_on;
               var SEGMENTS_COLOR_OFF = segment_color_off;
 
-              var circles = {
+              const circles = {
                 '1': [15, 20],
                 '2': [15, 50],
                 '3': [15, 80],
@@ -61,7 +61,7 @@ class FakooSegmentDisplay extends NSegmentDisplay {
                   setSegmentState(key, !segmentActive(currentSegments, key));
                 });
 
-                if (size.height < 50) return;
+                if (size.height < NSegmentDisplay.MIN_HEIGHT) return;
 
                 TextSpan span =
                     TextSpan(style: gcwTextStyle().copyWith(color: Colors.white, fontSize: pointSize * 1.3), text: key);
