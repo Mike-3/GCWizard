@@ -327,7 +327,6 @@ class MainView extends GCWWebStatefulWidget {
 
 class _MainViewState extends State<MainView> {
   var _isSearching = false;
-  final _searchController = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var _searchText = '';
   final _SHOW_SUPPORT_HINT_EVERY_N = 50;
@@ -336,16 +335,6 @@ class _MainViewState extends State<MainView> {
   void initState() {
     super.initState();
     Prefs.init();
-
-    // _searchController.addListener(() {
-    //   // setState(() {
-    //     if (_searchController.text.isEmpty) {
-    //       _searchText = '';
-    //     } else if (_searchText != _searchController.text) {
-    //       _searchText = _searchController.text;
-    //     }
-    //   // });
-    // });
 
     _showWhatsNewDialog() {
       const _MAX_ENTRIES = 10;
@@ -401,14 +390,6 @@ class _MainViewState extends State<MainView> {
         });
       }
     });
-  }
-
-  @override
-  void dispose() {
-    Prefs.dispose();
-    _searchController.dispose();
-
-    super.dispose();
   }
 
   Future<bool> _checkForGoldVersion() async {
@@ -491,11 +472,10 @@ class _MainViewState extends State<MainView> {
       icon: Icon(_isSearching ? Icons.close : Icons.search),
       onPressed: () {
         setState(() {
-          if (_isSearching) {
-            _searchController.clear();
-            _searchText = '';
-          }
-
+          // if (_isSearching) {
+          //   _searchText = '';
+          // }
+          _searchText = '';
           _isSearching = !_isSearching;
         });
       },
@@ -506,19 +486,13 @@ class _MainViewState extends State<MainView> {
     return _isSearching
         ? GCWTextField(
             autofocus: true,
-            controller: _searchController,
             icon: Icon(Icons.search, color: themeColors().mainFont()),
             hintText: i18n(context, 'common_search') + '...',
             onChanged: (text) {
               setState(() {
-                if (text.isEmpty) {
-                  _searchText = '';
-                } else if (_searchText != text) {
-                  _searchText = text;
-                }
+                _searchText = text;
               });
             })
-
         : Text(i18n(context, 'common_app_title'));
   }
 
