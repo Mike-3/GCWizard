@@ -67,9 +67,9 @@ class Sudoku {
     }
 
     addCells([
-      for (int c = column - 3; c < column - 1; c++) [row - 1, c],
-      for (int c = column - 2; c <= column; c++) [row, c],
-      for (int c = column - 1; c < column + 1; c++) [row - 1, c],
+      // for (int c = column - 3; c < column - 1; c++) [row - 1, c],
+      // for (int c = column - 2; c <= column; c++) [row, c],
+      // for (int c = column - 1; c < column + 1; c++) [row - 1, c],
       for (int c = column; c <= column + 2; c++) [row, c],
       for (int c = column - 1; c < column + 1; c++) [row, c],
       for (int c = column; c <= column + 2; c++) [row + 1, c],
@@ -150,8 +150,8 @@ Future<void> main() async {
   int counter = 0;
   await for (var _ in sudoku.solve()) {
     counter++;
-    print("\nLösung $counter:");
-    sudoku.printBoard();
+    // print("\nLösung $counter:");
+    // sudoku.printBoard();
   }
 
   print("\nAnzahl Lösungen: $counter");
