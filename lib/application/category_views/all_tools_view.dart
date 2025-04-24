@@ -472,9 +472,6 @@ class _MainViewState extends State<MainView> {
       icon: Icon(_isSearching ? Icons.close : Icons.search),
       onPressed: () {
         setState(() {
-          // if (_isSearching) {
-          //   _searchText = '';
-          // }
           _searchText = '';
           _isSearching = !_isSearching;
         });
