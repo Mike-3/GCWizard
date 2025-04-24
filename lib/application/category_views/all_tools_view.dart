@@ -337,15 +337,15 @@ class _MainViewState extends State<MainView> {
     super.initState();
     Prefs.init();
 
-    _searchController.addListener(() {
-      setState(() {
-        if (_searchController.text.isEmpty) {
-          _searchText = '';
-        } else if (_searchText != _searchController.text) {
-          _searchText = _searchController.text;
-        }
-      });
-    });
+    // _searchController.addListener(() {
+    //   // setState(() {
+    //     if (_searchController.text.isEmpty) {
+    //       _searchText = '';
+    //     } else if (_searchText != _searchController.text) {
+    //       _searchText = _searchController.text;
+    //     }
+    //   // });
+    // });
 
     _showWhatsNewDialog() {
       const _MAX_ENTRIES = 10;
@@ -508,7 +508,17 @@ class _MainViewState extends State<MainView> {
             autofocus: true,
             controller: _searchController,
             icon: Icon(Icons.search, color: themeColors().mainFont()),
-            hintText: i18n(context, 'common_search') + '...')
+            hintText: i18n(context, 'common_search') + '...',
+            onChanged: (text) {
+              setState(() {
+                if (text.isEmpty) {
+                  _searchText = '';
+                } else if (_searchText != text) {
+                  _searchText = text;
+                }
+              });
+            })
+
         : Text(i18n(context, 'common_app_title'));
   }
 
