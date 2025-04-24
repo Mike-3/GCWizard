@@ -49,45 +49,40 @@ class Sudoku {
 
   int _columnCount(int row) => (row * 2) + 1;
 
-  List<List<Point<int>>> hexagons(int row, int column) {
-    final lists = <List<Point<int>>>[];
+  List<Point<int>> hexagons(int row, int column) {
+    final list = <Point<int>>[];
 
     void addCells(List<List<int>> coords) {
-      final list = <Point<int>>[];
       for (final [r, c] in coords) {
         if (r > 0 && r < 9 && c > 0 && c < _columnCount(r)) {
-          list.add(Point<int>(r, c));
+          var p = Point<int>(r, c);
+          if (!list.contains(p)) list.add(p);
+
         }
       }
-      if (list.length > 1) {
-        lists.add(list);
-        print('row: $row column: $column ' + list.toString());
-      }
+      // if (list.length > 1) {
+      //   lists.add(list);
+      //   // print('row: $row column: $column ' + list.toString());
+      // }
     }
 
     addCells([
       for (int c = column - 3; c < column - 1; c++) [row - 1, c],
       for (int c = column - 2; c <= column; c++) [row, c],
-    ]);
-
-    addCells([
       for (int c = column - 1; c < column + 1; c++) [row - 1, c],
       for (int c = column; c <= column + 2; c++) [row, c],
-    ]);
-
-    addCells([
       for (int c = column - 1; c < column + 1; c++) [row, c],
       for (int c = column; c <= column + 2; c++) [row + 1, c],
     ]);
 
-    return lists;
+    return list;
   }
 
   bool numberIsValid(int row, int column, int number) {
     final point = Point<int>(row, column);
     final unitLists = [
       ..._unitlist.where((list) => list.contains(point)),
-      ...hexagons(row, column),
+      hexagons(row, column),
     ];
 
     return unitLists.every((list) =>
