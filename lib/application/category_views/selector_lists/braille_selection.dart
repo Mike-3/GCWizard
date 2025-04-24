@@ -9,13 +9,14 @@ import 'package:gc_wizard/tools/symbol_tables/_common/widget/symbol_table.dart';
 import 'package:gc_wizard/utils/ui_dependent_utils/common_widget_utils.dart';
 
 class BrailleSelection extends GCWSelection {
-  const BrailleSelection({Key? key}) : super(key: key);
+  const BrailleSelection({super.key});
 
   @override
   Widget build(BuildContext context) {
     final List<GCWTool> _toolList = registeredTools.where((element) {
       if (className(element.tool) == className(const SymbolTable()) &&
-          (element.tool as SymbolTable).symbolKey.startsWith('braille_')) {
+          ((element.tool as SymbolTable).symbolKey.startsWith('braille_') ||
+          (element.tool as SymbolTable).symbolKey.contains('fakoo'))) {
         return true;
       }
 

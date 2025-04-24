@@ -66,10 +66,13 @@ class Equation {
     }
     if (singleLetter) {
       // Extract all letters and determine the leading letters
-      for (var token in formatedEquation.split(RegExp(r'[^A-Z]'))) {
+      for (var token in formatedEquation.split(RegExp(r'[^A-Z0-9]'))) {
         if (token.isNotEmpty) {
-          usedMembers.addAll(token.split(''));
-          leadingLetters.add(token[0]);
+          var leadingLetter = token[0].replaceAll(RegExp(r'[0-9]'), '');
+          if (leadingLetter.isNotEmpty) {
+            leadingLetters.add(leadingLetter);
+          }
+          usedMembers.addAll(token.replaceAll(RegExp(r'[0-9]'), '').split(''));
         }
       }
     } else {

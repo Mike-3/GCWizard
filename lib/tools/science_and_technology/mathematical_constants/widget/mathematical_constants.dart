@@ -17,7 +17,7 @@ import 'package:gc_wizard/tools/science_and_technology/mathematical_constants/lo
 import 'package:gc_wizard/utils/ui_dependent_utils/text_widget_utils.dart';
 
 class MathematicalConstants extends StatefulWidget {
-  const MathematicalConstants({Key? key}) : super(key: key);
+  const MathematicalConstants({super.key});
 
   @override
   _MathematicalConstantsState createState() => _MathematicalConstantsState();
@@ -25,18 +25,16 @@ class MathematicalConstants extends StatefulWidget {
 
 class _MathematicalConstantsState extends State<MathematicalConstants> {
   String _currentConstant = '';
-  late Map<String, MathematicalConstant> _constants;
+  Map<String, MathematicalConstant> _constants = {};
 
   final List<String> _orderedConstantKeys = [];
 
   @override
-  void initState() {
-    super.initState();
-    _constants = _buildConstants(context);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (_constants.isEmpty) {
+      _constants = _buildConstants(context);
+    }
+
     return Column(
       children: <Widget>[
         GCWDropDown<String>(

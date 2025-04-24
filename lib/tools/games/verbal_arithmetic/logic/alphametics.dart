@@ -93,9 +93,17 @@ VerbalArithmeticOutput? _solveAlphametic(Equation equation) {
   return VerbalArithmeticOutput(equations: [equation], solutions: solutions, error: '');
 }
 
-Iterable<HashMap<String, int>?> _permuteAndEvaluate(List<String> letters, String formula,
-    Set<String> leadingLetters) sync* {
+List<int> _availableDigits(String equation) {
   var availableDigits = List.generate(10, (i) => i);
+  for (var match in RegExp(r'\d').allMatches(equation)) {
+    availableDigits.remove(int.parse(match.group(0).toString()));
+  }
+  return availableDigits;
+}
+
+Iterable<HashMap<String, int>?> _permuteAndEvaluate(List<String> letters, String equation,
+    Set<String> leadingLetters) sync* {
+  var availableDigits = _availableDigits(equation);
   var allPermutations = _generatePermutations(letters.length, availableDigits);
 
   for (var perm in allPermutations) {
@@ -111,7 +119,7 @@ Iterable<HashMap<String, int>?> _permuteAndEvaluate(List<String> letters, String
       continue;
     }
 
-    if (_evaluateEquation(formula, mapping)) {
+    if (_evaluateEquation(equation, mapping)) {
       yield mapping;
     }
   }
