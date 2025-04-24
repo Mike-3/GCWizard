@@ -19,12 +19,16 @@ dependencies:
   diacritic: ^0.1.6
   encrypt: ^5.0.3
   exif: ^3.1.4
-  file_picker: ^10.0.0
-  file_picker_writable: ^2.0.3
+  file_picker: ^10.1.2
+  file_picker_writable:
+    git:
+      url: https://github.com/amake/file_picker_writable.git
   fixnum: ^1.1.1
   flutter:
     sdk: flutter
-  flutter_dtmf: ^3.0.2
+  flutter_dtmf:
+    git:
+      url: https://github.com/vaibhavdreambolix/flutter_dtmf.git
   flutter_highlight: ^0.7.0
   flutter_localizations:
     sdk: flutter
@@ -60,7 +64,7 @@ dependencies:
   universal_html: ^2.2.4
   unrar_file:
     git:
-      url: https://github.com/fyxtc/unrar_file
+      url: https://github.com/Makarov96/unrar_file_fork.git
   uuid: ^4.5.1
   url_launcher: ^6.3.1
   utility: ^1.0.3
