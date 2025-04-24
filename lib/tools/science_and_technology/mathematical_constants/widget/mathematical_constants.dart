@@ -78,7 +78,7 @@ class _MathematicalConstantsState extends State<MathematicalConstants> {
       }
     }
 
-    List<String> _temp = _constants.keys.map((constant) => i18n(context, constant ?? '')).toList();
+    List<String> _temp = _constants.keys.map((constant) => i18n(context, constant)).toList();
     _temp.sort();
 
     for (String constant in _temp) {
