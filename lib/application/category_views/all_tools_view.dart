@@ -321,14 +321,13 @@ class MainView extends GCWWebStatefulWidget {
   MainView({super.key, super.webParameter})
       : super(apiSpecification: null);
 
-  final _searchController = TextEditingController();
-
   @override
   _MainViewState createState() => _MainViewState();
 }
 
 class _MainViewState extends State<MainView> {
   var _isSearching = false;
+  late TextEditingController _searchController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var _searchText = '';
   final _SHOW_SUPPORT_HINT_EVERY_N = 50;
@@ -337,6 +336,8 @@ class _MainViewState extends State<MainView> {
   void initState() {
     super.initState();
     Prefs.init();
+    _searchController = TextEditingController(text: _searchText);
+
     _showWhatsNewDialog() {
       const _MAX_ENTRIES = 10;
 
