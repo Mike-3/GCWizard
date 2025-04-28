@@ -397,7 +397,7 @@ class _MainViewState extends State<MainView> {
   @override
   void dispose() {
     Prefs.dispose();
-    widget._searchController.dispose();
+    _searchController.dispose();
 
     super.dispose();
   }
@@ -482,7 +482,7 @@ class _MainViewState extends State<MainView> {
       icon: Icon(_isSearching ? Icons.close : Icons.search),
       onPressed: () {
         setState(() {
-          widget._searchController.clear();
+          _searchController.clear();
           _searchText = '';
           _isSearching = !_isSearching;
         });
@@ -493,7 +493,7 @@ class _MainViewState extends State<MainView> {
   Widget _buildTitleAndSearchTextField() {
     return _isSearching
         ? GCWTextField(
-            controller: widget._searchController,
+            controller: _searchController,
             autofocus: true,
             icon: Icon(Icons.search, color: themeColors().mainFont()),
             hintText: i18n(context, 'common_search') + '...',
