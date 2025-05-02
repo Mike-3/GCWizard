@@ -13,13 +13,12 @@ class TupperFormulaBoard extends StatefulWidget {
   final int colors;
 
   const TupperFormulaBoard(
-      {Key? key,
+      {super.key,
       required this.onChanged,
       required this.state,
       required this.width,
       required this.height,
-      required this.colors})
-      : super(key: key);
+      required this.colors});
 
 
   @override
