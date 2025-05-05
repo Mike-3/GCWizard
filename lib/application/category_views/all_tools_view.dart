@@ -329,6 +329,7 @@ class _MainViewState extends State<MainView> {
   var _isSearching = false;
   late TextEditingController _searchController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _searchKey = GlobalKey<_MainViewState>();
   var _searchText = '';
   final _SHOW_SUPPORT_HINT_EVERY_N = 50;
 
@@ -397,7 +398,7 @@ class _MainViewState extends State<MainView> {
   @override
   void dispose() {
     Prefs.dispose();
-    widget._searchController.dispose();
+    _searchController.dispose();
 
     super.dispose();
   }
@@ -424,7 +425,6 @@ class _MainViewState extends State<MainView> {
     Favorites.initialize();
 
     var toolList = (_isSearching && _searchText.isNotEmpty) ? _getSearchedList() : null;
-
     if (!(_isSearching && _searchText.isNotEmpty)) {
       return DefaultTabController(
         length: 3,
@@ -482,7 +482,7 @@ class _MainViewState extends State<MainView> {
       icon: Icon(_isSearching ? Icons.close : Icons.search),
       onPressed: () {
         setState(() {
-          widget._searchController.clear();
+          _searchController.clear();
           _searchText = '';
           _isSearching = !_isSearching;
         });
@@ -493,7 +493,8 @@ class _MainViewState extends State<MainView> {
   Widget _buildTitleAndSearchTextField() {
     return _isSearching
         ? GCWTextField(
-            controller: widget._searchController,
+            key: _searchKey,
+            controller: _searchController,
             autofocus: true,
             icon: Icon(Icons.search, color: themeColors().mainFont()),
             hintText: i18n(context, 'common_search') + '...',
@@ -517,7 +518,6 @@ class _MainViewState extends State<MainView> {
 
   List<GCWTool> _getSearchedList() {
     var _sanitizedSearchText = removeAccents(_searchText.toLowerCase()).replaceAll(NOT_ALLOWED_SEARCH_CHARACTERS, '');
-
     if (_sanitizedSearchText.isEmpty) return <GCWTool>[];
 
     Set<String> _queryTexts = _sanitizedSearchText.split(REGEXP_SPLIT_STRINGLIST).toSet();
