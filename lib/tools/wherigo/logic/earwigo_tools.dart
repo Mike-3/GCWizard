@@ -62,9 +62,9 @@ String _wwb_deobf_obfuscation(String str) {
   int plen = rot_palette.length;
 
   const magic = {
-    ["\x01"]: "B",
-    ["\x02"]: "R",
-    ["\x03"]: ""
+    '\u0001': 'B',
+    '\u0002': 'R',
+    '\u0003': ''
   };
 
   str = str
@@ -91,7 +91,7 @@ String _wwb_deobf_obfuscation(String str) {
     if (c.codeUnitAt(0) > 127) {
       d++;
     }
-    result = result + c;
+    result += c;
   }
   result = result
       .replaceAll(String.fromCharCode(4), '<')
