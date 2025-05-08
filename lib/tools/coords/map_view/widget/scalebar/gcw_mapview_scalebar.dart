@@ -72,7 +72,7 @@ class GCWMapViewScalebar extends StatelessWidget {
     final pixelsBottomLeft = camera.pixelBounds.bottomLeft;
     var x1 = pixelsBottomLeft.dx + 10;
     var y1 = pixelsBottomLeft.dy - 30;
-    final latlng1 = camera.screenOffsetToLatLng(Offset(x1, y1));
+    final latlng1 = camera.unprojectAtZoom(Offset(x1, y1));
 
     double index = camera.zoom + 1;
     final metricDst = _metricScale[index.round().clamp(0, _metricScale.length - 1)];
