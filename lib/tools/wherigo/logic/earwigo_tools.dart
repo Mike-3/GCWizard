@@ -44,7 +44,7 @@ String _gsub_wig_obfuscation(String text) {
       p = p - jump;
       c = rot_palette[p - 1];
     }
-    result = result + c;
+    result += c;
   }
 
   return result;
