@@ -3,9 +3,6 @@ part of 'package:gc_wizard/tools/coords/map_view/widget/gcw_mapview.dart';
 /// This is the [CustomPainter] that draws the scalebar label and lines
 /// onto the canvas.
 class GCWMapViewScalebarPainter extends CustomPainter {
-  /// length of the scalebar
-  final double scalebarLength;
-
   /// marker points
   final List<Offset> scalebarPoints;
 
@@ -15,10 +12,6 @@ class GCWMapViewScalebarPainter extends CustomPainter {
   /// scalebar line height
   final double lineWidth;
 
-  /// The alignment is used to align the scalebar if it is smaller than the
-  /// text label.
-  final Alignment alignment;
-
   /// The cached half of the line stroke width
   late final _halfStrokeWidth = strokeWidth / 2;
 
@@ -27,13 +20,11 @@ class GCWMapViewScalebarPainter extends CustomPainter {
 
   /// Create a new [GCWMapViewScalebar], internally used in the [GCWMapViewScalebar].
   GCWMapViewScalebarPainter({
-    required this.scalebarLength,
     required this.scalebarPoints,
     required List<TextSpan> texts,
     required this.strokeWidth,
     required this.lineWidth,
     required Color lineColor,
-    required this.alignment,
   }) : _textPainters = texts.map((text) => TextPainter(
     text: text,
     textDirection: ui.TextDirection.ltr,
