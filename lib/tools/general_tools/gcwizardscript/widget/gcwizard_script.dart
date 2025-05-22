@@ -153,14 +153,14 @@ class GCWizardScriptState extends State<GCWizardScript> {
         ),
         if (_loadFile)
           GCWOpenFile(
-            onLoaded: (_file) {
-              if (_file == null) {
+            onLoaded: (GCWFile? value) {
+              if (value == null) {
                 showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
                 _loadFile = !_loadFile;
                 return;
               }
 
-              _currentProgram = String.fromCharCodes(_file.bytes);
+              _currentProgram = String.fromCharCodes(value.bytes);
               _programController.text = _currentProgram;
               _loadFile = !_loadFile;
               setState(() {});

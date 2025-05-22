@@ -335,18 +335,18 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
   Widget _widgetOpenGWCFile(BuildContext context) {
     return GCWOpenFile(
       title: i18n(context, 'wherigo_open_gwc'),
-      onLoaded: (_GWCfile) {
-        if (_GWCfile == null) {
+      onLoaded: (GCWFile? value) {
+        if (value == null) {
           showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
           return;
         }
 
-        if (isInvalidCartridge(_GWCfile.bytes)) {
+        if (isInvalidCartridge(value.bytes)) {
           showSnackBar(i18n(context, 'common_loadfile_exception_wrongtype_gwc'), context);
           return;
         }
 
-        _setGWCData(_GWCfile.bytes);
+        _setGWCData(value.bytes);
 
         _resetIndices();
 
@@ -389,17 +389,17 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
             )
             : GCWOpenFile(
               title: i18n(context, 'wherigo_open_lua'),
-              onLoaded: (_LUAfile) {
-                if (_LUAfile == null) {
+              onLoaded: (GCWFile? value) {
+                if (value == null) {
                   showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
                   return;
                 }
-                if (isInvalidLUASourcecode(String.fromCharCodes(_LUAfile.bytes.sublist(0, 18)))) {
+                if (isInvalidLUASourcecode(String.fromCharCodes(value.bytes.sublist(0, 18)))) {
                   showSnackBar(i18n(context, 'common_loadfile_exception_wrongtype_lua'), context);
                   return;
                 }
 
-                _setLUAData(_LUAfile.bytes);
+                _setLUAData(value.bytes);
 
                 _getLUAOnline = false;
 

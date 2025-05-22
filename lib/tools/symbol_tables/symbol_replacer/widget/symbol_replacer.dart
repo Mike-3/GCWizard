@@ -94,14 +94,14 @@ class _SymbolReplacerState extends State<SymbolReplacer> {
       GCWOpenFile(
         suppressGallery: false,
         supportedFileTypes: SUPPORTED_IMAGE_TYPES,
-        onLoaded: (_file) {
-          if (_file == null) {
+        onLoaded: (GCWFile? value) {
+          if (value == null) {
             showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
             return;
           }
 
           setState(() {
-            _platformFile = _file;
+            _platformFile = value;
             _symbolImage = null;
             _currentMergeDistance = null;
             _replaceSymbols(true);

@@ -62,13 +62,13 @@ class _ExifReaderState extends State<ExifReader> {
         GCWOpenFile(
           supportedFileTypes: SUPPORTED_IMAGE_TYPES,
           suppressGallery: false,
-          onLoaded: (_file) {
-            if (_file == null) {
+          onLoaded: (GCWFile? value) {
+            if (value == null) {
               showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
               return;
             }
 
-            _readFile(_file);
+            _readFile(value);
           },
         ),
         Container(),
