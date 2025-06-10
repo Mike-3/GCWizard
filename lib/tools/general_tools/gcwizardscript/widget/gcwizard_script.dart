@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'dart:ui';
 
 import 'package:code_text_field/code_text_field.dart';
 import 'package:flutter/material.dart';
@@ -654,7 +653,7 @@ class GCWizardScriptState extends State<GCWizardScript> {
             ..isAntiAlias = paint.isAntiAlias
             ..style = PaintingStyle.stroke
             ..strokeWidth = paint.strokeWidth;
-            canvas.drawPoints(PointMode.points, [Offset(double.parse(graphicCommand[1]), double.parse(graphicCommand[2]))], _paint);
+            canvas.drawPoints(ui.PointMode.points, [Offset(double.parse(graphicCommand[1]), double.parse(graphicCommand[2]))], _paint);
           break;
         case 'COLOR':
           paint.color = Color.fromARGB(
