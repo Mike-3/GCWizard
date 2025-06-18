@@ -151,7 +151,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
     return list;
   }
 
-  void _analysePlatformFileAsync() async {
+  Future<void> _analysePlatformFileAsync() async {
     await showDialog<bool>(
       context: context,
       barrierDismissible: false,

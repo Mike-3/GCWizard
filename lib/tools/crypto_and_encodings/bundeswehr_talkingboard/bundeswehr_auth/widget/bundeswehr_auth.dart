@@ -23,6 +23,7 @@ import 'package:gc_wizard/common_widgets/text_input_formatters/wrapper_for_maskt
 import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/bundeswehr_talkingboard/bundeswehr_auth/logic/bundeswehr_auth.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
+import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 
 class BundeswehrTalkingBoardAuthentification extends StatefulWidget {
   const BundeswehrTalkingBoardAuthentification({super.key});
@@ -292,7 +293,7 @@ class _BundeswehrTalkingBoardAuthentificationState
   GCWOpenFile _widgetOpenFile(BuildContext context) {
     return GCWOpenFile(
       title: i18n(context, 'common_exportfile_openfile'),
-      onLoaded: (_bundeswehrTalkingBoard) {
+      onLoaded: (GCWFile? _bundeswehrTalkingBoard) {
         if (_bundeswehrTalkingBoard == null) {
           showSnackBar(
               i18n(context, 'common_loadfile_exception_notloaded'), context);

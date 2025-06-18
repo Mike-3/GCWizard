@@ -20,6 +20,7 @@ import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/bundeswehr_talkingboard/bundeswehr_auth/logic/bundeswehr_auth.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/bundeswehr_talkingboard/bundeswehr_code/logic/bundeswehr_code.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
+import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 
 class BundeswehrTalkingBoardObfuscation extends StatefulWidget {
   const BundeswehrTalkingBoardObfuscation({super.key});
@@ -854,10 +855,9 @@ class _BundeswehrTalkingBoardObfuscationState
   Widget _widgetOpenFile(BuildContext context) {
     return GCWOpenFile(
       title: i18n(context, 'common_exportfile_openfile'),
-      onLoaded: (_bundeswehrTalkingBoard) {
+      onLoaded: (GCWFile? _bundeswehrTalkingBoard) {
         if (_bundeswehrTalkingBoard == null) {
-          showSnackBar(
-              i18n(context, 'common_loadfile_exception_notloaded'), context);
+          showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
           return;
         }
         BundeswehrTalkingBoard bwTalkingBoard = BundeswehrTalkingBoard.fromJson(
