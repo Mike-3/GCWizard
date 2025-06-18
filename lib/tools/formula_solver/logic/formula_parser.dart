@@ -99,7 +99,7 @@ class FormulaParser {
     'ceil'
   ];
 
-  static final Map<String, Function> _CUSTOM_FUNCTIONS = {
+  static final Map<String, double Function(List<double>)> _CUSTOM_FUNCTIONS = {
     'cs': (List<double> numbers) => sumCrossSum(numbers.map((number) => number.toInt()).toList()).toDouble(),
     'csi': (List<double> numbers) => sumCrossSumIterated(numbers.map((number) => number.toInt()).toList()).toDouble(),
     'min': (List<double> numbers) => numbers.reduce(min),
@@ -480,8 +480,8 @@ class FormulaParser {
 
     formula = _evaluateTextFunctions(formula);
     Expression expression = parser.parse(formula.toLowerCase());
-    var result = expression.evaluate(EvaluationType.REAL, _context);
-    if (result == null) throw Exception();
+    var evaluator = RealEvaluator(_context);
+    var result = evaluator.evaluate(expression);
 
     return _formatOutput(result);
   }
