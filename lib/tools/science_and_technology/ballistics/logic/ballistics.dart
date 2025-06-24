@@ -196,20 +196,16 @@ OutputBallistics calculateBallisticsNewton(
   // iterationswerte
   double T1, T2, Tm, H2, Hm;
 
-  double ln(double x) {
-    return log(x) / log(e);
-  }
-
   double XofT(double T) {
-    return Voo * Voo / g * ln(1 + Vxo * g * T / Voo / Voo);
+    return Voo * Voo / g * log(1 + Vxo * g * T / (Voo * Voo));
   }
 
   double YofTup(double T) {
-    return Voo * Voo / g * (ln(cos(g * (Tu - T) / Voo)) - ln(cos(g * Tu / Voo)));
+    return Voo * Voo / g * log(cos(g * (Tu - T) / Voo) / cos(g * Tu / Voo));
   }
 
   double YofTdown(double T) {
-    return Voo * Voo / g * (-g * (T - Tu) / Voo - ln((1 + exp(-2 * g * (T - Tu) / Voo)) / 2 * cos(g * Tu / Voo)));
+   return Voo * Voo / g * (-g * (T - Tu) / Voo - log((1 + exp(-2 * g * (T - Tu) / Voo)) / 2 * cos(g * Tu / Voo)));
   }
 
   Vyo = V0 * sin(Winkel / 180 * pi);
@@ -219,7 +215,7 @@ OutputBallistics calculateBallisticsNewton(
     return OutputBallistics(Time: 0.0, maxHeight: 0.0, Distance: 0.0, maxSpeed: 0.0, Speed: 0.0, Angle: 0.0);
   }
 
-  a = a * a / 4 * pi;
+  a = (a * a * pi) / 4;
   k = rho * cw * a / 2;
 
   Voo = sqrt(Masse * g / k);
@@ -233,7 +229,7 @@ OutputBallistics calculateBallisticsNewton(
   H2 = YofTdown(T2);
   while (H2 > 0) {
     T1 = T2;
-    T2 = T2 + Tu / 2;
+    T2 += Tu / 2;
     H2 = YofTdown(T2);
   }
 
@@ -247,8 +243,6 @@ OutputBallistics calculateBallisticsNewton(
     }
   } while (Hm.abs() > 0.01);
   T = (T1 + T2) / 2;
-  W = XofT(T);
-
   W = XofT(T);
 
   return OutputBallistics(Time: T, maxHeight: H, Distance: W, maxSpeed: maxSpeed, Speed: V0, Angle: 0.0);
