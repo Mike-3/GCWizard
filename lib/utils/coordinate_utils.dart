@@ -29,6 +29,10 @@ double normalizeBearing(double bearing) {
 // northern hemisphere. So in fact, it changes the Lon value by 180 degrees: (92, 10) == (88, -170)
 
 LatLng normalizeLatLon(double lat, double lon) {
+  if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+    return LatLng(lat, lon);
+  }
+
   var normalizedLat = lat;
   var normalizedLon = lon;
 

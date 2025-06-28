@@ -7,6 +7,7 @@ import 'package:gc_wizard/tools/coords/_common/logic/ellipsoid.dart';
 import 'package:gc_wizard/tools/coords/distance_and_bearing/logic/distance_and_bearing.dart' as geodetic;
 import 'package:gc_wizard/tools/coords/rhumb_line/logic/rhumb_line.dart' as rhumbline;
 import 'package:gc_wizard/tools/coords/waypoint_projection/logic/projection.dart';
+import 'package:gc_wizard/utils/coordinate_utils.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:uuid/uuid.dart';
 
@@ -101,6 +102,8 @@ class GCWMapLine extends GCWMapSimpleGeometry {
 
     for (int _i = 1; _i < _countSteps; _i++) {
       var _nextPoint = projection(start.point, _distBear.bearingAToB, stepLengthInM * _i, defaultEllipsoid);
+      _nextPoint = normalizeLatLon(_nextPoint.latitude, _nextPoint.longitude);
+
       shape.add(_nextPoint);
     }
 
@@ -166,25 +169,10 @@ class GCWMapCircle extends GCWMapSimpleGeometry {
 
     shape = List.generate(((360.0 + _degrees) / _degrees).floor(), (index) => index * _degrees).map((e) {
       LatLng coord = projectionVincenty(centerPoint, e, radius, defaultEllipsoid);
-
-      // if there is a huge longitude step around the world (nearly 360°)
-      // then one coordinate is placed to the left side of the map, the next one to the right (or vice versa)
-      // this yields a nasty line across the whole map. In that case, there is no circle
-      // To avoid this the coordinate should be sorted. This works only in that case.
-      // In normal cases, this would ruin your circle
-      if (_prevLongitude != null) {
-        if ((_prevLongitude! - coord.longitude).abs() > 350) shouldSort = true;
-      }
-      _prevLongitude = coord.longitude;
-
+      coord = normalizeLatLon(coord.latitude, coord.longitude);
+      
       return coord;
     }).toList();
-
-    if (shouldSort) {
-      shape.sort((a, b) {
-        return a.longitude.compareTo(b.longitude);
-      });
-    }
   }
 }
 
