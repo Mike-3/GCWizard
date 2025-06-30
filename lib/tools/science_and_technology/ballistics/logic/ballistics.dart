@@ -43,7 +43,7 @@ OutputBallistics calculateBallisticsNoDrag({
       distance = duration * velocity * cos(angle);
       break;
     case BALLISTICS_DATA_MODE.VELOCITY_DISTANCE_TO_ANGLE_DURATION:
-      angle = asin(distance * acceleration / velocity / velocity) /2;
+      angle = asin(distance * acceleration / velocity / velocity) / 2;
       duration = distance / velocity / cos(angle);
       break;
   }
@@ -65,8 +65,16 @@ OutputBallistics calculateBallisticsNoDrag({
       Angle: angle * 180 / pi);
 }
 
-OutputBallistics calculateBallisticsNewton(double V0, double Winkel, double g,
-    double startHeight, double Masse, double a, double cw, double rho) {
+OutputBallistics calculateBallisticsNewton(
+    {required double V0,
+    required double Winkel,
+    required double g,
+    required double startHeight,
+    required double Masse,
+    required double a,
+    required double cw,
+    required double rho,
+    required BALLISTICS_DATA_MODE dataMode}) {
 // Newton    https://matheplanet.com/default3.html?call=article.php%3fsid=735&ref=http://www.google.ch/search%3fhlX=de%2526qX=Schiefer+wurf+F+%253D+k+*+v%255E2%2526metaX=
 // https://www.geogebra.org/m/tEypsSwj#material/UCbRqoGb
 
@@ -188,38 +196,26 @@ OutputBallistics calculateBallisticsNewton(double V0, double Winkel, double g,
   // iterationswerte
   double T1, T2, Tm, H2, Hm;
 
-  double ln(double x) {
-    return log(x) / log(e);
-  }
-
   double XofT(double T) {
-    return Voo * Voo / g * ln(1 + Vxo * g * T / Voo / Voo);
+    return Voo * Voo / g * log(1 + Vxo * g * T / (Voo * Voo));
   }
 
   double YofTup(double T) {
-    return Voo *
-        Voo /
-        g *
-        (ln(cos(g * (Tu - T) / Voo)) - ln(cos(g * Tu / Voo)));
+    return Voo * Voo / g * log(cos(g * (Tu - T) / Voo) / cos(g * Tu / Voo));
   }
 
   double YofTdown(double T) {
-    return Voo *
-        Voo /
-        g *
-        (-g * (T - Tu) / Voo -
-            ln((1 + exp(-2 * g * (T - Tu) / Voo)) / 2 * cos(g * Tu / Voo)));
+   return Voo * Voo / g * (-g * (T - Tu) / Voo - log((1 + exp(-2 * g * (T - Tu) / Voo)) / 2 * cos(g * Tu / Voo)));
   }
 
   Vyo = V0 * sin(Winkel / 180 * pi);
   Vxo = V0 * cos(Winkel / 180 * pi);
 
   if (a == 0 || rho == 0 || Masse == 0) {
-    return OutputBallistics(
-        Time: 0.0, maxHeight: 0.0, Distance: 0.0, maxSpeed: 0.0, Speed: 0.0, Angle: 0.0);
+    return OutputBallistics(Time: 0.0, maxHeight: 0.0, Distance: 0.0, maxSpeed: 0.0, Speed: 0.0, Angle: 0.0);
   }
 
-  a = a * a / 4 * pi;
+  a = (a * a * pi) / 4;
   k = rho * cw * a / 2;
 
   Voo = sqrt(Masse * g / k);
@@ -233,7 +229,7 @@ OutputBallistics calculateBallisticsNewton(double V0, double Winkel, double g,
   H2 = YofTdown(T2);
   while (H2 > 0) {
     T1 = T2;
-    T2 = T2 + Tu / 2;
+    T2 += Tu / 2;
     H2 = YofTdown(T2);
   }
 
@@ -249,8 +245,5 @@ OutputBallistics calculateBallisticsNewton(double V0, double Winkel, double g,
   T = (T1 + T2) / 2;
   W = XofT(T);
 
-  W = XofT(T);
-
-  return OutputBallistics(
-      Time: T, maxHeight: H, Distance: W, maxSpeed: maxSpeed, Speed: V0, Angle: 0.0);
+  return OutputBallistics(Time: T, maxHeight: H, Distance: W, maxSpeed: maxSpeed, Speed: V0, Angle: 0.0);
 }
