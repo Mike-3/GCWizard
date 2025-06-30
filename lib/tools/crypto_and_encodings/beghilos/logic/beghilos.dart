@@ -2,7 +2,7 @@ import 'package:gc_wizard/utils/collection_utils.dart';
 
 enum BeghilosType {LOWER_G_TO_SIX, NINE_TO_SIX}
 
-final _AlphabetMap_LOWER_G_TO_SIX = {
+const _AlphabetMap_LOWER_G_TO_SIX = {
   'b': '8',
   'e': '3',
   'H': '4',
@@ -26,7 +26,7 @@ final _AlphabetMap_LOWER_G_TO_SIX = {
   '.': '.'
 };
 
-final _AlphabetMap_NINE_TO_SIX = {
+const _AlphabetMap_NINE_TO_SIX = {
   'b': '8',
   'e': '3',
   'H': '4',
