@@ -4,10 +4,10 @@ import 'package:gc_wizard/utils/math_utils.dart';
 enum EchoState {OK, ERROR_UNKNOWN_CHAR, ERROR_EVEN_KEY, ERROR_INPUT_TOO_SHORT}
 
 class EchoOutput {
-  String output;
-  EchoState state;
+  final String output;
+  final EchoState state;
 
-  EchoOutput(this.output, this.state);
+  const EchoOutput(this.output, this.state);
 }
 
 EchoOutput encryptEcho(String input, String key) {
