@@ -2116,7 +2116,6 @@ class _GCWizardSCriptInterpreter {
 
     while (
         (op = state.token[0]) == '→' || op == '←' || op == '&' || op == '|' || op == '@') {
-      print('token = '+op);
       getToken();
       partialResult = evaluateExpressionUnaryFunctionOperator();
       if (_isNotAInt(partialResult) && _isNotAInt(result)) {
