@@ -164,8 +164,7 @@ bool _evaluateEquation(String equation, Map<String, int> mapping) {
 }
 
 num _eval(String expression) {
-  var result = parser.parse(expression).evaluate(EvaluationType.REAL, _cm);
-  return result != null && result is num ? result : double.negativeInfinity;
+  return RealEvaluator(_cm).evaluate(parser.parse(expression));
 }
 
 int _calculatePossibilities(int lettersCount) {
