@@ -15,7 +15,7 @@ dependencies:
   code_text_field: ^1.1.0
   collection: ^1.19.0
   #dart_numerics: DO NOT USE! CURRENT VERSION 0.0.6 NOT WEB COMPATIBLE (02/2024)
-  device_info_plus: ^11.5.0
+  device_info_plus: ^11.3.0
   diacritic: ^0.1.6
   encrypt: ^5.0.3
   exif: ^3.1.4
@@ -41,7 +41,7 @@ dependencies:
   image_picker: ^1.1.1
   intl: ^0.20.2
   latlong2: ^0.9.0
-  location: 8.0.1
+  location: 7.0.1 #pinned => issue https://github.com/Lyokone/flutterlocation/issues/1031
   mask_text_input_formatter: ^2.5.0
   math_expressions: ^3.1.0
   package_info_plus: ^8.3.0

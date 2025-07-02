@@ -282,6 +282,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substit
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/toki_pona/widget/toki_pona.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tomtom/widget/tomtom.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trifid/widget/trifid.dart';
@@ -1994,8 +1995,25 @@ void initializeRegistry(BuildContext context) {
         tool: const TextAnalysis(),
         id: 'textanalysis',
         categories: const [ToolCategory.CRYPTOGRAPHY],
-        searchKeys: const ['alphabetvalues', 'asciivalues', 'textanalysis'],
-        licenses: const []),
+        searchKeys: const ['alphabetvalues', 'asciivalues', 'textanalysis', 'textanalysis_letterfrequencies']),
+    GCWTool(
+        tool: const TextAnalysisLetterFrequencies(),
+        id: 'textanalysis_letterfrequencies',
+        categories: const [ToolCategory.CRYPTOGRAPHY],
+        searchKeys: const ['alphabetvalues', 'textanalysis', 'textanalysis_letterfrequencies'],
+        licenses: [
+          ToolLicensePortedCode(
+              context: context,
+              author: 'en.wikipedia.org and contributors',
+              title: 'Letter frequency',
+              licenseType: ToolLicenseType.CCBYSA4,
+              licenseUrl:
+                'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+              sourceUrl:
+                'https://en.wikipedia.org/w/index.php?title=Letter_frequency&oldid=1295211904',
+          ),
+        ]
+    ),
     GCWTool(tool: const Trifid(), id: 'trifid', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -6784,7 +6802,7 @@ void initializeRegistry(BuildContext context) {
     ]),
 
     GCWSymbolTableTool(symbolKey: 'alchemy', symbolSearchStrings: const [
-      'symbol_alchemy',
+      'alchemy',
     ], licenses: [
       ToolLicenseOnlineArticle(
         context: context,
@@ -6798,10 +6816,19 @@ void initializeRegistry(BuildContext context) {
     GCWSymbolTableTool(
         symbolKey: 'alchemy_alphabet',
         symbolSearchStrings: const [
-          'symbol_alchemy_alphabet',
+          'alchemy',
         ],
         licenses: [
           stl._toolLicenseOnlineBookPolygraphieTrithemius
+        ]),
+    GCWSymbolTableTool(
+        symbolKey: 'alchemy_code_gc_muzeum',
+        symbolSearchStrings: const [
+          'alchemy',
+          'gcmuseum',
+        ],
+        licenses: [
+          stl._toolLicenseGCMuseum
         ]),
     GCWSymbolTableTool(
         symbolKey: 'alien_mushrooms',
@@ -7342,6 +7369,21 @@ void initializeRegistry(BuildContext context) {
     ], licenses: [
       stl._toolLicenseOnlineBookPolygraphieTrithemius
     ]),
+    GCWSymbolTableTool(
+        symbolKey: 'chinese',
+        symbolSearchStrings: const [
+          'symbol_chinese',
+        ],
+        licenses: [
+          ToolLicenseImage(
+              context: context,
+              author: 'dCode (dCode.fr)',
+              title: 'Chinese Code',
+              licenseType: ToolLicenseType.CCBY,
+              sourceUrl:
+              'https://web.archive.org/web/20250328085306/https://www.dcode.fr/chinese-code',
+              licenseUseType: ToolLicenseUseType.REPRODUCTION),
+        ]),
     GCWSymbolTableTool(symbolKey: 'cirth_erebor', symbolSearchStrings: const [
       'symbol_runes',
       'symbol_lordoftherings',
@@ -7818,6 +7860,16 @@ void initializeRegistry(BuildContext context) {
               sourceUrl:
                   'https://de.wikipedia.org/w/index.php?title=Arabische_Zahlschrift&oldid=246917272',
               licenseType: ToolLicenseType.CCBYSA4)
+        ]),
+    GCWSymbolTableTool(
+        symbolKey: 'egypt',
+        symbolSearchStrings: const [
+          'symbol_egypt',
+          'symbol_egyptian_numerals',
+          'gcmuseum',
+        ],
+        licenses: [
+          stl._toolLicenseGCMuseum
         ]),
     GCWSymbolTableTool(
         symbolKey: 'egyptian_numerals',
@@ -9719,6 +9771,25 @@ void initializeRegistry(BuildContext context) {
             licenseType: ToolLicenseType.CHARITYWARE,
           )
         ]),
+    GCWSymbolTableTool(
+        symbolKey: 'rainbow_gc_muzeum',
+        symbolSearchStrings: const [
+          'color',
+          'symbol_rainbow',
+          'gcmuseum',
+        ],
+        licenses: [
+          stl._toolLicenseGCMuseum
+        ]),
+    GCWSymbolTableTool(
+        symbolKey: 'rainbow_nina_schmierblock',
+        symbolSearchStrings: const [
+          'color',
+          'symbol_rainbow',
+        ],
+        licenses: [
+          stl._toolLicenseNinasSchmierblock
+        ]),
     GCWSymbolTableTool(symbolKey: 'ravkan', symbolSearchStrings: const [
       'symbol_ravkan',
     ], licenses: [
@@ -9845,6 +9916,37 @@ void initializeRegistry(BuildContext context) {
     ], licenses: [
       stl._toolLicenseMyGeoToolsCodeTabellen,
     ]),
+    GCWSymbolTableTool(
+        symbolKey: 'samurai',
+        symbolSearchStrings: const [
+          'symbol_chinese',
+        ],
+        licenses: [
+          ToolLicenseImage(
+              context: context,
+              author: 'dCode (dCode.fr)',
+              title: 'Chinese Code',
+              licenseType: ToolLicenseType.CCBY,
+              sourceUrl:
+              'https://web.archive.org/web/20250328085306/https://www.dcode.fr/chinese-code',
+              licenseUseType: ToolLicenseUseType.REPRODUCTION),
+    ]),
+    GCWSymbolTableTool(
+        symbolKey: 'samurai2',
+        symbolSearchStrings: const [
+          'symbol_chinese',
+
+        ],
+        licenses: [
+          ToolLicenseImage(
+              context: context,
+              author: 'dCode (dCode.fr)',
+              title: 'Chinese Code',
+              licenseType: ToolLicenseType.CCBY,
+              sourceUrl:
+              'https://web.archive.org/web/20250328085306/https://www.dcode.fr/chinese-code',
+              licenseUseType: ToolLicenseUseType.REPRODUCTION)
+        ]),
     GCWSymbolTableTool(symbolKey: 'sanluca', symbolSearchStrings: const [
       'symbol_sanluca',
     ], licenses: [
@@ -10668,6 +10770,23 @@ void initializeRegistry(BuildContext context) {
               'https://commons.wikimedia.org/w/index.php?title=File:Webdings-big.png&oldid=899647144',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN)
     ]),
+    GCWSymbolTableTool(
+        symbolKey: 'weldon',
+        symbolSearchStrings: const [
+          'symbol_weldon',
+          'symbol_zodiac_z408',
+          'gcmuseum'
+        ],
+        licenses: [
+          stl._toolLicenseGCMuseum,
+          ToolLicenseImage(
+              context: context,
+              author: 'nickpelling (ciphermysteries.com)',
+              title: "Weldon Ciphers resolved (it would seem)…",
+              sourceUrl: 'https://web.archive.org/web/20250523031800/https://ciphermysteries.com/2014/04/05/weldon-ciphers-resolved-seem',
+              licenseType: ToolLicenseType.FREE_TO_USE,
+              licenseUseType: ToolLicenseUseType.REPRODUCTION)
+        ]),
     GCWSymbolTableTool(symbolKey: 'westernunion', symbolSearchStrings: const [
       'symbol_westernunion',
       'teletypewriter'
