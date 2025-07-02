@@ -102,6 +102,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/caesar/widget/caesar.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/chao/widget/chao.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/charsets/ascii_values/widget/ascii_values.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/cipher_wheel/widget/cipher_wheel.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/echo/widget/echo.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/enclosed_areas/widget/enclosed_areas.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/enigma/widget/enigma.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/esoteric_programming_languages/beatnik_language/widget/beatnik_language.dart';
@@ -170,6 +171,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substit
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trifid/widget/trifid.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trithemius/widget/trithemius.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/universal_product_code/widget/universal_product_code.dart';
@@ -223,6 +225,7 @@ import 'package:gc_wizard/tools/science_and_technology/astronomy/sun_position/wi
 import 'package:gc_wizard/tools/science_and_technology/astronomy/sun_rise_set/widget/sun_rise_set.dart';
 import 'package:gc_wizard/tools/science_and_technology/ballistics/widget/ballistics.dart';
 import 'package:gc_wizard/tools/science_and_technology/binary/widget/binary.dart';
+import 'package:gc_wizard/tools/science_and_technology/bingo_calls/widget/bingo_calls.dart';
 import 'package:gc_wizard/tools/science_and_technology/blood_alcohol_content/widget/blood_alcohol_content.dart';
 import 'package:gc_wizard/tools/science_and_technology/colors/color_tool/widget/color_tool.dart';
 import 'package:gc_wizard/tools/science_and_technology/colors/pantone_color_codes/widget/pantone_color_codes.dart';
@@ -575,6 +578,7 @@ void _initStaticToolList() {
       className(const Bifid()),
       className(const Binary()),
       className(const Binary2Image()),
+      className(const BingoCalls()),
       className(const BloodAlcoholContent()),
       className(const BookCipher()),
       className(const Bowling()),
@@ -630,6 +634,7 @@ void _initStaticToolList() {
       className(const DuckSpeak()),
       className(const EasterSelection()),
       className(const EarwigoTextDeobfuscation()),
+      className(const Echo()),
       className(const EdelcrantzTelegraph()),
       className(const ElementsOfGeocaching()),
       className(const ElementsOfGeocachingDataView(atomicNumber: 1)),
@@ -802,6 +807,7 @@ void _initStaticToolList() {
       className(const TeletypewriterSelection()),
       className(const TeletypewriterPunchTape()),
       className(const TextAnalysis()),
+      className(const TextAnalysisLetterFrequencies()),
       className(const TimeCalculator()),
       className(const TomTomSelection()),
       className(const TowerOfHanoi()),

@@ -194,6 +194,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/chao/widget/chao.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/charsets/ascii_values/widget/ascii_values.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/cipher_wheel/widget/cipher_wheel.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/cistercian_numbers/widget/cistercian_numbers.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/echo/widget/echo.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/enclosed_areas/widget/enclosed_areas.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/enigma/widget/enigma.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/esoteric_programming_languages/beatnik_language/widget/beatnik_language.dart';
@@ -281,6 +282,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substit
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/toki_pona/widget/toki_pona.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tomtom/widget/tomtom.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trifid/widget/trifid.dart';
@@ -354,6 +356,7 @@ import 'package:gc_wizard/tools/science_and_technology/astronomy/sun_rise_set/wi
 import 'package:gc_wizard/tools/science_and_technology/ballistics/widget/ballistics.dart';
 import 'package:gc_wizard/tools/science_and_technology/beaufort/widget/beaufort.dart';
 import 'package:gc_wizard/tools/science_and_technology/binary/widget/binary.dart';
+import 'package:gc_wizard/tools/science_and_technology/bingo_calls/widget/bingo_calls.dart';
 import 'package:gc_wizard/tools/science_and_technology/blood_alcohol_content/widget/blood_alcohol_content.dart';
 import 'package:gc_wizard/tools/science_and_technology/checkdigits/widget/checkdigits_creditcard.dart';
 import 'package:gc_wizard/tools/science_and_technology/checkdigits/widget/checkdigits_de_taxid.dart';
@@ -753,6 +756,11 @@ void initializeRegistry(BuildContext context) {
       'barcodes',
       'images',
     ]),
+    GCWTool(tool: const BingoCalls(), id: 'bingo_calls', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'bingo_calls',
+    ]),
     GCWTool(tool: const BookCipher(), id: 'book_cipher', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -902,6 +910,19 @@ void initializeRegistry(BuildContext context) {
       ToolCategory.SCIENCE_AND_TECHNOLOGY
     ], searchKeys: const [
       'dtmf',
+    ]),
+    GCWTool(tool: const Echo(), id: 'echo', categories: const [
+      ToolCategory.CRYPTOGRAPHY
+    ], searchKeys: const [
+      'echo'
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+        context: context,
+        author: 'Oliver Kuhlemann (kryptografie.de)',
+        title: 'Echo Chiffre',
+        sourceUrl:
+          'https://web.archive.org/web/20250630084348/https://kryptografie.de/kryptografie/chiffre/echo-chiffre.htm',
+      )
     ]),
     GCWTool(
         tool: const ElementsOfGeocachingSelection(),
@@ -1504,10 +1525,10 @@ void initializeRegistry(BuildContext context) {
               author: 'Thomas Rosenau',
               title: 'Nonogram Solver',
               sourceUrl:
-                  'https://web.archivechive.org/web/20240819161712/https://github.com/ThomasR/nonogram-solver',
+                  'https://web.archive.org/web/20240819161712/https://github.com/ThomasR/nonogram-solver',
               licenseType: ToolLicenseType.APACHE2,
               licenseUrl:
-                  'https://web.archivechive.org/web/20240819161901/https://github.com/ThomasR/nonogram-solver?tab=Apache-2.0-1-ov-file'),
+                  'https://web.archive.org/web/20240819161901/https://github.com/ThomasR/nonogram-solver?tab=Apache-2.0-1-ov-file'),
         ]),
     GCWTool(
         tool: const NumberPyramidSolver(),
@@ -1526,10 +1547,10 @@ void initializeRegistry(BuildContext context) {
               author: 'Dennis \'dennistreysa\' P.',
               title: 'Py-Ramid',
               sourceUrl:
-                  'https://web.archivechive.org/web/20240819161342/https://github.com/dennistreysa/Py-Ramid',
+                  'https://web.archive.org/web/20240819161342/https://github.com/dennistreysa/Py-Ramid',
               licenseType: ToolLicenseType.GPL3,
               licenseUrl:
-                  'https://web.archivechive.org/web/20240819161613/https://github.com/dennistreysa/Py-Ramid?tab=GPL-3.0-1-ov-file'),
+                  'https://web.archive.org/web/20240819161613/https://github.com/dennistreysa/Py-Ramid?tab=GPL-3.0-1-ov-file'),
         ]),
     GCWTool(
         tool: const NumberSequenceSelection(),
@@ -1918,10 +1939,10 @@ void initializeRegistry(BuildContext context) {
           author: 'Demis Bellot, Adam Singer, Matias Meno',
           title: 'Sudoku Solver',
           sourceUrl:
-              'https://web.archivechive.org/web/20240819162156/https://github.com/dartist/sudoku_solver',
+              'https://web.archive.org/web/20240819162156/https://github.com/dartist/sudoku_solver',
           licenseType: ToolLicenseType.FREE_TO_USE,
           licenseUrl:
-              'https://web.archivechive.org/web/20240819162341/https://github.com/dartist/sudoku_solver/blob/master/LICENSE'),
+              'https://web.archive.org/web/20240819162341/https://github.com/dartist/sudoku_solver/blob/master/LICENSE'),
     ]),
     GCWTool(
       tool: const SymbolTableSelection(),
@@ -1974,8 +1995,25 @@ void initializeRegistry(BuildContext context) {
         tool: const TextAnalysis(),
         id: 'textanalysis',
         categories: const [ToolCategory.CRYPTOGRAPHY],
-        searchKeys: const ['alphabetvalues', 'asciivalues', 'textanalysis'],
-        licenses: const []),
+        searchKeys: const ['alphabetvalues', 'asciivalues', 'textanalysis', 'textanalysis_letterfrequencies']),
+    GCWTool(
+        tool: const TextAnalysisLetterFrequencies(),
+        id: 'textanalysis_letterfrequencies',
+        categories: const [ToolCategory.CRYPTOGRAPHY],
+        searchKeys: const ['alphabetvalues', 'textanalysis', 'textanalysis_letterfrequencies'],
+        licenses: [
+          ToolLicensePortedCode(
+              context: context,
+              author: 'en.wikipedia.org and contributors',
+              title: 'Letter frequency',
+              licenseType: ToolLicenseType.CCBYSA4,
+              licenseUrl:
+                'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+              sourceUrl:
+                'https://en.wikipedia.org/w/index.php?title=Letter_frequency&oldid=1295211904',
+          ),
+        ]
+    ),
     GCWTool(tool: const Trifid(), id: 'trifid', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -3009,9 +3047,9 @@ void initializeRegistry(BuildContext context) {
           title: 'rijksdriehoek',
           licenseType: ToolLicenseType.MIT,
           licenseUrl:
-              'https://github.com/GCWizard/rijksdriehoek/blob/dfea5221b8e3f9f44b6f0102114ab92f36eca5b2/LICENSE',
+              'https://web.archive.org/web/20250630124332/https://github.com/djvanderlaan/rijksdriehoek/blob/master/LICENSE',
           sourceUrl:
-              'hhttps://github.com/GCWizard/rijksdriehoek/tree/dfea5221b8e3f9f44b6f0102114ab92f36eca5b2',
+              'https://web.archive.org/web/20250630124702/https://github.com/djvanderlaan/rijksdriehoek',
         ),
         ToolLicenseOnlineArticle(
             context: context,
@@ -3045,9 +3083,9 @@ void initializeRegistry(BuildContext context) {
             title: 'Geo3x3',
             licenseType: ToolLicenseType.CC0_1,
             licenseUrl:
-                'https://github.com/GCWizard/Geo3x3/tree/ca45f4a2c5fcebd806d1dbf615c7a26a8cad1150?tab=License-1-ov-file',
+                'https://web.archive.org/web/20250630130101/https://github.com/taisukef/Geo3x3?tab=CC0-1.0-1-ov-file#readme',
             sourceUrl:
-                'https://github.com/GCWizard/Geo3x3/tree/ca45f4a2c5fcebd806d1dbf615c7a26a8cad1150'),
+                'https://web.archive.org/web/20250507134944/https://github.com/taisukef/Geo3x3/'),
         ToolLicenseOnlineArticle(
             context: context,
             author: '@sa2da',
@@ -3063,9 +3101,9 @@ void initializeRegistry(BuildContext context) {
             title: 'geohex4j',
             licenseType: ToolLicenseType.MIT,
             licenseUrl:
-                'https://github.com/GCWizard/geohex4j/tree/464acda075666e0c2cb868935b334371c7f2eb97?tab=readme-ov-file#license',
+                'https://web.archive.org/web/20250630131013/https://github.com/chsh/geohex4j?tab=readme-ov-file#license',
             sourceUrl:
-                'https://github.com/GCWizard/geohex4j/tree/464acda075666e0c2cb868935b334371c7f2eb97'),
+                'https://web.archive.org/web/20230226071438/https://github.com/chsh/geohex4j'),
         ToolLicenseOnlineArticle(
           context: context,
           author: 'Ziyad S. Al-Salloum (makaney.net)',
@@ -3083,18 +3121,18 @@ void initializeRegistry(BuildContext context) {
             title: 'mapcode-js',
             licenseType: ToolLicenseType.APACHE2,
             licenseUrl:
-                'https://github.com/GCWizard/mapcode-js/blob/25abcc53f4a15b996810a9d0fd00ff2efd0f2eeb/LICENSE',
+                'https://web.archive.org/web/20250630133145/https://github.com/mapcode-foundation/mapcode-js/blob/master/LICENSE',
             sourceUrl:
-                'https://github.com/GCWizard/mapcode-js/tree/25abcc53f4a15b996810a9d0fd00ff2efd0f2eeb'),
+                'https://web.archive.org/web/20240303102849/https://github.com/mapcode-foundation/mapcode-js'),
         ToolLicensePortedCode(
             context: context,
             author: '@Google',
             title: 'Open Location Code',
             licenseType: ToolLicenseType.APACHE2,
             licenseUrl:
-                'https://github.com/GCWizard/open-location-code/blob/dfcebc905b81c3d9c987f7b3ac6e992f1e8710c6/LICENSE',
+                'https://web.archive.org/web/20250116091702/https://github.com/google/open-location-code/blob/main/LICENSE',
             sourceUrl:
-                'https://github.com/GCWizard/open-location-code/tree/dfcebc905b81c3d9c987f7b3ac6e992f1e8710c6'),
+                'https://web.archive.org/web/20250524075014/https://github.com/google/open-location-code'),
         ToolLicenseOnlineArticle(
             context: context,
             author: 'OpenStreetMap.org and contributors',
@@ -3130,10 +3168,10 @@ void initializeRegistry(BuildContext context) {
             context: context,
             author: 'Patrick \'PattuX\' Wienhöft (GitHub)',
             title: 'Auto Reverse Wherigo Solver',
-            sourceUrl: 'https://github.com/PattuX/auto_reverse_wig_solver',
+            sourceUrl: 'https://web.archive.org/web/20201111160230/https://github.com/PattuX/auto_reverse_wig_solver',
             licenseType: ToolLicenseType.MIT,
             licenseUrl:
-                'https://github.com/PattuX/auto_reverse_wig_solver/blob/master/LICENSE.txt'),
+                'https://web.archive.org/web/20250630134152/https://github.com/PattuX/auto_reverse_wig_solver/blob/master/LICENSE.txt'),
         ToolLicensePortedCode(
             context: context,
             author: 'Google Inc.',
@@ -3166,7 +3204,7 @@ void initializeRegistry(BuildContext context) {
               title: 'GeoFormula and TerpsTest',
               licenseType: ToolLicenseType.APACHE2,
               licenseUrl:
-                  'https://github.com/GCWizard/GeoFormulas/tree/ac40eb5589883999f830908cd1db45c73e1e1267?tab=readme-ov-file#legal-stuff',
+                  'https://web.archive.org/web/20250630134556/https://github.com/pkohut/GeoFormulas?tab=readme-ov-file#legal-stuff',
               sourceUrl:
                   'http://web.archive.org/web/20240812021538/https://github.com/pkohut/GeoFormulas'),
           ToolLicensePortedCode(
@@ -3222,9 +3260,9 @@ void initializeRegistry(BuildContext context) {
               title: 'GPS Averaging',
               licenseType: ToolLicenseType.APACHE2,
               licenseUrl:
-                  'https://github.com/GCWizard/GPS-Averaging/blob/260eb5464d6d1b969c3f30bce42c5cf7848aab93/LICENSE.md',
+                  'https://web.archive.org/web/20170228083134/https://github.com/davidvavra/GPS-Averaging/blob/master/LICENSE.md',
               sourceUrl:
-                  'https://github.com/GCWizard/GPS-Averaging/tree/260eb5464d6d1b969c3f30bce42c5cf7848aab93')
+                  'https://web.archive.org/web/20201128223844/https://github.com/davidvavra/GPS-Averaging')
         ]),
     GCWTool(
         tool: const CenterTwoPoints(),
@@ -3819,15 +3857,19 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'Fabian Mastenbroek',
           title: 'brainfuck',
-          sourceUrl: 'https://github.com/fabianishere/brainfuck',
-          licenseType: ToolLicenseType.APACHE2),
+          sourceUrl: 'https://web.archive.org/web/20250511150306/https://github.com/fabianishere/brainfuck',
+          licenseType: ToolLicenseType.APACHE2,
+          licenseUrl: 'https://web.archive.org/web/20221209052016/https://github.com/fabianishere/brainfuck/blob/master/LICENSE.txt'
+      ),
       ToolLicensePortedCode(
           context: context,
           author: 'Anar Software',
           title: 'BrainJuck Generator',
           sourceUrl:
-              'https://github.com/anars/BrainJuck/blob/master/source/com/anars/brainjuck/Generator.java',
-          licenseType: ToolLicenseType.GPL3),
+              'https://web.archive.org/web/20250630135425/https://github.com/anars/BrainJuck/blob/master/source/com/anars/brainjuck/Generator.java',
+          licenseType: ToolLicenseType.GPL3,
+          licenseUrl: 'https://web.archive.org/web/20250630135314/https://github.com/anars/BrainJuck/blob/master/license.txt'
+      ),
     ]),
     GCWTool(tool: const Cow(), id: 'cow', searchKeys: const [
       'esotericprogramminglanguage',
@@ -6730,7 +6772,7 @@ void initializeRegistry(BuildContext context) {
               licenseUrl:
                   'https://web.archive.org/web/20240724150805/https://github.com/jforshee/ImageHashing/blob/master/README.md',
               sourceUrl:
-                  'https://web.archive.org/web/20240000000000*/https://github.com/jforshee/ImageHashing/blob/master/ImageHashing/ImageHashing.cs',
+                  'https://web.archive.org/web/20240724145840/https://github.com/jforshee/ImageHashing/blob/master/ImageHashing/ImageHashing.cs',
               licenseType: ToolLicenseType.FREE_TO_USE),
         ]),
 
@@ -6760,7 +6802,7 @@ void initializeRegistry(BuildContext context) {
     ]),
 
     GCWSymbolTableTool(symbolKey: 'alchemy', symbolSearchStrings: const [
-      'symbol_alchemy',
+      'alchemy',
     ], licenses: [
       ToolLicenseOnlineArticle(
         context: context,
@@ -6774,10 +6816,19 @@ void initializeRegistry(BuildContext context) {
     GCWSymbolTableTool(
         symbolKey: 'alchemy_alphabet',
         symbolSearchStrings: const [
-          'symbol_alchemy_alphabet',
+          'alchemy',
         ],
         licenses: [
           stl._toolLicenseOnlineBookPolygraphieTrithemius
+        ]),
+    GCWSymbolTableTool(
+        symbolKey: 'alchemy_code_gc_muzeum',
+        symbolSearchStrings: const [
+          'alchemy',
+          'gcmuseum',
+        ],
+        licenses: [
+          stl._toolLicenseGCMuseum
         ]),
     GCWSymbolTableTool(
         symbolKey: 'alien_mushrooms',
@@ -7318,6 +7369,21 @@ void initializeRegistry(BuildContext context) {
     ], licenses: [
       stl._toolLicenseOnlineBookPolygraphieTrithemius
     ]),
+    GCWSymbolTableTool(
+        symbolKey: 'chinese',
+        symbolSearchStrings: const [
+          'symbol_chinese',
+        ],
+        licenses: [
+          ToolLicenseImage(
+              context: context,
+              author: 'dCode (dCode.fr)',
+              title: 'Chinese Code',
+              licenseType: ToolLicenseType.CCBY,
+              sourceUrl:
+              'https://web.archive.org/web/20250328085306/https://www.dcode.fr/chinese-code',
+              licenseUseType: ToolLicenseUseType.REPRODUCTION),
+        ]),
     GCWSymbolTableTool(symbolKey: 'cirth_erebor', symbolSearchStrings: const [
       'symbol_runes',
       'symbol_lordoftherings',
@@ -7796,6 +7862,16 @@ void initializeRegistry(BuildContext context) {
               licenseType: ToolLicenseType.CCBYSA4)
         ]),
     GCWSymbolTableTool(
+        symbolKey: 'egypt',
+        symbolSearchStrings: const [
+          'symbol_egypt',
+          'symbol_egyptian_numerals',
+          'gcmuseum',
+        ],
+        licenses: [
+          stl._toolLicenseGCMuseum
+        ]),
+    GCWSymbolTableTool(
         symbolKey: 'egyptian_numerals',
         symbolSearchStrings: const [
           'symbol_egyptian_numerals',
@@ -8112,7 +8188,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Darrell Johnson, Leandro Pardini',
           title: 'Futurama Alien Alphabet One',
           sourceUrl:
-              'https://web.archive.org/web/20190704113955/www.futurama-madhouse.net/fonts/index.shtml',
+              'https://web.archive.org/web/20190704113955/https://www.futurama-madhouse.net/fonts/index.shtml',
           licenseType: ToolLicenseType.FREE_TO_USE)
     ]),
     GCWSymbolTableTool(symbolKey: 'futurama_2', symbolSearchStrings: const [
@@ -8123,7 +8199,7 @@ void initializeRegistry(BuildContext context) {
           author: 'Leandro Pardini',
           title: 'Futurama Alien Alphabet Two',
           sourceUrl:
-              'https://web.archive.org/web/20190704113955/www.futurama-madhouse.net/fonts/index.shtml',
+              'https://web.archive.org/web/20190704113955/https://www.futurama-madhouse.net/fonts/index.shtml',
           licenseType: ToolLicenseType.FREE_TO_USE)
     ]),
     GCWSymbolTableTool(symbolKey: 'gallifreyan', symbolSearchStrings: const [
@@ -9695,6 +9771,25 @@ void initializeRegistry(BuildContext context) {
             licenseType: ToolLicenseType.CHARITYWARE,
           )
         ]),
+    GCWSymbolTableTool(
+        symbolKey: 'rainbow_gc_muzeum',
+        symbolSearchStrings: const [
+          'color',
+          'symbol_rainbow',
+          'gcmuseum',
+        ],
+        licenses: [
+          stl._toolLicenseGCMuseum
+        ]),
+    GCWSymbolTableTool(
+        symbolKey: 'rainbow_nina_schmierblock',
+        symbolSearchStrings: const [
+          'color',
+          'symbol_rainbow',
+        ],
+        licenses: [
+          stl._toolLicenseNinasSchmierblock
+        ]),
     GCWSymbolTableTool(symbolKey: 'ravkan', symbolSearchStrings: const [
       'symbol_ravkan',
     ], licenses: [
@@ -9821,6 +9916,37 @@ void initializeRegistry(BuildContext context) {
     ], licenses: [
       stl._toolLicenseMyGeoToolsCodeTabellen,
     ]),
+    GCWSymbolTableTool(
+        symbolKey: 'samurai',
+        symbolSearchStrings: const [
+          'symbol_chinese',
+        ],
+        licenses: [
+          ToolLicenseImage(
+              context: context,
+              author: 'dCode (dCode.fr)',
+              title: 'Chinese Code',
+              licenseType: ToolLicenseType.CCBY,
+              sourceUrl:
+              'https://web.archive.org/web/20250328085306/https://www.dcode.fr/chinese-code',
+              licenseUseType: ToolLicenseUseType.REPRODUCTION),
+    ]),
+    GCWSymbolTableTool(
+        symbolKey: 'samurai2',
+        symbolSearchStrings: const [
+          'symbol_chinese',
+
+        ],
+        licenses: [
+          ToolLicenseImage(
+              context: context,
+              author: 'dCode (dCode.fr)',
+              title: 'Chinese Code',
+              licenseType: ToolLicenseType.CCBY,
+              sourceUrl:
+              'https://web.archive.org/web/20250328085306/https://www.dcode.fr/chinese-code',
+              licenseUseType: ToolLicenseUseType.REPRODUCTION)
+        ]),
     GCWSymbolTableTool(symbolKey: 'sanluca', symbolSearchStrings: const [
       'symbol_sanluca',
     ], licenses: [
@@ -10644,6 +10770,23 @@ void initializeRegistry(BuildContext context) {
               'https://commons.wikimedia.org/w/index.php?title=File:Webdings-big.png&oldid=899647144',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN)
     ]),
+    GCWSymbolTableTool(
+        symbolKey: 'weldon',
+        symbolSearchStrings: const [
+          'symbol_weldon',
+          'symbol_zodiac_z408',
+          'gcmuseum'
+        ],
+        licenses: [
+          stl._toolLicenseGCMuseum,
+          ToolLicenseImage(
+              context: context,
+              author: 'nickpelling (ciphermysteries.com)',
+              title: "Weldon Ciphers resolved (it would seem)…",
+              sourceUrl: 'https://web.archive.org/web/20250523031800/https://ciphermysteries.com/2014/04/05/weldon-ciphers-resolved-seem',
+              licenseType: ToolLicenseType.FREE_TO_USE,
+              licenseUseType: ToolLicenseUseType.REPRODUCTION)
+        ]),
     GCWSymbolTableTool(symbolKey: 'westernunion', symbolSearchStrings: const [
       'symbol_westernunion',
       'teletypewriter'
