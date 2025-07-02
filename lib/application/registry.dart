@@ -282,6 +282,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substit
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/toki_pona/widget/toki_pona.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tomtom/widget/tomtom.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trifid/widget/trifid.dart';
@@ -1994,8 +1995,25 @@ void initializeRegistry(BuildContext context) {
         tool: const TextAnalysis(),
         id: 'textanalysis',
         categories: const [ToolCategory.CRYPTOGRAPHY],
-        searchKeys: const ['alphabetvalues', 'asciivalues', 'textanalysis'],
-        licenses: const []),
+        searchKeys: const ['alphabetvalues', 'asciivalues', 'textanalysis', 'textanalysis_letterfrequencies']),
+    GCWTool(
+        tool: const TextAnalysisLetterFrequencies(),
+        id: 'textanalysis_letterfrequencies',
+        categories: const [ToolCategory.CRYPTOGRAPHY],
+        searchKeys: const ['alphabetvalues', 'textanalysis', 'textanalysis_letterfrequencies'],
+        licenses: [
+          ToolLicensePortedCode(
+              context: context,
+              author: 'en.wikipedia.org and contributors',
+              title: 'Letter frequency',
+              licenseType: ToolLicenseType.CCBYSA4,
+              licenseUrl:
+                'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+              sourceUrl:
+                'https://en.wikipedia.org/w/index.php?title=Letter_frequency&oldid=1295211904',
+          ),
+        ]
+    ),
     GCWTool(tool: const Trifid(), id: 'trifid', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
