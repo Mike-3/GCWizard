@@ -116,6 +116,7 @@ flutter:
     - lib/tools/symbol_tables/_common/assets/adlam/
     - lib/tools/symbol_tables/_common/assets/albhed/
     - lib/tools/symbol_tables/_common/assets/alchemy/
+    - lib/tools/symbol_tables/_common/assets/alchemy_code_gc_muzeum/
     - lib/tools/symbol_tables/_common/assets/alchemy_alphabet/
     - lib/tools/symbol_tables/_common/assets/alien_mushrooms/
     - lib/tools/symbol_tables/_common/assets/allemans_germains/
