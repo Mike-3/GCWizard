@@ -8,9 +8,9 @@ import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/tools/coords/_common/formats/dec/logic/dec.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format_constants.dart';
-import 'package:gc_wizard/tools/coords/_common/widget/coordinate_text_formatter.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/coordinates.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/default_coord_getter.dart';
+import 'package:gc_wizard/tools/coords/_common/widget/coordinate_text_formatter.dart';
 import 'package:gc_wizard/tools/coords/_common/widget/gcw_coords.dart';
 import 'package:gc_wizard/tools/coords/_common/widget/gcw_coords_formatselector.dart';
 import 'package:gc_wizard/tools/coords/_common/widget/gcw_coords_output/gcw_coords_output.dart';
@@ -19,7 +19,7 @@ import 'package:gc_wizard/utils/string_utils.dart';
 import 'package:latlong2/latlong.dart';
 
 class FormatConverter extends StatefulWidget {
-  const FormatConverter({Key? key}) : super(key: key);
+  const FormatConverter({super.key});
 
   @override
   _FormatConverterState createState() => _FormatConverterState();
@@ -123,7 +123,7 @@ class _FormatConverterState extends State<FormatConverter> {
   }
 
   Object _supplementOutput(LatLng latLng, BaseCoordinate coords, CoordinateFormat format) {
-    if (coords.errorCode != ErrorCode.OK) {
+    if (coords.stateCode != StateCode.OK) {
       var output = formatCoordOutput(latLng, format);
       if (output.isNotEmpty) output += '\n';
       return output + _coordErrorOutput(coords);
@@ -133,10 +133,10 @@ class _FormatConverterState extends State<FormatConverter> {
 
   String _coordErrorOutput(BaseCoordinate coords) {
     var output =
-      i18n(context, 'coords_formatconverter_' + enumName(ErrorCode.Invalid_Coordinate.toString()).toLowerCase());
-    if (coords.errorCode != ErrorCode.OK && coords.errorCode != ErrorCode.Invalid_Coordinate) {
+      i18n(context, 'coords_formatconverter_' + enumName(StateCode.Invalid_Coordinate.toString()).toLowerCase());
+    if (coords.stateCode != StateCode.OK && coords.stateCode != StateCode.Invalid_Coordinate) {
       output += '\n' +
-          i18n(context, 'coords_formatconverter_' + enumName(coords.errorCode.toString()).toLowerCase());
+          i18n(context, 'coords_formatconverter_' + enumName(coords.stateCode.toString()).toLowerCase());
     }
     return output;
   }
@@ -171,8 +171,8 @@ class _FormatConverterState extends State<FormatConverter> {
 
 class _GCWCoordsFormatSelectorAll extends GCWCoordsFormatSelector {
   const _GCWCoordsFormatSelectorAll(
-      {Key? key, required void Function(CoordinateFormat) onChanged, required CoordinateFormat format})
-      : super(key: key, input: false, onChanged: onChanged, format: format);
+      {required super.onChanged, required super.format})
+      : super(input: false);
 
   @override
   List<GCWDropDownMenuItem<CoordinateFormatKey>> getDropDownItems(BuildContext context) {

@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "de.sman42.gc_wizard"
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -18,22 +18,20 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
     defaultConfig {
         applicationId = "de.sman42.gc_wizard_alpha"
 
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties().apply {
-        load(FileInputStream(keystorePropertiesFile))
+        if (keystorePropertiesFile.exists()) {
+            load(FileInputStream(keystorePropertiesFile))
+        }
     }
 
     signingConfigs {

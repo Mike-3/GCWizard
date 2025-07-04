@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gc_wizard/application/theme/fixed_colors.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/default_coord_getter.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/distance_bearing.dart';
 import 'package:gc_wizard/tools/coords/distance_and_bearing/logic/distance_and_bearing.dart';
@@ -7,7 +8,6 @@ import 'package:gc_wizard/tools/coords/map_view/logic/map_geometries.dart';
 import 'package:gc_wizard/tools/coords/map_view/persistence/mapview_persistence_adapter.dart';
 import 'package:gc_wizard/tools/coords/map_view/persistence/model.dart';
 import 'package:gc_wizard/utils/constants.dart';
-import 'package:gc_wizard/application/theme/fixed_colors.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 import 'package:latlong2/latlong.dart';
@@ -141,20 +141,29 @@ class _GpxReader {
           point: LatLng(double.tryParse(lat) ?? 0, double.tryParse(lon) ?? 0),
           isEditable: true);
       var name = xmlElement.getElement('name')?.innerText ?? '';
+      var type = xmlElement.getElement('type')?.innerText ?? '';
+      var wpType = WaypointType.fromString(type);
 
       if (name.isNotEmpty) {
         wpt.markerText = name;
-        if (name.startsWith("P")) {
-          // Parking coordinate only for gc.com
-          wpt.color = COLOR_MAP_GPX_IMPORT_PARKING;
-        } else if (name.startsWith(RegExp('[0-9]')) ||
-            RegExp(r'-.{2}$').hasMatch(name)) {
-          // waypoint gc.com or oc.com
-          wpt.color = COLOR_MAP_GPX_IMPORT_WAYPOINT;
-        }
       } else {
         wpt.markerText = xmlElement.getElement('desc')?.innerText;
       }
+
+      if (type.isNotEmpty) {
+        wpt.color = wpType.color;
+        wpt.type = wpType;
+      } else {
+        wpt.color = COLOR_MAP_POINT;
+        wpt.type = WaypointType.OTHER;
+      }
+
+      if (wpt.type == WaypointType.FINAL  // ignores c:geo Final (0.0, 0.0) for unsolved caches
+          && wpt.point.latitude == (0.0)
+          && wpt.point.longitude == (0.0)) {
+        return null;
+      }
+
       return wpt;
     }
     return null;

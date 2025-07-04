@@ -8,8 +8,8 @@ import 'package:gc_wizard/common_widgets/buttons/gcw_button.dart';
 import 'package:gc_wizard/common_widgets/gcw_painter_container.dart';
 import 'package:gc_wizard/common_widgets/gcw_snackbar.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
-import 'package:gc_wizard/common_widgets/spinners/gcw_page_spinner.dart';
 import 'package:gc_wizard/common_widgets/spinners/gcw_integer_spinner.dart';
+import 'package:gc_wizard/common_widgets/spinners/gcw_page_spinner.dart';
 import 'package:gc_wizard/common_widgets/text_input_formatters/gcw_integer_textinputformatter.dart';
 import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
 import 'package:gc_wizard/tools/games/number_pyramid/logic/number_pyramid_solver.dart';
@@ -18,7 +18,7 @@ import 'package:touchable/touchable.dart';
 part 'package:gc_wizard/tools/games/number_pyramid/widget/number_pyramid_board.dart';
 
 class NumberPyramidSolver extends StatefulWidget {
-  const NumberPyramidSolver({Key? key}) : super(key: key);
+  const NumberPyramidSolver({super.key});
 
   @override
   _NumberPyramidSolverState createState() => _NumberPyramidSolverState();

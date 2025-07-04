@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/theme/theme.dart';
 import 'package:gc_wizard/application/theme/theme_colors.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
 import 'package:gc_wizard/common_widgets/clipboard/gcw_clipboard.dart';
-
-import '../gcw_text.dart';
+import 'package:gc_wizard/common_widgets/gcw_text.dart';
 
 class GCWColumnedMultilineOutput extends StatefulWidget {
   //TODO: Is input data type correctly defined? Is there a better way than List<List<...>>? Own return type?
@@ -24,7 +24,7 @@ class GCWColumnedMultilineOutput extends StatefulWidget {
   final int maxRowLimit;
 
   const GCWColumnedMultilineOutput(
-      {Key? key,
+      {super.key,
       required this.data,
       this.flexValues = const [],
       this.copyColumn,
@@ -36,8 +36,7 @@ class GCWColumnedMultilineOutput extends StatefulWidget {
       this.fontSize = 0.0,
       this.firstRows,
       this.lastRows,
-      this.maxRowLimit = 200}) // max loaded rows for Listview.builder
-      : super(key: key);
+      this.maxRowLimit = 150});
 
   @override
   _GCWColumnedMultilineOutputState createState() => _GCWColumnedMultilineOutputState();
@@ -46,6 +45,7 @@ class GCWColumnedMultilineOutput extends StatefulWidget {
 class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput> {
   late int _currentLimit = widget.maxRowLimit;
   late ScrollController _scrollController;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -66,9 +66,17 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
     }
   }
 
-  void _loadMore() {
+  void _loadMore() async {
+    if (_isLoading || _currentLimit >= widget.data.length) return;
+    setState(() {
+      _isLoading = true;
+    });
+
+    await Future<void>.delayed(const Duration(milliseconds: 1000));
+
     setState(() {
       _currentLimit = (_currentLimit + widget.maxRowLimit).clamp(0, widget.data.length);
+      _isLoading = false;
     });
   }
 
@@ -80,10 +88,12 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
       return SizedBox(
         height: MediaQuery.of(context).size.height * 0.6,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             _buildFirstRows(),
             (widget.hasHeader) ? _buildHeader() : const SizedBox.shrink(),
             Expanded(child: _buildListView()),
+            if (_isLoading) Center(child: _buildLoadingIndicator()),
             _buildLastRows()
           ],
         ),
@@ -98,6 +108,16 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
         _buildListView(),
         _buildLastRows()
       ],
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GCWText(
+        text: i18n(context, 'common_loadfile_loading') + ' ...',
+        align: Alignment.center,
+      ),
     );
   }
 
@@ -160,8 +180,7 @@ class _GCWColumnedMultilineOutputState extends State<GCWColumnedMultilineOutput>
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 2),
         decoration: BoxDecoration(color: rowColor),
-        child: _buildRowEntries(rowData, rowIdx, copyText)
-        );
+        child: _buildRowEntries(rowData, rowIdx, copyText));
   }
 
   Widget _buildRowEntries(List<dynamic> rowData, int rowIdx, String copytext, {bool boldType = false}) {

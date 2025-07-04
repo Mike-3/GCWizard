@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/navigation/no_animation_material_page_route.dart';
 import 'package:gc_wizard/application/theme/theme.dart';
+import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
 import 'package:gc_wizard/common_widgets/dropdowns/gcw_dropdown.dart';
-import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_columned_multiline_output.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
@@ -15,7 +15,7 @@ import 'package:gc_wizard/tools/science_and_technology/periodic_table/_common/lo
 class ElementsOfGeocachingDataView extends StatefulWidget {
   final int atomicNumber;
 
-  const ElementsOfGeocachingDataView({Key? key, required this.atomicNumber}) : super(key: key);
+  const ElementsOfGeocachingDataView({super.key, required this.atomicNumber});
 
   @override
   _ElementsOfGeocachingDataViewState createState() => _ElementsOfGeocachingDataViewState();

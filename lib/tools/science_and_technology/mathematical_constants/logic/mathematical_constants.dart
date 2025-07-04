@@ -10,16 +10,24 @@ class MathematicalConstant {
 }
 
 const Map<String, MathematicalConstant> MATHEMATICAL_CONSTANTS = {
+  'mathematical_constants_ramanujan': MathematicalConstant(
+    value: '1729',
+    additional_names: ['mathematical_constants_hardyramanujan']
+  ),
+  'mathematical_constants_hardyramanujan': MathematicalConstant(
+    value: '1729',
+    additional_names: ['mathematical_constants_ramanujan']
+  ),
   'mathematical_constants_kaprekar': MathematicalConstant(
-    symbol: '6174',
     value: '6174',
   ),
+  'mathematical_constants_xkcdrandomnumber': MathematicalConstant(
+    value: '4',
+  ),
   'mathematical_constants_zero': MathematicalConstant(
-    symbol: '0',
     value: '0',
   ),
   'mathematical_constants_one': MathematicalConstant(
-    symbol: '1',
     value: '1',
     additional_names: ['mathematical_constants_unity'],
   ),

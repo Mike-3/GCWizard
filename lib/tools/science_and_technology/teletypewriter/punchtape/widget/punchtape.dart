@@ -19,7 +19,7 @@ import 'package:gc_wizard/tools/science_and_technology/teletypewriter/punchtape_
 import 'package:gc_wizard/tools/science_and_technology/teletypewriter/punchtape_segment_display/widget/punchtape_segmentdisplay_output.dart';
 
 class TeletypewriterPunchTape extends StatefulWidget {
-  const TeletypewriterPunchTape({Key? key}) : super(key: key);
+  const TeletypewriterPunchTape({super.key});
 
   @override
   _TeletypewriterPunchTapeState createState() => _TeletypewriterPunchTapeState();
@@ -419,9 +419,9 @@ String _segments2binary(List<String> segments2convert, TeletypewriterCodebook la
   String result = '';
   for (int i = 1; i < 9; i++) {
     if (segments.contains(i.toString())) {
-      result = result + '1';
+      result += '1';
     } else {
-      result = result + '0';
+      result += '0';
     }
   }
   result = result.substring(0, BINARY_LENGTH[language]);

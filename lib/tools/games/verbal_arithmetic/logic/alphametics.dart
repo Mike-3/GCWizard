@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:isolate';
 import 'dart:math';
+
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
 import 'package:gc_wizard/tools/games/verbal_arithmetic/logic/helper.dart';
 import 'package:gc_wizard/utils/complex_return_types.dart';
@@ -92,9 +93,17 @@ VerbalArithmeticOutput? _solveAlphametic(Equation equation) {
   return VerbalArithmeticOutput(equations: [equation], solutions: solutions, error: '');
 }
 
-Iterable<HashMap<String, int>?> _permuteAndEvaluate(List<String> letters, String formula,
-    Set<String> leadingLetters) sync* {
+List<int> _availableDigits(String equation) {
   var availableDigits = List.generate(10, (i) => i);
+  for (var match in RegExp(r'\d').allMatches(equation)) {
+    availableDigits.remove(int.parse(match.group(0).toString()));
+  }
+  return availableDigits;
+}
+
+Iterable<HashMap<String, int>?> _permuteAndEvaluate(List<String> letters, String equation,
+    Set<String> leadingLetters) sync* {
+  var availableDigits = _availableDigits(equation);
   var allPermutations = _generatePermutations(letters.length, availableDigits);
 
   for (var perm in allPermutations) {
@@ -110,7 +119,7 @@ Iterable<HashMap<String, int>?> _permuteAndEvaluate(List<String> letters, String
       continue;
     }
 
-    if (_evaluateEquation(formula, mapping)) {
+    if (_evaluateEquation(equation, mapping)) {
       yield mapping;
     }
   }
@@ -155,8 +164,7 @@ bool _evaluateEquation(String equation, Map<String, int> mapping) {
 }
 
 num _eval(String expression) {
-  var result = parser.parse(expression).evaluate(EvaluationType.REAL, _cm);
-  return result != null && result is num ? result : double.negativeInfinity;
+  return RealEvaluator(_cm).evaluate(parser.parse(expression));
 }
 
 int _calculatePossibilities(int lettersCount) {

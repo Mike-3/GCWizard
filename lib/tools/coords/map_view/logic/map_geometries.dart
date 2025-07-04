@@ -10,11 +10,59 @@ import 'package:gc_wizard/tools/coords/waypoint_projection/logic/projection.dart
 import 'package:latlong2/latlong.dart';
 import 'package:uuid/uuid.dart';
 
+class WaypointType {
+  final String type;
+  final Color color;
+  final Icon icon;
+
+  static const List<WaypointType> values = [
+    OTHER,
+    MULTICACHE, UNKNOWNCACHE, TRADITIONAL, // todo: Traditional, Event, Virtual, ...
+    PARKING, VIRTUAL,  PHYSICAL, REFERENCE, FINAL,
+  ];
+
+  const WaypointType._(this.type, this.color, this.icon);
+
+  static const WaypointType OTHER = WaypointType._(
+      "Other", COLOR_MAP_POINT, Icon(Icons.location_searching_outlined));
+  static const WaypointType MULTICACHE = WaypointType._(
+      "Multi-cache", COLOR_MAP_POINT, Icon(Icons.add_location_alt));
+  static const WaypointType UNKNOWNCACHE = WaypointType._(
+      "Unknown Cache", COLOR_MAP_POINT, Icon(Icons.question_mark));
+  static const WaypointType TRADITIONAL = WaypointType._(
+      "Traditional Cache", COLOR_MAP_POINT, Icon(Icons.my_location));
+
+  static const WaypointType PARKING = WaypointType._(
+      "Parking Area", COLOR_MAP_GPX_IMPORT_PARKING, Icon(Icons.local_parking));
+  static const WaypointType VIRTUAL = WaypointType._(
+      "Virtual Stage", COLOR_MAP_GPX_IMPORT_VIRTUALSTAGE, Icon(Icons.location_pin));
+  static const WaypointType PHYSICAL = WaypointType._(
+      "Physical Stage", COLOR_MAP_GPX_IMPORT_PHYSICALSTAGE, Icon(Icons.location_pin));
+  static const WaypointType REFERENCE = WaypointType._(
+      "Reference Point", COLOR_MAP_GPX_IMPORT_REFERENCEPOINT, Icon(Icons.star_border));
+  static const WaypointType FINAL = WaypointType._(
+      "Final Location", COLOR_MAP_GPX_IMPORT_FINAL, Icon(Icons.flag));
+
+  static WaypointType fromString(String? value) {
+    if (value == null) return OTHER;
+
+    String processedValue = value.contains('|') ? value.split('|').last.trim() : value;
+    return values.firstWhere(
+          (e) => e.type.toLowerCase() == processedValue.toLowerCase(),
+      orElse: () => OTHER,
+    );
+  }
+
+  @override
+  String toString() => type; // Direkt den Typ zurückgeben
+}
+
 class GCWMapPoint {
   String? uuid;
   LatLng point;
   String? markerText;
   Color color;
+  WaypointType? type;
   CoordinateFormat? coordinateFormat;
   bool isEditable;
   GCWMapCircle? circle;
@@ -26,6 +74,7 @@ class GCWMapPoint {
       required this.point,
       this.markerText,
       this.color = COLOR_MAP_POINT,
+      this.type,
       this.coordinateFormat,
       this.isEditable = false,
       this.circle,

@@ -108,8 +108,8 @@ class _GpxWriter {
         }
         _writeElement(builder, 'cmt', '');
         _writeElement(builder, 'desc', '');
-        _writeElement(builder, 'sym', 'Virtual Stage');
-        _writeElement(builder, 'type', 'Waypoint|Virtual Stage');
+        _writeElement(builder, 'sym', wpt.type.toString());
+        _writeElement(builder, 'type', 'Waypoint|${wpt.type.toString()}');
         builder.element('gsak:wptExtension', nest: () {
           _writeElement(builder, 'gsak:Parent', cacheName);
         });

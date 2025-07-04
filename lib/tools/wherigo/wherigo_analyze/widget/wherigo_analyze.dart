@@ -8,6 +8,7 @@ import 'package:gc_wizard/application/navigation/no_animation_material_page_rout
 import 'package:gc_wizard/application/settings/logic/preferences.dart';
 import 'package:gc_wizard/application/theme/theme.dart';
 import 'package:gc_wizard/application/theme/theme_colors.dart';
+import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer.dart';
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
@@ -20,7 +21,6 @@ import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
 import 'package:gc_wizard/common_widgets/gcw_snackbar.dart';
 import 'package:gc_wizard/common_widgets/gcw_soundplayer.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
-import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/common_widgets/image_viewers/gcw_imageview.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_columned_multiline_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
@@ -30,8 +30,8 @@ import 'package:gc_wizard/common_widgets/outputs/gcw_output_text.dart';
 import 'package:gc_wizard/common_widgets/spinners/gcw_page_spinner.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/common_widgets/textfields/gcw_code_textfield.dart';
-import 'package:gc_wizard/tools/coords/_common/widget/coordinate_text_formatter.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/default_coord_getter.dart';
+import 'package:gc_wizard/tools/coords/_common/widget/coordinate_text_formatter.dart';
 import 'package:gc_wizard/tools/coords/_common/widget/gcw_coords_export_dialog.dart';
 import 'package:gc_wizard/tools/coords/map_view/logic/map_geometries.dart';
 import 'package:gc_wizard/tools/coords/map_view/widget/gcw_mapview.dart';
@@ -55,14 +55,14 @@ part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_outp
 part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_inputs.dart';
 part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_items.dart';
 part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_messages.dart';
+part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_obfuscator.dart';
 part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_tasks.dart';
 part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_timers.dart';
 part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_variables.dart';
 part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_zones.dart';
-part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_obfuscator.dart';
 
 class WherigoAnalyze extends StatefulWidget {
-  const WherigoAnalyze({Key? key}) : super(key: key);
+  const WherigoAnalyze({super.key});
 
   @override
   _WherigoAnalyzeState createState() => _WherigoAnalyzeState();
@@ -335,18 +335,18 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
   Widget _widgetOpenGWCFile(BuildContext context) {
     return GCWOpenFile(
       title: i18n(context, 'wherigo_open_gwc'),
-      onLoaded: (_GWCfile) {
-        if (_GWCfile == null) {
+      onLoaded: (GCWFile? value) {
+        if (value == null) {
           showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
           return;
         }
 
-        if (isInvalidCartridge(_GWCfile.bytes)) {
+        if (isInvalidCartridge(value.bytes)) {
           showSnackBar(i18n(context, 'common_loadfile_exception_wrongtype_gwc'), context);
           return;
         }
 
-        _setGWCData(_GWCfile.bytes);
+        _setGWCData(value.bytes);
 
         _resetIndices();
 
@@ -389,17 +389,17 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
             )
             : GCWOpenFile(
               title: i18n(context, 'wherigo_open_lua'),
-              onLoaded: (_LUAfile) {
-                if (_LUAfile == null) {
+              onLoaded: (GCWFile? value) {
+                if (value == null) {
                   showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
                   return;
                 }
-                if (isInvalidLUASourcecode(String.fromCharCodes(_LUAfile.bytes.sublist(0, 18)))) {
+                if (isInvalidLUASourcecode(String.fromCharCodes(value.bytes.sublist(0, 18)))) {
                   showSnackBar(i18n(context, 'common_loadfile_exception_wrongtype_lua'), context);
                   return;
                 }
 
-                _setLUAData(_LUAfile.bytes);
+                _setLUAData(value.bytes);
 
                 _getLUAOnline = false;
 
@@ -626,13 +626,6 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
       );
     }
 
-    if ((WherigoCartridgeLUAData.Media.isEmpty)) {
-      return GCWDefaultOutput(
-        child: i18n(context, 'wherigo_data_nodata'),
-        suppressCopyButton: true,
-      );
-    }
-
     List<List<String>> _outputMedia = [];
     String filename = '';
 
@@ -686,7 +679,7 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
         ),
         GCWPageSpinner(
           text: i18n(context, 'wherigo_data_media'),
-          max: WherigoCartridgeGWCData.NumberOfObjects,
+          max: WherigoCartridgeGWCData.NumberOfObjects - 1,
           index: _mediaFileIndex,
           onChanged: (index) {
             setState(() {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/navigation/no_animation_material_page_route.dart';
 import 'package:gc_wizard/application/theme/theme.dart';
-import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
 import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
+import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_columned_multiline_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
@@ -14,7 +14,7 @@ import 'package:gc_wizard/utils/string_utils.dart';
 class UICWagonCode extends StatefulWidget {
   final String? uicNumber;
 
-  const UICWagonCode({Key? key, this.uicNumber}) : super(key: key);
+  const UICWagonCode({super.key, this.uicNumber});
 
   @override
   _UICWagonCodeState createState() => _UICWagonCodeState();

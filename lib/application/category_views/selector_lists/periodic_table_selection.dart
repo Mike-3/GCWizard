@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/registry.dart';
-import 'package:gc_wizard/common_widgets/gcw_selection.dart';
 import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/application/tools/widget/gcw_toollist.dart';
+import 'package:gc_wizard/common_widgets/gcw_selection.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/atomic_numbers_to_text/widget/atomic_numbers_to_text.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table/widget/elements_of_geocaching.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_table/widget/periodic_table.dart';
@@ -11,7 +11,7 @@ import 'package:gc_wizard/tools/science_and_technology/periodic_table/periodic_t
 import 'package:gc_wizard/utils/ui_dependent_utils/common_widget_utils.dart';
 
 class PeriodicTableSelection extends GCWSelection {
-  const PeriodicTableSelection({Key? key}) : super(key: key);
+  const PeriodicTableSelection({super.key});
 
   @override
   Widget build(BuildContext context) {

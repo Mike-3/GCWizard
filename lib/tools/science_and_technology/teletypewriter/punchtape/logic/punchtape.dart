@@ -10,8 +10,7 @@ class PunchtapeOutput extends Segments {
   final String text12345;
 
   PunchtapeOutput(
-      {required List<List<String>> displays, required this.text54321, required this.text54123, required this.text12345})
-      : super(displays: displays);
+      {required super.displays, required this.text54321, required this.text54123, required this.text12345});
 }
 
 List<String> _decenary2segments(String decenary, bool order12345, TeletypewriterCodebook language) {
@@ -48,9 +47,9 @@ String? _segments2decenary(List<String> segments, TeletypewriterCodebook languag
 
   for (int i = 1; i < 9; i++) {
     if (segments.contains(i.toString())) {
-      result = result + '1';
+      result += '1';
     } else {
-      result = result + '0';
+      result += '0';
     }
   }
   result = result.substring(0, BINARY_LENGTH[language]);
