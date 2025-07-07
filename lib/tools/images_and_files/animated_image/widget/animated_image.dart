@@ -19,10 +19,11 @@ import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/tools/images_and_files/animated_image/logic/animated_image.dart';
-import 'package:gc_wizard/tools/images_and_files/animated_image/widget/animated_image_encode.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 import 'package:gc_wizard/utils/ui_dependent_utils/file_widget_utils.dart';
+
+// part 'package:gc_wizard/tools/images_and_files/animated_image/widget/animated_image_encode.dart';
 
 final List<FileType> ANIMATED_IMAGE_ALLOWED_FILETYPES = [FileType.GIF, FileType.PNG, FileType.WEBP];
 
@@ -40,7 +41,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
   GCWFile? _file;
   bool _play = false;
   var _currentMode = GCWSwitchPosition.right;
-
+  final List<Uint8List> _encodeImages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -171,6 +172,17 @@ class _AnimatedImageState extends State<AnimatedImage> {
     return list;
   }
 
+  List<GCWImageViewData> _convertEncodeImageData(List<Uint8List> images) {
+    var list = <GCWImageViewData>[];
+
+    var imageCount = images.length;
+    for (var i = 0; i < images.length; i++) {
+      String description = (i + 1).toString() + '/$imageCount';
+      list.add(GCWImageViewData(GCWFile(bytes: images[i]), description: description));
+    }
+    return list;
+  }
+
   Future<void> _analysePlatformFileAsync() async {
     await showDialog<bool>(
       context: context,
@@ -215,6 +227,59 @@ class _AnimatedImageState extends State<AnimatedImage> {
       setState(() {});
     });
   }
+
+  Widget buildEncodeWidget(BuildContext context) {
+    return Column(children: <Widget>[
+      GCWOpenFile(
+        supportedFileTypes: SUPPORTED_IMAGE_TYPES,
+        suppressGallery: false,
+        onLoaded: (GCWFile? value) {
+          if (value == null) {
+            showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
+            return;
+          }
+          setState(() {
+            _encodeImages.add(value.bytes);
+          });
+        },
+      ),
+      GCWGallery(imageData: _convertEncodeImageData(_encodeImages),
+      // GCWDefaultOutput(
+      //     trailing: Row(children: <Widget>[
+      //       GCWIconButton(
+      //         icon: Icons.play_arrow,
+      //         size: IconButtonSize.SMALL,
+      //         iconColor: _outData != null && !_play ? null : themeColors().inactive(),
+      //         onPressed: () {
+      //           setState(() {
+      //             _play = (_outData != null);
+      //           });
+      //         },
+      //       ),
+      //       GCWIconButton(
+      //         icon: Icons.stop,
+      //         size: IconButtonSize.SMALL,
+      //         iconColor: _play ? null : themeColors().inactive(),
+      //         onPressed: () {
+      //           setState(() {
+      //             _play = false;
+      //           });
+      //         },
+      //       ),
+      //       GCWIconButton(
+      //         icon: Icons.save,
+      //         size: IconButtonSize.SMALL,
+      //         iconColor: _outData == null ? themeColors().inactive() : null,
+      //         onPressed: () {
+      //           if (_outData != null && _file?.name != null) _exportFiles(context, _file!.name!, _outData!.images);
+      //         },
+      //       )
+      //     ]),
+      //     child: _buildOutput())
+        )
+      ]);
+  }
+
 
   Future<void> _exportFiles(BuildContext context, String fileName, List<Uint8List> data) async {
     createZipFile(fileName, '.' + fileExtension(FileType.PNG), data).then((bytes) async {
