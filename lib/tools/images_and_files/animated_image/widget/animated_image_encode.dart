@@ -17,49 +17,13 @@ import 'package:gc_wizard/common_widgets/image_viewers/gcw_imageview.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_columned_multiline_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output.dart';
-import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/tools/images_and_files/animated_image/logic/animated_image.dart';
-import 'package:gc_wizard/tools/images_and_files/animated_image/widget/animated_image_encode.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 import 'package:gc_wizard/utils/ui_dependent_utils/file_widget_utils.dart';
 
-final List<FileType> ANIMATED_IMAGE_ALLOWED_FILETYPES = [FileType.GIF, FileType.PNG, FileType.WEBP];
 
-class AnimatedImage extends StatefulWidget {
-  final GCWFile? file;
-
-  const AnimatedImage({super.key, this.file});
-
-  @override
-  _AnimatedImageState createState() => _AnimatedImageState();
-}
-
-class _AnimatedImageState extends State<AnimatedImage> {
-  AnimatedImageOutput? _outData;
-  GCWFile? _file;
-  bool _play = false;
-  var _currentMode = GCWSwitchPosition.right;
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        GCWTwoOptionsSwitch(
-          value: _currentMode,
-          onChanged: (value) {
-            setState(() {
-              _currentMode = value;
-            });
-          },
-        ),
-        _currentMode == GCWSwitchPosition.right ? _buildDecodeWidget(context) : buildEncodeWidget(context)
-      ],
-    );
-  }
-
-  Widget _buildDecodeWidget(BuildContext context) {
+Widget buildEncodeWidget(BuildContext context) {
     if (widget.file != null) {
       _file = widget.file;
       _analysePlatformFileAsync();
