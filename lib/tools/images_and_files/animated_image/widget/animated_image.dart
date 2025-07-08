@@ -9,6 +9,7 @@ import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer.dart';
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
+import 'package:gc_wizard/common_widgets/buttons/gcw_submit_button.dart';
 import 'package:gc_wizard/common_widgets/dialogs/gcw_exported_file_dialog.dart';
 import 'package:gc_wizard/common_widgets/dividers/gcw_divider.dart';
 import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
@@ -22,12 +23,11 @@ import 'package:gc_wizard/common_widgets/outputs/gcw_output.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/common_widgets/textfields/gcw_integer_textfield.dart';
 import 'package:gc_wizard/tools/images_and_files/animated_image/logic/animated_image.dart';
+import 'package:gc_wizard/tools/images_and_files/animated_image/logic/animated_image_encode.dart';
 import 'package:gc_wizard/utils/complex_return_types.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 import 'package:gc_wizard/utils/ui_dependent_utils/file_widget_utils.dart';
-
-// part 'package:gc_wizard/tools/images_and_files/animated_image/widget/animated_image_encode.dart';
 
 final List<FileType> ANIMATED_IMAGE_ALLOWED_FILETYPES = [FileType.GIF, FileType.PNG, FileType.WEBP];
 
@@ -48,6 +48,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
   final List<Uint8List> _encodeImages = [];
   final List<MapEntry<int, int>> _encodeDurations = []; //image index, duration
   final List<List<TextEditingController?>> _textEditingControllerArray = [];
+  Uint8List? _outDataEncode;
 
   @override
   void dispose() {
@@ -295,6 +296,8 @@ class _AnimatedImageState extends State<AnimatedImage> {
       //     child: _buildOutput())
         const GCWDivider(),
         _buildEncodeTable(),
+        _buildEncodeSubmitButton(),
+        _buildOutputEncode()
       ]);
   }
 
@@ -375,6 +378,58 @@ class _AnimatedImageState extends State<AnimatedImage> {
     return _textEditingControllerArray[rowIndex][columnIndex];
   }
 
+  Widget _buildEncodeSubmitButton() {
+    return GCWSubmitButton(onPressed: () async {
+      await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return Center(
+            child: SizedBox(
+              height: GCW_ASYNC_EXECUTER_INDICATOR_HEIGHT,
+              width: GCW_ASYNC_EXECUTER_INDICATOR_WIDTH,
+              child: GCWAsyncExecuter<Uint8List?>(
+                isolatedFunction: createImageAsync,
+                parameter: _buildJobDataEncode,
+                onReady: (data) => _saveOutputEncode(data),
+                isOverlay: true,
+              ),
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  Future<GCWAsyncExecuterParameters?> _buildJobDataEncode() async {
+    if (_file == null) return null;
+    return GCWAsyncExecuterParameters(
+        AnimatedImageJobData(
+            images: _encodeImages,
+            durations: _encodeDurations,
+        )
+    );
+  }
+
+  void _saveOutputEncode(Uint8List? output) {
+    _outDataEncode = output;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {});
+    });
+  }
+
+  Widget _buildOutputEncode() {
+    if (_outDataEncode == null) return Container();
+
+    return GCWDefaultOutput(child:
+      GCWImageView(
+        imageData: GCWImageViewData(GCWFile(bytes: _outDataEncode ?? Uint8List(0))),
+        toolBarRight: true,
+        fileName: buildFileNameWithDate('img1_', null),
+      )
+    );
+  }
 
   Future<void> _exportFiles(BuildContext context, String fileName, List<Uint8List> data) async {
     createZipFile(fileName, '.' + fileExtension(FileType.PNG), data).then((bytes) async {

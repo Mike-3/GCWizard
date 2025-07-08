@@ -6,7 +6,7 @@ import 'package:image/image.dart' as Image;
 
 class AnimatedImageJobData {
   final List<Uint8List> images;
-  final  List<MapEntry<int, int>> durations;
+  final List<MapEntry<int, int>> durations;
   final int loopCount;
 
   AnimatedImageJobData({required this.images, required this.durations, this.loopCount = 0});
