@@ -46,10 +46,11 @@ class _AnimatedImageState extends State<AnimatedImage> {
   GCWFile? _file;
   bool _play = false;
   var _currentMode = GCWSwitchPosition.right;
-  final List<Uint8List> _encodeImages = [];
+  //final List<Uint8List> _encodeImages = [];
   final List<MapEntry<int, int>> _encodeDurations = []; //image index, duration
   final List<List<TextEditingController?>> _textEditingControllerArray = [];
   Uint8List? _outDataEncode;
+  List<GCWImageViewData> _encodeImageData = [];
 
   @override
   void dispose() {
@@ -191,14 +192,21 @@ class _AnimatedImageState extends State<AnimatedImage> {
     return list;
   }
 
-  List<GCWImageViewData> _convertEncodeImageData(List<Uint8List> images) {
+  List<GCWImageViewData> _updateEncodeImageData(Uint8List? image) {
     var list = <GCWImageViewData>[];
 
-    var imageCount = images.length;
-    for (var i = 0; i < images.length; i++) {
-      String description = (i + 1).toString() + '/$imageCount';
-      list.add(GCWImageViewData(GCWFile(bytes: images[i]), description: description));
+    if (image != null) {
+      list.add(GCWImageViewData(GCWFile(bytes: image), description: ''));
     }
+
+    var imageCount = _encodeImageData.length;
+    for (var i = 0; i < _encodeImageData.length; i++) {
+      String description = (i + 1).toString() + '/$imageCount';
+      list.add(GCWImageViewData(GCWFile(bytes: _encodeImageData[i].file.bytes),
+          description: description,
+          marked: _encodeImageData[i].marked));
+    }
+    _encodeImageData = list;
     return list;
   }
 
@@ -258,7 +266,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
             return;
           }
           setState(() {
-            _encodeImages.add(value.bytes);
+            _updateEncodeImageData(value.bytes);
           });
         },
       ),
@@ -271,13 +279,14 @@ class _AnimatedImageState extends State<AnimatedImage> {
             iconColor: _outData != null && !_play ? null : themeColors().inactive(),
             onPressed: () {
               setState(() {
-                _play = (_outData != null);
+                _encodeImageData.removeWhere((data) => data.marked ?? false);
+                _updateEncodeImageData(null);
               });
             },
           ),
         ]),
       ),
-      GCWGallery(imageData: _convertEncodeImageData(_encodeImages)),
+      GCWGallery(imageData: _encodeImageData),
       const GCWDivider(),
       _buildEncodeTable(),
       _buildEncodeSubmitButton(),
@@ -389,7 +398,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
     if (_file == null) return null;
     return GCWAsyncExecuterParameters(
         AnimatedImageJobData(
-            images: _encodeImages,
+            images: _encodeImageData.map((data) => data.file.bytes).toList(),
             durations: _encodeDurations,
         )
     );
