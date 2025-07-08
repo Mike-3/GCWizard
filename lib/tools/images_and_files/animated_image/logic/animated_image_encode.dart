@@ -1,38 +1,49 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer_parameters.dart';
 import 'package:image/image.dart' as Image;
 
 class AnimatedImageJobData {
-  final List<Image.Image> images;
-  final List<int> durations;
-  final List<int> linkList;
+  final List<Uint8List> images;
+  final  List<MapEntry<int, int>> durations;
   final int loopCount;
 
-  AnimatedImageJobData({required this.images, required this.durations, required this.linkList, this.loopCount = 0});
+  AnimatedImageJobData({required this.images, required this.durations, this.loopCount = 0});
 }
 
 Future<Uint8List?> createImageAsync(GCWAsyncExecuterParameters? jobData) async {
   if (jobData?.parameters is! AnimatedImageJobData) return null;
 
   var data = jobData!.parameters as AnimatedImageJobData;
-  var output = createImage(data.images, data.durations, data.linkList, data.loopCount);
+  var output = createImage(data.images, data.durations, data.loopCount);
 
   jobData.sendAsyncPort?.send(output);
 
   return output;
 }
 
-Uint8List? createImage(List<Image.Image> images, List<int> durations, List<int> linkList, int loopCount) {
+Uint8List? createImage(List<Uint8List> images,  List<MapEntry<int, int>> durations, int loopCount) {
   try {
-    if (images.isEmpty || linkList.isEmpty) return null;
-
-    var animation = Image.Image(width: images.first.width, height: images.first.height);
-    for (var i= 0; i <linkList.length; i++) {
-      if (linkList[i] < animation.length ) {
-        var imageClone = images[linkList[i]].clone();
+    if (images.isEmpty || durations.isEmpty) return null;
+    var convertedImages = <Image.Image?>[];
+    for (var bytes in images) {
+      var decoder = Image.findDecoderForData(bytes);
+      Image.Image? convertedImage;
+      if (decoder != null) {
+        convertedImage = decoder.decode(bytes);
+      }
+      convertedImages.add(convertedImage);
+    }
+    var firstImage = convertedImages.firstWhere((image) => image != null);
+    if (firstImage == null) return null;
+    var animation = Image.Image(width: firstImage.width, height: firstImage.height);
+    for (var i = 0; i < durations.length; i++) {
+      if (durations[i].key > 0 && durations[i].key <= animation.length ) {
+        var imageClone = convertedImages[durations[i].key + 1]?.clone();
+        if (imageClone == null) continue;
         if (i < durations.length ) {
-          imageClone.frameDuration = durations[i];
+          imageClone.frameDuration = max(durations[i].value, 0);
         }
         animation.frames.add(imageClone);
       }

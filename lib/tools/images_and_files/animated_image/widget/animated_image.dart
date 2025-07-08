@@ -46,6 +46,19 @@ class _AnimatedImageState extends State<AnimatedImage> {
   bool _play = false;
   var _currentMode = GCWSwitchPosition.right;
   final List<Uint8List> _encodeImages = [];
+  final List<MapEntry<int, int>> _encodeDurations = []; //image index, duration
+  final List<List<TextEditingController?>> _textEditingControllerArray = [];
+
+  @override
+  void dispose() {
+    for(var y = 0; y < _textEditingControllerArray.length; y++) {
+      for (var x = 0; x < _textEditingControllerArray[y].length; x++) {
+        _textEditingControllerArray[y][x]?.dispose();
+      }
+    }
+    _textEditingControllerArray.clear();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -280,6 +293,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
              ),
       //     ]),
       //     child: _buildOutput())
+        const GCWDivider(),
         _buildEncodeTable(),
       ]);
   }
@@ -289,25 +303,76 @@ class _AnimatedImageState extends State<AnimatedImage> {
     var headerStyle = gcwTextStyle().copyWith(fontWeight: FontWeight.bold);
     rows.add(TableRow(children: [
       GCWText(text: i18n(context, 'common_index'), style: headerStyle),
-      GCWText(text: i18n(context, 'animated_image_table_index') + ' (ms)', style: headerStyle)])
+      GCWText(text: i18n(context, 'animated_image_table_index') + ' (ms)', style: headerStyle),
+      Container()])
     );
-    for (var i = 0; i < 10; i++) {
-      rows.add(TableRow(children: [
-        GCWIntegerTextField(
-          onChanged: (IntegerText ret) {},
-        ),
-        GCWIntegerTextField(
-          onChanged: (IntegerText ret) {},
-        )])
+    for (var i = 0; i < _encodeDurations.length + 1; i++) {
+      var rowColor = i.isOdd ? themeColors().outputListOddRows() : themeColors().primaryBackground();
+      rows.add(TableRow(
+        decoration: BoxDecoration(color: rowColor),
+        children: [
+          GCWIntegerTextField(
+            min: 0,
+            // max: _encodeImages.length,
+            controller: _getTextEditingController(i, 0,
+                i < _encodeDurations.length ? _encodeDurations[i].key.toString(): ''),
+            onChanged: (IntegerText ret) {
+              if (i < _encodeDurations.length) {
+                _encodeDurations[i] = MapEntry<int, int>(ret.value, _encodeDurations[i].value);
+              } else {
+                setState(() {
+                  _encodeDurations.add(MapEntry<int, int>(ret.value, 0));
+                });
+              }
+            },
+          ),
+          GCWIntegerTextField(
+            min: 0,
+            controller: _getTextEditingController(i, 1,
+                i < _encodeDurations.length ? _encodeDurations[i].value.toString(): ''),
+            onChanged: (IntegerText ret) {
+              if (i < _encodeDurations.length) {
+                _encodeDurations[i] = MapEntry<int, int>(_encodeDurations[i].key, ret.value);
+              } else {
+                setState(() {
+                  _encodeDurations.add(MapEntry<int, int>(0, ret.value));
+                });
+              }
+            },
+          ),
+          GCWIconButton(
+            icon: Icons.remove,
+            onPressed: () {
+              setState(() {
+                _encodeDurations.removeAt(i);
+              });
+            },
+          )
+      ])
       );
     }
 
     return Table(
         border: const TableBorder.symmetric(outside: BorderSide(width: 1, color: Colors.transparent)),
-        columnWidths: {0: FlexColumnWidth(50), 1: FlexColumnWidth(50)},
+        columnWidths: {0: FlexColumnWidth(50), 1: FlexColumnWidth(50), 2: IntrinsicColumnWidth()},
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: rows
     );
+  }
+
+  TextEditingController? _getTextEditingController(int rowIndex, int columnIndex, String text) {
+    while (_textEditingControllerArray.length <= rowIndex) {
+      _textEditingControllerArray.add(<TextEditingController?>[]);
+    }
+    while (_textEditingControllerArray[rowIndex].length <= columnIndex) {
+      _textEditingControllerArray[rowIndex].add(null);
+    }
+    if (_textEditingControllerArray[rowIndex][columnIndex] == null) {
+      _textEditingControllerArray[rowIndex][columnIndex] = TextEditingController();
+    }
+    _textEditingControllerArray[rowIndex][columnIndex]!.text = text;
+
+    return _textEditingControllerArray[rowIndex][columnIndex];
   }
 
 
