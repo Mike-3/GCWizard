@@ -35,12 +35,13 @@ Uint8List? createImage(List<Uint8List> images,  List<MapEntry<int, int>> duratio
       }
       convertedImages.add(convertedImage);
     }
-    var firstImage = convertedImages.firstWhere((image) => image != null);
+    var firstImage = convertedImages[durations[0].key - 1]?.clone(); //.firstWhere((image) => image != null);
     if (firstImage == null) return null;
-    var animation = Image.Image(width: firstImage.width, height: firstImage.height);
-    for (var i = 0; i < durations.length; i++) {
+    firstImage.frameDuration = max(durations[0].value, 0);
+    var animation = firstImage;
+    for (var i = 1; i < durations.length; i++) {
       if (durations[i].key > 0 && durations[i].key <= animation.length ) {
-        var imageClone = convertedImages[durations[i].key + 1]?.clone();
+        var imageClone = convertedImages[durations[i].key - 1]?.clone();
         if (imageClone == null) continue;
         if (i < durations.length ) {
           imageClone.frameDuration = max(durations[i].value, 0);
@@ -50,7 +51,7 @@ Uint8List? createImage(List<Uint8List> images,  List<MapEntry<int, int>> duratio
     }
     animation.loopCount = loopCount;
 
-    final image = Image.encodeGif(animation, singleFrame: false, repeat:  loopCount);
+    final image = Image.encodeGif(animation, singleFrame: false, repeat: loopCount);
 
     return image;
   } on Exception {

@@ -399,7 +399,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
   }
 
   Future<GCWAsyncExecuterParameters?> _buildJobDataEncode() async {
-    if (_file == null) return null;
+    if (_encodeImageData.isEmpty) return null;
     return GCWAsyncExecuterParameters(
         AnimatedImageJobData(
             images: _encodeImageData.map((data) => data.file.bytes).toList(),
@@ -410,10 +410,12 @@ class _AnimatedImageState extends State<AnimatedImage> {
 
   void _saveOutputEncode(Uint8List? output) {
     _outDataEncode = output;
+try {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    setState(() {});
+  });
+} catch (e) {}
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {});
-    });
   }
 
   Widget _buildOutputEncode() {
