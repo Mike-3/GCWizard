@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/navigation/no_animation_material_page_route.dart';
+import 'package:gc_wizard/application/theme/theme.dart';
 import 'package:gc_wizard/application/theme/theme_colors.dart';
 import 'package:gc_wizard/application/tools/widget/gcw_tool.dart';
 import 'package:gc_wizard/common_widgets/async_executer/gcw_async_executer.dart';
@@ -12,13 +13,16 @@ import 'package:gc_wizard/common_widgets/dialogs/gcw_exported_file_dialog.dart';
 import 'package:gc_wizard/common_widgets/dividers/gcw_divider.dart';
 import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
 import 'package:gc_wizard/common_widgets/gcw_snackbar.dart';
+import 'package:gc_wizard/common_widgets/gcw_text.dart';
 import 'package:gc_wizard/common_widgets/image_viewers/gcw_gallery.dart';
 import 'package:gc_wizard/common_widgets/image_viewers/gcw_imageview.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_columned_multiline_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_default_output.dart';
 import 'package:gc_wizard/common_widgets/outputs/gcw_output.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
+import 'package:gc_wizard/common_widgets/textfields/gcw_integer_textfield.dart';
 import 'package:gc_wizard/tools/images_and_files/animated_image/logic/animated_image.dart';
+import 'package:gc_wizard/utils/complex_return_types.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 import 'package:gc_wizard/utils/ui_dependent_utils/file_widget_utils.dart';
@@ -273,11 +277,37 @@ class _AnimatedImageState extends State<AnimatedImage> {
       //         onPressed: () {
       //           if (_outData != null && _file?.name != null) _exportFiles(context, _file!.name!, _outData!.images);
       //         },
-      //       )
+             ),
       //     ]),
       //     child: _buildOutput())
-        )
+        _buildEncodeTable(),
       ]);
+  }
+
+  Widget _buildEncodeTable() {
+    var rows = <TableRow>[];
+    var headerStyle = gcwTextStyle().copyWith(fontWeight: FontWeight.bold);
+    rows.add(TableRow(children: [
+      GCWText(text: i18n(context, 'common_index'), style: headerStyle),
+      GCWText(text: i18n(context, 'animated_image_table_index') + ' (ms)', style: headerStyle)])
+    );
+    for (var i = 0; i < 10; i++) {
+      rows.add(TableRow(children: [
+        GCWIntegerTextField(
+          onChanged: (IntegerText ret) {},
+        ),
+        GCWIntegerTextField(
+          onChanged: (IntegerText ret) {},
+        )])
+      );
+    }
+
+    return Table(
+        border: const TableBorder.symmetric(outside: BorderSide(width: 1, color: Colors.transparent)),
+        columnWidths: {0: FlexColumnWidth(50), 1: FlexColumnWidth(50)},
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        children: rows
+    );
   }
 
 
