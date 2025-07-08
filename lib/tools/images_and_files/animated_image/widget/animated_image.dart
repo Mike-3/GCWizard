@@ -299,7 +299,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
     var headerStyle = gcwTextStyle().copyWith(fontWeight: FontWeight.bold);
     rows.add(TableRow(children: [
       GCWText(text: i18n(context, 'common_index'), style: headerStyle),
-      GCWText(text: i18n(context, 'animated_image_table_index') + ' (ms)', style: headerStyle),
+      GCWText(text: 'Duration' + ' (ms)', style: headerStyle),
       Container()])
     );
     for (var i = 0; i < _encodeDurations.length + 1; i++) {
@@ -309,7 +309,6 @@ class _AnimatedImageState extends State<AnimatedImage> {
         children: [
           GCWIntegerTextField(
             min: 0,
-            // max: _encodeImages.length,
             controller: _getTextEditingController(i, 0,
                 i < _encodeDurations.length ? _encodeDurations[i].key.toString(): ''),
             onChanged: (IntegerText ret) {
@@ -347,13 +346,18 @@ class _AnimatedImageState extends State<AnimatedImage> {
       ])
       );
     }
-
-    return Table(
-        border: const TableBorder.symmetric(outside: BorderSide(width: 1, color: Colors.transparent)),
-        columnWidths: {0: FlexColumnWidth(50), 1: FlexColumnWidth(50), 2: IntrinsicColumnWidth()},
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: rows
-    );
+    return Row(children: [
+      Expanded(flex: 1, child: Container()),
+      Expanded(flex: 3, child:
+        Table(
+          border: const TableBorder.symmetric(outside: BorderSide(width: 1, color: Colors.transparent)),
+          columnWidths: {0: FlexColumnWidth(50), 1: FlexColumnWidth(50), 2: IntrinsicColumnWidth()},
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          children: rows
+        ),
+      ),
+      Expanded(flex: 1, child: Container()),
+    ]);
   }
 
   TextEditingController? _getTextEditingController(int rowIndex, int columnIndex, String text) {
