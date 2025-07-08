@@ -12,6 +12,7 @@ import 'package:gc_wizard/common_widgets/buttons/gcw_iconbutton.dart';
 import 'package:gc_wizard/common_widgets/buttons/gcw_submit_button.dart';
 import 'package:gc_wizard/common_widgets/dialogs/gcw_exported_file_dialog.dart';
 import 'package:gc_wizard/common_widgets/dividers/gcw_divider.dart';
+import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
 import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
 import 'package:gc_wizard/common_widgets/gcw_snackbar.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
@@ -261,44 +262,27 @@ class _AnimatedImageState extends State<AnimatedImage> {
           });
         },
       ),
-      GCWGallery(imageData: _convertEncodeImageData(_encodeImages),
-      // GCWDefaultOutput(
-      //     trailing: Row(children: <Widget>[
-      //       GCWIconButton(
-      //         icon: Icons.play_arrow,
-      //         size: IconButtonSize.SMALL,
-      //         iconColor: _outData != null && !_play ? null : themeColors().inactive(),
-      //         onPressed: () {
-      //           setState(() {
-      //             _play = (_outData != null);
-      //           });
-      //         },
-      //       ),
-      //       GCWIconButton(
-      //         icon: Icons.stop,
-      //         size: IconButtonSize.SMALL,
-      //         iconColor: _play ? null : themeColors().inactive(),
-      //         onPressed: () {
-      //           setState(() {
-      //             _play = false;
-      //           });
-      //         },
-      //       ),
-      //       GCWIconButton(
-      //         icon: Icons.save,
-      //         size: IconButtonSize.SMALL,
-      //         iconColor: _outData == null ? themeColors().inactive() : null,
-      //         onPressed: () {
-      //           if (_outData != null && _file?.name != null) _exportFiles(context, _file!.name!, _outData!.images);
-      //         },
-             ),
-      //     ]),
-      //     child: _buildOutput())
-        const GCWDivider(),
-        _buildEncodeTable(),
-        _buildEncodeSubmitButton(),
-        _buildOutputEncode()
-      ]);
+      GCWTextDivider(
+        text: '',
+        trailing: Row(children: <Widget>[
+          GCWIconButton(
+            icon: Icons.delete,
+            size: IconButtonSize.SMALL,
+            iconColor: _outData != null && !_play ? null : themeColors().inactive(),
+            onPressed: () {
+              setState(() {
+                _play = (_outData != null);
+              });
+            },
+          ),
+        ]),
+      ),
+      GCWGallery(imageData: _convertEncodeImageData(_encodeImages)),
+      const GCWDivider(),
+      _buildEncodeTable(),
+      _buildEncodeSubmitButton(),
+      _buildOutputEncode()
+    ]);
   }
 
   Widget _buildEncodeTable() {
