@@ -13,6 +13,7 @@ import 'package:gc_wizard/common_widgets/buttons/gcw_submit_button.dart';
 import 'package:gc_wizard/common_widgets/dialogs/gcw_exported_file_dialog.dart';
 import 'package:gc_wizard/common_widgets/dividers/gcw_divider.dart';
 import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
+import 'package:gc_wizard/common_widgets/gcw_expandable.dart';
 import 'package:gc_wizard/common_widgets/gcw_openfile.dart';
 import 'package:gc_wizard/common_widgets/gcw_snackbar.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
@@ -25,6 +26,7 @@ import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/common_widgets/textfields/gcw_integer_textfield.dart';
 import 'package:gc_wizard/tools/images_and_files/animated_image/logic/animated_image.dart';
 import 'package:gc_wizard/tools/images_and_files/animated_image/logic/animated_image_encode.dart';
+import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_container.dart';
 import 'package:gc_wizard/utils/complex_return_types.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
@@ -46,11 +48,17 @@ class _AnimatedImageState extends State<AnimatedImage> {
   GCWFile? _file;
   bool _play = false;
   var _currentMode = GCWSwitchPosition.right;
-  //final List<Uint8List> _encodeImages = [];
   final List<MapEntry<int, int>> _encodeDurations = []; //image index, duration
   final List<List<TextEditingController?>> _textEditingControllerArray = [];
+  final _loopDurationController = TextEditingController();
+  var _loopDuration = 0;
+  final _loopCountController = TextEditingController();
+  var _loopCount = 0;
   Uint8List? _outDataEncode;
-  List<GCWImageViewData> _encodeImageData = [];
+  final List<GCWImageViewData> _encodeImageData = [];
+  var _modeEncode = EncodeMode.LOOP;
+  var _expandedEncodeOptions = false;
+
 
   @override
   void dispose() {
@@ -60,6 +68,8 @@ class _AnimatedImageState extends State<AnimatedImage> {
       }
     }
     _textEditingControllerArray.clear();
+    _loopDurationController.dispose();
+    _loopCountController.dispose();
     super.dispose();
   }
 
@@ -192,24 +202,6 @@ class _AnimatedImageState extends State<AnimatedImage> {
     return list;
   }
 
-  List<GCWImageViewData> _updateEncodeImageData(Uint8List? image) {
-    var list = <GCWImageViewData>[];
-
-    if (image != null) {
-      list.add(GCWImageViewData(GCWFile(bytes: image), description: ''));
-    }
-
-    var imageCount = _encodeImageData.length;
-    for (var i = 0; i < _encodeImageData.length; i++) {
-      String description = (i + 1).toString() + '/$imageCount';
-      list.add(GCWImageViewData(GCWFile(bytes: _encodeImageData[i].file.bytes),
-          description: description,
-          marked: _encodeImageData[i].marked));
-    }
-    _encodeImageData = list;
-    return list;
-  }
-
   Future<void> _analysePlatformFileAsync() async {
     await showDialog<bool>(
       context: context,
@@ -266,7 +258,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
             return;
           }
           setState(() {
-            _updateEncodeImageData(value.bytes);
+            updateEncodeImageData(_encodeImageData, addImage: value.bytes);
           });
         },
       ),
@@ -280,33 +272,113 @@ class _AnimatedImageState extends State<AnimatedImage> {
             onPressed: () {
               setState(() {
                 _encodeImageData.removeWhere((data) => data.marked ?? false);
-                _updateEncodeImageData(null);
+                updateEncodeImageData(_encodeImageData);
               });
             },
           ),
         ]),
       ),
-      GCWGallery(imageData: _encodeImageData),
-      const GCWDivider(),
+      GCWGallery(
+          imageData: _encodeImageData,
+          onDoubleTap: (index) {
+            setState(() {
+              updateEncodeImageData(_encodeImageData, inversMarked: _encodeImageData[index]);
+            });
+          }
+
+      ),
+      _buildEncodeOptions(),
       _buildEncodeTable(),
       _buildEncodeSubmitButton(),
       _buildOutputEncode()
     ]);
+  }
+  Widget _buildEncodeOptions() {
+    return GCWExpandableTextDivider(
+      text: i18n(context, 'common_options'),
+      expanded: _expandedEncodeOptions,
+      onChanged: (value) {
+        _expandedEncodeOptions = value;
+        },
+      child: Column(
+        children: [
+          GCWTwoOptionsSwitch(
+              value: _modeEncode == EncodeMode.LOOP ? GCWSwitchPosition.right : GCWSwitchPosition.left,
+              onChanged:  (value) {
+                _modeEncode = value == GCWSwitchPosition.right ? EncodeMode.LOOP: EncodeMode.REVERSE;
+              }
+          ),
+          Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: GCWText(
+                    text: 'Loop Duration' + ' (ms):',
+                  )),
+              Expanded(
+                  flex: 3,
+                  child: GCWIntegerTextField(
+                    hintText: '300',
+                    controller: _loopDurationController,
+                    min: 0,
+                    onChanged: (value) {
+                      // setState(() {
+                      _loopDuration = value.value;
+                      // });
+                    },
+                  ),
+              )
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: GCWText(
+                    text: 'Loop count' + ':',
+                  )),
+              Expanded(
+                flex: 3,
+                child: GCWIntegerTextField(
+                  hintText: '0 -> ∞',
+                  controller: _loopCountController,
+                  min: 0,
+                  onChanged: (value) {
+                    // setState(() {
+                    _loopCount = value.value;
+                    // });
+                  },
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildEncodeTable() {
     var rows = <TableRow>[];
     var headerStyle = gcwTextStyle().copyWith(fontWeight: FontWeight.bold);
     rows.add(TableRow(children: [
+      Container(),
       GCWText(text: i18n(context, 'common_index'), style: headerStyle),
       GCWText(text: 'Duration' + ' (ms)', style: headerStyle),
       Container()])
     );
     for (var i = 0; i < _encodeDurations.length + 1; i++) {
       var rowColor = i.isOdd ? themeColors().outputListOddRows() : themeColors().primaryBackground();
+      Widget imageWidget = Container();
+      if (i < _encodeDurations.length && _encodeDurations[i].key > 0 &&
+          _encodeDurations[i].key <= _encodeImageData.length) {
+        var image = Image.memory(_encodeImageData[_encodeDurations[i].key - 1].file.bytes);
+        imageWidget = GCWSymbolContainer(symbol: image);
+        imageWidget = SizedBox(height: 32, child: imageWidget);
+      }
       rows.add(TableRow(
         decoration: BoxDecoration(color: rowColor),
         children: [
+          imageWidget,
           GCWIntegerTextField(
             min: 0,
             controller: _getTextEditingController(i, 0,
@@ -321,20 +393,22 @@ class _AnimatedImageState extends State<AnimatedImage> {
               }
             },
           ),
-          GCWIntegerTextField(
-            min: 0,
-            controller: _getTextEditingController(i, 1,
-                i < _encodeDurations.length ? _encodeDurations[i].value.toString(): ''),
-            onChanged: (IntegerText ret) {
-              if (i < _encodeDurations.length) {
-                _encodeDurations[i] = MapEntry<int, int>(_encodeDurations[i].key, ret.value);
-              } else {
-                setState(() {
-                  _encodeDurations.add(MapEntry<int, int>(0, ret.value));
-                });
-              }
-            },
-          ),
+          _loopDuration >= 0
+            ? Container()
+            : GCWIntegerTextField(
+              min: 0,
+              controller: _getTextEditingController(i, 1,
+                  i < _encodeDurations.length ? _encodeDurations[i].value.toString(): ''),
+              onChanged: (IntegerText ret) {
+                if (i < _encodeDurations.length) {
+                  _encodeDurations[i] = MapEntry<int, int>(_encodeDurations[i].key, ret.value);
+                } else {
+                  setState(() {
+                    _encodeDurations.add(MapEntry<int, int>(0, ret.value));
+                  });
+                }
+              },
+            ),
           GCWIconButton(
             icon: Icons.remove,
             onPressed: () {
@@ -348,10 +422,12 @@ class _AnimatedImageState extends State<AnimatedImage> {
     }
     return Row(children: [
       Expanded(flex: 1, child: Container()),
-      Expanded(flex: 3, child:
+      Expanded(flex: 6, child:
         Table(
           border: const TableBorder.symmetric(outside: BorderSide(width: 1, color: Colors.transparent)),
-          columnWidths: {0: FlexColumnWidth(50), 1: FlexColumnWidth(50), 2: IntrinsicColumnWidth()},
+          columnWidths: {0: FlexColumnWidth(50),
+            1: _loopDuration >= 0 ? FixedColumnWidth(0) : FlexColumnWidth(50),
+            2: IntrinsicColumnWidth()},
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           children: rows
         ),
@@ -404,6 +480,9 @@ class _AnimatedImageState extends State<AnimatedImage> {
         AnimatedImageJobData(
             images: _encodeImageData.map((data) => data.file.bytes).toList(),
             durations: _encodeDurations,
+            mode: _modeEncode,
+            loopDisplayDuration: _loopDuration,
+            loopCount: _loopCount
         )
     );
   }
@@ -445,4 +524,27 @@ void openInAnimatedImage(BuildContext context, GCWFile file) {
       NoAnimationMaterialPageRoute<GCWTool>(
           builder: (context) => GCWTool(
               tool: AnimatedImage(file: file), toolName: i18n(context, 'animated_image_title'), id: 'animated_image')));
+}
+
+void updateEncodeImageData(List<GCWImageViewData> list, {Uint8List? addImage,
+    GCWImageViewData? inversMarked}) {
+  if (inversMarked != null) {
+    var i = list.indexOf(inversMarked);
+    if (i >= 0) {
+      list[i] = GCWImageViewData(list[i].file,
+          description: list[i].description,
+          marked: !(list[i].marked ?? false));
+    }
+    return;
+  } else if (addImage != null) {
+    list.add(GCWImageViewData(GCWFile(bytes: addImage), description: ''));
+  }
+
+  var imageCount = list.length;
+  for (var i = 0; i < list.length; i++) {
+    String description = (i + 1).toString() + '/$imageCount';
+    list.add(GCWImageViewData(list[i].file,
+        description: description,
+        marked: list[i].marked));
+  }
 }
