@@ -22,8 +22,6 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/ldpc.dart';
 import 'package:gc_wizard/tools/images_and_files/jabcode/logic/mask.dart';
 
-
-
 void _memcpy(Int8List dst, int dst_offset, int src_offset, int length) {
 	dst.replaceRange(dst_offset, dst_offset + length, dst.getRange(src_offset, src_offset + length));
 }
@@ -992,7 +990,7 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	deinterleaveData(raw_data);
 
 	//decode ldpc
-	if(decodeLDPChd(raw_data.data, Pg, symbol.metadata!.ecl!.x, symbol.metadata!.ecl!.y) != Pn) {
+	if (decodeLDPChd(raw_data.data, Pg, symbol.metadata!.ecl!.x, symbol.metadata!.ecl!.y) != Pn) {
 		return JAB_FAILURE;
 	}
 
@@ -1006,16 +1004,16 @@ int _decodeSymbol(jab_bitmap matrix, jab_decoded_symbol symbol, Int8List data_ma
 	//set docked positions in host metadata
 	symbol.metadata!.docked_position = 0;
 	for(int i=0; i<4; i++) {
-		if(type == 1)	{//if host is a slave symbol
-			if(i == symbol.host_position) continue; //skip host position
+		if (type == 1)	{//if host is a slave symbol
+			if (i == symbol.host_position) continue; //skip host position
 		}
 		symbol.metadata!.docked_position += raw_data.data[metadata_offset--] << (3 - i);
 	}
 	//decode metadata for docked slave symbols
-	for(int i=0; i<4; i++) {
-		if((symbol.metadata!.docked_position & (0x08 >> i)) != 0) {
+	for (int i=0; i<4; i++) {
+		if ((symbol.metadata!.docked_position & (0x08 >> i)) != 0) {
 			int read_bit_length = _decodeSlaveMetadata(symbol, i, raw_data, metadata_offset);
-			if(read_bit_length == DECODE_METADATA_FAILED) {
+			if (read_bit_length == DECODE_METADATA_FAILED) {
 				// free(raw_data);
 				return DECODE_METADATA_FAILED;
 			}

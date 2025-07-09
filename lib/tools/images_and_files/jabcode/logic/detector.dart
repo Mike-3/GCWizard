@@ -61,7 +61,7 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/detector_h.dart';
  @return JAB_SUCCESS | JAB_FAILURE
 */
 bool _checkModuleSize2(double size1, double size2) {
-	double mean= (size1 + size2) / 2.0;
+	double mean = (size1 + size2) / 2.0;
 	double tolerance = mean / 2.5;
 
   return (mean - size1).abs() < tolerance && (mean - size2).abs() < tolerance;

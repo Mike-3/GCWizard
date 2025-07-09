@@ -17,9 +17,9 @@ import 'package:gc_wizard/tools/images_and_files/jabcode/logic/jabcode_h.dart';
 
 
 const BLOCK_SIZE_POWER = 5;
-const BLOCK_SIZE =			(1 << BLOCK_SIZE_POWER);
+const BLOCK_SIZE = (1 << BLOCK_SIZE_POWER);
 const BLOCK_SIZE_MASK =	(BLOCK_SIZE - 1);
-const MINIMUM_DIMENSION = 	(BLOCK_SIZE * 5);
+const MINIMUM_DIMENSION = (BLOCK_SIZE * 5);
 int CAP(int val, int min, int max)	{return (val < min ? min : (val > max ? max : val));}
 
 
