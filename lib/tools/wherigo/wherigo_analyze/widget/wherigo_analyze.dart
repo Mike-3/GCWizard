@@ -62,7 +62,7 @@ part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_outp
 part 'package:gc_wizard/tools/wherigo/wherigo_analyze/widget/wherigo_widget_output_zones.dart';
 
 class WherigoAnalyze extends StatefulWidget {
-  const WherigoAnalyze({Key? key}) : super(key: key);
+  const WherigoAnalyze({super.key});
 
   @override
   _WherigoAnalyzeState createState() => _WherigoAnalyzeState();
@@ -335,18 +335,18 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
   Widget _widgetOpenGWCFile(BuildContext context) {
     return GCWOpenFile(
       title: i18n(context, 'wherigo_open_gwc'),
-      onLoaded: (_GWCfile) {
-        if (_GWCfile == null) {
+      onLoaded: (GCWFile? value) {
+        if (value == null) {
           showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
           return;
         }
 
-        if (isInvalidCartridge(_GWCfile.bytes)) {
+        if (isInvalidCartridge(value.bytes)) {
           showSnackBar(i18n(context, 'common_loadfile_exception_wrongtype_gwc'), context);
           return;
         }
 
-        _setGWCData(_GWCfile.bytes);
+        _setGWCData(value.bytes);
 
         _resetIndices();
 
@@ -389,17 +389,17 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
             )
             : GCWOpenFile(
               title: i18n(context, 'wherigo_open_lua'),
-              onLoaded: (_LUAfile) {
-                if (_LUAfile == null) {
+              onLoaded: (GCWFile? value) {
+                if (value == null) {
                   showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
                   return;
                 }
-                if (isInvalidLUASourcecode(String.fromCharCodes(_LUAfile.bytes.sublist(0, 18)))) {
+                if (isInvalidLUASourcecode(String.fromCharCodes(value.bytes.sublist(0, 18)))) {
                   showSnackBar(i18n(context, 'common_loadfile_exception_wrongtype_lua'), context);
                   return;
                 }
 
-                _setLUAData(_LUAfile.bytes);
+                _setLUAData(value.bytes);
 
                 _getLUAOnline = false;
 
@@ -626,13 +626,6 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
       );
     }
 
-    if ((WherigoCartridgeLUAData.Media.isEmpty)) {
-      return GCWDefaultOutput(
-        child: i18n(context, 'wherigo_data_nodata'),
-        suppressCopyButton: true,
-      );
-    }
-
     List<List<String>> _outputMedia = [];
     String filename = '';
 
@@ -686,7 +679,7 @@ class _WherigoAnalyzeState extends State<WherigoAnalyze> {
         ),
         GCWPageSpinner(
           text: i18n(context, 'wherigo_data_media'),
-          max: WherigoCartridgeGWCData.NumberOfObjects,
+          max: WherigoCartridgeGWCData.NumberOfObjects - 1,
           index: _mediaFileIndex,
           onChanged: (index) {
             setState(() {

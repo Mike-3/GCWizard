@@ -410,10 +410,9 @@ class _GCWizardSCriptInterpreter {
 
   void getDATA() {
     state.script.split('\n').forEach((line) {
-      line = line.trim();
-      if (line.substring(0, line.length > 5 ? 5 : line.length).toUpperCase() ==
-          'DATA ') {
-        line.substring(5).split(',').forEach((data) {
+      line = line.trim().toUpperCase();
+      if (line.contains('DATA ')) {
+        line.split('DATA ')[1].split(',').forEach((data) {
           data = data.trim().replaceAll('"', '');
           if (int.tryParse(data) != null) {
             state.listDATA.add(int.parse(data));
@@ -2116,7 +2115,7 @@ class _GCWizardSCriptInterpreter {
     result = evaluateExpressionUnaryFunctionOperator();
 
     while (
-        (op = state.token[0]) == '→' || op == '←' || op == '&' || op == '|') {
+        (op = state.token[0]) == '→' || op == '←' || op == '&' || op == '|' || op == '@') {
       getToken();
       partialResult = evaluateExpressionUnaryFunctionOperator();
       if (_isNotAInt(partialResult) && _isNotAInt(result)) {
@@ -2134,6 +2133,9 @@ class _GCWizardSCriptInterpreter {
             break;
           case '|': // or
             result = (result as int) | (partialResult as int);
+            break;
+          case '@': // xor
+            result = (result as int) ^ (partialResult as int);
             break;
         }
       }
@@ -2400,7 +2402,7 @@ class _GCWizardSCriptInterpreter {
   }
 
   bool isDelimiter(String c) {
-    if ((" \n\r,;<>+-/*%^=()&|←→~".contains(c))) return true;
+    if ((" \n\r,;<>+-/*%^=()&|←→~@".contains(c))) return true;
     return false;
   }
 

@@ -77,7 +77,7 @@ bool _evaluateEquationSymbolism(Map<String, int> mapping, List<Equation> equatio
     var expression = Equation.replaceValues(equation.formatedEquation, mapping);
 
     try {
-      var result = parser.parse(expression).evaluate(EvaluationType.REAL, _cm);
+      var result = RealEvaluator(_cm).evaluate(parser.parse(expression));
       if (result != 0) return false;
     } catch (e) {
       return false;

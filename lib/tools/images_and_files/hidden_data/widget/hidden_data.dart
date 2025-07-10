@@ -23,7 +23,7 @@ import 'package:gc_wizard/utils/ui_dependent_utils/file_widget_utils.dart';
 class HiddenData extends StatefulWidget {
   final GCWFile? file;
 
-  const HiddenData({Key? key, this.file}) : super(key: key);
+  const HiddenData({super.key, this.file});
 
   @override
   _HiddenDataState createState() => _HiddenDataState();
@@ -86,14 +86,14 @@ class _HiddenDataState extends State<HiddenData> {
           title: i18n(context, 'hiddendata_openpublicfile'),
           file: _publicFile,
           suppressGallery: false,
-          onLoaded: (_openedFile) {
-            if (_openedFile == null) {
+          onLoaded: (GCWFile? value) {
+            if (value == null) {
               showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
               return;
             }
 
             setState(() {
-              _publicFile = _openedFile;
+              _publicFile = value;
             });
           },
         ),
@@ -119,14 +119,14 @@ class _HiddenDataState extends State<HiddenData> {
         if (_currentHideMode == GCWSwitchPosition.right)
           GCWOpenFile(
             file: _secretFile,
-            onLoaded: (_openedFile) {
-              if (_openedFile == null) {
+            onLoaded: (GCWFile? value) {
+              if (value == null) {
                 showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
                 return;
               }
 
               setState(() {
-                _secretFile = _openedFile;
+                _secretFile = value;
               });
             },
           ),
@@ -160,14 +160,14 @@ class _HiddenDataState extends State<HiddenData> {
         GCWOpenFile(
           file: _unHideFile,
           suppressGallery: false,
-          onLoaded: (_openedFile) {
-            if (_openedFile == null) {
+          onLoaded: (GCWFile? value) {
+            if (value == null) {
               showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
               return;
             }
 
             setState(() {
-              _unHideFile = _openedFile;
+              _unHideFile = value;
             });
           },
         ),

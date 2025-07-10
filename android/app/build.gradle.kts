@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "de.sman42.gc_wizard"
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -18,15 +18,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
     defaultConfig {
         applicationId = "de.sman42.gc_wizard"
 
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -52,6 +48,11 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs["release"]
+            // Enables code-related app optimization.
+            isMinifyEnabled = true
+
+            // Enables resource shrinking.
+            isShrinkResources = true
         }
     }
 }
