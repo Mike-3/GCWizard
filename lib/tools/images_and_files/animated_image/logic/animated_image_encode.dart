@@ -71,7 +71,7 @@ Uint8List? createImage(List<Uint8List> images,  List<MapEntry<int, int>> duratio
       convertedImages.add(convertedImage);
     }
 
-    // image count optimation
+    // image count optimization
     for (var i = durations.length - 1; i > 0; i--) {
       if (durations[i].key == durations[i - 1].key) {
         durations[i - 1] = MapEntry<int, int>(durations[i].key, durations[i].value + durations[i - 1].value);

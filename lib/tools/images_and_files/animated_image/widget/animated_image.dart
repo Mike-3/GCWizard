@@ -363,7 +363,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
     rows.add(TableRow(children: [
       Container(),
       GCWText(text: i18n(context, 'common_index'), style: headerStyle),
-      GCWText(text: 'Duration' + ' (ms)', style: headerStyle),
+      _loopDuration > 0 ? Container() : GCWText(text: 'Duration' + ' (ms)', style: headerStyle),
       Container()])
     );
     for (var i = 0; i < _encodeDurations.length + 1; i++) {
@@ -393,7 +393,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
               }
             },
           ),
-          _loopDuration >= 0
+          _loopDuration > 0
             ? Container()
             : GCWIntegerTextField(
               min: 0,
@@ -425,9 +425,11 @@ class _AnimatedImageState extends State<AnimatedImage> {
       Expanded(flex: 6, child:
         Table(
           border: const TableBorder.symmetric(outside: BorderSide(width: 1, color: Colors.transparent)),
-          columnWidths: {0: FlexColumnWidth(50),
-            1: _loopDuration >= 0 ? FixedColumnWidth(0) : FlexColumnWidth(50),
-            2: IntrinsicColumnWidth()},
+          columnWidths: {
+            0: FixedColumnWidth(40),
+            1: FlexColumnWidth(50),
+            2: _loopDuration >= 0 ? FixedColumnWidth(0) : FlexColumnWidth(50),
+            3: IntrinsicColumnWidth()},
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           children: rows
         ),
@@ -490,9 +492,9 @@ class _AnimatedImageState extends State<AnimatedImage> {
   void _saveOutputEncode(Uint8List? output) {
     _outDataEncode = output;
 try {
-  WidgetsBinding.instance.addPostFrameCallback((_) {
+  // WidgetsBinding.instance.addPostFrameCallback((_) {
     setState(() {});
-  });
+  // });
 } catch (e) {}
 
   }
