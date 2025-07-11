@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'dart:ui';
 
 import 'package:code_text_field/code_text_field.dart';
 import 'package:flutter/material.dart';
@@ -153,14 +152,14 @@ class GCWizardScriptState extends State<GCWizardScript> {
         ),
         if (_loadFile)
           GCWOpenFile(
-            onLoaded: (_file) {
-              if (_file == null) {
+            onLoaded: (GCWFile? value) {
+              if (value == null) {
                 showSnackBar(i18n(context, 'common_loadfile_exception_notloaded'), context);
                 _loadFile = !_loadFile;
                 return;
               }
 
-              _currentProgram = String.fromCharCodes(_file.bytes);
+              _currentProgram = String.fromCharCodes(value.bytes);
               _programController.text = _currentProgram;
               _loadFile = !_loadFile;
               setState(() {});
@@ -341,23 +340,30 @@ class GCWizardScriptState extends State<GCWizardScript> {
           ),
           GCWOutputText(
             style: gcwMonotypeTextStyle(),
-            text: i18n(context, _currentOutput.ErrorMessage) +
-                '\n' +
-                i18n(context, 'gcwizard_script_error_position') +
-                ': ' +
-                _currentOutput.ErrorPosition.toString() +
-                '\n' +
-                i18n(context, 'gcwizard_script_error_line') +
-                ': ' +
-                _printFaultyLine(_currentProgram, _currentOutput.ErrorPosition) +
-                '\n' +
-                '=> ' +
-                _printFaultyProgram(_currentProgram, _currentOutput.ErrorPosition),
+            text: _errorMessage(),
             isMonotype: true,
           ),
         ],
       );
     }
+  }
+
+  String _errorMessage(){
+    String errorPosition = i18n(context, 'gcwizard_script_error_position');
+    String errorLine = i18n(context, 'gcwizard_script_error_line');
+
+    if (errorLine.length > errorPosition.length) {
+      errorPosition = errorPosition.padRight(errorLine.length, ' ');
+    } else {
+      errorLine = errorLine.padRight(errorPosition.length, ' ');
+    }
+
+    String errorHint = '=>'.padLeft(errorPosition.length, ' ');
+
+    return i18n(context, _currentOutput.ErrorMessage) + '\n' +
+        errorPosition + ': ' + _currentOutput.ErrorPosition.toString() + '\n' +
+        errorLine + ': ' + _printFaultyLine(_currentProgram, _currentOutput.ErrorPosition) + '\n' +
+        errorHint + '  ' + _printFaultyProgram(_currentProgram, _currentOutput.ErrorPosition, errorHint.length - 1);
   }
 
   Future<GCWAsyncExecuterParameters?> _buildInterpreterJobData() async {
@@ -451,19 +457,18 @@ class GCWizardScriptState extends State<GCWizardScript> {
     int pc = position >= program.length ? program.length - 1 : position;
     if (program.isNotEmpty) {
       while (pc > 0 && program[pc] != '\n') {
-        line = program[pc] + line;
         pc--;
       }
-      pc = position + 1;
-      while (pc < program.length && program[pc] != '\n') {
-        line = line + program[pc];
-        pc++;
+      pc--;
+      while (pc > 0 && program[pc] != '\n') {
+        line = program[pc] + line;
+        pc--;
       }
     }
     return line;
   }
 
-  String _printFaultyProgram(String program, int position) {
+  String _printFaultyProgram(String program, int position, int padding) {
     String result = '';
 
     if (program.isNotEmpty) {
@@ -471,10 +476,10 @@ class GCWizardScriptState extends State<GCWizardScript> {
         result = (position < program.length) ? program[position - 1] : program[program.length - 1];
       }
       for (int i = position; (i < program.length && i < position + 6); i++) {
-        result = result + program[i];
+        result += program[i];
       }
     }
-    return result.replaceAll('\n', '↩') + '\n' + '   ^';
+    return result.replaceAll('\n', '↩') + '\n' + '   ^'.padLeft(4 + padding, ' ');
   }
 
   void _showDialogBoxInput(BuildContext context, String text) {
@@ -654,7 +659,7 @@ class GCWizardScriptState extends State<GCWizardScript> {
             ..isAntiAlias = paint.isAntiAlias
             ..style = PaintingStyle.stroke
             ..strokeWidth = paint.strokeWidth;
-            canvas.drawPoints(PointMode.points, [Offset(double.parse(graphicCommand[1]), double.parse(graphicCommand[2]))], _paint);
+            canvas.drawPoints(ui.PointMode.points, [Offset(double.parse(graphicCommand[1]), double.parse(graphicCommand[2]))], _paint);
           break;
         case 'COLOR':
           paint.color = Color.fromARGB(

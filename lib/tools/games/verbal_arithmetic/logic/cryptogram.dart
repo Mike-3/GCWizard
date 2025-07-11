@@ -162,7 +162,7 @@ bool _evaluateEquation(Map<String, int> variableValues, List<Equation> equations
       context.bindVariable(Variable(varName), Number(value));
     });
 
-    if (equation.exp.evaluate(EvaluationType.REAL, context) != 0) {
+    if (RealEvaluator(context).evaluate(equation.exp) != 0) {
       return false;
     }
   }

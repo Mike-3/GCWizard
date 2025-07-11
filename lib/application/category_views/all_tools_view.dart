@@ -102,6 +102,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/caesar/widget/caesar.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/chao/widget/chao.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/charsets/ascii_values/widget/ascii_values.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/cipher_wheel/widget/cipher_wheel.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/echo/widget/echo.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/enclosed_areas/widget/enclosed_areas.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/enigma/widget/enigma.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/esoteric_programming_languages/beatnik_language/widget/beatnik_language.dart';
@@ -170,6 +171,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substit
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trifid/widget/trifid.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trithemius/widget/trithemius.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/universal_product_code/widget/universal_product_code.dart';
@@ -223,6 +225,7 @@ import 'package:gc_wizard/tools/science_and_technology/astronomy/sun_position/wi
 import 'package:gc_wizard/tools/science_and_technology/astronomy/sun_rise_set/widget/sun_rise_set.dart';
 import 'package:gc_wizard/tools/science_and_technology/ballistics/widget/ballistics.dart';
 import 'package:gc_wizard/tools/science_and_technology/binary/widget/binary.dart';
+import 'package:gc_wizard/tools/science_and_technology/bingo_calls/widget/bingo_calls.dart';
 import 'package:gc_wizard/tools/science_and_technology/blood_alcohol_content/widget/blood_alcohol_content.dart';
 import 'package:gc_wizard/tools/science_and_technology/colors/color_tool/widget/color_tool.dart';
 import 'package:gc_wizard/tools/science_and_technology/colors/pantone_color_codes/widget/pantone_color_codes.dart';
@@ -260,6 +263,8 @@ import 'package:gc_wizard/tools/science_and_technology/gcd/widget/gcd.dart';
 import 'package:gc_wizard/tools/science_and_technology/hexadecimal/widget/hexadecimal.dart';
 import 'package:gc_wizard/tools/science_and_technology/iata_icao_search/widget/iata_icao_search.dart';
 import 'package:gc_wizard/tools/science_and_technology/ieee754/widget/ieee754.dart';
+import 'package:gc_wizard/tools/science_and_technology/ip_address/widget/ip_address.dart';
+import 'package:gc_wizard/tools/science_and_technology/ip_address/widget/ip_address_minimumsubnet.dart';
 import 'package:gc_wizard/tools/science_and_technology/ip_codes/widget/ip_codes.dart';
 import 'package:gc_wizard/tools/science_and_technology/kaprekar/widget/kaprekar.dart';
 import 'package:gc_wizard/tools/science_and_technology/lcm/widget/lcm.dart';
@@ -327,8 +332,9 @@ class MainView extends GCWWebStatefulWidget {
 
 class _MainViewState extends State<MainView> {
   var _isSearching = false;
-  final _searchController = TextEditingController();
+  late TextEditingController _searchController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _searchKey = GlobalKey<_MainViewState>();
   var _searchText = '';
   final _SHOW_SUPPORT_HINT_EVERY_N = 50;
 
@@ -336,16 +342,7 @@ class _MainViewState extends State<MainView> {
   void initState() {
     super.initState();
     Prefs.init();
-
-    _searchController.addListener(() {
-      setState(() {
-        if (_searchController.text.isEmpty) {
-          _searchText = '';
-        } else if (_searchText != _searchController.text) {
-          _searchText = _searchController.text;
-        }
-      });
-    });
+    _searchController = TextEditingController(text: _searchText);
 
     _showWhatsNewDialog() {
       const _MAX_ENTRIES = 10;
@@ -433,7 +430,6 @@ class _MainViewState extends State<MainView> {
     Favorites.initialize();
 
     var toolList = (_isSearching && _searchText.isNotEmpty) ? _getSearchedList() : null;
-
     if (!(_isSearching && _searchText.isNotEmpty)) {
       return DefaultTabController(
         length: 3,
@@ -491,11 +487,8 @@ class _MainViewState extends State<MainView> {
       icon: Icon(_isSearching ? Icons.close : Icons.search),
       onPressed: () {
         setState(() {
-          if (_isSearching) {
-            _searchController.clear();
-            _searchText = '';
-          }
-
+          _searchController.clear();
+          _searchText = '';
           _isSearching = !_isSearching;
         });
       },
@@ -505,10 +498,16 @@ class _MainViewState extends State<MainView> {
   Widget _buildTitleAndSearchTextField() {
     return _isSearching
         ? GCWTextField(
-            autofocus: true,
+            key: _searchKey,
             controller: _searchController,
+            autofocus: true,
             icon: Icon(Icons.search, color: themeColors().mainFont()),
-            hintText: i18n(context, 'common_search') + '...')
+            hintText: i18n(context, 'common_search') + '...',
+            onChanged: (text) {
+              setState(() {
+                _searchText = text;
+              });
+            })
         : Text(i18n(context, 'common_app_title'));
   }
 
@@ -524,7 +523,6 @@ class _MainViewState extends State<MainView> {
 
   List<GCWTool> _getSearchedList() {
     var _sanitizedSearchText = removeAccents(_searchText.toLowerCase()).replaceAll(NOT_ALLOWED_SEARCH_CHARACTERS, '');
-
     if (_sanitizedSearchText.isEmpty) return <GCWTool>[];
 
     Set<String> _queryTexts = _sanitizedSearchText.split(REGEXP_SPLIT_STRINGLIST).toSet();
@@ -582,6 +580,7 @@ void _initStaticToolList() {
       className(const Bifid()),
       className(const Binary()),
       className(const Binary2Image()),
+      className(const BingoCalls()),
       className(const BloodAlcoholContent()),
       className(const BookCipher()),
       className(const Bowling()),
@@ -637,6 +636,7 @@ void _initStaticToolList() {
       className(const DuckSpeak()),
       className(const EasterSelection()),
       className(const EarwigoTextDeobfuscation()),
+      className(const Echo()),
       className(const EdelcrantzTelegraph()),
       className(const ElementsOfGeocaching()),
       className(const ElementsOfGeocachingDataView(atomicNumber: 1)),
@@ -689,6 +689,8 @@ void _initStaticToolList() {
       className(const Intersection()),
       className(const IntersectThreeCircles()),
       className(const IntersectTwoCircles()),
+      className(const IPAddress()),
+      className(const IPAddressMinimumSubnet()),
       className(const IPCodes()),
       className(const IteratedCrossSumRange()),
       className(const IteratedCrossSumRangeFrequency()),
@@ -809,6 +811,7 @@ void _initStaticToolList() {
       className(const TeletypewriterSelection()),
       className(const TeletypewriterPunchTape()),
       className(const TextAnalysis()),
+      className(const TextAnalysisLetterFrequencies()),
       className(const TimeCalculator()),
       className(const TomTomSelection()),
       className(const TowerOfHanoi()),

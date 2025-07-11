@@ -38,7 +38,9 @@ class ReverseWherigoWaldmeisterCoordinate extends BaseCoordinate {
   }
 
   static ReverseWherigoWaldmeisterCoordinate? parse(String input) {
-    return _parseReverseWherigoWaldmeister(input);
+    var result = _parseReverseWherigoWaldmeister(input);
+    result?.toLatLng();
+    return result;
   }
 
   String _leftPadComponent(int x) {
@@ -59,7 +61,7 @@ LatLng? _reverseWIGWaldmeisterToLatLon(ReverseWherigoWaldmeisterCoordinate waldm
   var b = waldmeister.b;
   var c = waldmeister.c;
 
-  if (!checkSumTest(waldmeister)) return null;
+  if (!_checkSumTest(waldmeister)) return null;
 
   int _latSign = 1;
   int _lonSign = 1;
@@ -364,7 +366,7 @@ ReverseWherigoWaldmeisterCoordinate? _parseReverseWherigoWaldmeister(String inpu
   return ReverseWherigoWaldmeisterCoordinate(a, b, c);
 }
 
-bool checkSumTest(ReverseWherigoWaldmeisterCoordinate waldmeister) {
+bool _checkSumTest(ReverseWherigoWaldmeisterCoordinate waldmeister) {
   var b3Calc = __b3CheckSum(waldmeister).toInt();
   var c3Calc = __c3CheckSum(waldmeister).toInt();
 

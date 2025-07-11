@@ -57,13 +57,12 @@ import 'package:gc_wizard/tools/coords/_common/logic/coordinates.dart';
 import 'package:gc_wizard/tools/coords/_common/logic/default_coord_getter.dart';
 import 'package:gc_wizard/tools/coords/_common/widget/coord_format_inputs/degrees_lat_textinputformatter.dart';
 import 'package:gc_wizard/tools/coords/_common/widget/coord_format_inputs/degrees_lon_textinputformatter.dart';
-import 'package:gc_wizard/tools/coords/_common/widget/coordinate_text_formatter.dart';
 import 'package:gc_wizard/tools/coords/_common/widget/gcw_coords_formatselector.dart';
 import 'package:gc_wizard/tools/coords/_common/widget/gcw_coords_paste_button.dart';
 import 'package:gc_wizard/utils/collection_utils.dart';
 import 'package:gc_wizard/utils/complex_return_types.dart';
 import 'package:gc_wizard/utils/constants.dart';
-import 'package:gc_wizard/utils/data_type_utils/double_type_utils.dart';
+import 'package:gc_wizard/utils/data_type_utils/num_type_utils.dart';
 import 'package:gc_wizard/utils/string_utils.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
@@ -224,12 +223,9 @@ class _GCWCoordsState extends State<GCWCoords> {
             icon: Icons.copy,
             size: IconButtonSize.SMALL,
             onPressed: () {
-              var _currentCoordsLatLng = _currentCoords?.toLatLng();
               insertIntoGCWClipboard(
                   context,
-                  _currentCoordsLatLng != null
-                      ? formatCoordOutput(_currentCoordsLatLng, _currentCoordinateFormat, defaultEllipsoid, false)
-                      : '');
+                  '$_currentCoords');
             }),
         Container(width: DEFAULT_MARGIN),
         GCWIconButton(

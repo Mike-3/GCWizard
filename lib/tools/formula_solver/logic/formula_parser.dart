@@ -26,9 +26,9 @@ const _MAX_EXPANDED = 100;
 
 const RECURSIVE_FORMULA_REPLACEMENT_START = '{\u0000';
 const RECURSIVE_FORMULA_REPLACEMENT_END = '\u0000}';
-const _SAFED_FUNCTION_MARKER = '\x01';
-const _SAFED_RECURSIVE_FORMULA_MARKER = '\x02';
-const _SAFED_TEXTS_MARKER = '\x03';
+const _SAFED_FUNCTION_MARKER = '\u0001';
+const _SAFED_RECURSIVE_FORMULA_MARKER = '\u0002';
+const _SAFED_TEXTS_MARKER = '\u0003';
 const _STRING_MARKER_APOSTROPHE = "'";
 const _STRING_MARKER_QUOTE = '"';
 
@@ -99,7 +99,7 @@ class FormulaParser {
     'ceil'
   ];
 
-  static final Map<String, Function> _CUSTOM_FUNCTIONS = {
+  static final Map<String, double Function(List<double>)> _CUSTOM_FUNCTIONS = {
     'cs': (List<double> numbers) => sumCrossSum(numbers.map((number) => number.toInt()).toList()).toDouble(),
     'csi': (List<double> numbers) => sumCrossSumIterated(numbers.map((number) => number.toInt()).toList()).toDouble(),
     'min': (List<double> numbers) => numbers.reduce(min),
@@ -480,8 +480,8 @@ class FormulaParser {
 
     formula = _evaluateTextFunctions(formula);
     Expression expression = parser.parse(formula.toLowerCase());
-    var result = expression.evaluate(EvaluationType.REAL, _context);
-    if (result == null) throw Exception();
+    var evaluator = RealEvaluator(_context);
+    var result = evaluator.evaluate(expression);
 
     return _formatOutput(result);
   }
@@ -533,7 +533,7 @@ class FormulaParser {
         FormulaState.STATE_SINGLE_ERROR, [FormulaSolverSingleResult(FormulaState.STATE_SINGLE_ERROR, formula)]);
   }
 
-  static const String _MATCHED_VARIABLES_NO_KEY = '\x00';
+  static const String _MATCHED_VARIABLES_NO_KEY = '\u0000';
   FormulaSolverOutput parse(String formula, List<FormulaValue> values, {bool expandValues = true}) {
     formula = formula.trim();
 

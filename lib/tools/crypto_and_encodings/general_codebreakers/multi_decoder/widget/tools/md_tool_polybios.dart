@@ -14,13 +14,13 @@ class MultiDecoderToolPolybios extends AbstractMultiDecoderTool {
       : super(
             internalToolName: MDT_INTERNALNAMES_POLYBIOS,
             onDecode: (String input, String key) {
-              var polybiosOutput = decryptPolybios(input, key,
+              var polybiosOutput = decryptPolybios(input, key, /* standard 5x5 */
                   mode: PolybiosMode.AZ09,
                   modificationMode:
                       _parseStringToEnum(stringNullableTypeCheck(options[MDT_POLYBIOS_OPTION_MODE], null)));
               return polybiosOutput?.output;
             },
-            requiresKey: true);
+            optionalKey: true);
   @override
   State<StatefulWidget> createState() => _MultiDecoderToolPolybiosState();
 }
