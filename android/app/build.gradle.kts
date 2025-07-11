@@ -48,6 +48,11 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs["release"]
+            // Enables code-related app optimization.
+            isMinifyEnabled = true
+
+            // Enables resource shrinking.
+            isShrinkResources = true
         }
     }
 }
