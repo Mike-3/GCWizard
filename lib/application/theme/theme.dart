@@ -94,7 +94,7 @@ ThemeData buildTheme() {
       ),
       unselectedWidgetColor: colors.secondary(),
       indicatorColor: themeColors().secondary(),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
           indicatorColor: themeColors().secondary(),
           labelColor: colors.mainFont(),
           unselectedLabelColor: colors.mainFont().withAlpha((255.0 * 0.7).round()),
