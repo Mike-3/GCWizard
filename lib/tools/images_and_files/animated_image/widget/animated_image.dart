@@ -278,15 +278,7 @@ class _AnimatedImageState extends State<AnimatedImage> {
           ),
         ]),
       ),
-      GCWGallery(
-          imageData: _encodeImageData,
-          onDoubleTap: (index) {
-            setState(() {
-              updateEncodeImageData(_encodeImageData, inversMarked: _encodeImageData[index]);
-            });
-          }
-
-      ),
+      buildEncodeGallery(_encodeImageData, setState),
       _buildEncodeOptions(),
       _buildEncodeTable(),
       _buildEncodeSubmitButton(),
@@ -526,6 +518,16 @@ void openInAnimatedImage(BuildContext context, GCWFile file) {
       NoAnimationMaterialPageRoute<GCWTool>(
           builder: (context) => GCWTool(
               tool: AnimatedImage(file: file), toolName: i18n(context, 'animated_image_title'), id: 'animated_image')));
+}
+
+Widget buildEncodeGallery(List<GCWImageViewData> list, Function setState) {
+  return GCWGallery(
+      imageData: list,
+      onDoubleTap: (index) {
+        updateEncodeImageData(list, inversMarked: list[index]);
+        setState(() {});
+      }
+  );
 }
 
 void updateEncodeImageData(List<GCWImageViewData> list, {Uint8List? addImage,
