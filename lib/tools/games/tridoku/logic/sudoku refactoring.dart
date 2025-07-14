@@ -1,4 +1,7 @@
 // ported and adjusted for Dart2+ from https://github.com/dartist/sudoku_solver
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 
 /**
@@ -44,8 +47,8 @@ final List<List<String>> _unitlist = [
   ['4B','4C','4D','4E','4F','5D','5E','5F','6F'],
   ['7B','7C','7D','7E','7F','8D','8E','8F','9F'],
   ['7H','7I','7J','7K','7L','8J','8K','8L','9L'],
-  ['3A','3B','3C','4B','4C','4D'],
-  ['3C','3D','3E','4D','4E','4F'],
+  // ['3A','3B','3C','4B','4C','4D'],
+  // ['3C','3D','3E','4D','4E','4F'],
  // ['2A','2B','2C','3B','3C','3D'], // Hexagons
 // ['4A','4B','4C','5B','5C','5D'],
 // ['4C','4D','4E','5D','5E','5F'],
@@ -151,6 +154,15 @@ final Map<String, List<List<String>>> _units = _squares
     .map((s) => MapEntry<String, List<List<String>>>(s, _unitlist.where((u) => u.contains(s)).toList()))
     .fold(<String, List<List<String>>>{}, (map, kv) => map..putIfAbsent(kv.key, () => kv.value));
 
+// Map<String, List<List<String>>> __units() {
+//   var _unitsWithHexagons = _units;
+//   for (int i = 0; i < 9; i++) {
+//     for (int j = 0; j < _columnCount(i); j++) {
+//       gridMap.putIfAbsent(_rows[i] + _cols[j], () => grid[i][j].toString());
+//     }
+//   }
+// }
+
 final Map<String, Set<String>> _peers = _squares
     .map((s) => MapEntry<String, Set<String>>(s, _units[s]!.expand((u) => u).toSet()..removeAll([s])))
     .fold(<String, Set<String>>{}, (map, kv) => map..putIfAbsent(kv.key, () => kv.value));
@@ -194,21 +206,55 @@ Map<String, String> _grid_values(List<List<int>> grid) {
 Map<String, String>? _assign(Map<String, String> values, String s, String d) {
   var other_values = values[s]!.replaceAll(d, ''); // Zahl aus Lösungsmöglichkeit für eine Zelle entfernen
 // print(other_values.split('').toList().toString() + ' ' + values[s].toString());
-  print(s + ' 1: ' + values[s].toString() + ' ' + other_values.toString());
+//   print(s + ' 1: ' + values[s].toString() + ' ' + other_values.toString());
+
+
   var t = (other_values.split('').map((d2) => _eliminate(values, s, d2)));
   // print(s + ' t: '+ _all(t).toString());
    // print(s + ' t: '+ (t ?? '').toString());
   if (_all(t)) return values;
   // if (_all(other_values.split('').map((d2) => _eliminate(values, s, d2)))) return values;
-  print(s + ' :  null');
+  // print(s + ' :  null');
   return null;
 }
+
+List<String> getHexagon(String s)
+{
+  final offsetS = [
+  [ -2, -3 ],  // r == -1
+      [ -2, -2 ],  // r ==  0
+      [ -1,  0 ]   // r ==  1
+  ];
+
+  final offsetE =
+  [[ 1, 2 ],  // r == -1
+      [ 3, 3 ],  // r ==  0
+      [ 4,  3 ]   // r ==  1
+  ];
+  var cellRow = int.parse(s[0]) - 1;
+  var cellColum = ascii.encode(s[1]).first - 65;
+  var hexagon = <String>[];
+  for (int row = max(cellRow - 1, 0); row <= min(cellRow + 1, 8); row++) {
+    for (var col = max(cellColum + offsetS[row - cellRow + 1][cellColum % 2], 0); col < min(cellColum + offsetE[row - cellRow + 1][cellColum % 2], _columnCount(row)); col++) {
+      hexagon.add((row + 1).toString()+ ascii.decode([col + 65]));
+    }
+  }
+  return hexagon;
+}
+
 
 Map<String, String>? _eliminate(Map<String, String> values, String s, String d) {
   // print(s + '12: ' + values[s].toString());
   if (!values[s]!.contains(d)) return values;
   // print(s + ' 2: ' + values[s].toString());
   values[s] = values[s]!.replaceAll(d, ''); // Zahl aus Lösungsmöglichkeit für eine Zelle entfernen
+
+  // var hexagon = getHexagon(s);
+  // hexagon.whereNot((cell) => cell == s).forEach((s2) {
+  //   values[s2] = values[s2]!.replaceAll(d, ''); // Zahl aus Lösungsmöglichkeit für eine Zelle entfernen
+  // });
+
+
   // print(s + '_2: ' + values[s].toString());
   if (values[s]!.isEmpty) {
     return null; // keine gültige Lösung
