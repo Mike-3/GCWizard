@@ -1,6 +1,6 @@
 name: gc_wizard
 description: GC Wizard
-version: 3.4.0+327
+version: 3.4.1+334
 publish_to: none
 
 environment:
@@ -70,6 +70,7 @@ dependencies:
   utility: ^1.0.3
   week_of_year: ^2.0.0
   xml: ^6.5.0
+  shelf: ^1.4.0
 
 dependency_overrides:
   meta: ^1.15.0
@@ -116,6 +117,7 @@ flutter:
     - lib/tools/symbol_tables/_common/assets/adlam/
     - lib/tools/symbol_tables/_common/assets/albhed/
     - lib/tools/symbol_tables/_common/assets/alchemy/
+    - lib/tools/symbol_tables/_common/assets/alchemy_code_gc_muzeum/
     - lib/tools/symbol_tables/_common/assets/alchemy_alphabet/
     - lib/tools/symbol_tables/_common/assets/alien_mushrooms/
     - lib/tools/symbol_tables/_common/assets/allemans_germains/
