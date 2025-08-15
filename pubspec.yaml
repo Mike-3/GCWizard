@@ -1,6 +1,6 @@
 name: gc_wizard
 description: GC Wizard
-version: 3.5.0+333
+version: 3.4.1+334
 publish_to: none
 
 environment:
@@ -70,6 +70,7 @@ dependencies:
   utility: ^1.0.3
   week_of_year: ^2.0.0
   xml: ^6.5.0
+  shelf: ^1.4.0
 
 dependency_overrides:
   meta: ^1.15.0
@@ -405,6 +406,7 @@ flutter:
     - lib/tools/symbol_tables/_common/assets/slash_and_pipe/
     - lib/tools/symbol_tables/_common/assets/slash_and_pipe_codeofclaw/
     - lib/tools/symbol_tables/_common/assets/slash_and_pipe_underland/
+    - lib/tools/symbol_tables/_common/assets/snooker/
     - lib/tools/symbol_tables/_common/assets/solmisation/
     - lib/tools/symbol_tables/_common/assets/space_invaders/
     - lib/tools/symbol_tables/_common/assets/spintype/
