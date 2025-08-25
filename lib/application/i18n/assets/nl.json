@@ -2385,6 +2385,7 @@
   "dates_calendar_system_exceltimestamp": "EXCEL tijdsstempel",
   "dates_calendar_system_unixtimestamp": "UNIX tijdsstempel",
   "dates_calendar_error": "FOUT - negatieve jaren zijn niet van toepassing",
+  "dates_calendar_error_jd": "ERROR - negative Julian Dates are not applicable",
   "dates_calendar_error_overflow": "FOUT - Bereik van Datum overschrijdt limiet",
   "dates_calendar_unix_error": "FOUT - Data voor 1970/1/1 0:00:00h UTC zijn niet van toepassing",
   "dates_calendar_excel_error": "FOUT - Data voor 1900/1/1 0:00:00h UTC zijn niet van toepassing",

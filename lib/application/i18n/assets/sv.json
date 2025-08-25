@@ -2385,6 +2385,7 @@
   "dates_calendar_system_exceltimestamp": "EXCEL tidsstämpel",
   "dates_calendar_system_unixtimestamp": "UNIX tidsstämpel",
   "dates_calendar_error": "FEL - negativa år är gäller inte",
+  "dates_calendar_error_jd": "ERROR - negative Julian Dates are not applicable",
   "dates_calendar_error_overflow": "FEL - Datumintervallet överskrider gränsen",
   "dates_calendar_unix_error": "FEL - Datum före 1970/1/1 0:00:00h UTC gäller ej",
   "dates_calendar_excel_error": "FEL - Datum före 1900/1/1 0:00:00h UTC gäller ej",
