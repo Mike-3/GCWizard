@@ -10896,17 +10896,6 @@ void initializeRegistry(BuildContext context) {
           licenseType: ToolLicenseType.FREE_TO_USE,
           customComment: 'Pending'), // todo ask for License
     ]),
-    GCWSymbolTableTool(symbolKey: 'wingdings', symbolSearchStrings: const [
-      'symbol_wingdings',
-    ], licenses: [
-      ToolLicenseOnlineArticle(
-          context: context,
-          author: 'commons.wikimedia.org and contributors',
-          title: 'Wingdings',
-          sourceUrl:
-              'https://commons.wikimedia.org/wiki/File:Wingdings.png',
-          licenseType: ToolLicenseType.PUBLIC_DOMAIN)
-    ]),
     GCWSymbolTableTool(
         symbolKey: 'windforce_knots',
         symbolSearchStrings: const [
