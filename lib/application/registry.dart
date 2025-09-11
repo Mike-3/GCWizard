@@ -5220,6 +5220,7 @@ void initializeRegistry(BuildContext context) {
           ToolLicenseOnlineArticle(
             context: context,
             author: 'The On-Line Encyclopedia of Integer Sequences (OEIS)',
+            publisher: 'OAIS',
             title: 'A007304',
             sourceUrl:
             'https://web.archive.org/web/20250114133913/https://oeis.org/A007304/b007304.txt',
@@ -5281,24 +5282,6 @@ void initializeRegistry(BuildContext context) {
             title: 'Vergesst die 42, die Lieblingszahl von Nerds ist 1729',
             sourceUrl:
             'https://web.archive.org/web/20250426232004/https://www.spektrum.de/kolumne/srinivasa-ramanujan-und-die-taxicab-zahl-1729/2261407',
-          ),
-        ]),
-    GCWTool(
-        tool: const NumberSequenceSphenicNumbersSelection(),
-        id: 'numbersequence_sphenicnumbers',
-        searchKeys: const [
-          'numbers',
-          'numbersequence',
-          'numbersequence_sphenicnumbersselection',
-        ],
-        licenses: [
-          ToolLicenseOnlineArticle(
-            context: context,
-            author: 'Unknown',
-            publisher: 'OAIS',
-            title: 'A007304',
-            sourceUrl:
-            'https://web.archive.org/web/20250114133913/https://oeis.org/A007304/b007304.txt',
           ),
         ]),
     GCWTool(
