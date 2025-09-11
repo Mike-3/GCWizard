@@ -668,12 +668,6 @@ void initializeRegistry(BuildContext context) {
         id: 'babylonnumbers_selection',
         categories: const [ToolCategory.CRYPTOGRAPHY],
         searchKeys: const []),
-    GCWTool(tool: const Bacon(), id: 'bacon', categories: const [
-      ToolCategory.CRYPTOGRAPHY
-    ], searchKeys: const [
-      'bacon',
-      'binary',
-    ]),
     GCWTool(
         tool: const BaconSelection(),
         id: 'bacon_selection',
@@ -2462,32 +2456,21 @@ void initializeRegistry(BuildContext context) {
         ]),
 
     //Babylon Numbers Selection **************************************************************************************
-    GCWTool(
-        tool: const BabylonNumbers(),
-        id: 'babylonnumbers',
+    GCWTool(tool: const BabylonNumbers(), id: 'babylonnumbers',
         searchKeys: const [
           'babylonian_numerals',
         ],
         licenses: const []),
 
     //BaconSelection **************************************************************************************************
-    GCWTool(
-        tool: const Bacon(),
-        id: 'bacon',
-        categories: const [],
-        searchKeys: const [
-          'bacon',
-          'binary',
-        ]),
-    GCWTool(
-        tool: const BaconAnalyze(),
-        id: 'bacon_analyze',
-        categories: const [],
-        searchKeys: const [
-          'bacon',
-          'binary',
-        ]),
-
+    GCWTool(tool: const Bacon(), id: 'bacon', searchKeys: const [
+      'bacon',
+      'binary',
+    ]),
+    GCWTool(tool: const BaconAnalyze(), id: 'bacon_analyze', searchKeys: const [
+      'bacon',
+      'binary',
+    ]),
     //BaseSelection **************************************************************************************************
     GCWTool(tool: Base16(), id: 'base_base16', searchKeys: const [
       'base',
