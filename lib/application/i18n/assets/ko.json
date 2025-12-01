@@ -2385,6 +2385,7 @@
   "dates_calendar_system_exceltimestamp": "엑셀 타임스탬프",
   "dates_calendar_system_unixtimestamp": "유닉스 타임스탬프",
   "dates_calendar_error": "오류 - 음수 연도는 적용할 수 없습니다.",
+  "dates_calendar_error_jd": "ERROR - negative Julian Dates are not applicable",
   "dates_calendar_error_overflow": "오류 - 날짜 범위가 한도를 초과합니다.",
   "dates_calendar_unix_error": "오류 - 1970년 1월 1일 이전 날짜는 적용할 수 없습니다.",
   "dates_calendar_excel_error": "오류 - 1900년 1월 1일 이전 날짜는 적용할 수 없습니다.",

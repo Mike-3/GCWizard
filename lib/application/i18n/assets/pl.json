@@ -2385,6 +2385,7 @@
   "dates_calendar_system_exceltimestamp": "Znacznik czasu EXCEL",
   "dates_calendar_system_unixtimestamp": "Znacznik czasu UNIX",
   "dates_calendar_error": "BŁĄD - lata ujemne nie mają zastosowania",
+  "dates_calendar_error_jd": "ERROR - negative Julian Dates are not applicable",
   "dates_calendar_error_overflow": "BŁĄD - Zakres daty przekracza limit",
   "dates_calendar_unix_error": "BŁĄD – daty sprzed 1970/1/1 0:00:00h UTC nie mają zastosowania",
   "dates_calendar_excel_error": "BŁĄD - Daty przed 1900/1/1 0:00:00h UTC nie mają zastosowania",
