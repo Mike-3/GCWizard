@@ -6,8 +6,7 @@ import 'package:gc_wizard/tools/coords/_common/logic/coordinate_format_constants
 import 'package:gc_wizard/tools/coords/_common/logic/coordinates.dart';
 import 'package:latlong2/latlong.dart';
 
-const reverseWherigoHebi63Key =
-    'coords_reversewherigo_hebi63';
+const reverseWherigoHebi63Key = 'coords_reversewherigo_hebi63';
 
 final ReverseWherigoHebi63FormatDefinition = CoordinateFormatDefinition(
     CoordinateFormatKey.REVERSE_WIG_HEBI63,
@@ -64,77 +63,35 @@ LatLng? _reverseWIGHebi63ToLatLon(ReverseWherigoHebi63Coordinate hebi63) {
       b.toString().padLeft(6, '0') +
       c.toString().padLeft(6, '0');
 
-  int latSign = 0;
-  int latDegree = 0;
-  double latMinute = 0.0;
-
-  int lonSign = 0;
-  int lonDegree = 0;
-  double lonMinute = 0.0;
+  String latlonString = '';
+  for (int i = 1; i <= 17; i++) {
+    latlonString = latlonString +
+        _decodeModulo10(
+                int.parse(hebi63String[i]) - int.parse(hebi63String[i - 1]))
+            .toString();
+  }
 
   int digit = 0;
 
-  digit =
-      _decodeModulo10(int.parse(hebi63String[1]) - int.parse(hebi63String[0]));
-  ((0 <= digit) && (digit <= 4)) ? latSign = 1 : latSign = -1;
+  digit = int.parse(latlonString[0]);
+  int latSign = ((0 <= digit) && (digit <= 4)) ? 1 : -1;
 
-  int latDegree10 =
-      _decodeModulo10(int.parse(hebi63String[2]) - int.parse(hebi63String[1]));
-  int latDegree1 =
-      _decodeModulo10(int.parse(hebi63String[3]) - int.parse(hebi63String[2]));
-  latDegree = latDegree10 * 10 + latDegree1;
+  int latDegree = int.parse(latlonString.substring(1, 3));
+  double latMinute = double.parse(latlonString.substring(3, 8)) / 1000.0;
 
-  latMinute = (_decodeModulo10(
-                      int.parse(hebi63String[4]) - int.parse(hebi63String[3])) *
-                  10 +
-              _decodeModulo10(
-                  int.parse(hebi63String[5]) - int.parse(hebi63String[4])))
-          .toDouble() +
-      (_decodeModulo10(
-                      int.parse(hebi63String[6]) - int.parse(hebi63String[5])) *
-                  100 +
-              _decodeModulo10(
-                      int.parse(hebi63String[7]) - int.parse(hebi63String[6])) *
-                  10 +
-              _decodeModulo10(
-                  int.parse(hebi63String[8]) - int.parse(hebi63String[7]))) /
-          1000.0;
+  digit = int.parse(latlonString[8]);
+  int lonSign = ((0 <= digit) && (digit <= 4)) ? -1 : 1;
 
-  digit =
-      _decodeModulo10(int.parse(hebi63String[9]) - int.parse(hebi63String[8]));
-  ((0 <= digit) && (digit <= 4)) ? lonSign = -1 : lonSign = 1;
+  digit = int.parse(latlonString[9]);
+  int lonDegree = ((0 <= digit) && (digit <= 4)) ? 0 : 100;
 
-  digit =
-      _decodeModulo10(int.parse(hebi63String[10]) - int.parse(hebi63String[9]));
-  ((0 <= digit) && (digit <= 4)) ? lonDegree = 0 : lonSign = 100;
-  lonDegree = lonDegree +
-      10 *
-          _decodeModulo10(
-              int.parse(hebi63String[11]) - int.parse(hebi63String[10])) +
-      _decodeModulo10(
-          int.parse(hebi63String[12]) - int.parse(hebi63String[11]));
+  lonDegree = lonDegree + int.parse(latlonString.substring(10, 12));
 
-  lonMinute = 10.0 *
-          _decodeModulo10(
-              int.parse(hebi63String[13]) - int.parse(hebi63String[12])) +
-      _decodeModulo10(
-          int.parse(hebi63String[14]) - int.parse(hebi63String[13]));
-
-  lonMinute = lonMinute +
-      (100 *
-                  _decodeModulo10(int.parse(hebi63String[15]) -
-                      int.parse(hebi63String[14])) +
-              10 *
-                  _decodeModulo10(int.parse(hebi63String[16]) -
-                      int.parse(hebi63String[15])) +
-              _decodeModulo10(
-                  int.parse(hebi63String[17]) - int.parse(hebi63String[16]))) /
-          1000.0;
+  double lonMinute = double.parse(latlonString.substring(12)) / 1000.0;
 
   return DMMCoordinate(DMMLatitude(latSign, latDegree, latMinute),
           DMMLongitude(lonSign, lonDegree, lonMinute))
       .toLatLng();
-  //return dmmToLatLon(DMMCoordinate(_lat, _lon));
 }
 
 int _decodeModulo10(int x) {
@@ -152,29 +109,36 @@ ReverseWherigoHebi63Coordinate _latLonToReverseWIGHebi63(LatLng coord) {
 
   String hebi63 = '';
 
-  var rndInt = Random();
+  var rndInt = Random(0);
 
-  String dmmCoordString = rndInt.nextInt(10).toString() + DMMCoordinate.fromLatLon(coord)
-      .toString(3)
-      .replaceAll('.', '')
-      .replaceAll('°', '')
-      .replaceAll("'", '')
-      .replaceAll('\n', '')
-      .replaceAll(' ', '')
-      .replaceAll('N', rndInt.nextInt(5).toString())
-      .replaceAll('S', (5 + rndInt.nextInt(5)).toString())
-      .replaceAll('W', rndInt.nextInt(5).toString())
-      .replaceAll('E', (5 + rndInt.nextInt(5)).toString());
+  String dmmCoordString = rndInt.nextInt(10).toString() +
+      DMMCoordinate.fromLatLon(coord)
+          .toString(3)
+          .replaceAll('.', '')
+          .replaceAll('°', '')
+          .replaceAll("'", '')
+          .replaceAll('\n', '')
+          .replaceAll(' ', '')
+          .replaceAll('N', rndInt.nextInt(5).toString())
+          .replaceAll('S', (5 + rndInt.nextInt(5)).toString())
+          .replaceAll('W', rndInt.nextInt(5).toString())
+          .replaceAll('E', (5 + rndInt.nextInt(5)).toString());
 
   if (dmmCoordString[10] == '0') {
-    dmmCoordString = dmmCoordString.substring(0,10) + rndInt.nextInt(5).toString() + dmmCoordString.substring(11);
+    dmmCoordString = dmmCoordString.substring(0, 10) +
+        rndInt.nextInt(5).toString() +
+        dmmCoordString.substring(11);
   } else {
-    dmmCoordString = dmmCoordString.substring(0,10) + (5 + rndInt.nextInt(5)).toString() + dmmCoordString.substring(11);
+    dmmCoordString = dmmCoordString.substring(0, 10) +
+        (5 + rndInt.nextInt(5)).toString() +
+        dmmCoordString.substring(11);
   }
 
   hebi63 = dmmCoordString[0];
   for (int i = 1; i <= 17; i++) {
-    hebi63 = hebi63 + ((int.parse(hebi63[i - 1]) + int.parse(dmmCoordString[i])) % 10).toString();
+    hebi63 = hebi63 +
+        ((int.parse(hebi63[i - 1]) + int.parse(dmmCoordString[i])) % 10)
+            .toString();
   }
 
   a = hebi63.substring(0, 6);
