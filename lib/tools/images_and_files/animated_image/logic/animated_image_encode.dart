@@ -13,9 +13,10 @@ class AnimatedImageJobData {
   final EncodeMode mode;
   final int? loopDisplayDuration;
   final int loopCount;
+  final int scale;
 
   AnimatedImageJobData({required this.images, required this.durations, required this.mode,
-    this.loopDisplayDuration, this.loopCount = 0});
+    this.loopDisplayDuration, required this.loopCount, required this.scale});
 }
 
 Future<Uint8List?> createImageAsync(GCWAsyncExecuterParameters? jobData) async {
@@ -23,7 +24,7 @@ Future<Uint8List?> createImageAsync(GCWAsyncExecuterParameters? jobData) async {
 
   var data = jobData!.parameters as AnimatedImageJobData;
   var output = createImage(data.images, _prepareDurations(data.durations, data.mode, data.loopDisplayDuration)
-      , data.loopCount);
+      , data.loopCount, data.scale);
 
   jobData.sendAsyncPort?.send(output);
 
@@ -66,10 +67,12 @@ List<MapEntry<int, int>> _prepareDurations(List<MapEntry<int, int>> durations, E
   return list;
 }
 
-Uint8List? createImage(List<Uint8List> images,  List<MapEntry<int, int>> durations, int loopCount) {
+Uint8List? createImage(List<Uint8List> images,  List<MapEntry<int, int>> durations, int loopCount, int scale) {
   try {
     if (images.isEmpty || durations.isEmpty) return null;
     var convertedImages = <Image.Image?>[];
+    var maxWidth = 0;
+    var maxHeight = 0;
 
     images.forEachIndexed((index, image) {
       Image.Image? convertedImage;
@@ -79,7 +82,35 @@ Uint8List? createImage(List<Uint8List> images,  List<MapEntry<int, int>> duratio
           convertedImage = decoder.decode(image);
         }
       }
+      convertedImage = convertedImage?.frames.first;
+      if (convertedImage != null) {
+        if (convertedImage.width > maxWidth) maxWidth = convertedImage.width;
+        if (convertedImage.height > maxHeight) maxHeight = convertedImage.height;
+      }
       convertedImages.add(convertedImage);
+    });
+
+    if (scale > 0) {
+      maxWidth = (maxWidth * scale) ~/ 100;
+      maxHeight = (maxHeight * scale) ~/ 100;
+    }
+
+    convertedImages.forEachIndexed((index, convertedImage) {
+      if (convertedImage != null) {
+        if (convertedImage.width != maxWidth || convertedImage.height != maxHeight) {
+          if (scale != 100) {
+            convertedImage = Image.copyResize(convertedImage, maintainAspect: true,
+                width: (convertedImage.width * scale) ~/ 100);
+          }
+          if (convertedImage.width > maxWidth || convertedImage.height > maxHeight) {
+            convertedImage = Image.copyResize(convertedImage, width: maxWidth, height: maxHeight);
+          } else {
+            convertedImage = Image.copyExpandCanvas(convertedImage,
+                newWidth: maxWidth, newHeight: maxHeight, position: Image.ExpandCanvasPosition.center);
+          }
+          convertedImages[index] = convertedImage;
+        }
+      }
     });
 
     var animation = <Image.Image>[];
