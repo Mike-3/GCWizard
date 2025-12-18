@@ -312,6 +312,7 @@ import 'package:gc_wizard/tools/games/sudoku/widget/sudoku_solver.dart';
 import 'package:gc_wizard/tools/games/tower_of_hanoi/widget/tower_of_hanoi.dart';
 import 'package:gc_wizard/tools/games/verbal_arithmetic/widget/verbal_arithmetic.dart';
 import 'package:gc_wizard/tools/games/word_search/widget/word_search.dart';
+import 'package:gc_wizard/tools/games/wordoku/widget/wordoku_solver.dart';
 import 'package:gc_wizard/tools/general_tools/grid_generator/grid/widget/grid.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_cards.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_coin.dart';
@@ -2277,16 +2278,22 @@ void initializeRegistry(BuildContext context) {
         id: 'weathersymbols',
         categories: const [ToolCategory.SCIENCE_AND_TECHNOLOGY],
         searchKeys: const ['weather', 'weather_clouds', 'weather_a']),
-    GCWTool(tool: const Z22(), id: 'z22', categories: const [
-      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    GCWTool(tool: const WordokuSolver(), id: 'wordokusolver', categories: const [
+      ToolCategory.GAMES
     ], searchKeys: const [
-      'z22',
-    ]),
+      'games',
+      'games_wordokusolver',
+    ], licenses: []),
     GCWTool(
         tool: const WordSearch(),
         id: 'word_search',
         categories: const [ToolCategory.GAMES],
         searchKeys: const ['word_search', 'grid']),
+    GCWTool(tool: const Z22(), id: 'z22', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'z22',
+    ]),
     GCWTool(
         tool: ZamonianNumbers(),
         autoScroll: false,
