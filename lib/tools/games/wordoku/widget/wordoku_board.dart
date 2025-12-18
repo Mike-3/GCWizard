@@ -42,7 +42,7 @@ class _WordokuBoardState extends State<_WordokuBoard> {
 }
 
 class WordokuBoardPainter extends CustomPainter {
-  final void Function(int, int, int?) setBoxValue;
+  final void Function(int, int, String?) setBoxValue;
   final WordokuBoard board;
   final BuildContext context;
 
@@ -137,7 +137,7 @@ class WordokuBoardPainter extends CustomPainter {
           textStyle: gcwTextStyle().copyWith(fontSize: 32, color: themeColors().dialogText()),
           onPressed: () {
             Navigator.of(context).pop();
-            setBoxValue(x, y, value);
+            setBoxValue(x, y, value.toString());
           },
         ));
       }

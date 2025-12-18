@@ -6,7 +6,7 @@ enum WordokuFillType { USER_FILLED, CALCULATED }
 
 class WordokuBoardValue {
   WordokuFillType type;
-  int? value;
+  String? value;
 
   WordokuBoardValue(this.value, this.type);
 }
@@ -15,14 +15,14 @@ class WordokuBoard {
   late List<List<WordokuBoardValue?>> board;
   List<_WordokuSolution>? solutions;
 
-  WordokuBoard({List<List<int>>? board}) {
+  WordokuBoard({List<List<String>>? board}) {
     this.board =
         List<List<WordokuBoardValue?>>.generate(9, (index) => List<WordokuBoardValue?>.generate(9, (index) => null));
 
     if (board != null) {
       for (int i = 0; i < min(board.length, this.board.length); i++) {
         for (int j = 0; j < min(board[i].length, this.board[i].length); j++) {
-          if (board[i][j] > 0 && board[i][j] <= 9) {
+          if (board[i][j].isNotEmpty) {
             setValue(i, j, board[i][j], WordokuFillType.USER_FILLED);
           }
         }
@@ -30,11 +30,11 @@ class WordokuBoard {
     }
   }
 
-  void setValue(int i, int j, int? value, WordokuFillType type) {
+  void setValue(int i, int j, String? value, WordokuFillType type) {
     board[i][j] = WordokuBoardValue(value, type);
   }
 
-  int? getValue(int i, int j) {
+  String? getValue(int i, int j) {
     return board[i][j]?.value;
   }
 
@@ -87,11 +87,11 @@ class WordokuBoard {
 }
 
 class _WordokuSolution {
-  final List<List<int>> solution;
+  final List<List<String>> solution;
 
   _WordokuSolution(this.solution);
 
-  int? getValue(int i, int j) {
+  String? getValue(int i, int j) {
     if (i < 0 || i >= solution.length || j < 0 || j >= solution[i].length) return null;
     return solution[i][j];
   }
