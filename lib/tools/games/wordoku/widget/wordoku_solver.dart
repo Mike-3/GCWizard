@@ -9,6 +9,7 @@ import 'package:gc_wizard/common_widgets/gcw_painter_container.dart';
 import 'package:gc_wizard/common_widgets/gcw_snackbar.dart';
 import 'package:gc_wizard/common_widgets/gcw_text.dart';
 import 'package:gc_wizard/common_widgets/spinners/gcw_page_spinner.dart';
+import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
 import 'package:gc_wizard/tools/games/wordoku/logic/wordoku_solver.dart';
 import 'package:touchable/touchable.dart';
 
@@ -23,6 +24,7 @@ class WordokuSolver extends StatefulWidget {
 
 class _WordokuSolverState extends State<WordokuSolver> {
   late WordokuBoard _currentBoard;
+  late TextEditingController _keyController;
   int _currentSolution = 0;
 
   final int _MAX_SOLUTIONS = 1000;
@@ -32,12 +34,29 @@ class _WordokuSolverState extends State<WordokuSolver> {
     super.initState();
 
     _currentBoard = WordokuBoard();
+    _keyController = TextEditingController(text: _currentBoard.mapCharacter);
+  }
+
+  @override
+  void dispose() {
+    _keyController.dispose();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
+        GCWTextField(
+          maxLength: 9,
+          title: 'Character',
+          onChanged: (value) {
+            setState(() {
+              _currentBoard.mapCharacter = value;
+            });
+          }
+        ),
         GCWPainterContainer(
           child: _WordokuBoard(
             board: _currentBoard,

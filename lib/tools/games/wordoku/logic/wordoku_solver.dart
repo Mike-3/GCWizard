@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:gc_wizard/tools/games/sudoku/logic/external_libs/dartist.sudoku_solver/sudoku.dart';
+import 'package:gc_wizard/utils/string_utils.dart';
 
 enum WordokuFillType { USER_FILLED, CALCULATED }
 
@@ -14,15 +16,21 @@ class WordokuBoardValue {
 class WordokuBoard {
   late List<List<WordokuBoardValue?>> board;
   List<_WordokuSolution>? solutions;
+  var mapCharacter = 'ABCDEFGHI';
+  var mapCharacterCalc = '';
 
-  WordokuBoard({List<List<String>>? board}) {
+  WordokuBoard({List<List<String?>>? board, String? mapCharacter}) {
     this.board =
         List<List<WordokuBoardValue?>>.generate(9, (index) => List<WordokuBoardValue?>.generate(9, (index) => null));
+
+    if (mapCharacter != null && mapCharacter.isNotEmpty) {
+      this.mapCharacter = mapCharacter;
+    }
 
     if (board != null) {
       for (int i = 0; i < min(board.length, this.board.length); i++) {
         for (int j = 0; j < min(board[i].length, this.board[i].length); j++) {
-          if (board[i][j].isNotEmpty) {
+          if (board[i][j] != null && board[i][j]!.isNotEmpty) {
             setValue(i, j, board[i][j], WordokuFillType.USER_FILLED);
           }
         }
@@ -51,19 +59,68 @@ class WordokuBoard {
       return;
     }
 
-    this.solutions = solutions.map((solution) => _WordokuSolution(solution)).toList();
+    this.solutions = solutions.map((solution) => _WordokuSolution(_solvedBoard(solution))).toList();
   }
 
   List<List<int>> _solveableBoard() {
+    _buildMapCharacterCalc();
+
+    int getNumber(String? char){
+      if (char == null || char.isEmpty) return 0;
+      var index = mapCharacterCalc.indexOf(char.toUpperCase());
+      return (index >= 0) ? index + 1 : 0;
+    }
+
     return board.map((column) {
       return column
           .map((row) => row != null && row.type == WordokuFillType.USER_FILLED
-              ? (row.value is int)
-                  ? row.value as int
+              ? (row.value is String)
+                  ? getNumber(row.value)
                   : 0
               : 0)
           .toList();
     }).toList();
+  }
+
+  List<List<String?>> _solvedBoard(List<List<int>> solution) {
+    String? getChar(int value){
+      return (value > 0 && value <= mapCharacterCalc.length) ? mapCharacterCalc[value - 1] : null;
+    }
+
+    return board.mapIndexed((columnIndex, column) {
+      return column
+          .mapIndexed((rowIndex, row) => row != null && row.type == WordokuFillType.USER_FILLED
+              ? (row.value is String)
+                  ? row.value
+                  : null
+              : getChar(solution[columnIndex][rowIndex]))
+          .toList();
+    }).toList();
+  }
+
+  String mapCharacterCleaned() {
+    var cleaned =  mapCharacter.trim().replaceAll(RegExp(r'\s+'), '');
+    return removeDuplicateCharacters(cleaned).substring(0, 9).toUpperCase();
+  }
+
+  void _buildMapCharacterCalc() {
+    mapCharacterCalc = mapCharacterCleaned();
+
+    var allDigits = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    if (mapCharacterCalc.length < 9) {
+      for (var char in mapCharacterCalc.runes) {
+        allDigits.remove(String.fromCharCode(char));
+      }
+
+      while (mapCharacterCalc.length < 9) {
+        mapCharacterCalc += allDigits.first;
+        allDigits.remove(allDigits.first);
+      }
+    }
+
+    if (mapCharacterCalc.contains('0')) {
+      mapCharacterCalc = mapCharacterCalc.replaceAll('0', allDigits.first);
+    }
   }
 
   void removeCalculated() {
@@ -87,7 +144,7 @@ class WordokuBoard {
 }
 
 class _WordokuSolution {
-  final List<List<String>> solution;
+  final List<List<String?>> solution;
 
   _WordokuSolution(this.solution);
 

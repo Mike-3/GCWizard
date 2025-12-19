@@ -126,18 +126,20 @@ class WordokuBoardPainter extends CustomPainter {
 
   void _showInputDialog(int x, int y) {
     var columns = <Widget>[];
+    var values = board.mapCharacterCleaned();
 
     for (int i = 0; i < 3; i++) {
       var rows = <Widget>[];
       for (int j = 0; j < 3; j++) {
-        var value = i * 3 + j + 1;
+        var index = i * 3 + j + 1;
+        var value = index >= values.length ? '' : values[index];
 
         rows.add(GCWButton(
-          text: value.toString(),
+          text: value,
           textStyle: gcwTextStyle().copyWith(fontSize: 32, color: themeColors().dialogText()),
           onPressed: () {
             Navigator.of(context).pop();
-            setBoxValue(x, y, value.toString());
+            setBoxValue(x, y, value);
           },
         ));
       }
