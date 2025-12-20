@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:gc_wizard/tools/games/sudoku/logic/external_libs/dartist.sudoku_solver/sudoku.dart';
+import 'package:gc_wizard/utils/collection_utils.dart';
 import 'package:gc_wizard/utils/string_utils.dart';
 
 enum WordokuFillType { USER_FILLED, CALCULATED }
@@ -17,7 +18,7 @@ class WordokuBoard {
   late List<List<WordokuBoardValue?>> board;
   List<_WordokuSolution>? solutions;
   var mapCharacter = 'ABCDEFGHI';
-  var mapCharacterCalc = '';
+  var mapCharacterCalc = <int, String>{};
 
   WordokuBoard({List<List<String?>>? board, String? mapCharacter}) {
     this.board =
@@ -43,11 +44,15 @@ class WordokuBoard {
   }
 
   String? getValue(int i, int j) {
-    return board[i][j]?.value;
+    return _getValue(board[i][j]?.value);
+  }
+
+  String? _getValue(String? value) {
+    return value != null && value.trim().isNotEmpty ? value : null;
   }
 
   WordokuFillType getFillType(int i, int j) {
-    return (board[i][j] == null || board[i][j]!.type == WordokuFillType.CALCULATED)
+    return (getValue(i, j) == null || board[i][j]!.type == WordokuFillType.CALCULATED)
         ? WordokuFillType.CALCULATED
         : WordokuFillType.USER_FILLED;
   }
@@ -64,18 +69,18 @@ class WordokuBoard {
 
   List<List<int>> _solveableBoard() {
     _buildMapCharacterCalc();
+    var map = switchMapKeyValue(mapCharacterCalc);
 
     int getNumber(String? char){
-      if (char == null || char.isEmpty) return 0;
-      var index = mapCharacterCalc.indexOf(char.toUpperCase());
-      return (index >= 0) ? index + 1 : 0;
+      if (char == null || !map.containsKey(char.toUpperCase())) return 0;
+      return map[char.toUpperCase()]!;
     }
 
     return board.map((column) {
       return column
           .map((row) => row != null && row.type == WordokuFillType.USER_FILLED
               ? (row.value is String)
-                  ? getNumber(row.value)
+                  ? getNumber(_getValue(row.value))
                   : 0
               : 0)
           .toList();
@@ -84,7 +89,7 @@ class WordokuBoard {
 
   List<List<String?>> _solvedBoard(List<List<int>> solution) {
     String? getChar(int value){
-      return (value > 0 && value <= mapCharacterCalc.length) ? mapCharacterCalc[value - 1] : null;
+      return mapCharacterCalc[value];
     }
 
     return board.mapIndexed((columnIndex, column) {
@@ -100,27 +105,43 @@ class WordokuBoard {
 
   String mapCharacterCleaned() {
     var cleaned =  mapCharacter.trim().replaceAll(RegExp(r'\s+'), '');
-    return removeDuplicateCharacters(cleaned).substring(0, 9).toUpperCase();
+    cleaned = removeDuplicateCharacters(cleaned.toUpperCase());
+
+    for (int i = 0; i < 9; i++) {
+      for (int j = 0; j < 9; j++) {
+        if (getFillType(i, j) == WordokuFillType.USER_FILLED) {
+          var value = getValue(i, j);
+          if (value != null && !cleaned.contains(value.toUpperCase())) {
+            cleaned = value.toUpperCase() + cleaned;
+          }
+        }
+      }
+    }
+    return cleaned.substring(0, min(9, cleaned.length));
   }
 
   void _buildMapCharacterCalc() {
-    mapCharacterCalc = mapCharacterCleaned();
-
-    var allDigits = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    var chars = mapCharacterCleaned();
+    mapCharacterCalc.clear();
+    for (int i = 0; i < chars.length; i++) {
+      mapCharacterCalc.addAll({i+1: chars[i]});
+    }
+    
+    var allDigits = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     if (mapCharacterCalc.length < 9) {
-      for (var char in mapCharacterCalc.runes) {
-        allDigits.remove(String.fromCharCode(char));
+      for (var digit in mapCharacterCalc.keys) {
+        allDigits.remove(digit);
       }
 
       while (mapCharacterCalc.length < 9) {
-        mapCharacterCalc += allDigits.first;
+        mapCharacterCalc.addAll({mapCharacterCalc.length: allDigits.first.toString()}) ;
         allDigits.remove(allDigits.first);
       }
     }
 
-    if (mapCharacterCalc.contains('0')) {
-      mapCharacterCalc = mapCharacterCalc.replaceAll('0', allDigits.first);
-    }
+    // if (mapCharacterCalc.v.contains('0')) {
+    //   mapCharacterCalc = mapCharacterCalc.replaceAll('0', allDigits.first);
+    // }
   }
 
   void removeCalculated() {

@@ -24,7 +24,7 @@ class WordokuSolver extends StatefulWidget {
 
 class _WordokuSolverState extends State<WordokuSolver> {
   late WordokuBoard _currentBoard;
-  late TextEditingController _keyController;
+  late TextEditingController _charController;
   int _currentSolution = 0;
 
   final int _MAX_SOLUTIONS = 1000;
@@ -34,12 +34,12 @@ class _WordokuSolverState extends State<WordokuSolver> {
     super.initState();
 
     _currentBoard = WordokuBoard();
-    _keyController = TextEditingController(text: _currentBoard.mapCharacter);
+    _charController = TextEditingController(text: _currentBoard.mapCharacter);
   }
 
   @override
   void dispose() {
-    _keyController.dispose();
+    _charController.dispose();
 
     super.dispose();
   }
@@ -51,6 +51,7 @@ class _WordokuSolverState extends State<WordokuSolver> {
         GCWTextField(
           maxLength: 9,
           title: 'Character',
+          controller: _charController,
           onChanged: (value) {
             setState(() {
               _currentBoard.mapCharacter = value;
@@ -130,6 +131,7 @@ class _WordokuSolverState extends State<WordokuSolver> {
                     () {
                       setState(() {
                         _currentBoard = WordokuBoard();
+                        _charController.text = _currentBoard.mapCharacter;
                       });
                     },
                   );

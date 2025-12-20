@@ -131,7 +131,7 @@ class WordokuBoardPainter extends CustomPainter {
     for (int i = 0; i < 3; i++) {
       var rows = <Widget>[];
       for (int j = 0; j < 3; j++) {
-        var index = i * 3 + j + 1;
+        var index = i * 3 + j;
         var value = index >= values.length ? '' : values[index];
 
         rows.add(GCWButton(
