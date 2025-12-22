@@ -95,7 +95,7 @@ class _WordokuSolverState extends State<WordokuSolver> {
                   text: i18n(context, 'sudokusolver_solve'),
                   onPressed: () {
                     setState(() {
-                      _currentBoard.solveSudoku(_MAX_SOLUTIONS);
+                      _currentBoard.solveWordoku(_MAX_SOLUTIONS);
                       if (_currentBoard.solutions == null) {
                         showSnackBar(i18n(context, 'sudokusolver_error'), context);
                       } else {

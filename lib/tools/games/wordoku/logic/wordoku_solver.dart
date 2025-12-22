@@ -57,7 +57,8 @@ class WordokuBoard {
         : WordokuFillType.USER_FILLED;
   }
 
-  void solveSudoku(int maxSolutions) {
+  void solveWordoku(int maxSolutions) {
+    // print(board);
     var solutions = solve(_solveableBoard(), maxSolutions: maxSolutions);
     if (solutions == null) {
       this.solutions = null;
@@ -76,6 +77,17 @@ class WordokuBoard {
       return map[char.toUpperCase()]!;
     }
 
+    var pp = board.map((column) {
+      return column
+          .map((row) => row != null && row.type == WordokuFillType.USER_FILLED
+          ? (row.value is String)
+          ? "'"  + row.value! + "'"
+          : ''
+          : "''")
+          .toList();
+    }).toList();
+    print(pp);
+
     return board.map((column) {
       return column
           .map((row) => row != null && row.type == WordokuFillType.USER_FILLED
@@ -92,6 +104,13 @@ class WordokuBoard {
       return mapCharacterCalc[value];
     }
 
+    var pp = solution.map((column) {
+      return column
+          .map((row) => "'" + getChar(row)! + "'")
+          .toList();
+    }).toList();
+    print(pp);
+
     return board.mapIndexed((columnIndex, column) {
       return column
           .mapIndexed((rowIndex, row) => row != null && row.type == WordokuFillType.USER_FILLED
@@ -104,20 +123,34 @@ class WordokuBoard {
   }
 
   String mapCharacterCleaned() {
-    var cleaned =  mapCharacter.trim().replaceAll(RegExp(r'\s+'), '');
-    cleaned = removeDuplicateCharacters(cleaned.toUpperCase());
+    final cleanedSet = <String>{};
+    for (final c in mapCharacter
+        .trim()
+        .replaceAll(RegExp(r'\s+'), '')
+        .toUpperCase()
+        .split('')) {
+      cleanedSet.add(c);
+    }
 
+    final usedSet = <String>{};
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
         if (getFillType(i, j) == WordokuFillType.USER_FILLED) {
-          var value = getValue(i, j);
-          if (value != null && !cleaned.contains(value.toUpperCase())) {
-            cleaned = value.toUpperCase() + cleaned;
+          final value = getValue(i, j);
+          if (value != null) {
+            usedSet.add(value.toUpperCase());
           }
         }
       }
     }
-    return cleaned.substring(0, min(9, cleaned.length));
+
+    final resultSet = <String>{...usedSet};
+    for (final c in cleanedSet) {
+      if (resultSet.length >= 9) break;
+      resultSet.add(c);
+    }
+
+    return resultSet.take(9).join();
   }
 
   void _mapCharacterCalc() {
@@ -129,7 +162,7 @@ class WordokuBoard {
 
     var fillCharacter = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
     if (mapCharacterCalc.length < 9) {
-      for (var digit in mapCharacterCalc.keys) {
+      for (var digit in mapCharacterCalc.values) {
         fillCharacter.remove(digit);
       }
 
