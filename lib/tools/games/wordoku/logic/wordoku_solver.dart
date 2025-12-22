@@ -58,7 +58,6 @@ class WordokuBoard {
   }
 
   void solveWordoku(int maxSolutions) {
-    // print(board);
     var solutions = solve(_solveableBoard(), maxSolutions: maxSolutions);
     if (solutions == null) {
       this.solutions = null;
@@ -77,17 +76,6 @@ class WordokuBoard {
       return map[char.toUpperCase()]!;
     }
 
-    var pp = board.map((column) {
-      return column
-          .map((row) => row != null && row.type == WordokuFillType.USER_FILLED
-          ? (row.value is String)
-          ? "'"  + row.value! + "'"
-          : ''
-          : "''")
-          .toList();
-    }).toList();
-    print(pp);
-
     return board.map((column) {
       return column
           .map((row) => row != null && row.type == WordokuFillType.USER_FILLED
@@ -103,13 +91,6 @@ class WordokuBoard {
     String? getChar(int value){
       return mapCharacterCalc[value];
     }
-
-    var pp = solution.map((column) {
-      return column
-          .map((row) => "'" + getChar(row)! + "'")
-          .toList();
-    }).toList();
-    print(pp);
 
     return board.mapIndexed((columnIndex, column) {
       return column
