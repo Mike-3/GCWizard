@@ -6,13 +6,13 @@ import 'package:gc_wizard/common_widgets/switches/gcw_onoff_switch.dart';
 import 'package:gc_wizard/common_widgets/switches/gcw_twooptions_switch.dart';
 import 'package:gc_wizard/common_widgets/text_input_formatters/wrapper_for_masktextinputformatter.dart';
 import 'package:gc_wizard/common_widgets/textfields/gcw_textfield.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/jupiter/logic/jupiter.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/hva/logic/hva.dart';
 
 const String _apiSpecification = '''
 {
-  "/Jupiter" : {
+  "/Juno" : {
     "get": {
-      "summary": "Jupiter Tool",
+      "summary": "HVA Tool",
       "responses": {
         "204": {
           "description": "Tool loaded. No response data."
@@ -55,14 +55,14 @@ const String _apiSpecification = '''
 }
 ''';
 
-class Jupiter extends GCWWebStatefulWidget {
-  Jupiter({super.key}) : super(apiSpecification: _apiSpecification);
+class HVA extends GCWWebStatefulWidget {
+  HVA({super.key}) : super(apiSpecification: _apiSpecification);
 
   @override
-  _JupiterState createState() => _JupiterState();
+  _HVAState createState() => _HVAState();
 }
 
-class _JupiterState extends State<Jupiter> {
+class _HVAState extends State<HVA> {
   late TextEditingController _inputController;
   late TextEditingController _otpController;
 
@@ -71,6 +71,7 @@ class _JupiterState extends State<Jupiter> {
   var _currentOneTimePadMode = false;
 
   var _currentOneTimePad = '';
+  var _currentCodeTable = GCWSwitchPosition.left;
 
   final _maskFormatter = GCWMaskTextInputFormatter(mask: '##### ' * 100000 + '#####', filter: {"#": RegExp(r'\d')});
 
@@ -124,6 +125,16 @@ class _JupiterState extends State<Jupiter> {
             });
           },
         ),
+        GCWTwoOptionsSwitch(
+          leftValue: '1950-1970',
+          rightValue: '1970-1990',
+          value: _currentCodeTable,
+          onChanged: (value) {
+            setState(() {
+              _currentCodeTable = value;
+            });
+          },
+        ),
         GCWOnOffSwitch(
           title: i18n(context, 'common_onetimepad'),
           value: _currentOneTimePadMode,
@@ -152,13 +163,9 @@ class _JupiterState extends State<Jupiter> {
 
   String _buildOutput() {
     if (_currentMode == GCWSwitchPosition.left) {
-      return encryptJupiter(_currentInput, _currentOneTimePad);
+      return encryptHVA(_currentInput, _currentOneTimePad, _currentCodeTable == GCWSwitchPosition.left);
     } else {
-      if (_currentInput.replaceAll(RegExp(r'\s'), '').length % 5 == 0) {
-        return decryptJupiter(_currentInput, _currentOneTimePad);
-      } else {
-        return i18n(context, 'common_error_invalid_length_5');
-      }
+      return decryptHVA(_currentInput, _currentOneTimePad, _currentCodeTable == GCWSwitchPosition.left);
     }
   }
 }

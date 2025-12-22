@@ -133,8 +133,8 @@ final allCoordinateFormatDefinitions = [
   ReverseWherigoWaldmeisterFormatDefinition,
   ReverseWherigoDay1976FormatDefinition,
   ReverseWherigo10YWaldmeisterFormatDefinition,
-  ReverseWherigoHebi63FormatDefinition,
   XYZFormatDefinition,
+  ReverseWherigoHebi63FormatDefinition, // lower as XYZ
   SwissGridFormatDefinition,
   SwissGridPlusFormatDefinition,
   GaussKruegerFormatDefinition,
