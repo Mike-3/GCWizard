@@ -24,7 +24,7 @@ class _WordokuBoardState extends State<_WordokuBoard> {
                     return CustomPaint(
                         painter: WordokuBoardPainter(context, widget.board, (x, y, value) {
                       setState(() {
-                        if (value == null) {
+                        if (value == null || value.trim().isEmpty) {
                           widget.board.setValue(x, y, null, WordokuFillType.CALCULATED);
                           widget.onChanged(widget.board);
                           return;
@@ -52,6 +52,7 @@ class WordokuBoardPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     var _touchCanvas = TouchyCanvas(context, canvas);
     ThemeColors colors = themeColors();
+    var _mapCharacterCleaned = board.mapCharacterCleaned();
 
     var paint = Paint();
 
@@ -82,6 +83,7 @@ class WordokuBoardPainter extends CustomPainter {
 
             var boardY = i * 3 + k;
             var boardX = j * 3 + l;
+            var text = board.getValue(boardX, boardY);
 
             _touchCanvas.drawRect(Rect.fromLTWH(xInner, yInner, widthInner, heightInner), paint,
                 onTapDown: (tapDetail) {
@@ -94,14 +96,14 @@ class WordokuBoardPainter extends CustomPainter {
             _touchCanvas.drawLine(Offset(xInner, 0.0), Offset(xInner, size.width), paint);
             _touchCanvas.drawLine(Offset(0.0, yInner), Offset(size.height, yInner), paint);
 
-            if (board.getValue(boardX, boardY) != null) {
+            if (text != null) {
               var textColor = board.getFillType(boardX, boardY) == WordokuFillType.USER_FILLED
-                  ? colors.secondary()
+                  ? _mapCharacterCleaned.contains(text) ? colors.secondary() : Colors.red
                   : colors.mainFont();
 
               TextSpan span = TextSpan(
                   style: gcwTextStyle().copyWith(color: textColor, fontSize: heightInner * 0.8),
-                  text: board.getValue(boardX, boardY)?.toString());
+                  text: text);
               TextPainter textPainter = TextPainter(text: span, textDirection: TextDirection.ltr);
               textPainter.layout();
 

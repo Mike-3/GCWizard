@@ -68,7 +68,7 @@ class WordokuBoard {
   }
 
   List<List<int>> _solveableBoard() {
-    _buildMapCharacterCalc();
+    _mapCharacterCalc();
     var map = switchMapKeyValue(mapCharacterCalc);
 
     int getNumber(String? char){
@@ -120,28 +120,24 @@ class WordokuBoard {
     return cleaned.substring(0, min(9, cleaned.length));
   }
 
-  void _buildMapCharacterCalc() {
+  void _mapCharacterCalc() {
     var chars = mapCharacterCleaned();
     mapCharacterCalc.clear();
     for (int i = 0; i < chars.length; i++) {
       mapCharacterCalc.addAll({i+1: chars[i]});
     }
-    
-    var allDigits = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    var fillCharacter = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
     if (mapCharacterCalc.length < 9) {
       for (var digit in mapCharacterCalc.keys) {
-        allDigits.remove(digit);
+        fillCharacter.remove(digit);
       }
 
       while (mapCharacterCalc.length < 9) {
-        mapCharacterCalc.addAll({mapCharacterCalc.length: allDigits.first.toString()}) ;
-        allDigits.remove(allDigits.first);
+        mapCharacterCalc.addAll({mapCharacterCalc.length: fillCharacter.first}) ;
+        fillCharacter.remove(fillCharacter.first);
       }
     }
-
-    // if (mapCharacterCalc.v.contains('0')) {
-    //   mapCharacterCalc = mapCharacterCalc.replaceAll('0', allDigits.first);
-    // }
   }
 
   void removeCalculated() {
@@ -157,8 +153,7 @@ class WordokuBoard {
     if (solutions == null || solutionIndex < 0 || solutionIndex >= solutions!.length) return;
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
-        if (getFillType(i, j) == WordokuFillType.USER_FILLED) continue;
-        setValue(i, j, solutions![solutionIndex].getValue(i, j), WordokuFillType.CALCULATED);
+        setValue(i, j, solutions![solutionIndex].getValue(i, j), getFillType(i, j));
       }
     }
   }
