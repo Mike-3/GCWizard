@@ -16,15 +16,15 @@ class WordokuBoardValue {
 class WordokuBoard {
   late List<List<WordokuBoardValue?>> board;
   List<_WordokuSolution>? solutions;
-  var mapCharacter = 'ABCDEFGHI';
-  var mapCharacterCalc = <int, String>{};
+  var mapLetters = 'ABCDEFGHI';
+  var mapLettersCalc = <int, String>{};
 
-  WordokuBoard({List<List<String?>>? board, String? mapCharacter}) {
+  WordokuBoard({List<List<String?>>? board, String? mapLetters}) {
     this.board =
         List<List<WordokuBoardValue?>>.generate(9, (index) => List<WordokuBoardValue?>.generate(9, (index) => null));
 
-    if (mapCharacter != null && mapCharacter.isNotEmpty) {
-      this.mapCharacter = mapCharacter;
+    if (mapLetters != null && mapLetters.isNotEmpty) {
+      this.mapLetters = mapLetters;
     }
 
     if (board != null) {
@@ -67,8 +67,8 @@ class WordokuBoard {
   }
 
   List<List<int>> _solveableBoard() {
-    _mapCharacterCalc();
-    var map = switchMapKeyValue(mapCharacterCalc);
+    _mapLettersCalc();
+    var map = switchMapKeyValue(mapLettersCalc);
 
     int getNumber(String? char){
       if (char == null || !map.containsKey(char.toUpperCase())) return 0;
@@ -88,7 +88,7 @@ class WordokuBoard {
 
   List<List<String?>> _solvedBoard(List<List<int>> solution) {
     String? getChar(int value){
-      return mapCharacterCalc[value];
+      return mapLettersCalc[value];
     }
 
     return board.mapIndexed((columnIndex, column) {
@@ -102,9 +102,9 @@ class WordokuBoard {
     }).toList();
   }
 
-  String mapCharacterCleaned() {
+  String mapLetterCleaned() {
     final cleanedSet = <String>{};
-    for (final c in mapCharacter
+    for (final c in mapLetters
         .trim()
         .replaceAll(RegExp(r'\s+'), '')
         .toUpperCase()
@@ -133,19 +133,19 @@ class WordokuBoard {
     return resultSet.take(9).join();
   }
 
-  void _mapCharacterCalc() {
-    var chars = mapCharacterCleaned();
-    mapCharacterCalc.clear();
+  void _mapLettersCalc() {
+    var chars = mapLetterCleaned();
+    mapLettersCalc.clear();
     for (int i = 0; i < chars.length; i++) {
-      mapCharacterCalc.addAll({i+1: chars[i]});
+      mapLettersCalc.addAll({i+1: chars[i]});
     }
 
     var fillCharacter = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    if (mapCharacterCalc.length < 9) {
+    if (mapLettersCalc.length < 9) {
       fillCharacter.removeWhere((char) => chars.contains(char));
 
-      while (mapCharacterCalc.length < 9 || fillCharacter.isEmpty) {
-        mapCharacterCalc.addAll({mapCharacterCalc.length + 1: fillCharacter.first}) ;
+      while (mapLettersCalc.length < 9 || fillCharacter.isEmpty) {
+        mapLettersCalc.addAll({mapLettersCalc.length + 1: fillCharacter.first}) ;
         fillCharacter.remove(fillCharacter.first);
       }
     }

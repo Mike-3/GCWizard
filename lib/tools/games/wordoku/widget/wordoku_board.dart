@@ -52,7 +52,7 @@ class WordokuBoardPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     var _touchCanvas = TouchyCanvas(context, canvas);
     ThemeColors colors = themeColors();
-    var _mapCharacterCleaned = board.mapCharacterCleaned();
+    var _mapCharacterCleaned = board.mapLetterCleaned();
 
     var paint = Paint();
 
@@ -128,7 +128,7 @@ class WordokuBoardPainter extends CustomPainter {
 
   void _showInputDialog(int x, int y) {
     var columns = <Widget>[];
-    var values = board.mapCharacterCleaned();
+    var values = board.mapLetterCleaned();
 
     for (int i = 0; i < 3; i++) {
       var rows = <Widget>[];

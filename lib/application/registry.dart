@@ -2283,6 +2283,7 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'games',
       'games_wordokusolver',
+      'games_sudokusolver'
     ], licenses: []),
     GCWTool(
         tool: const WordSearch(),

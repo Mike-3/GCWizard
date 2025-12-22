@@ -34,7 +34,7 @@ class _WordokuSolverState extends State<WordokuSolver> {
     super.initState();
 
     _currentBoard = WordokuBoard();
-    _charController = TextEditingController(text: _currentBoard.mapCharacter);
+    _charController = TextEditingController(text: _currentBoard.mapLetters);
   }
 
   @override
@@ -50,11 +50,11 @@ class _WordokuSolverState extends State<WordokuSolver> {
       children: <Widget>[
         GCWTextField(
           maxLength: 9,
-          title: 'Character',
+          title: i18n(context, 'common_letters'),
           controller: _charController,
           onChanged: (value) {
             setState(() {
-              _currentBoard.mapCharacter = value;
+              _currentBoard.mapLetters = value;
             });
           }
         ),
@@ -131,7 +131,7 @@ class _WordokuSolverState extends State<WordokuSolver> {
                     () {
                       setState(() {
                         _currentBoard = WordokuBoard();
-                        _charController.text = _currentBoard.mapCharacter;
+                        _charController.text = _currentBoard.mapLetters;
                       });
                     },
                   );
