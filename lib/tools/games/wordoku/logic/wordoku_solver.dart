@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:gc_wizard/tools/games/sudoku/logic/external_libs/dartist.sudoku_solver/sudoku.dart';
 import 'package:gc_wizard/utils/collection_utils.dart';
-import 'package:gc_wizard/utils/string_utils.dart';
 
 enum WordokuFillType { USER_FILLED, CALCULATED }
 
@@ -143,12 +142,10 @@ class WordokuBoard {
 
     var fillCharacter = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
     if (mapCharacterCalc.length < 9) {
-      for (var digit in mapCharacterCalc.values) {
-        fillCharacter.remove(digit);
-      }
+      fillCharacter.removeWhere((char) => chars.contains(char));
 
-      while (mapCharacterCalc.length < 9) {
-        mapCharacterCalc.addAll({mapCharacterCalc.length: fillCharacter.first}) ;
+      while (mapCharacterCalc.length < 9 || fillCharacter.isEmpty) {
+        mapCharacterCalc.addAll({mapCharacterCalc.length + 1: fillCharacter.first}) ;
         fillCharacter.remove(fillCharacter.first);
       }
     }
