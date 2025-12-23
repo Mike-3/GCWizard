@@ -6,6 +6,7 @@ import 'package:gc_wizard/common_widgets/gcw_text.dart';
 import 'package:intl/intl.dart';
 
 final CHANGELOG = {
+  '3.6.0': DateTime(2026, 1, 2), //Android Studio 2025.2.2, Android SDK 36.1.0, Flutter 3.38.5
   '3.5.0': DateTime(2025, 8, 25), //Android Studio 2025.1.2, Android SDK 35.0.0-rc4, Flutter 3.32.8
   '3.4.1': DateTime(2025, 7, 12), //Android Studio 2025.1.1, Android SDK 35.0.0-rc4, Flutter 3.32.5
   '3.4.0': DateTime(2025, 5, 6), //Android Studio 2024.3.1 Patch 2, Android SDK 35.0.0-rc4, Flutter 3.27.4
