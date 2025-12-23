@@ -460,12 +460,16 @@ class _MainViewState extends State<MainView> {
               title: _buildTitleAndSearchTextField(),
               actions: <Widget>[_buildSearchActionButton()]),
           drawer: buildMainMenu(context),
-          body: TabBarView(
-            children: [
-              GCWToolList(toolList: toolList ?? _categoryList),
-              GCWToolList(toolList: toolList ?? _mainToolList),
-              GCWToolList(toolList: toolList ?? Favorites.favoritedGCWTools()),
-            ],
+          body: SafeArea(
+            bottom: true,
+            top: false,
+            child: TabBarView(
+              children: [
+                GCWToolList(toolList: toolList ?? _categoryList),
+                GCWToolList(toolList: toolList ?? _mainToolList),
+                GCWToolList(toolList: toolList ?? Favorites.favoritedGCWTools()),
+              ],
+            ),
           ),
         ),
       );
@@ -478,7 +482,12 @@ class _MainViewState extends State<MainView> {
               actions: <Widget>[_buildSearchActionButton()]
           ),
           drawer: buildMainMenu(context),
-          body: GCWToolList(toolList: toolList!));
+          body: SafeArea(
+              bottom: true,
+              top: false,
+              child: GCWToolList(toolList: toolList!)
+          )
+        );
     }
   }
 
