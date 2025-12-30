@@ -15,12 +15,12 @@ class GCWOutputText extends StatefulWidget {
 
   const GCWOutputText(
       {super.key,
-        this.text,
-        this.align = Alignment.centerLeft,
-        this.isMonotype = false,
-        this.style,
-        this.suppressCopyButton = false,
-        this.copyText});
+      this.text,
+      this.align = Alignment.centerLeft,
+      this.isMonotype = false,
+      this.style,
+      this.suppressCopyButton = false,
+      this.copyText});
 
   @override
   _GCWOutputTextState createState() => _GCWOutputTextState();
@@ -43,14 +43,14 @@ class _GCWOutputTextState extends State<GCWOutputText> {
         ),
         widget.text != null && widget.text!.isNotEmpty && !widget.suppressCopyButton
             ? GCWIconButton(
-          iconColor: widget.style != null ? widget.style!.color : themeColors().mainFont(),
-          size: IconButtonSize.SMALL,
-          icon: Icons.content_copy,
-          onPressed: () {
-            var copyText = widget.copyText != null ? widget.copyText.toString() : widget.text ?? '';
-            insertIntoGCWClipboard(context, copyText);
-          },
-        )
+                iconColor: widget.style != null ? widget.style!.color : themeColors().mainFont(),
+                size: IconButtonSize.SMALL,
+                icon: Icons.content_copy,
+                onPressed: () {
+                  var copyText = widget.copyText != null ? widget.copyText.toString() : widget.text ?? '';
+                  insertIntoGCWClipboard(context, copyText);
+                },
+              )
             : Container()
       ],
     );

@@ -1,5 +1,6 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gc_wizard/application/i18n/logic/app_localizations.dart';
 import 'package:gc_wizard/application/navigation/no_animation_material_page_route.dart';
 import 'package:gc_wizard/application/settings/logic/preferences.dart';
@@ -11,6 +12,7 @@ import 'package:gc_wizard/common_widgets/dividers/gcw_text_divider.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/logic/symbol_table_data.dart';
 import 'package:gc_wizard/tools/symbol_tables/_common/widget/gcw_symbol_table_symbol_matrix.dart';
 import 'package:gc_wizard/tools/symbol_tables/symbol_tables_examples_select/widget/symbol_tables_examples.dart';
+import 'package:gc_wizard/utils/json_utils.dart';
 import 'package:prefs/prefs.dart';
 
 const _LOGO_NAME = 'logo.png';
@@ -47,10 +49,12 @@ class _SymbolTableExamplesSelectState extends State<SymbolTableExamplesSelect> {
 
   Future<void> _initializeImages() async {
     //AssetManifest.json holds the information about all asset files
-    final manifestContent = await AssetManifest.loadFromAssetBundle(rootBundle);
-    final assets = manifestContent.listAssets();
+    final manifestContent = await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+    final manifestMap = asJsonMapOrNull(json.decode(manifestContent));
 
-    final imagePaths = assets.where((String key) => key.contains(_pathKey()) && key.contains(_LOGO_NAME)).toList();
+    final imagePaths = manifestMap == null
+        ? <String>[]
+        : manifestMap.keys.where((String key) => key.contains(_pathKey()) && key.contains(_LOGO_NAME)).toList();
 
     if (imagePaths.isEmpty) return;
 
