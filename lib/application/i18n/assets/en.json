@@ -599,7 +599,7 @@
   "ccitt_5_title": "CCITT IA-5",
   "ccitt_5_description": "International Alphabet No 5, 7 Bit Code",
   "ccitt_5_example": "CACHE → 1000011 1000001 1000011 1001000 1000101",
-  "changelog_3.6.0": "[new] Coord Format: Hebi63\n[new] Gade derivates (Edag, Lowe, EWOL)\n[new] NVA Codes (Juno, Jupiter, Zebra)\n[new] Wordoku\n[new] Game of life generator\n[new] Animated Gif generator\n[chg] Verbal Arithemtic output\n[fix] Many bug fixes",
+  "changelog_3.6.0": "[new] Coord Format: Hebi63\n[new] Gade derivates (Edag, Lowe, EWOL)\n[new] NVA Codes (Juno, Jupiter, Zebra)\n[new] RegEx\n[new] Wordoku\n[new] Game of life generator\n[new] Animated Gif generator\n[chg] Verbal Arithemtic output\n[fix] Many bug fixes",
   "changelog_3.5.0": "[new] Echo\n[new] Subnetmask\n[new] Bingo\n[new] Cryptoanalysis/ Text Analysis\n[new] Many Symbol Tables\n[chg] Beghilos\n[fix] Many bug fixes",
   "changelog_3.4.1": "[fix] Fixed map issue",
   "changelog_3.4.0": "[new] Ballistics\n[new] Larrabee\n[new] Fakoo Segment Display\n[new] Many Symbol Tables\n[chg] Tupper\n[chg] Vanity Words\n[fix] Many bug fixes",
