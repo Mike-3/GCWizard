@@ -189,6 +189,9 @@ class _EnigmaState extends State<Enigma> {
 
     if (_currentEntryRotorMode) _allRotors.add(_currentEntryRotor);
 
+    final rotorNames = <String>{};
+    _allRotors = _allRotors.where((rotorConfiguration) => rotorNames.add(rotorConfiguration.rotor.name)).toList();
+
     if (_allRotors.isEmpty) return Container();
 
     if (_currentRotorInformation >= _allRotors.length) {
@@ -202,7 +205,7 @@ class _EnigmaState extends State<Enigma> {
         GCWTextDivider(text: i18n(context, 'enigma_rotorinfo')),
         GCWDropDownSpinner(
           index: _currentRotorInformation,
-          items: _allRotors.map((EnigmaRotorConfiguration e) => e.rotor.name).toList(),
+          items: rotorNames.toList(),
           onChanged: (value) {
             setState(() {
               _currentRotorInformation = value;

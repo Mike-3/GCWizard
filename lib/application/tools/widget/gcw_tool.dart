@@ -185,12 +185,16 @@ class _GCWToolState extends State<GCWTool> {
             menuItemBuilder: (context) => _buildToolBarItems(),
           ) : Container()
         ]),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).requestFocus(_focusNode),
-        child: Focus(
-          focusNode: _focusNode,
-          child: _buildBody(),
-        ),
+      body: SafeArea(
+        bottom: true,
+        top: false,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(_focusNode),
+          child: Focus(
+            focusNode: _focusNode,
+            child: _buildBody(),
+          ),
+        )
       ),
     );
   }

@@ -76,6 +76,7 @@ import 'package:gc_wizard/application/category_views/selector_lists/number_seque
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_sphenicnumber_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_sublimenumbers_selection.dart';
+import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_suitablenumbers_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_superperfectnumbers_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_taxicab_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_weirdnumbers_selection.dart';
@@ -225,11 +226,11 @@ import 'package:gc_wizard/tools/crypto_and_encodings/hashes/hashes_overview/widg
 import 'package:gc_wizard/tools/crypto_and_encodings/hill/widget/hill.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/homophone/widget/homophone.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/houdini/widget/houdini.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/language_games/judoon/widget/judoon.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/kamasutra/widget/kamasutra.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/kenny/widget/kenny.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/chicken_language/widget/chicken_language.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/duck_speak/widget/duck_speak.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/language_games/judoon/widget/judoon.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/pig_latin/widget/pig_latin.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/robber_language/widget/robber_language.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/spoon_language/widget/spoon_language.dart';
@@ -246,6 +247,12 @@ import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_identify_languages/widget/numeral_words_identify_languages.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_lists/widget/numeral_words_lists.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/numeral_words/numeral_words_text_search/widget/numeral_words_text_search.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/535/widget/535.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/hva/widget/hva.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/juno/widget/juno.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/jupiter/widget/jupiter.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/tapir/widget/tapir.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/zebra/widget/zebra.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/one_time_pad/widget/one_time_pad.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/playfair/widget/playfair.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/pokemon/widget/pokemon.dart';
@@ -281,7 +288,6 @@ import 'package:gc_wizard/tools/crypto_and_encodings/solitaire/widget/solitaire.
 import 'package:gc_wizard/tools/crypto_and_encodings/straddling_checkerboard/widget/straddling_checkerboard.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substitution.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/toki_pona/widget/toki_pona.dart';
@@ -306,6 +312,8 @@ import 'package:gc_wizard/tools/games/sudoku/widget/sudoku_solver.dart';
 import 'package:gc_wizard/tools/games/tower_of_hanoi/widget/tower_of_hanoi.dart';
 import 'package:gc_wizard/tools/games/verbal_arithmetic/widget/verbal_arithmetic.dart';
 import 'package:gc_wizard/tools/games/word_search/widget/word_search.dart';
+import 'package:gc_wizard/tools/games/wordoku/widget/wordoku_solver.dart';
+import 'package:gc_wizard/tools/general_tools/gcwizardscript/widget/gcwizard_script.dart';
 import 'package:gc_wizard/tools/general_tools/grid_generator/grid/widget/grid.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_cards.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_coin.dart';
@@ -334,7 +342,6 @@ import 'package:gc_wizard/tools/images_and_files/qr_code/widget/qr_code.dart';
 import 'package:gc_wizard/tools/images_and_files/stegano/widget/stegano.dart';
 import 'package:gc_wizard/tools/images_and_files/tupper_formula/widget/tupper_formula.dart';
 import 'package:gc_wizard/tools/images_and_files/visual_cryptography/widget/visual_cryptography.dart';
-import 'package:gc_wizard/tools/general_tools/gcwizardscript/widget/gcwizard_script.dart';
 import 'package:gc_wizard/tools/science_and_technology/alcohol_mass/widget/alcohol_mass.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/hebrew/widget/hebrew_number_system.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/milesian/widget/milesian_number_system.dart';
@@ -391,8 +398,8 @@ import 'package:gc_wizard/tools/science_and_technology/date_and_time/calendar_we
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/day_calculator/widget/day_calculator.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/day_of_the_year/widget/day_of_the_year.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/excel_time/widget/excel_time.dart';
-import 'package:gc_wizard/tools/science_and_technology/date_and_time/time_calculator/widget/time_calculator.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/unix_time/widget/unix_time.dart';
+import 'package:gc_wizard/tools/science_and_technology/date_and_time/time_calculator/widget/time_calculator.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/weekday/widget/weekday.dart';
 import 'package:gc_wizard/tools/science_and_technology/decabit/widget/decabit.dart';
 import 'package:gc_wizard/tools/science_and_technology/divisor/widget/divisor.dart';
@@ -455,6 +462,7 @@ import 'package:gc_wizard/tools/science_and_technology/number_sequences/primes/w
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/recaman/widget/recaman.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/sphenic_numbers/widget/spenic_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/sublime_numbers/widget/sublime_numbers.dart';
+import 'package:gc_wizard/tools/science_and_technology/number_sequences/suitable_numbers/widget/suitable_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/superperfect_numbers/widget/superperfect_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/taxicab/widget/taxicab_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/weird_numbers/widget/weird_numbers.dart';
@@ -476,6 +484,7 @@ import 'package:gc_wizard/tools/science_and_technology/primes/primes_primeindex/
 import 'package:gc_wizard/tools/science_and_technology/projectiles/widget/projectiles.dart';
 import 'package:gc_wizard/tools/science_and_technology/quadratic_equation/widget/quadratic_equation.dart';
 import 'package:gc_wizard/tools/science_and_technology/recycling/widget/recycling.dart';
+import 'package:gc_wizard/tools/science_and_technology/regex/widget/regex.dart';
 import 'package:gc_wizard/tools/science_and_technology/resistor/resistor_colorcodecalculator/widget/resistor_colorcodecalculator.dart';
 import 'package:gc_wizard/tools/science_and_technology/resistor/resistor_eia96/widget/resistor_eia96.dart';
 import 'package:gc_wizard/tools/science_and_technology/segment_display/14_segment_display/widget/fourteen_segments.dart';
@@ -668,12 +677,6 @@ void initializeRegistry(BuildContext context) {
         id: 'babylonnumbers_selection',
         categories: const [ToolCategory.CRYPTOGRAPHY],
         searchKeys: const []),
-    GCWTool(tool: const Bacon(), id: 'bacon', categories: const [
-      ToolCategory.CRYPTOGRAPHY
-    ], searchKeys: const [
-      'bacon',
-      'binary',
-    ]),
     GCWTool(
         tool: const BaconSelection(),
         id: 'bacon_selection',
@@ -1059,13 +1062,21 @@ void initializeRegistry(BuildContext context) {
     ], licenses: [
       ToolLicenseOnlineArticle(
           context: context,
-          author: 'de.wikipedia.org and contributors',
-          title: 'Conways_Spiel_des_Lebens',
-          licenseType: ToolLicenseType.CCBYSA4,
+          author: 'Thomas L. Robinson',
+          title: 'Game of Life pattern generator and tools',
+          licenseType: ToolLicenseType.MIT,
           licenseUrl:
-              'https://web.archive.org/web/20240718115628/https://creativecommons.org/licenses/by-sa/4.0/deed.de',
+              'https://github.com/tlrobinson/life-gen/commit/005f5cca4a10ab5884983755ddafab2617a90188',
           sourceUrl:
-              'https://de.wikipedia.org/w/index.php?title=Conways_Spiel_des_Lebens&oldid=246560171'),
+              'https://github.com/tlrobinson/life-gen/'),
+      ToolLicenseCodeLibrary(
+          context: context,
+          author: 'NovaCrypto',
+          title: 'Base58',
+          sourceUrl:
+          'https://web.archive.org/web/20240722085432/https://github.com/NovaCrypto/Base58',
+          licenseType: ToolLicenseType.GPL3),
+
     ]),
     GCWTool(tool: const GCCode(), id: 'gccode', categories: const [
       ToolCategory.CRYPTOGRAPHY
@@ -1114,6 +1125,22 @@ void initializeRegistry(BuildContext context) {
       'binary',
       'gray',
     ]),
+    GCWTool(
+        tool: Grenztruppen535(),
+        id: '535',
+        categories: const [ToolCategory.CRYPTOGRAPHY],
+        searchKeys: const ['535', 'numbers'],
+        licenses: [
+          ToolLicenseOnlineArticle(
+              context: context,
+              author: 'Jörg Drobick',
+              title: 'Der SAS- und Chiffrierdienst (SCD) DDR Seit 1995 - Manuelle Chiffrierverfahren',
+              licenseType: ToolLicenseType.NON_COMMERCIAL,
+              licenseUrl:
+              'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
+              sourceUrl:
+              'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
+        ],),
     GCWTool(tool: const Grid(), id: 'grid', categories: const [
       ToolCategory.GAMES
     ], searchKeys: const [
@@ -1199,6 +1226,22 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'houdini',
     ]),
+    GCWTool(
+      tool: HVA(),
+      id: 'hva',
+      categories: const [ToolCategory.CRYPTOGRAPHY],
+      searchKeys: const ['hva', 'numbers'],
+      licenses: [
+        ToolLicenseOnlineArticle(
+            context: context,
+            author: 'Jörg Drobick',
+            title: 'Der SAS- und Chiffrierdienst (SCD) DDR Seit 1995 - Manuelle Chiffrierverfahren',
+            licenseType: ToolLicenseType.NON_COMMERCIAL,
+            licenseUrl:
+            'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
+            sourceUrl:
+            'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
+      ],),
     GCWTool(tool: const IATAICAOSearch(), id: 'iataicao', categories: const [
       ToolCategory.SCIENCE_AND_TECHNOLOGY
     ], searchKeys: const [
@@ -1267,6 +1310,38 @@ void initializeRegistry(BuildContext context) {
         id: 'ipcodes',
         categories: const [ToolCategory.SCIENCE_AND_TECHNOLOGY],
         searchKeys: const ['ipcodes']),
+    GCWTool(
+        tool: Juno(),
+        id: 'juno',
+        categories: const [ToolCategory.CRYPTOGRAPHY],
+        searchKeys: const ['juno', 'numbers'],
+        licenses: [
+          ToolLicenseOnlineArticle(
+            context: context,
+            author: 'Jörg Drobick',
+            title: 'Der SAS- und Chiffrierdienst (SCD) DDR Seit 1995 - Manuelle Chiffrierverfahren',
+            licenseType: ToolLicenseType.NON_COMMERCIAL,
+            licenseUrl:
+            'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
+            sourceUrl:
+            'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
+        ],),
+    GCWTool(
+        tool: Jupiter(),
+        id: 'jupiter',
+        categories: const [ToolCategory.CRYPTOGRAPHY],
+        searchKeys: const ['jupiter', 'numbers'],
+        licenses: [
+          ToolLicenseOnlineArticle(
+            context: context,
+            author: 'Jörg Drobick',
+            title: 'Der SAS- und Chiffrierdienst (SCD) DDR Seit 1995 - Manuelle Chiffrierverfahren',
+            licenseType: ToolLicenseType.NON_COMMERCIAL,
+            licenseUrl:
+            'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
+            sourceUrl:
+            'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
+        ],),
     GCWTool(tool: const Kamasutra(), id: 'kamasutra', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -1773,6 +1848,11 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'recycling',
     ]),
+    GCWTool(tool: const RegEx(), id: 'regex', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'regex',
+    ]),
     GCWTool(
         tool: const ResistorSelection(),
         id: 'resistor_selection',
@@ -1808,7 +1888,7 @@ void initializeRegistry(BuildContext context) {
         tool: const ScrabbleSelection(),
         id: 'scrabble_selection',
         categories: const [ToolCategory.GAMES],
-        searchKeys: const ['games']),
+        searchKeys: const ['games', 'games_scrabble']),
     GCWTool(
         tool: const MiscellaneousSelection(),
         id: 'miscellaneous_selection',
@@ -2198,16 +2278,23 @@ void initializeRegistry(BuildContext context) {
         id: 'weathersymbols',
         categories: const [ToolCategory.SCIENCE_AND_TECHNOLOGY],
         searchKeys: const ['weather', 'weather_clouds', 'weather_a']),
-    GCWTool(tool: const Z22(), id: 'z22', categories: const [
-      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    GCWTool(tool: const WordokuSolver(), id: 'wordokusolver', categories: const [
+      ToolCategory.GAMES
     ], searchKeys: const [
-      'z22',
-    ]),
+      'games',
+      'games_wordokusolver',
+      'games_sudokusolver'
+    ], licenses: []),
     GCWTool(
         tool: const WordSearch(),
         id: 'word_search',
         categories: const [ToolCategory.GAMES],
         searchKeys: const ['word_search', 'grid']),
+    GCWTool(tool: const Z22(), id: 'z22', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'z22',
+    ]),
     GCWTool(
         tool: ZamonianNumbers(),
         autoScroll: false,
@@ -2223,6 +2310,22 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'zc1',
     ]),
+    GCWTool(
+        tool: Zebra(),
+        id: 'zebra',
+        categories: const [ToolCategory.CRYPTOGRAPHY],
+        searchKeys: const ['zebra', 'numbers'],
+        licenses: [
+          ToolLicenseOnlineArticle(
+            context: context,
+            author: 'Jörg Drobick',
+            title: 'Der SAS- und Chiffrierdienst (SCD) DDR Seit 1995 - Manuelle Chiffrierverfahren',
+            licenseType: ToolLicenseType.NON_COMMERCIAL,
+            licenseUrl:
+            'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
+            sourceUrl:
+            'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
+        ],),
     GCWTool(
         tool: const ZodiacSelection(),
         id: 'zodiac_selection',
@@ -2462,32 +2565,21 @@ void initializeRegistry(BuildContext context) {
         ]),
 
     //Babylon Numbers Selection **************************************************************************************
-    GCWTool(
-        tool: const BabylonNumbers(),
-        id: 'babylonnumbers',
+    GCWTool(tool: const BabylonNumbers(), id: 'babylonnumbers',
         searchKeys: const [
           'babylonian_numerals',
         ],
         licenses: const []),
 
     //BaconSelection **************************************************************************************************
-    GCWTool(
-        tool: const Bacon(),
-        id: 'bacon',
-        categories: const [],
-        searchKeys: const [
-          'bacon',
-          'binary',
-        ]),
-    GCWTool(
-        tool: const BaconAnalyze(),
-        id: 'bacon_analyze',
-        categories: const [],
-        searchKeys: const [
-          'bacon',
-          'binary',
-        ]),
-
+    GCWTool(tool: const Bacon(), id: 'bacon', searchKeys: const [
+      'bacon',
+      'binary',
+    ]),
+    GCWTool(tool: const BaconAnalyze(), id: 'bacon_analyze', searchKeys: const [
+      'bacon',
+      'binary',
+    ]),
     //BaseSelection **************************************************************************************************
     GCWTool(tool: Base16(), id: 'base_base16', searchKeys: const [
       'base',
@@ -3179,6 +3271,12 @@ void initializeRegistry(BuildContext context) {
             licenseType: ToolLicenseType.MIT,
             licenseUrl:
                 'https://web.archive.org/web/20250630134152/https://github.com/PattuX/auto_reverse_wig_solver/blob/master/LICENSE.txt'),
+        ToolLicensePortedCode(
+            context: context,
+            author: 'MZCacheHunter',
+            title: 'The Reverse Cache (10Y) ',
+            sourceUrl: 'https://web.archive.org/web/20251105192200/https://www.wherigo.com/cartridge/details.aspx?CGUID=62e80ba9-8ce2-4c1b-90d3-64740526966b',
+            licenseType: ToolLicenseType.REPRODUCTION_NEEDED),
         ToolLicensePortedCode(
             context: context,
             author: 'Google Inc.',
@@ -5220,6 +5318,7 @@ void initializeRegistry(BuildContext context) {
           ToolLicenseOnlineArticle(
             context: context,
             author: 'The On-Line Encyclopedia of Integer Sequences (OEIS)',
+            publisher: 'OAIS',
             title: 'A007304',
             sourceUrl:
             'https://web.archive.org/web/20250114133913/https://oeis.org/A007304/b007304.txt',
@@ -5284,24 +5383,6 @@ void initializeRegistry(BuildContext context) {
           ),
         ]),
     GCWTool(
-        tool: const NumberSequenceSphenicNumbersSelection(),
-        id: 'numbersequence_sphenicnumbers',
-        searchKeys: const [
-          'numbers',
-          'numbersequence',
-          'numbersequence_sphenicnumbersselection',
-        ],
-        licenses: [
-          ToolLicenseOnlineArticle(
-            context: context,
-            author: 'Unknown',
-            publisher: 'OAIS',
-            title: 'A007304',
-            sourceUrl:
-            'https://web.archive.org/web/20250114133913/https://oeis.org/A007304/b007304.txt',
-          ),
-        ]),
-    GCWTool(
         tool: const NumberSequenceLonelyNumbersSelection(),
         id: 'numbersequence_lonelynumbers',
         searchKeys: const [
@@ -5331,12 +5412,76 @@ void initializeRegistry(BuildContext context) {
           ToolLicenseOnlineArticle(
             context: context,
             author: 'Unknown',
-            publisher: 'OAIS',
+            publisher: 'The On-Line Encyclopedia of Integer Sequences (OEIS)',
             title: 'A002385',
             sourceUrl:
             'https://web.archive.org/web/20241229231226/https://oeis.org/A002385/b002385.txt',
           ),
         ]),
+    GCWTool(
+        tool: const NumberSequenceSuitableNumbersSelection(),
+        id: 'numbersequence_suitablenumbers',
+        searchKeys: const [
+          'numbers',
+          'numbersequence',
+          'numbersequence_suitablenumbersselection',
+        ],
+        licenses: [
+          ToolLicenseOnlineArticle(
+            context: context,
+            author: 'Unknown',
+            publisher: 'OEIS',
+            title: 'A000926',
+            sourceUrl:
+            'https://web.archive.org/web/20241229231226/https://oeis.org/A002385/b002385.txt',
+          ),
+          ToolLicenseOnlineArticle(
+            context: context,
+            author: 'en.wikipedia.org and contributors',
+            title: 'Idoneal number',
+            licenseType: ToolLicenseType.CCBYSA4,
+            licenseUrl:
+            'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+            sourceUrl:
+            'https://en.wikipedia.org/w/index.php?title=Idoneal_number&oldid=1283811656',
+          ),
+          ToolLicenseOnlineArticle(
+            context: context,
+            author: 'Florian Freistetter',
+            publisher: 'Spektrum.de',
+            title: 'Das Geheimnis um geeignete Zahlen',
+            sourceUrl:
+            'https://web.archive.org/web/20251105212042/https://www.spektrum.de/kolumne/das-geheimnis-um-geeignete-zahlen/2283662',
+          ),
+        ]),
+
+    //NumberSequenceSelection SuitableNumbers ****************************************************************************************
+    GCWTool(
+        tool: const NumberSequenceSuitableNumbersNthNumber(),
+        id: 'numbersequence_nth',
+        id_prefix: 'suitablenumbers_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const NumberSequenceSuitableNumbersRange(),
+        id: 'numbersequence_range',
+        id_prefix: 'suitablenumbers_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const NumberSequenceSuitableNumbersCheckNumber(),
+        id: 'numbersequence_check',
+        id_prefix: 'suitablenumbers_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const NumberSequenceSuitableNumbersDigits(),
+        id: 'numbersequence_digits',
+        id_prefix: 'suitablenumbers_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const NumberSequenceSuitableNumbersContainsDigits(),
+        id: 'numbersequence_containsdigits',
+        id_prefix: 'suitablenumbers_',
+        searchKeys: const []),
+
 
     //NumberSequenceSelection LonelyNumbers ****************************************************************************************
     GCWTool(
@@ -6564,9 +6709,7 @@ void initializeRegistry(BuildContext context) {
 
     //Scrabble Selection *****************************************************************************************
 
-    GCWTool(tool: const Scrabble(), id: 'scrabble', searchKeys: const [
-      'games_scrabble',
-    ], licenses: [
+    GCWTool(tool: const Scrabble(), id: 'scrabble', licenses: [
       ToolLicenseOnlineArticle(
         context: context,
         author: 'en.wikipedia.org and contributors',
@@ -6590,9 +6733,6 @@ void initializeRegistry(BuildContext context) {
     GCWTool(
         tool: const ScrabbleOverview(),
         id: 'scrabbleoverview',
-        searchKeys: const [
-          'games_scrabble',
-        ],
         licenses: [
           ToolLicenseOnlineArticle(
             context: context,
@@ -8499,10 +8639,15 @@ void initializeRegistry(BuildContext context) {
         ]),
     GCWSymbolTableTool(symbolKey: 'hieroglyphs', symbolSearchStrings: const [
       'symbol_hieroglyphs',
-    ], licenses: const []),
-    GCWSymbolTableTool(symbolKey: 'hieroglyphs_v2', symbolSearchStrings: const [
-      'symbol_hieroglyphs',
-    ], licenses: const []),
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'de.wikipedia.org and contributors',
+          title: 'Ägyptische Hieroglyphen',
+          sourceUrl:
+          'https://de.wikipedia.org/w/index.php?title=%C3%84gyptische_Hieroglyphen&oldid=256091998',
+          licenseType: ToolLicenseType.CCBYSA4)
+    ]),
     GCWSymbolTableTool(symbolKey: 'hobbit_runes', symbolSearchStrings: const [
       'symbol_lordoftherings',
       'symbol_runes',
@@ -10924,17 +11069,6 @@ void initializeRegistry(BuildContext context) {
           sourceUrl: 'https://web.archive.org/web/20241004220413/https://geocachen.be/geocaching/geocache-puzzels-oplossen/molentaal/',
           licenseType: ToolLicenseType.FREE_TO_USE,
           customComment: 'Pending'), // todo ask for License
-    ]),
-    GCWSymbolTableTool(symbolKey: 'wingdings', symbolSearchStrings: const [
-      'symbol_wingdings',
-    ], licenses: [
-      ToolLicenseOnlineArticle(
-          context: context,
-          author: 'commons.wikimedia.org and contributors',
-          title: 'Wingdings',
-          sourceUrl:
-              'https://commons.wikimedia.org/wiki/File:Wingdings.png',
-          licenseType: ToolLicenseType.PUBLIC_DOMAIN)
     ]),
     GCWSymbolTableTool(
         symbolKey: 'windforce_knots',
