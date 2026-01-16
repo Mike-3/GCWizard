@@ -59,10 +59,10 @@ import 'package:gc_wizard/tools/science_and_technology/number_sequences/primaryp
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/primes/logic/list_primes.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/sphenic_numbers/logic/list_sphenic_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/sublime_numbers/logic/list_sublime_numbers.dart';
+import 'package:gc_wizard/tools/science_and_technology/number_sequences/suitable_numbers/logic/list_suitable_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/superperfect_numbers/logic/list_super_perfect_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/taxicab/logic/list_taxicab_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/weird_numbers/logic/list_weird_numbers.dart';
-import 'package:gc_wizard/tools/science_and_technology/number_sequences/suitable_numbers/logic/list_suitable_numbers.dart';
 
 part 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/logic/number_sequence_checknumber.dart';
 part 'package:gc_wizard/tools/science_and_technology/number_sequences/_common/logic/number_sequence_containsdigits.dart';

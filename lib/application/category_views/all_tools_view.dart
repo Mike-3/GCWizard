@@ -148,6 +148,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/535
 import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/hva/widget/hva.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/juno/widget/juno.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/jupiter/widget/jupiter.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/zebra/widget/zebra.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/one_time_pad/widget/one_time_pad.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/playfair/widget/playfair.dart';
@@ -175,7 +176,6 @@ import 'package:gc_wizard/tools/crypto_and_encodings/solitaire/widget/solitaire.
 import 'package:gc_wizard/tools/crypto_and_encodings/straddling_checkerboard/widget/straddling_checkerboard.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substitution.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trifid/widget/trifid.dart';
@@ -275,6 +275,8 @@ import 'package:gc_wizard/tools/science_and_technology/ip_codes/widget/ip_codes.
 import 'package:gc_wizard/tools/science_and_technology/kaprekar/widget/kaprekar.dart';
 import 'package:gc_wizard/tools/science_and_technology/lcm/widget/lcm.dart';
 import 'package:gc_wizard/tools/science_and_technology/mathematical_constants/widget/mathematical_constants.dart';
+import 'package:gc_wizard/tools/science_and_technology/midi/midi_coding/widget/midi_coding.dart';
+import 'package:gc_wizard/tools/science_and_technology/midi/midi_overview/widget/midi_overview.dart';
 import 'package:gc_wizard/tools/science_and_technology/music_notes/music_notes/widget/music_notes.dart';
 import 'package:gc_wizard/tools/science_and_technology/numeral_bases/widget/numeral_bases.dart';
 import 'package:gc_wizard/tools/science_and_technology/paperformat/widget/paperformat.dart';
@@ -731,6 +733,8 @@ void _initStaticToolList() {
       className(const MayaCalendarSelection()),
       className(const MayaNumbersSelection()),
       className(const MexicanArmyCipherWheel()),
+      className(const MIDI()),
+      className(const MIDICoding()),
       className(const MilesianNumberSystem()),
       className(const MoonPosition()),
       className(const MoonRiseSet()),

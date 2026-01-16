@@ -226,11 +226,11 @@ import 'package:gc_wizard/tools/crypto_and_encodings/hashes/hashes_overview/widg
 import 'package:gc_wizard/tools/crypto_and_encodings/hill/widget/hill.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/homophone/widget/homophone.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/houdini/widget/houdini.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/language_games/judoon/widget/judoon.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/kamasutra/widget/kamasutra.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/kenny/widget/kenny.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/chicken_language/widget/chicken_language.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/duck_speak/widget/duck_speak.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/language_games/judoon/widget/judoon.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/pig_latin/widget/pig_latin.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/robber_language/widget/robber_language.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/language_games/spoon_language/widget/spoon_language.dart';
@@ -251,6 +251,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/535
 import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/hva/widget/hva.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/juno/widget/juno.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/jupiter/widget/jupiter.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/zebra/widget/zebra.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/one_time_pad/widget/one_time_pad.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/playfair/widget/playfair.dart';
@@ -287,7 +288,6 @@ import 'package:gc_wizard/tools/crypto_and_encodings/solitaire/widget/solitaire.
 import 'package:gc_wizard/tools/crypto_and_encodings/straddling_checkerboard/widget/straddling_checkerboard.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substitution.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/toki_pona/widget/toki_pona.dart';
@@ -313,6 +313,7 @@ import 'package:gc_wizard/tools/games/tower_of_hanoi/widget/tower_of_hanoi.dart'
 import 'package:gc_wizard/tools/games/verbal_arithmetic/widget/verbal_arithmetic.dart';
 import 'package:gc_wizard/tools/games/word_search/widget/word_search.dart';
 import 'package:gc_wizard/tools/games/wordoku/widget/wordoku_solver.dart';
+import 'package:gc_wizard/tools/general_tools/gcwizardscript/widget/gcwizard_script.dart';
 import 'package:gc_wizard/tools/general_tools/grid_generator/grid/widget/grid.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_cards.dart';
 import 'package:gc_wizard/tools/general_tools/randomizer/widget/randomizer_coin.dart';
@@ -341,7 +342,6 @@ import 'package:gc_wizard/tools/images_and_files/qr_code/widget/qr_code.dart';
 import 'package:gc_wizard/tools/images_and_files/stegano/widget/stegano.dart';
 import 'package:gc_wizard/tools/images_and_files/tupper_formula/widget/tupper_formula.dart';
 import 'package:gc_wizard/tools/images_and_files/visual_cryptography/widget/visual_cryptography.dart';
-import 'package:gc_wizard/tools/general_tools/gcwizardscript/widget/gcwizard_script.dart';
 import 'package:gc_wizard/tools/science_and_technology/alcohol_mass/widget/alcohol_mass.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/hebrew/widget/hebrew_number_system.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/milesian/widget/milesian_number_system.dart';
@@ -398,8 +398,8 @@ import 'package:gc_wizard/tools/science_and_technology/date_and_time/calendar_we
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/day_calculator/widget/day_calculator.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/day_of_the_year/widget/day_of_the_year.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/excel_time/widget/excel_time.dart';
-import 'package:gc_wizard/tools/science_and_technology/date_and_time/time_calculator/widget/time_calculator.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/epoch_time/unix_time/widget/unix_time.dart';
+import 'package:gc_wizard/tools/science_and_technology/date_and_time/time_calculator/widget/time_calculator.dart';
 import 'package:gc_wizard/tools/science_and_technology/date_and_time/weekday/widget/weekday.dart';
 import 'package:gc_wizard/tools/science_and_technology/decabit/widget/decabit.dart';
 import 'package:gc_wizard/tools/science_and_technology/divisor/widget/divisor.dart';
@@ -429,6 +429,8 @@ import 'package:gc_wizard/tools/science_and_technology/keyboard/keyboard_numbers
 import 'package:gc_wizard/tools/science_and_technology/lcm/widget/lcm.dart';
 import 'package:gc_wizard/tools/science_and_technology/mathematical_constants/widget/mathematical_constants.dart';
 import 'package:gc_wizard/tools/science_and_technology/maya_calendar/widget/maya_calendar.dart';
+import 'package:gc_wizard/tools/science_and_technology/midi/midi_coding/widget/midi_coding.dart';
+import 'package:gc_wizard/tools/science_and_technology/midi/midi_overview/widget/midi_overview.dart';
 import 'package:gc_wizard/tools/science_and_technology/music_notes/music_notes/widget/music_notes.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/Harshad/widget/Harshad_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/bell/widget/bell.dart';
@@ -1491,6 +1493,50 @@ void initializeRegistry(BuildContext context) {
           'cipherwheel',
           'mexicanarmycipherwheel',
         ]),
+    GCWTool(tool: const MIDI(), id: 'midi', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'music',
+      'music_notes',
+      'piano',
+      'midi',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+        context: context,
+        author: 'InspiredAcoustics',
+        title: 'MIDI note numbers and center frequencies',
+        sourceUrl:
+        'https://web.archive.org/web/20260103131245/https://inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies',
+      ),
+      ToolLicenseOnlineArticle(
+        context: context,
+        author: 'en.wikipedia.org and contributors',
+        title: 'General MIDI',
+        licenseType: ToolLicenseType.CCBYSA4,
+        licenseUrl:
+        'https://en.wikipedia.org/w/index.php?title=Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License&oldid=1162946924',
+        sourceUrl:
+        'https://en.wikipedia.org/w/index.php?title=General_MIDI&oldid=1320989440',
+      ),
+      ToolLicenseCodeLibrary(
+          context: context,
+          author: 'Nick Fox-Gieg,',
+          title: 'RKhive Velocity Grand Piano',
+          sourceUrl: 'https://web.archive.org/web/20260104152502/https://rkhive.com/rk-download/piano/velocity_grand_piano.zip',
+          licenseType: ToolLicenseType.CC0_1,
+          licenseUrl: 'https://web.archive.org/web/20260104153234/https://rkhive.com/legal.html',
+      ),
+    ]
+    ),
+    GCWTool(tool: const MIDICoding(), id: 'midi_coding', categories: const [
+      ToolCategory.CRYPTOGRAPHY
+    ], searchKeys: const [
+      'music',
+      'music_notes',
+      'piano',
+      'midi',
+    ], licenses: const []
+    ),
     GCWTool(
         tool: const MilesianNumberSystem(),
         id: 'milesian_numbers',

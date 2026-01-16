@@ -1,6 +1,6 @@
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/_common/logic/common.dart';
 import 'package:gc_wizard/utils/collection_utils.dart';
 import 'package:gc_wizard/utils/string_utils.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/_common/logic/common.dart';
 
 const Map<String, String> _AZToZebra = {
   ' ': '86', 'A': '0', 'E': '1', 'I': '2', 'N': '3',
