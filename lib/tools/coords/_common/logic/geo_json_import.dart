@@ -3,7 +3,7 @@
 import 'dart:core';
 
 import 'package:gc_wizard/tools/coords/_common/formats/dec/logic/dec.dart';
-import 'package:gc_wizard/tools/coords/_common/logic/coordinates.dart';
+//import 'package:gc_wizard/tools/coords/_common/logic/coordinates.dart';
 import 'package:gc_wizard/tools/coords/map_view/logic/map_geometries.dart';
 import 'package:gc_wizard/utils/json_utils.dart';
 import 'package:latlong2/latlong.dart';
@@ -14,6 +14,8 @@ enum geoJsonLabel {
   features,
   geometry,
   geometries,
+  properties,
+  bbox
 }
 
 enum geoJsonLabelTypes {
@@ -23,6 +25,7 @@ enum geoJsonLabelTypes {
   MultiPoint,
   MultiLineString,
   MultiPolygon,
+  Feature,
   FeatureCollection,
   GeometryCollection,
 }
@@ -45,6 +48,34 @@ class _GeoJsonReader {
   //   });
   //   return points;
   // }
+  MapViewDAO? _parse(String input) {
+    var jsonMap = asJsonMapOrNull(input);
+    if (jsonMap == null) return null;
+
+
+    var list = <GCWMapPoint>[];
+    if (jsonMap.containsKey(geoJsonLabel.type.name)) {
+      if (jsonMap.containsKey(geoJsonLabel.features.name) &&
+          jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.FeatureCollection.name) {
+
+          var jsonFeatueArray = asJsonArrayOrNull(jsonMap[geoJsonLabel.features.name]);
+          if (jsonFeatueArray != null) {
+            jsonFeatueArray.forEach((jsonFeature) {
+              var jsonFeatureMap = _parseFeature(jsonFeature?.toString() ?? '');
+            });
+          }
+      } else if (jsonMap.containsKey(geoJsonLabel.geometry.name) &&
+          jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.Feature.name) {
+
+          var jsonFeatureMap = _parseFeature(input);
+        }
+      }
+    }
+    print(map);
+  }
+    List<GCWMapPoint> _parseFeature(String input) {
+
+    }
 
   List<List<GCWMapPoint>> _parseCoordinates(String input) {
     final decoded = asJsonArray(input);
@@ -55,6 +86,8 @@ class _GeoJsonReader {
         if (point_ != null) {
           return GCWMapPoint(
               point: point_.toLatLng()!, isEditable: true);
+        } else {
+          return GCWMapPoint(point: LatLng(0, 0));
         }
         // final p = point as List;
         // return '${p[0]},${p[1]}'; // oder '${p[0]} ${p[1]}'
@@ -201,4 +234,5 @@ void main() {
    }'''
 
   ];
+  _GeoJsonReader()._parse(tests.first);
 }
