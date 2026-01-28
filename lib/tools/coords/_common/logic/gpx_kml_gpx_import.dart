@@ -127,7 +127,7 @@ class _GpxReader {
       });
 
       _restoreCircles(points, lines);
-      return _convertToMapViewDAO(points, lines);
+      return convertToMapViewDAO(points, lines);
     }
     return null;
   }
@@ -195,7 +195,7 @@ class _KmlReader {
         _restorePoints(points, lines);
         _restoreCircles(points, lines);
 
-        return _convertToMapViewDAO(points, lines);
+        return convertToMapViewDAO(points, lines);
       }
     }
     return null;
@@ -384,7 +384,7 @@ bool _completeCircle(GCWMapPolyline line, List<GCWMapPoint> points) {
   return true;
 }
 
-MapViewDAO _convertToMapViewDAO(
+MapViewDAO convertToMapViewDAO(
     List<GCWMapPoint> points, List<GCWMapPolyline> lines) {
   var daoPoints = <MapPointDAO>[];
   var daoLines = <MapPolylineDAO>[];
