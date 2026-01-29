@@ -62,8 +62,9 @@ class GeoJsonReader {
         } else if (jsonMap.containsKey(geoJsonLabel.geometries.name) &&
             jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.GeometryCollection.name) {
 
+          var label = _searchLabel(jsonMap);
           asJsonArray(jsonMap[geoJsonLabel.geometries.name]).forEach((jsonGeometry) {
-            var geometry = _parseGeometry(jsonGeometry);
+            var geometry = _parseGeometry(jsonGeometry, label);
             if (geometry != null) {
               list.add(geometry);
             }
@@ -87,12 +88,13 @@ class GeoJsonReader {
     var jsonMap = asJsonMap(input);
     if (!jsonMap.containsKey(geoJsonLabel.geometry.name)) return null;
 
-    var geometry = _parseGeometry(jsonMap[geoJsonLabel.geometry.name]);
+    var label = _searchLabel(jsonMap);
+    var geometry = _parseGeometry(jsonMap[geoJsonLabel.geometry.name], label);
 
     return geometry;
   }
 
-  MapViewDAO? _parseGeometry(Object? input) {
+  MapViewDAO? _parseGeometry(Object? input, String? label) {
     var jsonMap = asJsonMap(input);
     if (!jsonMap.containsKey(geoJsonLabel.type.name) ||
         !jsonMap.containsKey(geoJsonLabel.coordinates.name)) {
@@ -128,6 +130,20 @@ class GeoJsonReader {
       }
     }
 
+    if (label != null) {
+      for (var point in points) {
+        point.markerText = label;
+      }
+      for (var line in lines) {
+        for (var point in line.points) {
+          point.markerText = label;
+        }
+      }
+    }
+    return convertToMapViewDAO(points, lines);
+  }
+
+  String? _searchLabel(Map<String, Object?> jsonMap) {
     String? name;
     if (jsonMap.containsKey('name')) {
       name = jsonMap['name']?.toString();
@@ -137,20 +153,11 @@ class GeoJsonReader {
       var propertiesMap = asJsonMap(jsonMap[geoJsonLabel.properties.name]);
       if (propertiesMap.containsKey('name')) {
         name = propertiesMap['name']?.toString();
+      } else if (propertiesMap.containsKey('title')) {
+        name = propertiesMap['title']?.toString();
       }
     }
-
-    if (name != null) {
-      for (var point in points) {
-        point.markerText = name;
-      }
-      for (var line in lines) {
-        for (var point in line.points) {
-          point.markerText = name;
-        }
-      }
-    }
-    return convertToMapViewDAO(points, lines);
+    return name;
   }
 
   List<List<GCWMapPoint>> _parseCoordinates(Object? input) {

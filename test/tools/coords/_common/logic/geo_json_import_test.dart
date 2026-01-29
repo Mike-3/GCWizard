@@ -17,7 +17,8 @@ void main() async {
                "prop0": "value0"
            }
        }]
-   }''';
+      }''';
+
     List<Map<String, Object?>> _inputsToExpected = [
       {'input' : '', 'expectedPointOutput' : null, 'expectedLinesOutput' : null},
       {'input' : '''{
@@ -133,6 +134,7 @@ void main() async {
        "type": "FeatureCollection",
        "features": [{
            "type": "Feature",
+           "title": "testname1",
            "geometry": {
                "type": "Point",
                "coordinates": [102.0, 0.5]
@@ -152,7 +154,7 @@ void main() async {
                ]
            },
            "properties": {
-               "prop0": "value0",
+               "title": "testname2",
                "prop1": 0.0
            }
        }, {
