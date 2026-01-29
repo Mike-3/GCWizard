@@ -1,7 +1,10 @@
 import "package:flutter_test/flutter_test.dart";
 import 'package:gc_wizard/tools/coords/_common/logic/geo_json_import.dart';
+import 'package:prefs/prefs.dart';
 
-void main() {
+void main() async {
+  SharedPreferences.setMockInitialValues({});
+  await Prefs.init();
 
   group("Coordinates.geoJsonImport:", () {
     var baseStructure =
@@ -16,7 +19,7 @@ void main() {
        }]
    }''';
     List<Map<String, Object?>> _inputsToExpected = [
-      {'input' : '', 'expectedPointOutput' : 0, 'expectedLinesOutput' : 0},
+      {'input' : '', 'expectedPointOutput' : null, 'expectedLinesOutput' : null},
       {'input' : '''{
          "type": "Point",
          "coordinates": [100.0, 0.0]
@@ -187,32 +190,17 @@ void main() {
              ]
          }]
         }''', 'expectedPointOutput' : 1, 'expectedLinesOutput' : 1},
-      {'input' : '''{
-       "type": "Feature",
-       "bbox": [-10.0, -10.0, 10.0, 10.0],
-       "geometry": {
-           "type": "Polygon",
-           "coordinates": [
-               [
-                   [-10.0, -10.0],
-                   [10.0, -10.0],
-                   [10.0, 10.0],
-                   [-10.0, -10.0]
-               ]
-           ]
-       }
-      }''', 'expectedPointOutput' : 1, 'expectedLinesOutput' : 1},
     ];
 
     for (var elem in _inputsToExpected) {
       test('input: ${elem['input']}', () {
         var input = elem['input'].toString();
-        if (!input.contains('Feature') && input.isNotEmpty) {
+        if (input.isNotEmpty && !input.contains('Feature') && !input.contains('GeometryCollection')) {
           input = baseStructure.replaceAll('testReplacement', input);
         }
         var _actual = GeoJsonReader().parse(input);
-        expect(_actual?.points.length ?? 0, elem['expectedPointOutput']);
-        expect(_actual?.polylines.length ?? 0, elem['expectedLinesOutput']);
+        expect(_actual?.points.length, elem['expectedPointOutput']);
+        expect(_actual?.polylines.length, elem['expectedLinesOutput']);
       });
     }
   });

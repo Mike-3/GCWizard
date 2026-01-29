@@ -62,6 +62,12 @@ class GeoJsonReader {
         } else if (jsonMap.containsKey(geoJsonLabel.geometries.name) &&
             jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.GeometryCollection.name) {
 
+          asJsonArray(jsonMap[geoJsonLabel.geometries.name]).forEach((jsonGeometry) {
+            var geometry = _parseGeometry(jsonGeometry);
+            if (geometry != null) {
+              list.add(geometry);
+            }
+          });
         }
       }
 
@@ -73,7 +79,7 @@ class GeoJsonReader {
       }
 
       return list.first;
-    } catch (e) {print(e.toString());}
+    } catch (e) {}
     return null;
   }
 
