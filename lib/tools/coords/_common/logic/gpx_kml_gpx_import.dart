@@ -394,8 +394,7 @@ MapViewDAO convertToMapViewDAO(
   }
 
   for (var line in lines) {
-    daoLines
-        .add(MapViewPersistenceAdapter.gcwMapPolylineToMapPolylineDAO(line));
+    daoLines.add(MapViewPersistenceAdapter.gcwMapPolylineToMapPolylineDAO(line));
   }
 
   return MapViewDAO(daoPoints, daoLines);

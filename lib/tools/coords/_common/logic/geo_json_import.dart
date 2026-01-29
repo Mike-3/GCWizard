@@ -1,9 +1,9 @@
 //https://datatracker.ietf.org/doc/html/rfc7946
 
+import 'dart:convert';
 import 'dart:core';
 
 import 'package:gc_wizard/tools/coords/_common/formats/dec/logic/dec.dart';
-//import 'package:gc_wizard/tools/coords/_common/logic/coordinates.dart';
 import 'package:gc_wizard/tools/coords/map_view/logic/map_geometries.dart';
 import 'package:gc_wizard/tools/coords/map_view/persistence/model.dart';
 import 'package:gc_wizard/utils/json_utils.dart';
@@ -36,56 +36,60 @@ enum geoJsonLabelTypes {
 class GeoJsonReader {
 
   MapViewDAO? parse(String input) {
-    var jsonMap = asJsonMap(input);
+    try {
+      if (input.isEmpty) return null;
+      var jsonMap = asJsonMap(json.decode(input));
 
-    var list = <MapViewDAO>[];
-    if (jsonMap.containsKey(geoJsonLabel.type.name)) {
-      if (jsonMap.containsKey(geoJsonLabel.features.name) &&
-          jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.FeatureCollection.name) {
+      var list = <MapViewDAO>[];
+      if (jsonMap.containsKey(geoJsonLabel.type.name)) {
+        if (jsonMap.containsKey(geoJsonLabel.features.name) &&
+            jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.FeatureCollection.name) {
 
-          asJsonArray(jsonMap[geoJsonLabel.features.name]).forEach((jsonFeature) {
-            var feature = _parseFeature(jsonFeature?.toString() ?? '');
-            if (feature != null) {
-              list.add(feature);
-            }
-          });
+            asJsonArray(jsonMap[geoJsonLabel.features.name]).forEach((jsonFeature) {
+              var feature = _parseFeature(jsonFeature);
+              if (feature != null) {
+                list.add(feature);
+              }
+            });
 
-      } else if (jsonMap.containsKey(geoJsonLabel.geometry.name) &&
-          jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.Feature.name) {
+        } else if (jsonMap.containsKey(geoJsonLabel.geometry.name) &&
+            jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.Feature.name) {
 
-        var feature = _parseFeature(input);
-        if (feature != null) {
-          list.add(feature);
+          var feature = _parseFeature(input);
+          if (feature != null) {
+            list.add(feature);
+          }
         }
       }
-    }
 
-    if (list.isEmpty) return null;
+      if (list.isEmpty) return null;
 
-    for (var i = 1; i < list.length; i++) {
-      list.first.points.addAll(list[i].points);
-      list.first.polylines.addAll(list[i].polylines);
-    }
+      for (var i = 1; i < list.length; i++) {
+        list.first.points.addAll(list[i].points);
+        list.first.polylines.addAll(list[i].polylines);
+      }
 
-    return list.first;
+      return list.first;
+    } catch (e) {print(e.toString());}
+    return null;
   }
 
-  MapViewDAO? _parseFeature(String input) {
+  MapViewDAO? _parseFeature(Object? input) {
     var jsonMap = asJsonMap(input);
     if (!jsonMap.containsKey(geoJsonLabel.geometry.name)) return null;
 
-    var geometry = _parseGeometry(jsonMap[geoJsonLabel.geometry.name]?.toString() ?? '');
+    var geometry = _parseGeometry(jsonMap[geoJsonLabel.geometry.name]);
 
     return geometry;
   }
 
-  MapViewDAO? _parseGeometry(String input) {
+  MapViewDAO? _parseGeometry(Object? input) {
     var jsonMap = asJsonMap(input);
     if (!jsonMap.containsKey(geoJsonLabel.type.name) ||
         !jsonMap.containsKey(geoJsonLabel.coordinates.name)) {
       return null;
     }
-    var coordinates =  _parseCoordinates(jsonMap[geoJsonLabel.coordinates.name]?.toString() ?? '');
+    var coordinates =  _parseCoordinates(jsonMap[geoJsonLabel.coordinates.name]);
     if (coordinates.isEmpty) return null;
 
     var points = <GCWMapPoint>[];
@@ -95,7 +99,7 @@ class GeoJsonReader {
       if (coordinates.first.isNotEmpty) {
         points.add(coordinates.first.first);
       }
-    } else    if (jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.MultiPoint.name) {
+    } else if (jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.MultiPoint.name) {
       for (var list in coordinates) {
         if (list.isNotEmpty) {
           points.add(list.first);
@@ -140,174 +144,52 @@ class GeoJsonReader {
     return convertToMapViewDAO(points, lines);
   }
 
-  List<List<GCWMapPoint>> _parseCoordinates(String input) {
+  List<List<GCWMapPoint>> _parseCoordinates(Object? input) {
 
-    List<GCWMapPoint> _parsePoints(Object? coordinates) {
-      var points = asJsonArray(coordinates).map<GCWMapPoint>((point) {
-        var point_ = DECCoordinate.parse(point?.toString() ?? '');
-        if (point_ != null) {
-          return GCWMapPoint(
-              point: point_.toLatLng()!, isEditable: true);
-        } else {
-          return GCWMapPoint(point: LatLng(0, 0), isVisible: false);
+    List<GCWMapPoint> _parsePoints(Object? coordinatesList) {
+      var points = asJsonArray(coordinatesList).map<GCWMapPoint>((point) {
+      var pointArray = asJsonArray(point);
+        if (pointArray.length == 2) {
+          var pointString = (pointArray[0]?.toString() ?? '') + ' ' + (pointArray[1]?.toString() ?? '');
+
+          var point_ = DECCoordinate.parse(pointString);
+          if (point_ != null) {
+            return GCWMapPoint(point: point_.toLatLng()!, coordinateFormat: DECCoordinate().format, isEditable: true);
+          }
         }
+        return GCWMapPoint(point: LatLng(0, 0), isVisible: false);
       }).toList();
 
       points.removeWhere((mapPoint) => !mapPoint.isVisible);
       return points;
     }
 
-    var coordinates = <List<GCWMapPoint>>[];
-    asJsonArray(input).forEach((coords) {
-      coordinates.add(_parsePoints(coords));
+    bool _isSinglePoint(List<Object?> array) {
+      if (array.length == 2) {
+        if (getJsonType(array[0]) == JsonType.SIMPLE_TYPE && getJsonType(array[1]) == JsonType.SIMPLE_TYPE) {
+          return true;
+        }
+      }
+      return false;
+    }
 
-      asJsonArray(coords).forEach((coords_) {
-        coordinates.add(_parsePoints(coords_));
-      });
-    });
+    var coordinates = <List<GCWMapPoint>>[];
+    var pointArray = asJsonArray(input);
+
+    if (_isSinglePoint(pointArray)) {
+      coordinates.add(_parsePoints([pointArray]));
+    } else {
+
+      //for (var coords in pointArray) {
+        coordinates.add(_parsePoints(pointArray));
+
+        // asJsonArray(coords).forEach((coords_) {
+        //   coordinates.add(_parsePoints(coords_));
+        // });
+      //}
+    }
 
     coordinates.removeWhere((list) => list.isEmpty);
     return coordinates;
   }
-}
-
-void main() {
-  var tests = <String>[
-    '''{
-         "type": "Point",
-         "coordinates": [100.0, 0.0]
-     }'''
-    ,
-    '''{
-         "type": "LineString",
-         "coordinates": [
-             [100.0, 0.0],
-             [101.0, 1.0]
-         ]
-     }'''
-    ,
-    '''{
-         "type": "Polygon",
-         "coordinates": [
-             [
-                 [100.0, 0.0],
-                 [101.0, 0.0],
-                 [101.0, 1.0],
-                 [100.0, 1.0],
-                 [100.0, 0.0]
-             ]
-         ]
-     }'''
-    ,
-    '''{
-         "type": "Polygon",
-         "coordinates": [
-             [
-                 [100.0, 0.0],
-                 [101.0, 0.0],
-                 [101.0, 1.0],
-                 [100.0, 1.0],
-                 [100.0, 0.0]
-             ],
-             [
-                 [100.8, 0.8],
-                 [100.8, 0.2],
-                 [100.2, 0.2],
-                 [100.2, 0.8],
-                 [100.8, 0.8]
-             ]
-         ]
-     }'''
-    ,
-    '''{
-       "type": "MultiPolygon",
-       "coordinates": [
-           [
-               [
-                   [180.0, 40.0], [180.0, 50.0], [170.0, 50.0],
-                   [170.0, 40.0], [180.0, 40.0]
-               ]
-           ],
-           [
-               [
-                   [-170.0, 40.0], [-170.0, 50.0], [-180.0, 50.0],
-                   [-180.0, 40.0], [-170.0, 40.0]
-               ]
-           ]
-       ]
-   }'''
-    ,
-    '''{
-         "type": "MultiPoint",
-         "coordinates": [
-             [100.0, 0.0],
-             [101.0, 1.0]
-         ]
-     }'''
-    ,
-    '''{
-         "type": "MultiLineString",
-         "coordinates": [
-             [
-                 [100.0, 0.0],
-                 [101.0, 1.0]
-             ],
-             [
-                 [102.0, 2.0],
-                 [103.0, 3.0]
-             ]
-         ]
-     }'''
-    ,
-    '''{
-       "type": "FeatureCollection",
-       "features": [{
-           "type": "Feature",
-           "geometry": {
-               "type": "Point",
-               "coordinates": [102.0, 0.5]
-           },
-           "properties": {
-               "prop0": "value0"
-           }
-       }, {
-           "type": "Feature",
-           "geometry": {
-               "type": "LineString",
-               "coordinates": [
-                   [102.0, 0.0],
-                   [103.0, 1.0],
-                   [104.0, 0.0],
-                   [105.0, 1.0]
-               ]
-           },
-           "properties": {
-               "prop0": "value0",
-               "prop1": 0.0
-           }
-       }, {
-           "type": "Feature",
-           "geometry": {
-               "type": "Polygon",
-               "coordinates": [
-                   [
-                       [100.0, 0.0],
-                       [101.0, 0.0],
-                       [101.0, 1.0],
-                       [100.0, 1.0],
-                       [100.0, 0.0]
-                   ]
-               ]
-           },
-           "properties": {
-               "prop0": "value0",
-               "prop1": {
-                   "this": "that"
-               }
-           }
-       }]
-   }'''
-
-  ];
-  GeoJsonReader().parse(tests.first);
 }

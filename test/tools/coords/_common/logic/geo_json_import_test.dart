@@ -201,19 +201,18 @@ void main() {
                ]
            ]
        }
-       //...
       }''', 'expectedPointOutput' : 1, 'expectedLinesOutput' : 1},
     ];
 
     for (var elem in _inputsToExpected) {
       test('input: ${elem['input']}', () {
         var input = elem['input'].toString();
-        if (!input.contains('Feature')) {
+        if (!input.contains('Feature') && input.isNotEmpty) {
           input = baseStructure.replaceAll('testReplacement', input);
         }
         var _actual = GeoJsonReader().parse(input);
-        expect(_actual?.points.length, elem['expectedPointOutput']);
-        expect(_actual?.polylines.length, elem['expectedLinesOutput']);
+        expect(_actual?.points.length ?? 0, elem['expectedPointOutput']);
+        expect(_actual?.polylines.length ?? 0, elem['expectedLinesOutput']);
       });
     }
   });
