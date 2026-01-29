@@ -32,7 +32,8 @@ enum geoJsonLabelTypes {
   FeatureCollection,
   GeometryCollection,
 }
-class _GeoJsonReader {
+
+class GeoJsonReader {
 
   MapViewDAO? parse(String input) {
     var jsonMap = asJsonMap(input);
@@ -308,5 +309,5 @@ void main() {
    }'''
 
   ];
-  _GeoJsonReader().parse(tests.first);
+  GeoJsonReader().parse(tests.first);
 }
