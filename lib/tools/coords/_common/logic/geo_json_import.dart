@@ -59,6 +59,9 @@ class GeoJsonReader {
           if (feature != null) {
             list.add(feature);
           }
+        } else if (jsonMap.containsKey(geoJsonLabel.geometries.name) &&
+            jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.GeometryCollection.name) {
+
         }
       }
 
@@ -102,7 +105,7 @@ class GeoJsonReader {
     } else if (jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.MultiPoint.name) {
       for (var list in coordinates) {
         if (list.isNotEmpty) {
-          points.add(list.first);
+          points.addAll(list);
         }
       }
     } else if (jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.LineString.name)  {
@@ -146,11 +149,24 @@ class GeoJsonReader {
 
   List<List<GCWMapPoint>> _parseCoordinates(Object? input) {
 
-    List<GCWMapPoint> _parsePoints(Object? coordinatesList) {
-      var points = asJsonArray(coordinatesList).map<GCWMapPoint>((point) {
-      var pointArray = asJsonArray(point);
-        if (pointArray.length == 2) {
-          var pointString = (pointArray[0]?.toString() ?? '') + ' ' + (pointArray[1]?.toString() ?? '');
+    bool _isSinglePoint(List<Object?> array) {
+      if (array.length == 2) {
+        if (getJsonType(array[0]) == JsonType.SIMPLE_TYPE && getJsonType(array[1]) == JsonType.SIMPLE_TYPE) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    bool _isPointArray(List<Object?> array) {
+      return array.isNotEmpty && _isSinglePoint(array.first as List);
+    }
+
+    List<GCWMapPoint> _parsePointArray(Object? _pointArray) {
+      var points = asJsonArray(_pointArray).map<GCWMapPoint>((point) {
+        var __pointArray = asJsonArray(point);
+        if (_isSinglePoint(__pointArray)) {
+          var pointString = (__pointArray[0]?.toString() ?? '') + ' ' + (__pointArray[1]?.toString() ?? '');
 
           var point_ = DECCoordinate.parse(pointString);
           if (point_ != null) {
@@ -164,30 +180,23 @@ class GeoJsonReader {
       return points;
     }
 
-    bool _isSinglePoint(List<Object?> array) {
-      if (array.length == 2) {
-        if (getJsonType(array[0]) == JsonType.SIMPLE_TYPE && getJsonType(array[1]) == JsonType.SIMPLE_TYPE) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     var coordinates = <List<GCWMapPoint>>[];
     var pointArray = asJsonArray(input);
 
-    if (_isSinglePoint(pointArray)) {
-      coordinates.add(_parsePoints([pointArray]));
-    } else {
-
-      //for (var coords in pointArray) {
-        coordinates.add(_parsePoints(pointArray));
-
-        // asJsonArray(coords).forEach((coords_) {
-        //   coordinates.add(_parsePoints(coords_));
-        // });
-      //}
+    void _parsePointList(Object? _pointArray) {
+      var __pointArray = asJsonArray(_pointArray);
+      if (_isSinglePoint(__pointArray)) {
+        coordinates.add(_parsePointArray([__pointArray]));
+      } else if (_isPointArray(__pointArray)) {
+        coordinates.add(_parsePointArray(__pointArray));
+      } else {
+        for (var _pointArray in __pointArray) {
+          _parsePointList(_pointArray);
+        }
+      }
     }
+
+    _parsePointList(pointArray);
 
     coordinates.removeWhere((list) => list.isEmpty);
     return coordinates;
