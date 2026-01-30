@@ -21,6 +21,16 @@ void main() async {
 
     List<Map<String, Object?>> _inputsToExpected = [
       {'input' : '', 'expectedPointOutput' : null, 'expectedLinesOutput' : null},
+      {'input' :   '''{
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [125.6, 10.1]
+          },
+          "properties": {
+            "name": "Dinagat Islands"
+          }
+        }''', 'expectedPointOutput' : 1, 'expectedLinesOutput' : 0},
       {'input' : '''{
          "type": "Point",
          "coordinates": [100.0, 0.0]

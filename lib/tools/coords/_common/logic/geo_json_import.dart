@@ -42,6 +42,7 @@ class GeoJsonReader {
 
       var list = <MapViewDAO>[];
       if (jsonMap.containsKey(geoJsonLabel.type.name)) {
+
         if (jsonMap.containsKey(geoJsonLabel.features.name) &&
             jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.FeatureCollection.name) {
 
@@ -55,7 +56,7 @@ class GeoJsonReader {
         } else if (jsonMap.containsKey(geoJsonLabel.geometry.name) &&
             jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.Feature.name) {
 
-          var feature = _parseFeature(input);
+          var feature = _parseFeature(jsonMap);
           if (feature != null) {
             list.add(feature);
           }
