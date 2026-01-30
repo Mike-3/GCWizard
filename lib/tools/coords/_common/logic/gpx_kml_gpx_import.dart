@@ -13,23 +13,25 @@ import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:xml/xml.dart';
 
+import 'geo_json_import.dart';
+
 Future<MapViewDAO?> importCoordinatesFile(GCWFile file) async {
   var type = fileTypeByFilename(file.name!);
   switch (type) {
     case FileType.GPX:
       var xml = convertBytesToString(file.bytes);
-      return parseCoordinatesFile(xml);
+      return parseCoordinatesFile(xml, type!);
     case FileType.KML:
       var xml = convertBytesToString(file.bytes);
-      return parseCoordinatesFile(xml, kmlFormat: true);
+      return parseCoordinatesFile(xml, type!);
     case FileType.ZIP:
       // Decode the Zip file
       final archive = extractZipArchive(file.bytes);
       if (archive.isNotEmpty) {
         var file = archive.first;
-        if (getFileExtension(file.name.toLowerCase()) == '.gpx') {
+        if (getFileExtension(file.name.toLowerCase()) == '.' + fileExtension(FileType.GPX).toLowerCase()) {
           var xml = convertBytesToString(file.content);
-          return parseCoordinatesFile(xml);
+          return parseCoordinatesFile(xml, FileType.GPX);
         }
       }
       break;
@@ -40,9 +42,12 @@ Future<MapViewDAO?> importCoordinatesFile(GCWFile file) async {
       if (archive.isNotEmpty) {
         var file = archive.first;
         var xml = convertBytesToString(file.content);
-        return parseCoordinatesFile(xml, kmlFormat: true);
+        return parseCoordinatesFile(xml, type!);
       }
       break;
+    case FileType.GEOJSON:
+      var data = convertBytesToString(file.bytes);
+      return parseCoordinatesFile(data, type!);
     default:
       break;
   }
@@ -50,14 +55,17 @@ Future<MapViewDAO?> importCoordinatesFile(GCWFile file) async {
   return null;
 }
 
-MapViewDAO? parseCoordinatesFile(String xml, {bool kmlFormat = false}) {
+MapViewDAO? parseCoordinatesFile(String data, FileType fileType) {
   MapViewDAO? result;
   try {
-    var xmlDoc = XmlDocument.parse(xml);
-    if (kmlFormat) {
+    if (fileType == FileType.KML) {
+      var xmlDoc = XmlDocument.parse(data);
       result = _KmlReader()._parse(xmlDoc);
-    } else {
+    } else if (fileType == FileType.GPX) {
+      var xmlDoc = XmlDocument.parse(data);
       result = _GpxReader()._parse(xmlDoc);
+    } else if (fileType == FileType.GEOJSON) {
+      result = GeoJsonReader().parse(data);
     }
   } catch (e) {
     return null;

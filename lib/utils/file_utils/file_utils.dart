@@ -292,7 +292,8 @@ const Map<FileType, FileTypeInfo> _FILE_TYPES = {
       extensions: ['json'], magic_bytes: <List<int>>[], mime_types: ['text/plain'], file_class: FileClass.TEXT),
 
   FileType.GEOJSON: FileTypeInfo(
-      extensions: ['geoJson'], magic_bytes: <List<int>>[], mime_types: ['text/plain'], file_class: FileClass.TEXT),
+      extensions: ['geojson', 'json'],
+      magic_bytes: <List<int>>[], mime_types: ['text/plain'], file_class: FileClass.TEXT),
 
   FileType.PDF: FileTypeInfo(extensions: [
     'pdf'
