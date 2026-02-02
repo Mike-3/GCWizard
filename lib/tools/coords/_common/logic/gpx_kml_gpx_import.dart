@@ -8,6 +8,7 @@ import 'package:gc_wizard/tools/coords/map_view/logic/map_geometries.dart';
 import 'package:gc_wizard/tools/coords/map_view/persistence/mapview_persistence_adapter.dart';
 import 'package:gc_wizard/tools/coords/map_view/persistence/model.dart';
 import 'package:gc_wizard/utils/constants.dart';
+import 'package:gc_wizard/utils/coordinate_utils.dart';
 import 'package:gc_wizard/utils/file_utils/file_utils.dart';
 import 'package:gc_wizard/utils/file_utils/gcw_file.dart';
 import 'package:latlong2/latlong.dart';
@@ -200,7 +201,7 @@ class _KmlReader {
           lines.addAll(points);
         });
 
-        _restorePoints(points, lines);
+        restorePoints(points, lines);
         _restoreCircles(points, lines);
 
         return convertToMapViewDAO(points, lines);
@@ -311,17 +312,6 @@ class _KmlReader {
     return point;
   }
 
-  void _restorePoints(List<GCWMapPoint> points, List<GCWMapPolyline> lines) {
-    for (int i = lines.length - 1; i >= 0; i--) {
-      points.addAll(lines[i].points);
-      if (lines[i].points.length == 1) {
-        lines.removeAt(i);
-      } else {
-        lines[i].color = lines[i].points[0].color;
-      }
-    }
-  }
-
   Color _ColorCode(String color) {
     if (color.length == 8) {
       color = color.substring(0, 2) +
@@ -333,9 +323,20 @@ class _KmlReader {
   }
 }
 
+void restorePoints(List<GCWMapPoint> points, List<GCWMapPolyline> lines) {
+  for (int i = lines.length - 1; i >= 0; i--) {
+    points.addAll(lines[i].points);
+    if (lines[i].points.length == 1) {
+      lines.removeAt(i);
+    } else {
+      lines[i].color = lines[i].points[0].color;
+    }
+  }
+}
+
 void _restoreCircles(List<GCWMapPoint> points, List<GCWMapPolyline> lines) {
   for (int i = lines.length - 1; i >= 0; i--) {
-    if (_isClosedLine(lines[i]) && _completeCircle(lines[i], points)) {
+    if (isClosedLine(lines[i]) && _completeCircle(lines[i], points)) {
       for (var point in lines[i].points) {
         points.remove(point);
       }
@@ -344,11 +345,8 @@ void _restoreCircles(List<GCWMapPoint> points, List<GCWMapPolyline> lines) {
   }
 }
 
-bool _isClosedLine(GCWMapPolyline line) {
-  return ((line.points.first.point.latitude - line.points.last.point.latitude) <
-          practical_epsilon) &&
-      ((line.points.first.point.longitude - line.points.last.point.longitude) <
-          practical_epsilon);
+bool isClosedLine(GCWMapPolyline line) {
+  return equalsLatLng(line.points.first.point, line.points.last.point, tolerance: practical_epsilon);
 }
 
 bool _completeCircle(GCWMapPolyline line, List<GCWMapPoint> points) {

@@ -378,7 +378,7 @@ FileType? fileTypeByFilename(String fileName) {
   }
 
   return _FILE_TYPES.keys.firstWhereOrNull((type) {
-    return _FILE_TYPES[type]!.extensions.contains(fileName);
+    return _FILE_TYPES[type]!.extensions.contains(fileName.toLowerCase());
   });
 }
 

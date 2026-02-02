@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:gc_wizard/tools/coords/_common/logic/geo_json_import.dart';
 import 'package:gc_wizard/tools/coords/map_view/logic/map_geometries.dart';
-import 'package:gc_wizard/utils/coordinate_utils.dart';
+
+
+import 'gpx_kml_gpx_import.dart';
 
 /// Convert points into geoJson
 class geoJsonWriter {
@@ -11,10 +13,10 @@ class geoJsonWriter {
   }
 
   String _toJsonFeatureCollection( List<GCWMapPoint> points, List<GCWMapPolyline> polylines) {
-    var list = <Map<String, Object>>[];
-    list.add({geoJsonLabel.type.name: geoJsonLabelTypes.FeatureCollection.name});
-    list.add({geoJsonLabel.features.name: _toJsonFeatureList(points, polylines)});
-    return jsonEncode(list);
+    var map = <String, Object>{};
+    map.addAll({geoJsonLabel.type.name: geoJsonLabelTypes.FeatureCollection.name});
+    map.addAll({geoJsonLabel.features.name: _toJsonFeatureList(points, polylines)});
+    return jsonEncode(map);
   }
 
   List<Map<String, Object>> _toJsonFeatureList(List<GCWMapPoint> points, List<GCWMapPolyline> polylines) {
@@ -53,7 +55,7 @@ class geoJsonWriter {
     } else if (line.points.length == 2) {
       list.addAll({geoJsonLabel.type.name: geoJsonLabelTypes.LineString.name});
     } else if (line.points.length > 2) {
-      if (equalsLatLng(line.points.first.point, line.points.last.point)) {
+      if (isClosedLine(line)) {
         list.addAll({geoJsonLabel.type.name: geoJsonLabelTypes.Polygon.name});
       } else {
         list.addAll({geoJsonLabel.type.name: geoJsonLabelTypes.LineString.name});

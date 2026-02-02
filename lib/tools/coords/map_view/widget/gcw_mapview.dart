@@ -1210,19 +1210,19 @@ class _GCWMapViewState extends State<GCWMapView> {
         case FileType.GEOJSON:
           var json = convertBytesToString(file.bytes);
           setState(() {
-            var result = false;
+            var isJsonHandled = false;
             if (type == FileType.JSON) {
-              result = _persistanceAdapter?.setJsonMapViewData(json) ?? false;
+              isJsonHandled = _persistanceAdapter?.setJsonMapViewData(json) ?? false;
             }
-            if (!result) {
+            if (!isJsonHandled) {
               // extension json or geojson
               var viewData = GeoJsonReader().parse(json);
               if (viewData != null) {
-                result = true;
+                isJsonHandled = true;
                 _persistanceAdapter?.addViewData(viewData);
               }
             }
-            if (!result) return;
+            if (!isJsonHandled) return;
             _mapController.fitCamera(_getBounds());
           });
           break;

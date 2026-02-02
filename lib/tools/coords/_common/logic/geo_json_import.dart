@@ -6,8 +6,11 @@ import 'dart:core';
 import 'package:gc_wizard/tools/coords/_common/formats/dec/logic/dec.dart';
 import 'package:gc_wizard/tools/coords/map_view/logic/map_geometries.dart';
 import 'package:gc_wizard/tools/coords/map_view/persistence/model.dart';
+import 'package:gc_wizard/utils/constants.dart';
+import 'package:gc_wizard/utils/coordinate_utils.dart';
 import 'package:gc_wizard/utils/json_utils.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:utility/utility.dart';
 
 import 'gpx_kml_gpx_import.dart';
 
@@ -40,7 +43,7 @@ class GeoJsonReader {
       if (input.isEmpty) return null;
       var jsonMap = asJsonMap(json.decode(input));
 
-      var list = <MapViewDAO>[];
+      var list = <({List<GCWMapPoint> points, List<GCWMapPolyline> lines})>[];
       if (jsonMap.containsKey(geoJsonLabel.type.name)) {
 
         if (jsonMap.containsKey(geoJsonLabel.features.name) &&
@@ -75,17 +78,39 @@ class GeoJsonReader {
 
       if (list.isEmpty) return null;
 
+      // merge lists
+      var mapViewEntry = list.first;
       for (var i = 1; i < list.length; i++) {
-        list.first.points.addAll(list[i].points);
-        list.first.polylines.addAll(list[i].polylines);
+        mapViewEntry.points.addAll(list[i].points);
+        mapViewEntry.lines.addAll(list[i].lines);
       }
 
-      return list.first;
+      _restorePoints(mapViewEntry.points, mapViewEntry.lines);
+      return convertToMapViewDAO(mapViewEntry.points, mapViewEntry.lines);
     } catch (e) {}
     return null;
   }
 
-  MapViewDAO? _parseFeature(Object? input) {
+  void _restorePoints(List<GCWMapPoint> points, List<GCWMapPolyline> lines) {
+    for (var line in lines) {
+      for(var i = 0; i< line.points.length; i++) {
+        for (var point in points) {
+          if (equalsLatLng(line.points[i].point, point.point, tolerance: practical_epsilon)) {
+            line.points[i] = point;
+          }
+        }
+      }
+    }
+
+    var newPoints = lines
+        .expand((line) => line.points)
+        .where((point) => !points.contains(point))
+        .toSet();
+
+    points.addAll(newPoints);
+  }
+
+  ({List<GCWMapPoint> points, List<GCWMapPolyline> lines})? _parseFeature(Object? input) {
     var jsonMap = asJsonMap(input);
     if (!jsonMap.containsKey(geoJsonLabel.geometry.name)) return null;
 
@@ -95,7 +120,7 @@ class GeoJsonReader {
     return geometry;
   }
 
-  MapViewDAO? _parseGeometry(Object? input, String? label) {
+  ({List<GCWMapPoint> points, List<GCWMapPolyline> lines})? _parseGeometry(Object? input, String? label) {
     var jsonMap = asJsonMap(input);
     if (!jsonMap.containsKey(geoJsonLabel.type.name) ||
         !jsonMap.containsKey(geoJsonLabel.coordinates.name)) {
@@ -141,7 +166,7 @@ class GeoJsonReader {
         }
       }
     }
-    return convertToMapViewDAO(points, lines);
+    return (points: points, lines: lines);
   }
 
   String? _searchLabel(Map<String, Object?> jsonMap) {
