@@ -10,7 +10,6 @@ import 'package:gc_wizard/utils/constants.dart';
 import 'package:gc_wizard/utils/coordinate_utils.dart';
 import 'package:gc_wizard/utils/json_utils.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:utility/utility.dart';
 
 import 'gpx_kml_gpx_import.dart';
 
