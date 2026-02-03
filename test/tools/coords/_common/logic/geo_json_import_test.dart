@@ -53,7 +53,7 @@ void main() async {
                  [100.0, 0.0]
              ]
          ]
-        }''', 'expectedPointOutput' : 5, 'expectedLinesOutput' : 1},
+        }''', 'expectedPointOutput' : 4, 'expectedLinesOutput' : 1},
       {'input' : '''{
          "type": "Polygon",
          "coordinates": [
@@ -72,7 +72,7 @@ void main() async {
                  [100.8, 0.8]
              ]
          ]
-        }''', 'expectedPointOutput' : 10, 'expectedLinesOutput' : 2},
+        }''', 'expectedPointOutput' : 8, 'expectedLinesOutput' : 2},
       {'input' : '''{
          "type": "MultiPolygon",
          "coordinates": [
@@ -89,7 +89,7 @@ void main() async {
                  ]
              ]
          ]
-        }''', 'expectedPointOutput' : 10, 'expectedLinesOutput' : 2},
+        }''', 'expectedPointOutput' : 8, 'expectedLinesOutput' : 2},
       {'input' : '''{
          "type": "MultiPolygon",
          "coordinates": [
@@ -119,7 +119,7 @@ void main() async {
                  ]
              ]
          ]
-        }''', 'expectedPointOutput' : 15, 'expectedLinesOutput' : 3},
+        }''', 'expectedPointOutput' : 12, 'expectedLinesOutput' : 3},
       {'input' : '''{
          "type": "MultiPoint",
          "coordinates": [
@@ -188,7 +188,7 @@ void main() async {
                }
            }
        }]
-      }''', 'expectedPointOutput' : 10, 'expectedLinesOutput' : 2},
+      }''', 'expectedPointOutput' : 9, 'expectedLinesOutput' : 2},
       {'input' : '''{
          "type": "GeometryCollection",
          "geometries": [{

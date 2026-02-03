@@ -151,6 +151,9 @@ class GeoJsonReader {
         jsonMap[geoJsonLabel.type.name] == geoJsonLabelTypes.MultiLineString.name)  {
         for (var list in coordinates) {
           if (list.length > 1) {
+            if (equalsLatLng(list.first.point, list.last.point)) {
+              list.first = list.last;
+            }
             lines.add(GCWMapPolyline(points: list));
           }
       }
