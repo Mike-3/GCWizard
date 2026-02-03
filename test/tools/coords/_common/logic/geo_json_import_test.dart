@@ -41,7 +41,7 @@ void main() async {
              [100.0, 0.0],
              [101.0, 1.0]
          ]
-        }''', 'expectedPointOutput' : 0, 'expectedLinesOutput' : 1},
+        }''', 'expectedPointOutput' : 2, 'expectedLinesOutput' : 1},
       {'input' : '''{
          "type": "Polygon",
          "coordinates": [
@@ -53,7 +53,7 @@ void main() async {
                  [100.0, 0.0]
              ]
          ]
-        }''', 'expectedPointOutput' : 0, 'expectedLinesOutput' : 1},
+        }''', 'expectedPointOutput' : 5, 'expectedLinesOutput' : 1},
       {'input' : '''{
          "type": "Polygon",
          "coordinates": [
@@ -72,7 +72,7 @@ void main() async {
                  [100.8, 0.8]
              ]
          ]
-        }''', 'expectedPointOutput' : 0, 'expectedLinesOutput' : 2},
+        }''', 'expectedPointOutput' : 10, 'expectedLinesOutput' : 2},
       {'input' : '''{
          "type": "MultiPolygon",
          "coordinates": [
@@ -89,7 +89,7 @@ void main() async {
                  ]
              ]
          ]
-        }''', 'expectedPointOutput' : 0, 'expectedLinesOutput' : 2},
+        }''', 'expectedPointOutput' : 10, 'expectedLinesOutput' : 2},
       {'input' : '''{
          "type": "MultiPolygon",
          "coordinates": [
@@ -119,7 +119,7 @@ void main() async {
                  ]
              ]
          ]
-        }''', 'expectedPointOutput' : 0, 'expectedLinesOutput' : 3},
+        }''', 'expectedPointOutput' : 15, 'expectedLinesOutput' : 3},
       {'input' : '''{
          "type": "MultiPoint",
          "coordinates": [
@@ -139,7 +139,7 @@ void main() async {
                  [103.0, 3.0]
              ]
          ]
-        }''', 'expectedPointOutput' : 0, 'expectedLinesOutput' : 2},
+        }''', 'expectedPointOutput' : 4, 'expectedLinesOutput' : 2},
       {'input' : '''{
        "type": "FeatureCollection",
        "features": [{
@@ -188,7 +188,7 @@ void main() async {
                }
            }
        }]
-      }''', 'expectedPointOutput' : 1, 'expectedLinesOutput' : 2},
+      }''', 'expectedPointOutput' : 10, 'expectedLinesOutput' : 2},
       {'input' : '''{
          "type": "GeometryCollection",
          "geometries": [{
@@ -201,7 +201,7 @@ void main() async {
                  [102.0, 1.0]
              ]
          }]
-        }''', 'expectedPointOutput' : 1, 'expectedLinesOutput' : 1},
+        }''', 'expectedPointOutput' : 3, 'expectedLinesOutput' : 1},
     ];
 
     for (var elem in _inputsToExpected) {
