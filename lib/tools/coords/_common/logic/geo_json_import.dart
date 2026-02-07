@@ -207,7 +207,7 @@ class GeoJsonReader {
       var points = asJsonArray(_pointArray).map<GCWMapPoint>((point) {
         var __pointArray = asJsonArray(point);
         if (_isSinglePoint(__pointArray)) {
-          var pointString = (__pointArray[0]?.toString() ?? '') + ' ' + (__pointArray[1]?.toString() ?? '');
+          var pointString = (__pointArray[1]?.toString() ?? '') + ' ' + (__pointArray[0]?.toString() ?? '');
 
           var point_ = DECCoordinate.parse(pointString);
           if (point_ != null) {

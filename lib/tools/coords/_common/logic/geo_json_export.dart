@@ -72,7 +72,7 @@ class geoJsonWriter {
   }
 
   List<double> _toJsonPoint(GCWMapPoint point) {
-    return ([point.point.latitude, point.point.longitude]);
+    return ([point.point.longitude, point.point.latitude]);
   }
 }
 
