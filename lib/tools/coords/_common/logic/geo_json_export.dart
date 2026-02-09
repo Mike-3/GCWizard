@@ -60,7 +60,7 @@ class geoJsonWriter {
         list.addAll({geoJsonLabel.type.name: geoJsonLabelTypes.LineString.name});
       }
     }
-    list.addAll({geoJsonLabel.coordinates.name: _toJsonPoints(line.points)});
+    list.addAll({geoJsonLabel.coordinates.name: [_toJsonPoints(line.points)]});
     return list;
   }
 
