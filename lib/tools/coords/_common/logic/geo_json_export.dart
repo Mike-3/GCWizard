@@ -35,9 +35,8 @@ class geoJsonWriter {
     var _featureMap = <String, Object>{};
     _featureMap.addAll({geoJsonLabel.type.name: geoJsonLabelTypes.Feature.name});
     _featureMap.addAll(featureMap);
-    if (label != null && label.isNotEmpty) {
-      _featureMap.addAll({geoJsonLabel.properties.name: {'name': label}});
-    }
+    _featureMap.addAll({geoJsonLabel.properties.name: (label != null && label.isNotEmpty) ? {'name': label} : {}});
+
     return _featureMap;
   }
 
