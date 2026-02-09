@@ -26,7 +26,7 @@ class geoJsonWriter {
       list.add(_fillFeatureMap({geoJsonLabel.geometry.name: _toJsonPointGeometry(point)}, point.markerText));
     }
     for (var polyline in polylines) {
-      list.add(_fillFeatureMap({geoJsonLabel.geometry.name: _toJsonPolylineGeometry(polyline)}, null));
+      list.add(_fillFeatureMap({geoJsonLabel.geometry.name: _toJsonPolylineGeometry(polyline)}, ''));
     }
     return list;
   }
