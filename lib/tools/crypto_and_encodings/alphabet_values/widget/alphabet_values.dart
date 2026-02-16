@@ -370,7 +370,7 @@ class _AlphabetValuesState extends State<AlphabetValues> {
           onCreateInput: (Key? key) => _AlphabetValuesKeyValueInput(key: key),
           onCreateNewItem: (entry, odd) => _createNewItem(entry, odd),
         ),
-        const GCWDivider()
+        const GCWDivider(suppressTopSpace: true, suppressBottomSpace: true)
       ],
     );
   }
@@ -399,7 +399,7 @@ class _AlphabetValuesState extends State<AlphabetValues> {
             });
           },
         ),
-        const GCWDivider()
+        const GCWDivider(suppressTopSpace: true, suppressBottomSpace: true)
       ],
     );
   }
@@ -499,12 +499,19 @@ class _AlphabetValuesState extends State<AlphabetValues> {
       var alphabetValues = logic.AlphabetValues(alphabet: alphabet).textToValues(_currentInput, keepNumbers: true);
 
       return CrosstotalOutput(
-          text: _currentInput, values: List<int>.from(alphabetValues.where((value) => value != null)));
+        text: _currentInput.toUpperCase(),
+        values: List<int?>.from(alphabetValues),
+        textValidCharacters: alphabet.keys.join(),
+      );
     } else {
       var _currentDecodeInput = textToIntList(_currentInput);
 
       var text = logic.AlphabetValues(alphabet: alphabet).valuesToText(_currentDecodeInput);
-      return CrosstotalOutput(text: text, values: _currentDecodeInput);
+      return CrosstotalOutput(
+        text: text,
+        values: _currentDecodeInput,
+        suppressWordMode: true,
+      );
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gc_wizard/application/_common/gcw_package_info.dart';
 import 'package:gc_wizard/application/category_views/favorites.dart';
@@ -143,6 +144,12 @@ import 'package:gc_wizard/tools/crypto_and_encodings/mexican_army_cipher_wheel/w
 import 'package:gc_wizard/tools/crypto_and_encodings/morbit/widget/morbit.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/navajo/widget/navajo.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/navajo/widget/navajo_list.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/535/widget/535.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/hva/widget/hva.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/juno/widget/juno.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/jupiter/widget/jupiter.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/tapir/widget/tapir.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/nva_substitution_tables/zebra/widget/zebra.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/one_time_pad/widget/one_time_pad.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/playfair/widget/playfair.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/pokemon/widget/pokemon.dart';
@@ -169,7 +176,6 @@ import 'package:gc_wizard/tools/crypto_and_encodings/solitaire/widget/solitaire.
 import 'package:gc_wizard/tools/crypto_and_encodings/straddling_checkerboard/widget/straddling_checkerboard.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/substitution/widget/substitution.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/tap_code/widget/tap_code.dart';
-import 'package:gc_wizard/tools/crypto_and_encodings/tapir/widget/tapir.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/text_analysis/widget/text_analysis_letter_frequencies.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/trifid/widget/trifid.dart';
@@ -270,6 +276,8 @@ import 'package:gc_wizard/tools/science_and_technology/ip_codes/widget/ip_codes.
 import 'package:gc_wizard/tools/science_and_technology/kaprekar/widget/kaprekar.dart';
 import 'package:gc_wizard/tools/science_and_technology/lcm/widget/lcm.dart';
 import 'package:gc_wizard/tools/science_and_technology/mathematical_constants/widget/mathematical_constants.dart';
+import 'package:gc_wizard/tools/science_and_technology/midi/midi_coding/widget/midi_coding.dart';
+import 'package:gc_wizard/tools/science_and_technology/midi/midi_overview/widget/midi_overview.dart';
 import 'package:gc_wizard/tools/science_and_technology/music_notes/music_notes/widget/music_notes.dart';
 import 'package:gc_wizard/tools/science_and_technology/numeral_bases/widget/numeral_bases.dart';
 import 'package:gc_wizard/tools/science_and_technology/paperformat/widget/paperformat.dart';
@@ -284,6 +292,7 @@ import 'package:gc_wizard/tools/science_and_technology/postcode/widget/postcode.
 import 'package:gc_wizard/tools/science_and_technology/projectiles/widget/projectiles.dart';
 import 'package:gc_wizard/tools/science_and_technology/quadratic_equation/widget/quadratic_equation.dart';
 import 'package:gc_wizard/tools/science_and_technology/recycling/widget/recycling.dart';
+import 'package:gc_wizard/tools/science_and_technology/regex/widget/regex.dart';
 import 'package:gc_wizard/tools/science_and_technology/segment_display/14_segment_display/widget/fourteen_segments.dart';
 import 'package:gc_wizard/tools/science_and_technology/segment_display/16_segment_display/widget/sixteen_segments.dart';
 import 'package:gc_wizard/tools/science_and_technology/segment_display/7_segment_display/widget/seven_segments.dart';
@@ -388,7 +397,7 @@ class _MainViewState extends State<MainView> {
 
       if (countAppOpened > 0 && (countAppOpened == 10 || countAppOpened % _SHOW_SUPPORT_HINT_EVERY_N == 0)) {
         _checkForGoldVersion().then((value) {
-          if (!value) {
+          if (!value && !kIsWeb) {
             showGCWAlertDialog(
               context,
               i18n(context, 'common_support_title'),
@@ -454,12 +463,16 @@ class _MainViewState extends State<MainView> {
               title: _buildTitleAndSearchTextField(),
               actions: <Widget>[_buildSearchActionButton()]),
           drawer: buildMainMenu(context),
-          body: TabBarView(
-            children: [
-              GCWToolList(toolList: toolList ?? _categoryList),
-              GCWToolList(toolList: toolList ?? _mainToolList),
-              GCWToolList(toolList: toolList ?? Favorites.favoritedGCWTools()),
-            ],
+          body: SafeArea(
+            bottom: true,
+            top: false,
+            child: TabBarView(
+              children: [
+                GCWToolList(toolList: toolList ?? _categoryList),
+                GCWToolList(toolList: toolList ?? _mainToolList),
+                GCWToolList(toolList: toolList ?? Favorites.favoritedGCWTools()),
+              ],
+            ),
           ),
         ),
       );
@@ -472,7 +485,12 @@ class _MainViewState extends State<MainView> {
               actions: <Widget>[_buildSearchActionButton()]
           ),
           drawer: buildMainMenu(context),
-          body: GCWToolList(toolList: toolList!));
+          body: SafeArea(
+              bottom: true,
+              top: false,
+              child: GCWToolList(toolList: toolList!)
+          )
+        );
     }
   }
 
@@ -659,6 +677,7 @@ void _initStaticToolList() {
       className(const GCD()),
       className(const Geohashing()),
       className(const Gray()),
+      className(Grenztruppen535()),
       className(const Gronsfeld()),
       className(const HeatIndex()),
       className(const HebrewNumberSystem()),
@@ -673,6 +692,7 @@ void _initStaticToolList() {
       className(const Homophone()),
       className(const Houdini()),
       className(const Humidex()),
+      className(HVA()),
       className(const IATAICAOSearch()),
       className(const IAUAllConstellations()),
       className(const IAUSingleConstellation(
@@ -697,6 +717,8 @@ void _initStaticToolList() {
       className(const IteratedCrossSumRangeFrequency()),
       className(const JabCode()),
       className(const Judoon()),
+      className(Juno()),
+      className(Jupiter()),
       className(const Kamasutra()),
       className(const Kaprekar()),
       className(const KarolRobot()),
@@ -713,6 +735,8 @@ void _initStaticToolList() {
       className(const MayaCalendarSelection()),
       className(const MayaNumbersSelection()),
       className(const MexicanArmyCipherWheel()),
+      className(const MIDI()),
+      className(const MIDICoding()),
       className(const MilesianNumberSystem()),
       className(const MoonPosition()),
       className(const MoonRiseSet()),
@@ -766,6 +790,7 @@ void _initStaticToolList() {
       className(const RandomizerSelection()),
       className(const RC4()),
       className(const Recycling()),
+      className(const RegEx()),
       className(const Resection()),
       className(const ResistorSelection()),
       className(const Reverse()),
@@ -851,6 +876,7 @@ void _initStaticToolList() {
       className(const Z22()),
       className(ZamonianNumbers()),
       className(const ZC1()),
+      className(Zebra()),
       className(const Zodiac()),
     ].contains(className(element.tool));
   }).toList();

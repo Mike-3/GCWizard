@@ -42,7 +42,6 @@ class _GCWDropDownSpinnerState extends State<GCWDropDownSpinner> {
   @override
   Widget build(BuildContext context) {
     _currentIndex = widget.index;
-
     if (widget.layout == SpinnerLayout.HORIZONTAL) {
       return Row(
         children: <Widget>[
