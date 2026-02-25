@@ -1,6 +1,6 @@
 part of 'package:gc_wizard/tools/science_and_technology/euclidic_triangle/logic/triangle.dart';
 
-Sides triangleMediansXY(XYPoint a, XYPoint b, XYPoint c,){
+Sides triangleMediansXY(XYPoint a, XYPoint b, XYPoint c) {
   Sides sides = triangleSidesXY(a, b, c);
 
   return Sides(

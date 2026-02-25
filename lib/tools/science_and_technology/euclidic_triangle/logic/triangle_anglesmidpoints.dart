@@ -1,6 +1,6 @@
 part of 'package:gc_wizard/tools/science_and_technology/euclidic_triangle/logic/triangle.dart';
 
-List<XYPoint> triangleAnglesMidPointsXY(XYPoint a, XYPoint b, XYPoint c,){
+List<XYPoint> triangleAnglesMidPointsXY(XYPoint a, XYPoint b, XYPoint c) {
 
   List<XYPoint> sidesMidpoint = [];
   Sides sides = triangleSidesXY(a, b, c);
@@ -15,4 +15,3 @@ List<XYPoint> triangleAnglesMidPointsXY(XYPoint a, XYPoint b, XYPoint c,){
 
   return sidesMidpoint;
 }
-

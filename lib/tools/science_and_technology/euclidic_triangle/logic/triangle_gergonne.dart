@@ -8,6 +8,5 @@ XYPoint triangleGergonnePointXY(XYPoint a, XYPoint b, XYPoint c) {
   final sb = c.distanceToPoint(a);
   final sc = a.distanceToPoint(b);
 
-  return XYPoint.fromBarycentric(Triangle(a, b, c), 1 / (sb + sc - sa),
-      1 / (sc + sa - sb), 1 / (sa + sb - sc));
+  return XYPoint.fromBarycentric(Triangle(a, b, c), 1 / (sb + sc - sa), 1 / (sc + sa - sb), 1 / (sa + sb - sc));
 }

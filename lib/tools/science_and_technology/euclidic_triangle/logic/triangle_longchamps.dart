@@ -1,6 +1,6 @@
 part of 'package:gc_wizard/tools/science_and_technology/euclidic_triangle/logic/triangle.dart';
 
-XYPoint triangleLongchampsPointXY(XYPoint a, XYPoint b, XYPoint c){
+XYPoint triangleLongchampsPointXY(XYPoint a, XYPoint b, XYPoint c) {
   Triangle t = Triangle(a, b, c);
 
   final bary = _longchampsBarycentricFromAngles(t.angles.alpha, t.angles.beta, t.angles.gamma);
@@ -16,7 +16,7 @@ BarycentricPoint _longchampsBarycentricFromAngles(
     double a, // |BC|
     double b, // |CA|
     double c, // |AB|
-){
+) {
   a = degToRadian(a);
   b = degToRadian(b);
   c = degToRadian(c);
@@ -27,6 +27,3 @@ BarycentricPoint _longchampsBarycentricFromAngles(
 
   return BarycentricPoint(a: alpha, b: beta, c: gamma);
  }
-
-
-

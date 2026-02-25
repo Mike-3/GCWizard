@@ -11,12 +11,12 @@ XYPoint _vectorAdd(XYPoint a, XYPoint b) {
   );
 }
 
-XYPoint _vectorDiv(XYPoint a, double s) {
-  return XYPoint(
-    x: a.x / s,
-    y: a.y / s,
-  );
-}
+// XYPoint _vectorDiv(XYPoint a, double s) {
+//   return XYPoint(
+//     x: a.x / s,
+//     y: a.y / s,
+//   );
+// }
 
 XYPoint _vectorMult(XYPoint a, double s) {
   return XYPoint(
@@ -29,22 +29,22 @@ double _vectorProductDot(XYPoint a, XYPoint b) {
   return a.x * b.x + a.y * b.y;
 }
 
-bool _vectorEqual(XYPoint a, XYPoint b) {
-  a = _vectorNormalize(a);
-  b = _vectorNormalize(b);
-  return (a.x == b.x && a.y == b.y);
-}
+// bool _vectorEqual(XYPoint a, XYPoint b) {
+//   a = _vectorNormalize(a);
+//   b = _vectorNormalize(b);
+//   return (a.x == b.x && a.y == b.y);
+// }
 
 double _vectorLength(XYPoint v) {
   return sqrt(v.x * v.x + v.y * v.y);
 }
 
-XYPoint _vectorNorm(XYPoint a) {
-  return XYPoint(
-    x: -a.y,
-    y: a.x,
-  );
-}
+// XYPoint _vectorNorm(XYPoint a) {
+//   return XYPoint(
+//     x: -a.y,
+//     y: a.x,
+//   );
+// }
 
 XYPoint _vectorNormalize(XYPoint v) {
   double factor = _vectorLength(v);

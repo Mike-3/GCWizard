@@ -1169,7 +1169,7 @@ void initializeRegistry(BuildContext context) {
               'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
               sourceUrl:
               'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
-        ],),
+        ]),
     GCWTool(tool: const Grid(), id: 'grid', categories: const [
       ToolCategory.GAMES
     ], searchKeys: const [
@@ -1270,7 +1270,7 @@ void initializeRegistry(BuildContext context) {
             'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
             sourceUrl:
             'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
-      ],),
+      ]),
     GCWTool(tool: const IATAICAOSearch(), id: 'iataicao', categories: const [
       ToolCategory.SCIENCE_AND_TECHNOLOGY
     ], searchKeys: const [
@@ -1354,7 +1354,7 @@ void initializeRegistry(BuildContext context) {
             'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
             sourceUrl:
             'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
-        ],),
+        ]),
     GCWTool(
         tool: Jupiter(),
         id: 'jupiter',
@@ -1370,7 +1370,7 @@ void initializeRegistry(BuildContext context) {
             'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
             sourceUrl:
             'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
-        ],),
+        ]),
     GCWTool(tool: const Kamasutra(), id: 'kamasutra', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -1396,7 +1396,7 @@ void initializeRegistry(BuildContext context) {
           title: "Kaprekar's routine",
           sourceUrl:
           'https://en.wikipedia.org/w/index.php?title=Kaprekar%27s_routine&oldid=1274436905')
-    ],),
+    ]),
     GCWTool(tool: const Kenny(), id: 'kenny', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -1855,7 +1855,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl:
           'https://web.archive.org/web/20250508131535/https://numbergenerator.org/numberlist/prime-numbers/1-10000000#',
         ),
-      ],),
+      ]),
     GCWTool(tool: const Projectiles(), id: 'projectiles', categories: const [
       ToolCategory.SCIENCE_AND_TECHNOLOGY
     ], searchKeys: const [
@@ -2398,7 +2398,7 @@ void initializeRegistry(BuildContext context) {
             'https://web.archive.org/web/20251207183924/https://scz.bplaced.net/',
             sourceUrl:
             'https://web.archive.org/web/20251207183113/https://scz.bplaced.net/m.html'),
-        ],),
+        ]),
     GCWTool(
         tool: const ZodiacSelection(),
         id: 'zodiac_selection',
@@ -3957,14 +3957,14 @@ void initializeRegistry(BuildContext context) {
     ], licenses: [
       stl._toolLicenseElementsOfGeocachingGeocacherMagazine,
       stl._toolLicenseElementsOfGeocachingGeocachenBE,
-    ],),
+    ]),
     GCWTool(tool: const ElementsOfGeocachingDataView(atomicNumber: 1), id: 'elementsofgeocaching_dataview',
         searchKeys: const [
       'elementsofgeocaching_dataview',
     ], licenses: [
         stl._toolLicenseElementsOfGeocachingGeocacherMagazine,
         stl._toolLicenseElementsOfGeocachingGeocachenBE,
-      ],),
+      ]),
 
     // EllipsoidTrianglePointsSelection ***************************************************
     GCWTool(
@@ -5145,7 +5145,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl:
           'https://web.archive.org/web/20250508131535/https://numbergenerator.org/numberlist/prime-numbers/1-10000000#',
         ),
-      ],),
+      ]),
     GCWTool(
         tool: const NumberSequenceMersenneExponentsSelection(),
         id: 'numbersequence_mersenneexponents',
@@ -5163,7 +5163,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl:
           'https://web.archive.org/web/20250505191859/https://www.mersenne.org/primes/',
         ),
-      ],),
+      ]),
     GCWTool(
         tool: const NumberSequenceMersenneFermatSelection(),
         id: 'numbersequence_mersennefermat',
@@ -5357,7 +5357,7 @@ void initializeRegistry(BuildContext context) {
           sourceUrl:
           'https://web.archive.org/web/20231206110849/https://www.dnull.com/bells/bell1000.html',
         ),
-      ],),
+      ]),
     GCWTool(
         tool: const NumberSequencePellSelection(),
         id: 'numbersequence_pell',
@@ -9361,7 +9361,7 @@ void initializeRegistry(BuildContext context) {
         title: 'Unscrambling Codes: From Hieroglyphs to Market News',
         sourceUrl:
         'https://web.archive.org/web/20250117200927/https://www.researchgate.net/publication/359543315_Unscrambling_Codes_From_Hieroglyphs_to_Market_News',
-        customComment: 'DOI:10.2139/ssrn.4049797',)
+        customComment: 'DOI:10.2139/ssrn.4049797')
     ]),
     GCWSymbolTableTool(symbolKey: 'mary_stuart_castelnau', symbolSearchStrings: const [
       'symbol_mary_stuart',

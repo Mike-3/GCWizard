@@ -10,7 +10,7 @@ Vec3 latLngToVec3(LatLng p) {
   return Vec3(
     cos(lat) * cos(lng),
     cos(lat) * sin(lng),
-    sin(lat),
+    sin(lat)
   );
 }
 

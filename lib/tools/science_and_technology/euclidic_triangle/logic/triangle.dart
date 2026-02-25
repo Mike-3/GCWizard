@@ -52,7 +52,7 @@ part 'package:gc_wizard/tools/science_and_technology/euclidic_triangle/logic/tri
 part 'package:gc_wizard/tools/science_and_technology/euclidic_triangle/logic/triangle_longchamps.dart';
 part 'package:gc_wizard/tools/science_and_technology/euclidic_triangle/logic/triangle_kinds.dart';
 
-Map<int, String> SIDE_ANGLE_TYPES = {
+const Map<int, String> SIDE_ANGLE_TYPES = {
   0: 'triangle_euclidic_sss',
   1: 'triangle_euclidic_ssw',
   2: 'triangle_euclidic_sws',
@@ -62,7 +62,7 @@ Map<int, String> SIDE_ANGLE_TYPES = {
   6: 'triangle_euclidic_sww',
 };
 
-Map<int, List<String>> TRIANGLES_SW_TEXT = {
+const Map<int, List<String>> TRIANGLES_SW_TEXT = {
   0: ['triangle_euclidic_s', 'triangle_euclidic_s', 'triangle_euclidic_s'],
   1: ['triangle_euclidic_s', 'triangle_euclidic_s', 'triangle_euclidic_w'],
   2: ['triangle_euclidic_s', 'triangle_euclidic_w', 'triangle_euclidic_s'],
@@ -72,7 +72,7 @@ Map<int, List<String>> TRIANGLES_SW_TEXT = {
   6: ['triangle_euclidic_s', 'triangle_euclidic_w', 'triangle_euclidic_w'],
 };
 
-Map<String, String> TRIANGLE_LABLES = {
+const Map<String, String> TRIANGLE_LABLES = {
   'LEGEND': 'triangle_output_legend',
   'COORDINATES': 'gcwizard_script_help_coordinates',
   'SIDES': 'triangle_output_sides',

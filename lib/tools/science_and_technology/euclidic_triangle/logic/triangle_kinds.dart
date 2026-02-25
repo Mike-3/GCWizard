@@ -52,7 +52,7 @@ bool triangleIsObtuse(double a, double b, double c, {double eps = 1e-6}) {
       c2 + a2 < b2 - eps;
 }
 
-String triangleDescription(double a, double b, double c, {double eps = 1e-6}){
+String triangleDescription(double a, double b, double c, {double eps = 1e-6}) {
   if (triangleIsEquilateral(a, b, c)) {
     return 'triangle_kind_equilateral';
   } else if (triangleIsIsosceles(a, b, c)) {
