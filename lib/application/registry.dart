@@ -164,6 +164,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/affine/widget/affine.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/alphabet_values/widget/alphabet_values.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/amsco/widget/amsco.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/atbash/widget/atbash.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/autokey/widget/autokey.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/avemaria/widget/avemaria.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/babylon_numbers/widget/babylon_numbers.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/bacon/widget/bacon.dart';
@@ -283,6 +284,7 @@ import 'package:gc_wizard/tools/crypto_and_encodings/rotation/rot18/widget/rot18
 import 'package:gc_wizard/tools/crypto_and_encodings/rotation/rot47/widget/rot47.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/rotation/rot5/widget/rot5.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/rotation/rotation_general/widget/rotation_general.dart';
+import 'package:gc_wizard/tools/crypto_and_encodings/rotation/rotxyz/widget/rotxyz.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/rsa/rsa/widget/rsa.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/rsa/rsa_d_calculator/widget/rsa_d_calculator.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/rsa/rsa_d_checker/widget/rsa_d_checker.dart';
@@ -660,6 +662,16 @@ void initializeRegistry(BuildContext context) {
         'atbash',
       ],
       deeplinkAlias: const ['atbasch'],
+    ),
+    GCWTool(
+        tool: const Autokey(),
+        id: 'autokey',
+        categories: const [
+          ToolCategory.CRYPTOGRAPHY
+        ],
+        searchKeys: const [
+          'autokey',
+        ]
     ),
     GCWTool(tool: const AveMaria(), id: 'avemaria', categories: const [
       ToolCategory.CRYPTOGRAPHY
@@ -6817,6 +6829,10 @@ void initializeRegistry(BuildContext context) {
       'rotation',
       'rotation_rot123',
     ]),
+    GCWTool(tool: const RotXYZ(), id: 'rotation_rotxyz', searchKeys: const [
+      'rotation',
+      'rotation_rotxyz',
+    ]),
     GCWTool(tool: RotationGeneral(), id: 'rotation_general', searchKeys: const [
       'rotation',
     ], deeplinkAlias: const [
@@ -11608,7 +11624,7 @@ void initializeRegistry(BuildContext context) {
         licenses: [
           ToolLicenseOfflineBook(
               context: context,
-              author: 'Königl. Pruess. Telegraphendirection',
+              author: 'Königl. Preuss. Telegraphendirection',
               title:
                   'Classe 5.2 Wörterbuch für die Telegraphisten-Correspondenz\nInstruction. Erster Abschnitt. Die Behandlung des Apparates.\nInstruction. Zweiter Abschnitt. Das Telegraphieren.',
               privatePermission: ToolLicensePrivatePermission(
@@ -11985,7 +12001,33 @@ void initializeRegistry(BuildContext context) {
       'symbol_planets',
       'symbol_zodiacsigns',
       'symbol_zodiacsigns_latin',
-    ], licenses: const []),
+      'zodiac'
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'en.wikipedia.org and contributors',
+          title: 'Astrological sign',
+          licenseType: ToolLicenseType.CCBYSA4,
+          sourceUrl:
+          'https://en.wikipedia.org/w/index.php?title=Astrological_sign&oldid=1340252037'),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Jeremy B. Tatum',
+          title: 'The Signs and Constellations of the Zodiac',
+          publisher: 'NASA Astrophysics Data System',
+          month: 6,
+          year: 2010,
+          sourceUrl:
+          'https://web.archive.org/web/20240604232721/https://articles.adsabs.harvard.edu/cgi-bin/nph-iarticle_query?bibcode=2010JRASC.104..103T&db_key=AST&page_ind=0&data_type=GIF&type=SCREEN_VIEW&classic=YES'),
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Manon Bischoff',
+          title: 'Ihr Sternzeichen ist falsch - hier finden Sie das richtige',
+          publisher: 'Spektrum.de',
+          sourceUrl:
+          'https://web.archive.org/web/20260228143540/https://www.spektrum.de/kolumne/horoskop-und-astrologie-ihr-sternzeichen-ist-falsch/2309632'),
+
+    ]),
   ].map((toolWidget) {
     toolWidget.toolName = i18n(context, toolWidget.id + '_title');
     toolWidget.defaultLanguageToolName =
