@@ -78,6 +78,7 @@ import 'package:gc_wizard/tools/coords/intersect_three_circles/widget/intersect_
 import 'package:gc_wizard/tools/coords/intersect_two_circles/widget/intersect_two_circles.dart';
 import 'package:gc_wizard/tools/coords/intersection/widget/intersection.dart';
 import 'package:gc_wizard/tools/coords/map_view/widget/map_view.dart';
+import 'package:gc_wizard/tools/coords/orthogonal_projection/widget/orthogonal_projection.dart';
 import 'package:gc_wizard/tools/coords/resection/widget/resection.dart';
 import 'package:gc_wizard/tools/coords/rhumb_line/widget/rhumbline_distancebearing.dart';
 import 'package:gc_wizard/tools/coords/rhumb_line/widget/rhumbline_waypoint_projection.dart';
@@ -289,6 +290,7 @@ import 'package:gc_wizard/tools/science_and_technology/mathematical_constants/wi
 import 'package:gc_wizard/tools/science_and_technology/midi/midi_coding/widget/midi_coding.dart';
 import 'package:gc_wizard/tools/science_and_technology/midi/midi_overview/widget/midi_overview.dart';
 import 'package:gc_wizard/tools/science_and_technology/music_notes/music_notes/widget/music_notes.dart';
+import 'package:gc_wizard/tools/science_and_technology/number_sequences/look_and_say/widget/look_and_say_text.dart';
 import 'package:gc_wizard/tools/science_and_technology/numeral_bases/widget/numeral_bases.dart';
 import 'package:gc_wizard/tools/science_and_technology/paperformat/widget/paperformat.dart';
 import 'package:gc_wizard/tools/science_and_technology/periodic_table/atomic_numbers_to_text/widget/atomic_numbers_to_text.dart';
@@ -739,6 +741,7 @@ void _initStaticToolList() {
       className(Larrabee()),
       className(const LCM()),
       className(const LogicalSupporter()),
+      className(const LookAndSayText()),
       className(const MagicEyeSolver()),
       className(const MajorSystem()),
       className(const MathematicalConstants()),
@@ -767,6 +770,7 @@ void _initStaticToolList() {
       className(const OhlsenTelegraph()),
       className(OneTimePad()),
       className(Ook()),
+      className(const OrthogonalProjection()),
       className(const PantoneColorCodes()),
       className(const PaperFormats()),
       className(const PasleyTelegraph()),

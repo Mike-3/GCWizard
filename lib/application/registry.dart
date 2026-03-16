@@ -57,6 +57,7 @@ import 'package:gc_wizard/application/category_views/selector_lists/number_seque
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_jacobsthallucas_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_jacobsthaloblong_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_lonelynumbers_selection.dart';
+import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_look_and_say_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_lucas_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_luckynumbers_selection.dart';
 import 'package:gc_wizard/application/category_views/selector_lists/number_sequences/numbersequence_lychrel_selection.dart';
@@ -143,6 +144,7 @@ import 'package:gc_wizard/tools/coords/intersect_three_circles/widget/intersect_
 import 'package:gc_wizard/tools/coords/intersect_two_circles/widget/intersect_two_circles.dart';
 import 'package:gc_wizard/tools/coords/intersection/widget/intersection.dart';
 import 'package:gc_wizard/tools/coords/map_view/widget/map_view.dart';
+import 'package:gc_wizard/tools/coords/orthogonal_projection/widget/orthogonal_projection.dart';
 import 'package:gc_wizard/tools/coords/resection/widget/resection.dart';
 import 'package:gc_wizard/tools/coords/rhumb_line/widget/rhumbline_distancebearing.dart';
 import 'package:gc_wizard/tools/coords/rhumb_line/widget/rhumbline_waypoint_projection.dart';
@@ -353,7 +355,6 @@ import 'package:gc_wizard/tools/images_and_files/qr_code/widget/qr_code.dart';
 import 'package:gc_wizard/tools/images_and_files/stegano/widget/stegano.dart';
 import 'package:gc_wizard/tools/images_and_files/tupper_formula/widget/tupper_formula.dart';
 import 'package:gc_wizard/tools/images_and_files/visual_cryptography/widget/visual_cryptography.dart';
-import 'package:gc_wizard/tools/images_and_files/waveform/widget/waveform.dart';
 import 'package:gc_wizard/tools/science_and_technology/alcohol_mass/widget/alcohol_mass.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/hebrew/widget/hebrew_number_system.dart';
 import 'package:gc_wizard/tools/science_and_technology/alphabet_number_systems/milesian/widget/milesian_number_system.dart';
@@ -459,6 +460,8 @@ import 'package:gc_wizard/tools/science_and_technology/number_sequences/jacobsth
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/jacobsthal_lucas/widget/jacobsthal_lucas.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/jacobsthal_oblong/widget/jacobsthal_oblong.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/lonely_numbers/widget/lonely_numbers.dart';
+import 'package:gc_wizard/tools/science_and_technology/number_sequences/look_and_say/widget/look_and_say.dart';
+import 'package:gc_wizard/tools/science_and_technology/number_sequences/look_and_say/widget/look_and_say_text.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/lucas/widget/lucas.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/lucky_numbers/widget/lucky_numbers.dart';
 import 'package:gc_wizard/tools/science_and_technology/number_sequences/lychrel/widget/lychrel.dart';
@@ -2350,11 +2353,6 @@ void initializeRegistry(BuildContext context) {
           'images'
         ],
         licenses: const []),
-    GCWTool(tool: const WaveForm(), id: 'waveform', categories: const [
-      ToolCategory.IMAGES_AND_FILES
-    ], searchKeys: const [
-      'waveform',
-    ]),
     GCWTool(tool: const WASD(), id: 'wasd', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -3681,6 +3679,18 @@ void initializeRegistry(BuildContext context) {
         ],
         licenses: const []),
     GCWTool(
+        tool: const OrthogonalProjection(),
+        id: 'coords_orthogonalprojection',
+        iconPath: 'lib/tools/coords/_common/assets/icons/icon_orthogonalprojection.png',
+        categories: const [
+          ToolCategory.COORDINATES
+        ],
+        searchKeys: const [
+          'coordinates',
+          'coordinates_orthogonalprojection',
+        ],
+        licenses: [stl._toolLicenseMitre]),
+    GCWTool(
         tool: const Intersection(),
         id: 'coords_intersection',
         iconPath: 'lib/tools/coords/_common/assets/icons/icon_intersection.png',
@@ -3989,6 +3999,64 @@ void initializeRegistry(BuildContext context) {
         stl._toolLicenseElementsOfGeocachingGeocacherMagazine,
         stl._toolLicenseElementsOfGeocachingGeocachenBE,
       ]),
+
+    // EllipsoidTrianglePointsSelection ***************************************************
+    GCWTool(
+        tool: const TriangleNapoleonPoints(),
+        id: 'triangle_point_napoleon',
+        searchKeys: const [
+          'triangle',
+        ],
+        ),
+    GCWTool(
+      tool: const TriangleSideMidPoints(),
+      id: 'triangle_point_sidesmidpoint',
+      searchKeys: const [
+        'triangle',
+      ],
+    ),
+    GCWTool(
+      tool: const TriangleIncircle(),
+      id: 'triangle_point_incircle',
+      searchKeys: const [
+        'triangle',
+      ],
+    ),
+    GCWTool(
+      tool: const TriangleCircumCircle(),
+      id: 'triangle_point_circumcircle',
+      searchKeys: const [
+        'triangle',
+      ],
+    ),
+    GCWTool(
+      tool: const TriangleCenterOfGravity(),
+      id: 'triangle_point_centerofgravity',
+      searchKeys: const [
+        'triangle',
+      ],
+    ),
+    GCWTool(
+      tool: const TriangleOrthocenter(),
+      id: 'triangle_point_orthocenter',
+      searchKeys: const [
+        'triangle',
+      ],
+    ),
+    GCWTool(
+      tool: const TriangleExcircles(),
+      id: 'triangle_point_excircles',
+      searchKeys: const [
+        'triangle',
+      ],
+    ),
+    GCWTool(
+      tool: const TriangleGergonnePoint(),
+      id: 'triangle_point_gergonne',
+      searchKeys: const [
+        'triangle',
+      ],
+    ),
 
     // EllipsoidTrianglePointsSelection ***************************************************
     GCWTool(
@@ -5619,7 +5687,14 @@ void initializeRegistry(BuildContext context) {
             'https://web.archive.org/web/20251105212042/https://www.spektrum.de/kolumne/das-geheimnis-um-geeignete-zahlen/2283662',
           ),
         ]),
-
+    GCWTool(
+        tool: const NumberSequenceLookAndSaySelection(),
+        id: 'numbersequence_look_and_saynumbers',
+        searchKeys: const [
+          'numbers',
+          'numbersequence',
+          'numbersequence_look_and_saynumbersselection',
+        ]),
     //NumberSequenceSelection SuitableNumbers ****************************************************************************************
     GCWTool(
         tool: const NumberSequenceSuitableNumbersNthNumber(),
@@ -5702,7 +5777,7 @@ void initializeRegistry(BuildContext context) {
         id_prefix: 'busy_beaver_',
         searchKeys: const []),
 
-    //NumberSequenceSelection Carmichael NUmbers ****************************************************************************************
+    //NumberSequenceSelection Carmichael Numbers ****************************************************************************************
     GCWTool(
         tool: const NumberSequenceCarmichaelNumbersNthNumber(),
         id: 'numbersequence_nth',
@@ -5729,7 +5804,7 @@ void initializeRegistry(BuildContext context) {
         id_prefix: 'carmichaelnumbers_',
         searchKeys: const []),
 
-    //NumberSequenceSelection Sphenic NUmbers ****************************************************************************************
+    //NumberSequenceSelection Sphenic Numbers ****************************************************************************************
     GCWTool(
         tool: const NumberSequenceSphenicNumbersNthNumber(),
         id: 'numbersequence_nth',
@@ -6607,6 +6682,40 @@ void initializeRegistry(BuildContext context) {
         id_prefix: 'primes_',
         searchKeys: const []),
 
+    //NumberSequenceSelection Look and Say ****************************************************************************************
+    GCWTool(
+        tool: const NumberSequenceLookAndSayNthNumber(),
+        id: 'numbersequence_nth',
+        id_prefix: 'lookandsay_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const NumberSequenceLookAndSayRange(),
+        id: 'numbersequence_range',
+        id_prefix: 'lookandsay_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const NumberSequenceLookAndSayCheckNumber(),
+        id: 'numbersequence_check',
+        id_prefix: 'lookandsay_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const NumberSequenceLookAndSayDigits(),
+        id: 'numbersequence_digits',
+        id_prefix: 'lookandsay_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const NumberSequenceLookAndSayContainsDigits(),
+        id: 'numbersequence_containsdigits',
+        id_prefix: 'lookandsay_',
+        searchKeys: const []),
+    GCWTool(
+        tool: const LookAndSayText(),
+        id: 'look_and_say',
+        searchKeys: const [
+          'numbers',
+          'numbersequence',
+          'numbersequence_look_and_saynumbersselection'
+        ]),
     //PeriodicTableSelection ***************************************************************************************
     GCWTool(
         tool: const PeriodicTable(),

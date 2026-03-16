@@ -155,14 +155,16 @@ List<List<int>> _filterImages(List<List<int>> filteredList, int imageIndex, List
   return filteredList;
 }
 
-MorseCodeOutput? decodeMorseCode(List<int> durations, List<bool> onSignal, {double tolerance = 1.2}) {
+MorseCodeOutput? decodeMorseCode(List<int> durations, List<bool> onSignal) {
   var timeList = _buildTimeList(durations, onSignal);
   var signalTimes = foundSignalTimes(timeList);
+
   if (signalTimes == null) return null;
+
   var out = '';
   for (var element in timeList) {
     if (element.on) {
-      out += (element.duration > signalTimes.ditLevel * tolerance) ? '-' : '.'; //2
+      out += (element.duration > signalTimes.ditLevel) ? '-' : '.'; //2
     } else if (element.duration > signalTimes.spaceLevel) {
       out += String.fromCharCode(8195) + "|" + String.fromCharCode(8195);
     } else if (element.duration > signalTimes.dahLevel) {
