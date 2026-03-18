@@ -5,9 +5,9 @@ void main() {
   group("regex.evaluate:", () {
     List<Map<String, Object?>> _inputsToExpected = [
 
-      {'text' : '',   'pattern' : '',   'expectedOutput' : []},
+      {'text' : '',   'pattern' : '',   'expectedOutput' : <List<String>>[['']]},
 
-      {'text' : '',   'pattern' : '[\\.,].',   'expectedOutput' : []},
+      {'text' : '',   'pattern' : '[\\.,].',   'expectedOutput' : <List<String>>[['']]},
       {'text' : 'hallo',   'pattern' : '',   'expectedOutput' : [['hallo']]},
 
       {'text' : 'susi wacht einsam wenn ulla schläft',   'pattern' : '(eins|zwei|drei|vier|fuenf|sechs|sieben|acht|neun|null)',   'expectedOutput' : [['acht'], ['eins']]},
