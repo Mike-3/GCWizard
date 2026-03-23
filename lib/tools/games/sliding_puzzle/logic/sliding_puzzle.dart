@@ -13,7 +13,7 @@ import 'package:gc_wizard/tools/games/sliding_puzzle/logic/state.dart';
 //       : super(initialState, goalState);
 //
 //   @override
-  List<State> solve() {
+  List<State> solve(State initialState, State goalState) {
     List<State> stack = [];
     Queue<State> deque = Queue<State>();
 
