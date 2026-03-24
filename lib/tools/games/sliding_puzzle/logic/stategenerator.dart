@@ -31,7 +31,7 @@ class StateGenerator {
     return State(goalBoard, null);
   }
 
-  List<State> generateStates(State currentState) {
+  static List<State> generateStates(State currentState) {
     Point<int> emptyField = currentState.getEmptyField();
     State parent = currentState;
     int rows = State.getRows();
@@ -55,25 +55,25 @@ class StateGenerator {
     return nextStates;
   }
 
-  bool checkUp(Point<int> emptyField) {
+  static bool checkUp(Point<int> emptyField) {
     int pos = emptyField.y - 1;
     return pos >= 0;
   }
 
-  bool checkDown(Point<int> emptyField, int rows) {
+  static bool checkDown(Point<int> emptyField, int rows) {
     int pos = emptyField.y + 1;
     return pos < rows;
   }
 
-  bool checkLeft(Point<int> emptyField, int columns) {
+  static bool checkLeft(Point<int> emptyField, int columns) {
     return emptyField.x % columns != 0;
   }
 
-  bool checkRight(Point<int> emptyField, int columns) {
+  static bool checkRight(Point<int> emptyField, int columns) {
     return emptyField.x % columns != columns - 1;
   }
 
-  State moveUp(int rows, int columns, Point<int> emptyField, State parent) {
+  static State moveUp(int rows, int columns, Point<int> emptyField, State parent) {
     // List<List<int>> newBoard = List.generate(rows, (_) => List.filled(columns, 0));
     final newBoard = cloneBoard(parent.getBoard());
 
@@ -87,9 +87,9 @@ class StateGenerator {
     return State(newBoard, parent);
   }
 
-  State moveDown(int rows, int columns, Point<int> emptyField, State parent) {
-    List<List<int>> newBoard =
-    List.generate(rows, (_) => List.filled(columns, 0));
+  static State moveDown(int rows, int columns, Point<int> emptyField, State parent) {
+    // List<List<int>> newBoard = List.generate(rows, (_) => List.filled(columns, 0));
+    final newBoard = cloneBoard(parent.getBoard());
 
     // copyBoard(newBoard, rows, columns, parent);
 
@@ -101,7 +101,7 @@ class StateGenerator {
     return State(newBoard, parent);
   }
 
-  State moveLeft(int rows, int columns, Point<int> emptyField, State parent) {
+  static State moveLeft(int rows, int columns, Point<int> emptyField, State parent) {
     // List<List<int>> newBoard = List.generate(rows, (_) => List.filled(columns, 0));
     final newBoard = cloneBoard(parent.getBoard());
 
@@ -115,7 +115,7 @@ class StateGenerator {
     return State(newBoard, parent);
   }
 
-  State moveRight(int rows, int columns, Point<int> emptyField, State parent) {
+  static State moveRight(int rows, int columns, Point<int> emptyField, State parent) {
     // List<List<int>> newBoard = List.generate(rows, (_) => List.filled(columns, 0));
     final newBoard = cloneBoard(parent.getBoard());
 
@@ -129,15 +129,15 @@ class StateGenerator {
     return State(newBoard, parent);
   }
 
-  void copyBoard(List<List<int>> newBoard, int rows, int columns, State parent) {
-    List<List<int>> board = parent.getBoard();
-
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < columns; j++) {
-        newBoard[i][j] = board[i][j];
-      }
-    }
-  }
+  // void copyBoard(List<List<int>> newBoard, int rows, int columns, State parent) {
+  //   List<List<int>> board = parent.getBoard();
+  //
+  //   for (int i = 0; i < rows; i++) {
+  //     for (int j = 0; j < columns; j++) {
+  //       newBoard[i][j] = board[i][j];
+  //     }
+  //   }
+  // }
 
   static List<List<int>> cloneBoard(List<List<int>> board) {
     return board.map((row) => List<int>.from(row)).toList();

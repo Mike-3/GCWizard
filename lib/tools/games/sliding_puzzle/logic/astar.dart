@@ -20,7 +20,7 @@ import 'state.dart';
     );
 
     final Set<State> visited = {};
-    final generator = StateGenerator();
+    // final generator = StateGenerator();
 
     queue.add(initialState);
     visited.add(initialState);
@@ -42,7 +42,7 @@ import 'state.dart';
         return toReturn;
       }
 
-      List<State> nextStates = generator.generateStates(current);
+      List<State> nextStates = StateGenerator.generateStates(current);
 
       for (State state in nextStates) {
         state.setHeuristicValue(goalState);
@@ -58,5 +58,4 @@ import 'state.dart';
   }
 // }
 
-int stateCompare(State a, State b) =>
-    a.getHeuristicValue().compareTo(b.getHeuristicValue());
+int stateCompare(State a, State b) => a.getHeuristicValue().compareTo(b.getHeuristicValue());
