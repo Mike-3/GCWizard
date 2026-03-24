@@ -1,7 +1,5 @@
-import 'dart:collection';
-
-// import 'algorithm.dart';
 import 'package:collection/collection.dart';
+import 'package:gc_wizard/tools/games/sliding_puzzle/logic/stategenerator.dart';
 
 import 'state.dart';
 // import 'state_comparator.dart';
@@ -18,7 +16,7 @@ import 'state.dart';
 
     // PriorityQueue Ersatz in Dart
     final queue = PriorityQueue<State>(
-          (a, b) => StateComparator().compare(a, b),
+          (a, b) => stateCompare(a, b),
     );
 
     final Set<State> visited = {};
@@ -59,3 +57,6 @@ import 'state.dart';
     return toReturn;
   }
 // }
+
+int stateCompare(State a, State b) =>
+    a.getHeuristicValue().compareTo(b.getHeuristicValue());
