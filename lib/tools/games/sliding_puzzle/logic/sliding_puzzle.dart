@@ -1,6 +1,7 @@
 //https://github.com/gojkovicmatija99/Sliding-puzzle-solver
 import 'dart:collection';
 
+import 'package:gc_wizard/tools/games/sliding_puzzle/logic/astar.dart';
 import 'package:gc_wizard/tools/games/sliding_puzzle/logic/state.dart';
 
 // import 'state.dart';
@@ -13,9 +14,10 @@ import 'package:gc_wizard/tools/games/sliding_puzzle/logic/state.dart';
 //       : super(initialState, goalState);
 //
 //   @override
-  List<State> solve(State initialState, State goalState) {
+  List<State> solveTileByTile(State initialState, State goalState) {
     List<State> stack = [];
     Queue<State> deque = Queue<State>();
+    int numOfSteps;
 
     List<List<int>> initialBoard = initialState.getBoard();
     List<List<int>> goalBoard = goalState.getBoard();
@@ -59,12 +61,12 @@ import 'package:gc_wizard/tools/games/sliding_puzzle/logic/state.dart';
         State newInitialState = State(newInitialBoard, null);
         State newGoalState = State(newGoalBoard, null);
 
-        AStar aStar = AStar(newInitialState, newGoalState);
-        aStar.addSubscriber(MainView.getInstance());
+        // AStar aStar = AStar(newInitialState, newGoalState);
+        // aStar.addSubscriber(MainView.getInstance());
 
-        stack = aStar.solve();
-        numOfSteps += aStar.getNumOfSteps();
-        nodeExplored += aStar.getNodeExplored();
+        stack = solveAStar(newInitialState, newGoalState);
+        // numOfSteps += aStar.getNumOfSteps();
+        // nodeExplored += aStar.getNodeExplored();
 
         addTopHalf(stack, goalBoard, rows, columns, currRow);
         addToDeque(deque, stack);
