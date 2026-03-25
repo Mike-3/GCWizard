@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:gc_wizard/tools/games/sliding_puzzle/logic/astar.dart';
 import 'package:gc_wizard/tools/games/sliding_puzzle/logic/state.dart';
+import 'package:gc_wizard/tools/games/sliding_puzzle/logic/stategenerator.dart';
 
 // import 'state.dart';
 // import 'algorithm.dart';
@@ -173,3 +174,13 @@ import 'package:gc_wizard/tools/games/sliding_puzzle/logic/state.dart';
     }
   }
 // }
+
+void main() {
+
+  var initialState = StateGenerator.makeGoalState();
+  initialState.board= <List<int>> [[1,2,3, 4],[5,6,7, 8],[9,10,11, 12],[0,13,14, 15]];
+
+  var goalState = initialState.makeGoalState();
+  var result = solveTileByTile(initialState, goalState);
+  print(result);
+}
