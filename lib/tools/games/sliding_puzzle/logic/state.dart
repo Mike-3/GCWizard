@@ -18,6 +18,8 @@ class State {
 
   State(List<List<int>> board, this.parent) {
     emptyField = Point(0, 0);
+    rows = board.length;
+    columns = board.first.length;
     this.board = List.generate(
       rows,
           (_) => List.filled(columns, 0),

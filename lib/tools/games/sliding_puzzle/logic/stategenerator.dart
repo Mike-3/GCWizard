@@ -10,9 +10,9 @@ import 'state.dart';
 // Board klonen mit .map()
 // oder sogar immutable states + caching
 class StateGenerator {
-  static State makeGoalState() {
-    int rows = State.getRows();
-    int columns = State.getColumns();
+  static State makeGoalState(int rows, int columns) {
+    // int rows = State.getRows();
+    // int columns = State.getColumns();
 
     int num = 1;
     List<List<int>> goalBoard =

@@ -2,6 +2,7 @@
 import 'dart:collection';
 
 import 'package:gc_wizard/tools/games/sliding_puzzle/logic/astar.dart';
+import 'package:gc_wizard/tools/games/sliding_puzzle/logic/hamming.dart';
 import 'package:gc_wizard/tools/games/sliding_puzzle/logic/state.dart';
 import 'package:gc_wizard/tools/games/sliding_puzzle/logic/stategenerator.dart';
 
@@ -176,11 +177,17 @@ import 'package:gc_wizard/tools/games/sliding_puzzle/logic/stategenerator.dart';
 // }
 
 void main() {
+  // State initialState = new State(initalBoard, null);
+  // State goalState = StateGenerator.makeGoalState();
 
-  var initialState = StateGenerator.makeGoalState();
-  initialState.board= <List<int>> [[1,2,3, 4],[5,6,7, 8],[9,10,11, 12],[0,13,14, 15]];
+ var initialState = State([[1,2,3, 4],[5,6,7, 8],[9,10,11, 12],[0,13,14, 15]], null);
 
-  var goalState = initialState.makeGoalState();
+  var goalState = StateGenerator.makeGoalState(4, 4);
+  // initialState.board= <List<int>> [[1,2,3, 4],[5,6,7, 8],[9,10,11, 12],[0,13,14, 15]];
+
+  // var goalState = initialState.makeGoalState();
+ State.setHeuristic(Hamming());
+ // State.heuristic = Hamming()
   var result = solveTileByTile(initialState, goalState);
   print(result);
 }
