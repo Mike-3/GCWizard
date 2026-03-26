@@ -189,5 +189,6 @@ void main() {
  State.setHeuristic(Hamming());
  // State.heuristic = Hamming()
   var result = solveTileByTile(initialState, goalState);
+  result.forEach((e) => print(e.emptyField));
   print(result);
 }
