@@ -274,43 +274,74 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
               )
             ],
           ),
-          Column(
-            children: [
-              GCWIconButton(
-                icon: Icons.arrow_drop_up,
-                onPressed: () {
-                  setState(() {
-                    _moveUp(tool.id);
-                  });
-                },
-              ),
-              GCWIconButton(
-                icon: Icons.arrow_drop_down,
-                onPressed: () {
-                  setState(() {
-                    _moveDown(tool.id);
-                  });
-                },
-              )
-            ],
-          )
+          // Column(
+          //   children: [
+      Container(
+      width:40,
+      decoration: ShapeDecoration(
+      color: themeColors().secondary(),
+      shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
+      )),
+      // decoration: TextButton.styleFrom(
+      // padding: EdgeInsets.zero,
+      // shape:  RoundedRectangleBorder(
+      // side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
+      // borderRadius: BorderRadius.circular(ROUNDED_BORDER_RADIUS))
+),
+              // GCWIconButton(
+              //   icon: Icons.arrow_drop_up,
+              //   onPressed: () {
+              //     setState(() {
+              //       _moveUp(tool.id);
+              //     });
+              //   },
+              // ),
+              // GCWIconButton(
+              //   icon: Icons.arrow_drop_down,
+              //   onPressed: () {
+              //     setState(() {
+              //       _moveDown(tool.id);
+              //     });
+              //   },
+              // )
+          //   ],
+          // )
         ],
       );
 
       Widget output;
       if (odd) {
-        output = Container(color: themeColors().outputListOddRows(), child: row);
+        output = Container(key: Key(tool.id.toString()), color: themeColors().outputListOddRows(), child: row);
       } else {
-        output = Container(child: row);
+        output = Container(key: Key(tool.id.toString()), child: row);
       }
       odd = !odd;
 
       return output;
     }).toList();
 
-    return Column(
+    // return Column(
+    // children: [
+    return ReorderableListView(
+      shrinkWrap: true,
+      physics: const AlwaysScrollableScrollPhysics(),
+      //proxyDecorator: proxyDecorator,
       children: rows,
-    );
+      onReorder: (int oldIndex, int newIndex) {
+        setState(() {
+          if (oldIndex < newIndex) {
+            newIndex -= 1;
+          }
+          print('oldIndex: $oldIndex, newIndex: $newIndex');
+          // final int item = _items.removeAt(oldIndex);
+          // _items.insert(newIndex, item);
+          // var mdtTool = mdtTools.removeAt(oldIndex);
+          // mdtTools.insert(oldIndex + 1, mdtTool);
+        });
+      },
+     );
+    //     ]);
   }
 }
 
