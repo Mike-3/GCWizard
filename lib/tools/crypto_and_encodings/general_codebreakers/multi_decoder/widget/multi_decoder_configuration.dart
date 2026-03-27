@@ -112,6 +112,12 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
       mdtTools.insert(oldIndex + 1, mdtTool);
     }
   }
+  void _moveTool(int oldIndex, int newIndex) {
+    if (oldIndex < mdtTools.length - 1) {
+      var mdtTool = mdtTools.removeAt(oldIndex);
+      mdtTools.insert(newIndex, mdtTool);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -234,31 +240,31 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
           Column(
             children: [
               _currentEditId == tool.id
-                  ? GCWIconButton(
-                      icon: Icons.check,
-                      onPressed: () {
-                        if (_editingToolName.isNotEmpty) {
-                          tool.name = _editingToolName;
-                        }
-                        _updateTool(tool);
+                ? GCWIconButton(
+                    icon: Icons.check,
+                    onPressed: () {
+                      if (_editingToolName.isNotEmpty) {
+                        tool.name = _editingToolName;
+                      }
+                      _updateTool(tool);
 
-                        setState(() {
-                          _currentEditId = null;
-                          _editingToolNameController.text = '';
-                          _editingToolName = '';
-                        });
-                      },
-                    )
-                  : GCWIconButton(
-                      icon: Icons.edit,
-                      onPressed: () {
-                        setState(() {
-                          _currentEditId = tool.id;
-                          _editingToolNameController.text = tool.name;
-                          _editingToolName = tool.name;
-                        });
-                      },
-                    ),
+                      setState(() {
+                        _currentEditId = null;
+                        _editingToolNameController.text = '';
+                        _editingToolName = '';
+                      });
+                    },
+                  )
+                : GCWIconButton(
+                    icon: Icons.edit,
+                    onPressed: () {
+                      setState(() {
+                        _currentEditId = tool.id;
+                        _editingToolNameController.text = tool.name;
+                        _editingToolName = tool.name;
+                      });
+                    },
+                  ),
               GCWIconButton(
                 icon: Icons.remove,
                 onPressed: () {
@@ -274,39 +280,15 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
               )
             ],
           ),
-          // Column(
-          //   children: [
-      Container(
-      width:40,
-      decoration: ShapeDecoration(
-      color: themeColors().secondary(),
-      shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
-      )),
-      // decoration: TextButton.styleFrom(
-      // padding: EdgeInsets.zero,
-      // shape:  RoundedRectangleBorder(
-      // side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
-      // borderRadius: BorderRadius.circular(ROUNDED_BORDER_RADIUS))
-),
-              // GCWIconButton(
-              //   icon: Icons.arrow_drop_up,
-              //   onPressed: () {
-              //     setState(() {
-              //       _moveUp(tool.id);
-              //     });
-              //   },
-              // ),
-              // GCWIconButton(
-              //   icon: Icons.arrow_drop_down,
-              //   onPressed: () {
-              //     setState(() {
-              //       _moveDown(tool.id);
-              //     });
-              //   },
-              // )
-          //   ],
-          // )
+          Container(
+            width:40,
+            height: 2 * (38.0 + 4),
+            decoration: ShapeDecoration(
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
+                borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
+            )),
+          ),
         ],
       );
 
@@ -321,27 +303,19 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
       return output;
     }).toList();
 
-    // return Column(
-    // children: [
     return ReorderableListView(
       shrinkWrap: true,
       physics: const AlwaysScrollableScrollPhysics(),
-      //proxyDecorator: proxyDecorator,
       children: rows,
       onReorder: (int oldIndex, int newIndex) {
         setState(() {
           if (oldIndex < newIndex) {
             newIndex -= 1;
           }
-          print('oldIndex: $oldIndex, newIndex: $newIndex');
-          // final int item = _items.removeAt(oldIndex);
-          // _items.insert(newIndex, item);
-          // var mdtTool = mdtTools.removeAt(oldIndex);
-          // mdtTools.insert(oldIndex + 1, mdtTool);
+          _moveTool(oldIndex, newIndex);
         });
       },
      );
-    //     ]);
   }
 }
 
