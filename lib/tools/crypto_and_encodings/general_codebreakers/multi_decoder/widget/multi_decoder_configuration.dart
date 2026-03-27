@@ -196,75 +196,76 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
   }
 
   Widget _buildToollist() {
-    var odd = true;
-    var rows = mdtTools.map((tool) {
-      var row = Row(
+    var odd = false;
+
+    Future<Widget> buildRow(AbstractMultiDecoderTool tool, bool odd) {
+      Widget row = Row(
         children: [
           Expanded(
               child: _currentEditId == tool.id
                   ? Container(
-                      padding: const EdgeInsets.only(right: DOUBLE_DEFAULT_MARGIN),
-                      child: Column(children: [
-                        Row(
-                          children: [
-                            Expanded(flex: 1, child: GCWText(text: i18n(context, 'multidecoder_configuration_name'))),
-                            Expanded(
-                                flex: 3,
-                                child: GCWTextField(
-                                  controller: _editingToolNameController,
-                                  onChanged: (value) {
-                                    _editingToolName = value;
-                                  },
-                                ))
-                          ],
-                        ),
-                        tool
-                        // tool.configurationWidget ?? Container()
-                      ]))
-                  : Column(
+                  padding: const EdgeInsets.only(right: DOUBLE_DEFAULT_MARGIN),
+                  child: Column(children: [
+                    Row(
                       children: [
-                        GCWText(text: tool.name),
-                        Container(
-                          padding: const EdgeInsets.only(left: DEFAULT_DESCRIPTION_MARGIN),
-                          child: GCWText(
-                            text: tool.options.entries.map((entry) {
-                              var result = _optionNameKey(entry.value.toString(), tool.internalToolName);
-
-                              return '${i18n(context, entry.key)}: ${i18n(context, result.toString(), ifTranslationNotExists: result)}';
-                            }).join('\n'),
-                            style: gcwDescriptionTextStyle(),
-                          ),
-                        )
+                        Expanded(flex: 1, child: GCWText(text: i18n(context, 'multidecoder_configuration_name'))),
+                        Expanded(
+                            flex: 3,
+                            child: GCWTextField(
+                              controller: _editingToolNameController,
+                              onChanged: (value) {
+                                _editingToolName = value;
+                              },
+                            ))
                       ],
-                    )),
+                    ),
+                    tool
+                    // tool.configurationWidget ?? Container()
+                  ]))
+                  : Column(
+                children: [
+                  GCWText(text: tool.name),
+                  Container(
+                    padding: const EdgeInsets.only(left: DEFAULT_DESCRIPTION_MARGIN),
+                    child: GCWText(
+                      text: tool.options.entries.map((entry) {
+                        var result = _optionNameKey(entry.value.toString(), tool.internalToolName);
+
+                        return '${i18n(context, entry.key)}: ${i18n(context, result.toString(), ifTranslationNotExists: result)}';
+                      }).join('\n'),
+                      style: gcwDescriptionTextStyle(),
+                    ),
+                  )
+                ],
+              )),
           Column(
             children: [
               _currentEditId == tool.id
-                ? GCWIconButton(
-                    icon: Icons.check,
-                    onPressed: () {
-                      if (_editingToolName.isNotEmpty) {
-                        tool.name = _editingToolName;
-                      }
-                      _updateTool(tool);
+                  ? GCWIconButton(
+                icon: Icons.check,
+                onPressed: () {
+                  if (_editingToolName.isNotEmpty) {
+                    tool.name = _editingToolName;
+                  }
+                  _updateTool(tool);
 
-                      setState(() {
-                        _currentEditId = null;
-                        _editingToolNameController.text = '';
-                        _editingToolName = '';
-                      });
-                    },
-                  )
-                : GCWIconButton(
-                    icon: Icons.edit,
-                    onPressed: () {
-                      setState(() {
-                        _currentEditId = tool.id;
-                        _editingToolNameController.text = tool.name;
-                        _editingToolName = tool.name;
-                      });
-                    },
-                  ),
+                  setState(() {
+                    _currentEditId = null;
+                    _editingToolNameController.text = '';
+                    _editingToolName = '';
+                  });
+                },
+              )
+                  : GCWIconButton(
+                icon: Icons.edit,
+                onPressed: () {
+                  setState(() {
+                    _currentEditId = tool.id;
+                    _editingToolNameController.text = tool.name;
+                    _editingToolName = tool.name;
+                  });
+                },
+              ),
               GCWIconButton(
                 icon: Icons.remove,
                 onPressed: () {
@@ -284,23 +285,32 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
             width:40,
             height: 2 * (38.0 + 4),
             decoration: ShapeDecoration(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
-                borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
-            )),
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
+                  borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
+                )),
           ),
         ],
       );
 
-      Widget output;
       if (odd) {
-        output = Container(key: Key(tool.id.toString()), color: themeColors().outputListOddRows(), child: row);
+        row = Container(key: Key(tool.id.toString()), color: themeColors().outputListOddRows(), child: row);
       } else {
-        output = Container(key: Key(tool.id.toString()), child: row);
+        row =  Container(key: Key(tool.id.toString()), child: row);
       }
-      odd = !odd;
+      return Future.value(row);
+    }
 
-      return output;
+    var rows = mdtTools.map((tool) {
+      odd = !odd;
+//return await buildRow(tool, odd);
+      return FutureBuilder<Widget>(
+          key: Key(tool.id.toString()) ,
+          future: buildRow(tool, odd),
+          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+            return  snapshot.data ?? Container();
+          });
+
     }).toList();
 
     return ReorderableListView(
