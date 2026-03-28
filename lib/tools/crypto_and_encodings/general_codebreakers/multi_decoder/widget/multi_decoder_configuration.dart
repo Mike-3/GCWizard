@@ -298,6 +298,12 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
       } else {
         row =  Container(key: Key(tool.id.toString()), child: row);
       }
+
+      row = ReorderableDragStartListener(
+        child: row,
+        //child: const Icon(Icons.drag_handle),
+        index: tool.id,
+      );
       return Future.value(row);
     }
 
@@ -315,7 +321,8 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
 
     return ReorderableListView(
       shrinkWrap: true,
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics:  const ClampingScrollPhysics(), //const AlwaysScrollableScrollPhysics(),
+      buildDefaultDragHandles: false,
       children: rows,
       onReorder: (int oldIndex, int newIndex) {
         setState(() {
