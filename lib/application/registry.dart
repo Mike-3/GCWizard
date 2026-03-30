@@ -501,6 +501,7 @@ import 'package:gc_wizard/tools/science_and_technology/primes/primes_nearestprim
 import 'package:gc_wizard/tools/science_and_technology/primes/primes_nthprime/widget/primes_nthprime.dart';
 import 'package:gc_wizard/tools/science_and_technology/primes/primes_primeindex/widget/primes_primeindex.dart';
 import 'package:gc_wizard/tools/science_and_technology/projectiles/widget/projectiles.dart';
+import 'package:gc_wizard/tools/science_and_technology/punycode/widget/punycode.dart';
 import 'package:gc_wizard/tools/science_and_technology/quadratic_equation/widget/quadratic_equation.dart';
 import 'package:gc_wizard/tools/science_and_technology/recycling/widget/recycling.dart';
 import 'package:gc_wizard/tools/science_and_technology/regex/widget/regex.dart';
@@ -1718,8 +1719,7 @@ void initializeRegistry(BuildContext context) {
               context: context,
               author: 'Dennis \'dennistreysa\' P.',
               title: 'Py-Ramid',
-              sourceUrl:
-                  'https://web.archive.org/web/20240819161342/https://github.com/dennistreysa/Py-Ramid',
+              sourceUrl: 'https://web.archive.org/web/20240819161342/https://github.com/dennistreysa/Py-Ramid',
               licenseType: ToolLicenseType.GPL3,
               licenseUrl:
                   'https://web.archive.org/web/20240819161613/https://github.com/dennistreysa/Py-Ramid?tab=GPL-3.0-1-ov-file'),
@@ -1786,8 +1786,7 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'de.wikipedia.org and contributors',
           title: 'Zielcode',
-          sourceUrl:
-              'https://de.wikipedia.org/w/index.php?title=Zielcode&oldid=246247471')
+          sourceUrl: 'https://de.wikipedia.org/w/index.php?title=Zielcode&oldid=246247471')
     ]),
     GCWTool(tool: const PiSelection(), id: 'pi_selection', categories: const [
       ToolCategory.SCIENCE_AND_TECHNOLOGY
@@ -1804,8 +1803,7 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'Physical Measurement Laboratory of NIST',
           title: 'Fundamental Physical Constants',
-          sourceUrl:
-          'https://web.archive.org/web/20240926130440/https://physics.nist.gov/cuu/Constants/index.html',
+          sourceUrl: 'https://web.archive.org/web/20240926130440/https://physics.nist.gov/cuu/Constants/index.html',
           licenseType: ToolLicenseType.PUBLIC_DOMAIN),
     ]),
     GCWTool(tool: Playfair(), id: 'playfair', categories: const [
@@ -1878,6 +1876,18 @@ void initializeRegistry(BuildContext context) {
     ], searchKeys: const [
       'projectiles',
     ], licenses: const []),
+    GCWTool(tool: const Punycode(), id: 'punycode', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'punycode',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+        context: context,
+        author: '',
+        title: 'IDNA Punycode',
+        sourceUrl: 'https://web.archive.org/web/20260316201152/https://datatracker.ietf.org/doc/html/rfc3492',
+        licenseUrl: 'https://web.archive.org/web/20260312003021/https://www.rfc-editor.org/rfc/rfc3492.html#page-35')
+      ]),
     GCWTool(tool: const QrCode(), id: 'qr_code', categories: const [
       ToolCategory.IMAGES_AND_FILES
     ], searchKeys: const [
