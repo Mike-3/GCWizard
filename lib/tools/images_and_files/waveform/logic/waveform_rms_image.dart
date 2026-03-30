@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'dart:async';
 
-enum PARSE_STATUS {OK, ERROR}
+enum PARSE_STATUS { OK, ERROR }
 
 class WaveformAndMorseResult {
-  // final Uint8List rgbaBytes;
   final Uint8List pngBytes;
   final int width;
   final int height;
@@ -20,7 +19,6 @@ class WaveformAndMorseResult {
   final String error;
 
   WaveformAndMorseResult({
-    // required this.rgbaBytes,
     required this.pngBytes,
     required this.width,
     required this.height,
@@ -60,12 +58,10 @@ class _SampleResult {
     required this.status,
     required this.error,
   });
-
 }
 
 // Parser to handle simple PCM/Float-WAV-Files
 class WavParser {
-
   static Future<WavData> parse(Uint8List bytes) async {
     final bd = ByteData.sublistView(bytes);
 
@@ -76,17 +72,29 @@ class WavParser {
         numChannels: 0,
         channels: [],
         status: PARSE_STATUS.ERROR,
-        error: 'waveform_error_file_to_short',
+        error: 'waveform_error_parse_file_to_short',
       );
       // throw FormatException('File to short');
     }
+
+    if (String.fromCharCodes(bytes.sublist(0, 3)) == 'ID3') {
+      int size = ByteData.sublistView(bytes).getInt32(6, Endian.big);
+    }
+
+    // if (String.fromCharCodes(bytes.sublist(0, 4)) == 'OggS') {
+    //   int size = ByteData.sublistView(bytes).getInt32(6, Endian.big);
+    //   print(size);
+    //   print('size      '+String.fromCharCodes(bytes.sublist(size, 3)));
+    //   print('size + 10 '+String.fromCharCodes(bytes.sublist(size + 10, 3)));
+    // }
+
     if (String.fromCharCodes(bytes.sublist(0, 4)) != 'RIFF') {
       return WavData(
         sampleRate: 0,
         numChannels: 0,
         channels: [],
         status: PARSE_STATUS.ERROR,
-        error: 'waveform_error_missing_riff_header',
+        error: 'waveform_error_parse_missing_riff_header',
       );
       // throw FormatException('Missing RIFF-Header');
     }
@@ -96,7 +104,7 @@ class WavParser {
         numChannels: 0,
         channels: [],
         status: PARSE_STATUS.ERROR,
-        error: 'waveform_error_missing_wav_header',
+        error: 'waveform_error_parse_missing_wav_header',
       );
       // throw FormatException('Missing WAVE-Header');
     }
@@ -143,7 +151,7 @@ class WavParser {
         numChannels: 0,
         channels: [],
         status: PARSE_STATUS.ERROR,
-        error: 'waveform_error_malformed_wav_header',
+        error: 'waveform_error_parse_malformed_wav_header',
       );
       // throw FormatException('Malformed WAV-Header');
     }
@@ -154,7 +162,7 @@ class WavParser {
         numChannels: 0,
         channels: [],
         status: PARSE_STATUS.ERROR,
-        error: 'waveform_error_unsupported_format',
+        error: 'waveform_error_parse_unsupported_format',
       );
       // throw FormatException('Unsupported Format - only PCM (1) or IEEE Float (3) are supported');
     }
@@ -165,7 +173,7 @@ class WavParser {
 
     final channels = List.generate(
       numChannels,
-          (_) => List<double>.filled(totalFrames, 0.0, growable: false),
+      (_) => List<double>.filled(totalFrames, 0.0, growable: false),
     );
 
     int pos = dataOffset;
@@ -201,11 +209,11 @@ class WavParser {
   }
 
   static _SampleResult _readSample(
-      ByteData bd,
-      int offset,
-      int bitsPerSample,
-      int audioFormat,
-      ) {
+    ByteData bd,
+    int offset,
+    int bitsPerSample,
+    int audioFormat,
+  ) {
     // PCM
     if (audioFormat == 1) {
       switch (bitsPerSample) {
@@ -214,15 +222,17 @@ class WavParser {
           return _SampleResult(
             sample: (v - 128) / 128.0,
             status: PARSE_STATUS.OK,
-            error: '',);
+            error: '',
+          );
         case 16:
           final v = bd.getInt16(offset, Endian.little);
           return _SampleResult(
             sample: v / 32768.0,
             status: PARSE_STATUS.OK,
-            error: '',);
+            error: '',
+          );
         case 24:
-        // 24-bit little endian, sign-extend auf 32-bit
+          // 24-bit little endian, sign-extend auf 32-bit
           final b0 = bd.getUint8(offset);
           final b1 = bd.getUint8(offset + 1);
           final b2 = bd.getUint8(offset + 2);
@@ -233,19 +243,23 @@ class WavParser {
           return _SampleResult(
             sample: v / 8388608.0, // 2^23
             status: PARSE_STATUS.OK,
-            error: '',);
+            error: '',
+          );
         case 32:
           final v = bd.getInt32(offset, Endian.little);
           return _SampleResult(
             sample: v / 2147483648.0, // 2^31
             status: PARSE_STATUS.OK,
-            error: '',);
+            error: '',
+          );
         default:
           return _SampleResult(
-            sample: 0.0,
-            status: PARSE_STATUS.ERROR,
-            error: 'waveform_error_unsupported_pcm_bit_depth' + ':' + bitsPerSample.toString());
-          // throw FormatException('waveform_error_unsupported_pcm_bit_depth: $bitsPerSample');
+              sample: 0.0,
+              status: PARSE_STATUS.ERROR,
+              error: 'waveform_error_parse_unsupported_pcm_bit_depth' +
+                  ':' +
+                  bitsPerSample.toString());
+        // throw FormatException('waveform_error_unsupported_pcm_bit_depth: $bitsPerSample');
       }
     }
 
@@ -256,19 +270,24 @@ class WavParser {
         return _SampleResult(
           sample: v.clamp(-1.0, 1.0),
           status: PARSE_STATUS.OK,
-          error: '',);
+          error: '',
+        );
       } else {
         return _SampleResult(
-          sample: 0.0,
-          status: PARSE_STATUS.ERROR,
-          error: 'waveform_error_unsupported_float_bit_depth' + ':' + bitsPerSample.toString());
+            sample: 0.0,
+            status: PARSE_STATUS.ERROR,
+            error: 'waveform_error_parse_unsupported_float_bit_depth' +
+                ':' +
+                bitsPerSample.toString());
         // throw FormatException('waveform_error_unsupported_float_bit_depth: $bitsPerSample');
       }
     }
     return _SampleResult(
-      sample: 0.0,
-      status: PARSE_STATUS.ERROR,
-      error: 'waveform_error_unsupported_audioformat' + ':' + audioFormat.toString());
+        sample: 0.0,
+        status: PARSE_STATUS.ERROR,
+        error: 'waveform_error_parse_unsupported_audioformat' +
+            ':' +
+            audioFormat.toString());
     // throw FormatException('waveform_error_unsupported_audioformat: $audioFormat');
   }
 }
@@ -314,12 +333,12 @@ class WavWaveformPainter extends CustomPainter {
   }
 
   void _drawChannel(
-      Canvas canvas,
-      Size size,
-      int channelIndex,
-      double channelHeight,
-      Paint paintWave,
-      ) {
+    Canvas canvas,
+    Size size,
+    int channelIndex,
+    double channelHeight,
+    Paint paintWave,
+  ) {
     final samples = data.channels[channelIndex];
     final totalSamples = samples.length;
 
@@ -379,11 +398,10 @@ class WavWaveformPainter extends CustomPainter {
   }
 }
 
-
 class MorseAnalysisResult {
-  final String bits;          // z.B. "111000111000000..."
-  final String morse;         // z.B. "... --- ..."
-  final String text;          // z.B. "SOS"
+  final String bits; // z.B. "111000111000000..."
+  final String morse; // z.B. "... --- ..."
+  final String text; // z.B. "SOS"
 
   MorseAnalysisResult({
     required this.bits,
@@ -392,172 +410,105 @@ class MorseAnalysisResult {
   });
 }
 
-const Map<String, String> _morseToChar = {
-  '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E',
-  '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
-  '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O',
-  '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
-  '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y',
-  '--..': 'Z',
-  '-----': '0', '.----': '1', '..---': '2', '...--': '3',
-  '....-': '4', '.....': '5', '-....': '6', '--...': '7',
-  '---..': '8', '----.': '9',
+// ------------------------------------------------------------
+// PARAMETER-KLASSE (für GCWizard-UI einstellbar)
+// ------------------------------------------------------------
+enum MorseUnitMode {
+  threshold,   // klassische Methode
+  tolerant,    // deine bisherige tolerante Variante
+  cluster      // neue automatische Clustering-Variante
+}
+
+Map<int, MorseUnitMode> morseUnitModeMap = {
+  0: MorseUnitMode.threshold,
+  1: MorseUnitMode.tolerant,
+  2: MorseUnitMode.cluster
 };
 
-List<double> _toMono(WavData data) {
-  final n = data.length;
-  if (n == 0) return const [];
+class MorseParams {
+  final int smoothingWindow;
+  final double thresholdFactor;
+  final int minRunLength;
+  final double unitTolerance;
+  final MorseUnitMode mode;
 
-  if (data.numChannels == 1) {
-    return List<double>.from(data.channels[0], growable: false);
-  }
+  const MorseParams({
+    this.smoothingWindow = 5,
+    this.thresholdFactor = 4.0,
+    this.minRunLength = 3,
+    this.unitTolerance = 0.40,
+    this.mode = MorseUnitMode.tolerant,
+  });
+}
 
-  final mono = List<double>.filled(n, 0.0, growable: false);
-  for (int i = 0; i < n; i++) {
-    double sum = 0.0;
-    for (int ch = 0; ch < data.numChannels; ch++) {
-      sum += data.channels[ch][i];
+
+const Map<String, String> _morseMap = {
+  '.-': 'A',
+  '-...': 'B',
+  '-.-.': 'C',
+  '-..': 'D',
+  '.': 'E',
+  '..-.': 'F',
+  '--.': 'G',
+  '....': 'H',
+  '..': 'I',
+  '.---': 'J',
+  '-.-': 'K',
+  '.-..': 'L',
+  '--': 'M',
+  '-.': 'N',
+  '---': 'O',
+  '.--.': 'P',
+  '--.-': 'Q',
+  '.-.': 'R',
+  '...': 'S',
+  '-': 'T',
+  '..-': 'U',
+  '...-': 'V',
+  '.--': 'W',
+  '-..-': 'X',
+  '-.--': 'Y',
+  '--..': 'Z',
+  '-----': '0',
+  '.----': '1',
+  '..---': '2',
+  '...--': '3',
+  '....-': '4',
+  '.....': '5',
+  '-....': '6',
+  '--...': '7',
+  '---..': '8',
+  '----.': '9',
+};
+
+// ------------------------------------------------------------
+// PCM → MONO
+// ------------------------------------------------------------
+List<double> _toMono(WavData wav) {
+  if (wav.channels.isEmpty) return const [];
+  if (wav.channels.length == 1) return wav.channels[0];
+
+  final mono = List<double>.filled(wav.channels[0].length, 0.0);
+  for (int i = 0; i < mono.length; i++) {
+    double sum = 0;
+    for (int c = 0; c < wav.channels.length; c++) {
+      sum += wav.channels[c][i];
     }
-    mono[i] = sum / data.numChannels;
+    mono[i] = sum / wav.channels.length;
   }
   return mono;
 }
 
-double _estimateThreshold(List<double> env) {
-  if (env.isEmpty) return 0.1;
-
-  final sorted = List<double>.from(env)..sort();
-  final median = sorted[sorted.length ~/ 2];
-
-  return (median * 4).clamp(0.02, 0.5);
-}
-
-class _Run {
-  final int value; // 0 oder 1
-  final int length;
-  _Run(this.value, this.length);
-}
-
-class _Units {
-  final double toneUnit;
-  final double silenceUnit;
-  _Units(this.toneUnit, this.silenceUnit);
-}
-
-_Units _estimateUnits(List<_Run> runs) {
-  final tones = <int>[];
-  final silences = <int>[];
-
-  for (final r in runs) {
-    if (r.value == 1) {
-      tones.add(r.length);
-    } else {
-      silences.add(r.length);
-    }
-  }
-
-  double median(List<int> xs) {
-    if (xs.isEmpty) return 1.0;
-    xs.sort();
-    return xs[xs.length ~/ 2].toDouble().clamp(1.0, double.infinity);
-  }
-
-  return _Units(
-    median(tones),
-    median(silences),
-  );
-}
-
-List<_Run> _compressRuns(List<int> bits) {
-  final out = <_Run>[];
-  if (bits.isEmpty) return out;
-
-  int cur = bits[0];
-  int len = 1;
-
-  for (int i = 1; i < bits.length; i++) {
-    if (bits[i] == cur) {
-      len++;
-    } else {
-      out.add(_Run(cur, len));
-      cur = bits[i];
-      len = 1;
-    }
-  }
-  out.add(_Run(cur, len));
-  return out;
-}
-
-List<_Run> _compressRunsClean(List<int> bits, {int minRun = 3}) {
-  final raw = _compressRuns(bits);
-  final cleaned = <_Run>[];
-
-  for (final r in raw) {
-    if (r.length < minRun) continue; // kurze Zipper ignorieren
-    if (cleaned.isNotEmpty && cleaned.last.value == r.value) {
-      final last = cleaned.removeLast();
-      cleaned.add(_Run(last.value, last.length + r.length));
-    } else {
-      cleaned.add(r);
-    }
-  }
-  return cleaned;
-}
-
-String _runsToMorse(List<_Run> runs, _Units units) {
-  final buf = StringBuffer();
-  bool lastWasTone = false;
-
-  for (final r in runs) {
-    if (r.value == 1) {
-      final u = r.length / units.toneUnit;
-      final k = u.round().clamp(1, 3); // 1 = dot, 3 = dash
-      buf.write(k == 1 ? '.' : '-');
-      lastWasTone = true;
-    } else {
-      if (!lastWasTone) continue;
-      final u = r.length / units.silenceUnit;
-      final k = u.round().clamp(1, 7);
-
-      if (k <= 1) {
-        // intra-symbol
-      } else if (k <= 3) {
-        buf.write(' '); // letter space
-      } else {
-        buf.write(' | '); // word space
-      }
-      lastWasTone = false;
-    }
-  }
-
-  return buf.toString().trim();
-}
-
-String _decodeMorse(String morse) {
-  if (morse.isEmpty) return '';
-
-  final words = morse.split(' | ');
-  final out = StringBuffer();
-
-  for (int w = 0; w < words.length; w++) {
-    final letters = words[w].split(' ');
-    for (final l in letters) {
-      if (l.isEmpty) continue;
-      out.write(_morseToChar[l] ?? '?');
-    }
-    if (w < words.length - 1) out.write(' ');
-  }
-
-  return out.toString();
-}
-
-List<double> _smoothEnvelope(List<double> env, {int window = 5}) {
+// ------------------------------------------------------------
+// smoothen amplitudes
+// ------------------------------------------------------------
+List<double> _smoothEnvelope(List<double> env, int window) {
   if (env.isEmpty || window <= 1) return env;
   final out = List<double>.filled(env.length, 0.0);
   final half = window ~/ 2;
 
   for (int i = 0; i < env.length; i++) {
-    double sum = 0.0;
+    double sum = 0;
     int count = 0;
     for (int j = i - half; j <= i + half; j++) {
       if (j < 0 || j >= env.length) continue;
@@ -569,16 +520,233 @@ List<double> _smoothEnvelope(List<double> env, {int window = 5}) {
   return out;
 }
 
-Future<MorseAnalysisResult> analyzeMorseFromWavBytes(Uint8List wavBytes) async {
-  final wav = await WavParser.parse(wavBytes);
+// ------------------------------------------------------------
+// estimate thresholds using parameter
+// ------------------------------------------------------------
+double _estimateThreshold(List<double> env, MorseParams p) {
+  if (env.isEmpty) return 0.1;
+  final sorted = [...env]..sort();
+  final median = sorted[sorted.length ~/ 2];
+  return (median * p.thresholdFactor).clamp(0.02, 0.5);
+}
+
+// ------------------------------------------------------------
+// get RUNS (0/1-Segments)
+// ------------------------------------------------------------
+class _Run {
+  final int value; // 0 oder 1
+  final int length;
+  const _Run(this.value, this.length);
+}
+
+List<_Run> _compressRuns(List<int> bits) {
+  if (bits.isEmpty) return [];
+  final runs = <_Run>[];
+  int current = bits[0];
+  int len = 1;
+
+  for (int i = 1; i < bits.length; i++) {
+    if (bits[i] == current) {
+      len++;
+    } else {
+      runs.add(_Run(current, len));
+      current = bits[i];
+      len = 1;
+    }
+  }
+  runs.add(_Run(current, len));
+  return runs;
+}
+
+// ------------------------------------------------------------
+// cleaning runs (using parameter)
+// ------------------------------------------------------------
+List<_Run> _compressRunsClean(List<int> bits, MorseParams p) {
+  final raw = _compressRuns(bits);
+  final cleaned = <_Run>[];
+
+  for (final r in raw) {
+    if (r.length < p.minRunLength) continue;
+
+    if (cleaned.isNotEmpty &&
+        cleaned.last.value == r.value &&
+        cleaned.last.length < p.minRunLength) {
+      final last = cleaned.removeLast();
+      cleaned.add(_Run(r.value, last.length + r.length));
+    } else {
+      cleaned.add(r);
+    }
+  }
+  return cleaned;
+}
+
+// ------------------------------------------------------------
+// estimate units (Dot-length)
+// ------------------------------------------------------------
+class _Units {
+  final double dot;
+  final double dash;
+  const _Units(this.dot, this.dash);
+}
+
+double _median(List<int> xs) {
+  if (xs.isEmpty) return 1.0;
+  xs.sort();
+  return xs[xs.length ~/ 2].toDouble().clamp(1.0, double.infinity);
+}
+
+_Units _estimateUnitsCluster(List<_Run> runs) {
+  final on = <int>[];
+  final off = <int>[];
+
+  for (final r in runs) {
+    if (r.value == 1) {
+      on.add(r.length);
+    } else {
+      off.add(r.length);
+    }
+  }
+
+  final onCenters = _kMeans1D(on, 2);   // dot, dash
+  final offCenters = _kMeans1D(off, 3); // intra, letter, word
+
+  return _Units(
+    onCenters[0],          // dot
+    onCenters[1],          // dash
+  );
+}
+
+_Units _estimateUnits(List<_Run> runs) {
+  final on = <int>[];
+  for (final r in runs) {
+    if (r.value == 1) on.add(r.length);
+  }
+  final dot = _median(on);
+  return _Units(dot, dot * 3);
+}
+
+// ------------------------------------------------------------
+// classification of tolerance
+// ------------------------------------------------------------
+bool _isDot(int len, double dot, MorseParams p) =>
+    len >= dot * (1 - p.unitTolerance) && len <= dot * (1 + p.unitTolerance);
+
+bool _isDash(int len, double dot, MorseParams p) =>
+    len >= dot * (3 - 3 * p.unitTolerance) &&
+    len <= dot * (3 + 3 * p.unitTolerance);
+
+String _classifyPause(int len, double dot, MorseParams p) {
+  if (len < dot * (2 + 2 * p.unitTolerance)) return ""; // intra-symbol
+  if (len < dot * (5 + 5 * p.unitTolerance)) return " "; // letter
+  return " | "; // word
+}
+
+List<double> _kMeans1D(List<int> values, int k, {int iterations = 20}) {
+  if (values.isEmpty) return List.filled(k, 1.0);
+
+  final data = values.map((e) => e.toDouble()).toList()..sort();
+
+  // Initial centers: pick evenly spaced values
+  final centers = List<double>.generate(k, (i) {
+    int idx = ((i + 1) * data.length / (k + 1)).floor();
+    return data[idx.clamp(0, data.length - 1)];
+  });
+
+  for (int iter = 0; iter < iterations; iter++) {
+    final clusters = List.generate(k, (_) => <double>[]);
+
+    for (final v in data) {
+      int best = 0;
+      double bestDist = (v - centers[0]).abs();
+      for (int i = 1; i < k; i++) {
+        final d = (v - centers[i]).abs();
+        if (d < bestDist) {
+          bestDist = d;
+          best = i;
+        }
+      }
+      clusters[best].add(v);
+    }
+
+    for (int i = 0; i < k; i++) {
+      if (clusters[i].isNotEmpty) {
+        centers[i] = clusters[i].reduce((a, b) => a + b) / clusters[i].length;
+      }
+    }
+  }
+
+  centers.sort();
+  return centers;
+}
+
+// ------------------------------------------------------------
+// RUNS → MORSE
+// ------------------------------------------------------------
+String _runsToMorse(List<_Run> runs, _Units u, MorseParams p) {
+  final out = StringBuffer();
+  bool lastWasOn = false;
+
+  for (final r in runs) {
+    if (r.value == 1) {
+      if (_isDot(r.length, u.dot, p)) {
+        out.write('.');
+      } else if (_isDash(r.length, u.dot, p)) {
+        out.write('-');
+      }
+      lastWasOn = true;
+    } else {
+      if (!lastWasOn) continue;
+      out.write(_classifyPause(r.length, u.dot, p));
+      lastWasOn = false;
+    }
+  }
+  return out.toString().trim();
+}
+
+// ------------------------------------------------------------
+// MORSE → TEXT
+// ------------------------------------------------------------
+String _decodeMorse(String morse) {
+  if (morse.isEmpty) return "";
+  final words = morse.split(" | ");
+  final out = StringBuffer();
+
+  for (int w = 0; w < words.length; w++) {
+    final letters = words[w].split(" ");
+    for (final l in letters) {
+      if (l.isEmpty) continue;
+      out.write(_morseMap[l] ?? "?");
+    }
+    if (w < words.length - 1) out.write(" ");
+  }
+  return out.toString();
+}
+
+// ------------------------------------------------------------
+// Main: PCM → MORSE → TEXT
+// ------------------------------------------------------------
+Future<MorseAnalysisResult> analyzeMorseFromWavBytes(
+  Uint8List bytes, {
+  MorseParams params = const MorseParams()
+}) async {
+  final wav = await WavParser.parse(bytes);
   final mono = _toMono(wav);
-  final envRaw = mono.map((v) => v.abs()).toList(growable: false);
-  final env = _smoothEnvelope(envRaw, window: 5);
-  final threshold = _estimateThreshold(env);
-  final bits = env.map((v) => v > threshold ? 1 : 0).toList(growable: false);
-  final runs = _compressRunsClean(bits, minRun: 3);
-  final units = _estimateUnits(runs);
-  final morse = _runsToMorse(runs, units);
+
+  final env = mono.map((x) => x.abs()).toList();
+  final smooth = _smoothEnvelope(env, params.smoothingWindow);
+
+  final threshold = _estimateThreshold(smooth, params);
+  final bits = smooth.map((v) => v > threshold ? 1 : 0).toList();
+
+  final runs = _compressRunsClean(bits, params);
+  final units = switch (params.mode) {
+    MorseUnitMode.threshold => _estimateUnits(runs),
+    MorseUnitMode.tolerant  => _estimateUnits(runs),
+    MorseUnitMode.cluster   => _estimateUnitsCluster(runs),
+  };
+
+
+  final morse = _runsToMorse(runs, units, params);
   final text = _decodeMorse(morse);
 
   return MorseAnalysisResult(
@@ -596,8 +764,13 @@ Future<WaveformAndMorseResult> renderAndAnalyzeWav({
   Color backgroundColor = Colors.black,
   Color waveformColor = Colors.orange,
   double strokeWidth = 1.0,
+  MorseParams params = const MorseParams(
+    smoothingWindow: 5,
+    thresholdFactor: 4.0,
+    minRunLength: 3,
+    unitTolerance: 0.40,
+  ),
 }) async {
-
   final wavData = await WavParser.parse(wavBytes);
 
   if (wavData.status == PARSE_STATUS.ERROR) {
@@ -630,7 +803,8 @@ Future<WaveformAndMorseResult> renderAndAnalyzeWav({
   if (width < minWidth) width = minWidth;
 
   final recorder = ui.PictureRecorder();
-  final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, width.toDouble(), height));
+  final canvas =
+      Canvas(recorder, Rect.fromLTWH(0, 0, width.toDouble(), height));
 
   final painter = WavWaveformPainter(
     data: wavData,
@@ -644,14 +818,9 @@ Future<WaveformAndMorseResult> renderAndAnalyzeWav({
   final picture = recorder.endRecording();
   final uiImage = await picture.toImage(width, height.toInt());
 
-  // final rgbaData = await uiImage.toByteData(format: ui.ImageByteFormat.rawRgba);
-  // if (rgbaData == null) throw StateError("unable to create RGBA");
-  // final rgbaBytes = rgbaData.buffer.asUint8List();
-
   final pngData = await uiImage.toByteData(format: ui.ImageByteFormat.png);
   if (pngData == null) {
     return WaveformAndMorseResult(
-      // rgbaBytes: rgbaBytes,
       pngBytes: Uint8List.fromList([]),
       width: 0,
       height: 0,
@@ -661,11 +830,10 @@ Future<WaveformAndMorseResult> renderAndAnalyzeWav({
       status: PARSE_STATUS.ERROR,
       error: 'waveform_error_png_not_created',
     );
-    // throw StateError("unable to create PNG");
   }
   final pngBytes = pngData.buffer.asUint8List();
 
-  final morse = await analyzeMorseFromWavBytes(wavBytes);
+  final morse = await analyzeMorseFromWavBytes(wavBytes, params: params);
 
   return WaveformAndMorseResult(
     // rgbaBytes: rgbaBytes,
