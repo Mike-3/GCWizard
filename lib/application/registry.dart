@@ -1728,8 +1728,7 @@ void initializeRegistry(BuildContext context) {
               context: context,
               author: 'Dennis \'dennistreysa\' P.',
               title: 'Py-Ramid',
-              sourceUrl:
-                  'https://web.archive.org/web/20240819161342/https://github.com/dennistreysa/Py-Ramid',
+              sourceUrl: 'https://web.archive.org/web/20240819161342/https://github.com/dennistreysa/Py-Ramid',
               licenseType: ToolLicenseType.GPL3,
               licenseUrl:
                   'https://web.archive.org/web/20240819161613/https://github.com/dennistreysa/Py-Ramid?tab=GPL-3.0-1-ov-file'),
@@ -1796,8 +1795,7 @@ void initializeRegistry(BuildContext context) {
           context: context,
           author: 'de.wikipedia.org and contributors',
           title: 'Zielcode',
-          sourceUrl:
-              'https://de.wikipedia.org/w/index.php?title=Zielcode&oldid=246247471')
+          sourceUrl: 'https://de.wikipedia.org/w/index.php?title=Zielcode&oldid=246247471')
     ]),
     GCWTool(tool: const PiSelection(), id: 'pi_selection', categories: const [
       ToolCategory.SCIENCE_AND_TECHNOLOGY
@@ -1805,24 +1803,18 @@ void initializeRegistry(BuildContext context) {
       'pi',
       'irrationalnumbers',
     ]),
-    GCWTool(
-        tool: const PhysicalConstants(),
-        id: 'physical_constants',
-        categories: const [
-          ToolCategory.SCIENCE_AND_TECHNOLOGY
-        ],
-        searchKeys: const [
-          'physical_constants',
-        ],
-        licenses: [
-          ToolLicenseOnlineArticle(
-              context: context,
-              author: 'Physical Measurement Laboratory of NIST',
-              title: 'Fundamental Physical Constants',
-              sourceUrl:
-                  'https://web.archive.org/web/20240926130440/https://physics.nist.gov/cuu/Constants/index.html',
-              licenseType: ToolLicenseType.PUBLIC_DOMAIN),
-        ]),
+    GCWTool(tool: const PhysicalConstants(), id: 'physical_constants', categories: const [
+      ToolCategory.SCIENCE_AND_TECHNOLOGY
+    ], searchKeys: const [
+      'physical_constants',
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+          context: context,
+          author: 'Physical Measurement Laboratory of NIST',
+          title: 'Fundamental Physical Constants',
+          sourceUrl: 'https://web.archive.org/web/20240926130440/https://physics.nist.gov/cuu/Constants/index.html',
+          licenseType: ToolLicenseType.PUBLIC_DOMAIN),
+    ]),
     GCWTool(tool: Playfair(), id: 'playfair', categories: const [
       ToolCategory.CRYPTOGRAPHY
     ], searchKeys: const [
@@ -1897,7 +1889,14 @@ void initializeRegistry(BuildContext context) {
       ToolCategory.SCIENCE_AND_TECHNOLOGY
     ], searchKeys: const [
       'punycode',
-    ], licenses: const []),
+    ], licenses: [
+      ToolLicenseOnlineArticle(
+        context: context,
+        author: '',
+        title: 'IDNA Punycode',
+        sourceUrl: 'https://web.archive.org/web/20260316201152/https://datatracker.ietf.org/doc/html/rfc3492',
+        licenseUrl: 'https://web.archive.org/web/20260312003021/https://www.rfc-editor.org/rfc/rfc3492.html#page-35')
+      ]),
     GCWTool(tool: const QrCode(), id: 'qr_code', categories: const [
       ToolCategory.IMAGES_AND_FILES
     ], searchKeys: const [
