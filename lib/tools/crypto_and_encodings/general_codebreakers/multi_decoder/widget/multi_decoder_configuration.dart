@@ -206,200 +206,131 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
           if (oldIndex < newIndex) {
             newIndex -= 1;
           }
-          final item = mdtTools.removeAt(oldIndex);
-          mdtTools.insert(newIndex, item);
+          _moveTool(oldIndex, newIndex);
         });
       },
       itemBuilder: (context, index) {
-        return ListTile(
-          key: ValueKey(mdtTools[index]),
-          title: Text(mdtTools[index].name),
-          trailing: ReorderableDragStartListener(
-            index: index,
-            child: Column( children:[
-            Expanded(
-              child:
-              Container (width: 40,
-              // height: 2 * (38.0 + 4),
-              decoration: ShapeDecoration(
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
-                    borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
-                  )),
-              child: const Icon(Icons.drag_handle),
-          ))]),
-
-          ),
-        );
+        return _buildToolTile(context, index);
       },
     );
-    // return ReorderableListView.builder(
-    //   shrinkWrap: true,
-    //   buildDefaultDragHandles: false,
-    //   itemCount: mdtTools.length,
-    //   onReorder: (int oldIndex, int newIndex) {
-    //     setState(() {
-    //       if (oldIndex < newIndex) {
-    //         newIndex -= 1;
-    //       }
-    //       final item = mdtTools.removeAt(oldIndex);
-    //       mdtTools.insert(newIndex, item);
-    //     });
-    //   },
-    //   itemBuilder: (context, index) {
-    //     return ListTile(
-    //       key: ValueKey(mdtTools[index]),
-    //       title: Text(mdtTools[index].name),
-    //       // Hier platzieren wir unseren eigenen Handle
-    //       trailing: ReorderableDelayedDragStartListener(
-    //         index: index,
-    //         child: const Icon(Icons.drag_handle),
-    //       ),
-    //     );
-    //   },
-    // );
   }
-//     var odd = false;
-//
-//     Future<Widget> buildRow(AbstractMultiDecoderTool tool, bool odd) {
-//       Widget row = Row(
-//         children: [
-//           Expanded(
-//               child: _currentEditId == tool.id
-//                   ? Container(
-//                   padding: const EdgeInsets.only(right: DOUBLE_DEFAULT_MARGIN),
-//                   child: Column(children: [
-//                     Row(
-//                       children: [
-//                         Expanded(flex: 1, child: GCWText(text: i18n(context, 'multidecoder_configuration_name'))),
-//                         Expanded(
-//                             flex: 3,
-//                             child: GCWTextField(
-//                               controller: _editingToolNameController,
-//                               onChanged: (value) {
-//                                 _editingToolName = value;
-//                               },
-//                             ))
-//                       ],
-//                     ),
-//                     tool
-//                     // tool.configurationWidget ?? Container()
-//                   ]))
-//                   : Column(
-//                 children: [
-//                   GCWText(text: tool.name),
-//                   Container(
-//                     padding: const EdgeInsets.only(left: DEFAULT_DESCRIPTION_MARGIN),
-//                     child: GCWText(
-//                       text: tool.options.entries.map((entry) {
-//                         var result = _optionNameKey(entry.value.toString(), tool.internalToolName);
-//
-//                         return '${i18n(context, entry.key)}: ${i18n(context, result.toString(), ifTranslationNotExists: result)}';
-//                       }).join('\n'),
-//                       style: gcwDescriptionTextStyle(),
-//                     ),
-//                   )
-//                 ],
-//               )),
-//           Column(
-//             children: [
-//               _currentEditId == tool.id
-//                   ? GCWIconButton(
-//                 icon: Icons.check,
-//                 onPressed: () {
-//                   if (_editingToolName.isNotEmpty) {
-//                     tool.name = _editingToolName;
-//                   }
-//                   _updateTool(tool);
-//
-//                   setState(() {
-//                     _currentEditId = null;
-//                     _editingToolNameController.text = '';
-//                     _editingToolName = '';
-//                   });
-//                 },
-//               )
-//                   : GCWIconButton(
-//                 icon: Icons.edit,
-//                 onPressed: () {
-//                   setState(() {
-//                     _currentEditId = tool.id;
-//                     _editingToolNameController.text = tool.name;
-//                     _editingToolName = tool.name;
-//                   });
-//                 },
-//               ),
-//               GCWIconButton(
-//                 icon: Icons.remove,
-//                 onPressed: () {
-//                   setState(() {
-//                     showDeleteAlertDialog(context, tool.name, () {
-//                       setState(() {
-//                         if (_currentEditId == tool.id) _currentEditId = null;
-//                         _deleteTool(tool.id);
-//                       });
-//                     });
-//                   });
-//                 },
-//               )
-//             ],
-//           ),
-//           ReorderableDragStartListener(
-//             index: tool.id,
-//             child: Container(
-//             width:40,
-//             height: 2 * (38.0 + 4),
-//             decoration: ShapeDecoration(
-//                 shape: RoundedRectangleBorder(
-//                   side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
-//                   borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
-//                 )),
-//           ),
-//           )
-//         ],
-//       );
-//
-//       if (odd) {
-//         row = Container(key: Key(tool.id.toString()), color: themeColors().outputListOddRows(), child: row);
-//       } else {
-//         row =  Container(key: Key(tool.id.toString()), child: row);
-//       }
-//
-//       // row = ReorderableDragStartListener(
-//       //   child: row,
-//       //   //child: const Icon(Icons.drag_handle),
-//       //   index: tool.id,
-//       // );
-//       return Future.value(row);
-//     }
-//
-//     var rows = mdtTools.map((tool) {
-//       odd = !odd;
-// //return await buildRow(tool, odd);
-//       return FutureBuilder<Widget>(
-//           key: Key(tool.id.toString()) ,
-//           future: buildRow(tool, odd),
-//           builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-//             return  snapshot.data ?? Container();
-//           });
-//
-//     }).toList();
-//
-//     return ReorderableListView(
-//       shrinkWrap: true,
-//       physics:  const ClampingScrollPhysics(), //const AlwaysScrollableScrollPhysics(),
-//       buildDefaultDragHandles: false,
-//       children: rows,
-//       onReorder: (int oldIndex, int newIndex) {
-//         setState(() {
-//           if (oldIndex < newIndex) {
-//             newIndex -= 1;
-//           }
-//           _moveTool(oldIndex, newIndex);
-//         });
-//       },
-//      );
-//   }
+
+  ListTile _buildToolTile(BuildContext context, int index) {
+    return ListTile(
+      key: ValueKey(mdtTools[index]),
+      title: _buildToolRow(mdtTools[index], index),
+      trailing: ReorderableDragStartListener(
+        index: index,
+        child: Column( children:[
+          Expanded(
+            child:
+              Container (width: 40,
+                // height: 2 * (38.0 + 4),
+                decoration: ShapeDecoration(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
+                      borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
+                    )),
+                child: const Icon(Icons.drag_handle),
+              ))]),
+
+      ),
+    );
+  }
+
+  Widget _buildToolRow(AbstractMultiDecoderTool tool, int index) {
+
+    Widget row = Row(
+        children: [
+          Expanded(
+              child: _currentEditId == tool.id
+                  ? Container(
+                  padding: const EdgeInsets.only(right: DOUBLE_DEFAULT_MARGIN),
+                  child: Column(children: [
+                    Row(
+                      children: [
+                        Expanded(flex: 1, child: GCWText(text: i18n(context, 'multidecoder_configuration_name'))),
+                        Expanded(
+                            flex: 3,
+                            child: GCWTextField(
+                              controller: _editingToolNameController,
+                              onChanged: (value) {
+                                _editingToolName = value;
+                              },
+                            ))
+                      ],
+                    ),
+                  ]))
+                  : Column(
+                children: [
+                  GCWText(text: tool.name),
+                  Container(
+                    padding: const EdgeInsets.only(left: DEFAULT_DESCRIPTION_MARGIN),
+                    child: GCWText(
+                      text: tool.options.entries.map((entry) {
+                        var result = _optionNameKey(entry.value.toString(), tool.internalToolName);
+
+                        return '${i18n(context, entry.key)}: ${i18n(context, result.toString(), ifTranslationNotExists: result)}';
+                      }).join('\n'),
+                      style: gcwDescriptionTextStyle(),
+                    ),
+                  )
+                ],
+              )),
+          Column(
+            children: [
+              _currentEditId == tool.id
+                  ? GCWIconButton(
+                icon: Icons.check,
+                onPressed: () {
+                  if (_editingToolName.isNotEmpty) {
+                    tool.name = _editingToolName;
+                  }
+                  _updateTool(tool);
+
+                  setState(() {
+                    _currentEditId = null;
+                    _editingToolNameController.text = '';
+                    _editingToolName = '';
+                  });
+                },
+              )
+                  : GCWIconButton(
+                icon: Icons.edit,
+                onPressed: () {
+                  setState(() {
+                    _currentEditId = tool.id;
+                    _editingToolNameController.text = tool.name;
+                    _editingToolName = tool.name;
+                  });
+                },
+              ),
+              GCWIconButton(
+                icon: Icons.remove,
+                onPressed: () {
+                  setState(() {
+                    showDeleteAlertDialog(context, tool.name, () {
+                      setState(() {
+                        if (_currentEditId == tool.id) _currentEditId = null;
+                        _deleteTool(tool.id);
+                      });
+                    });
+                  });
+                },
+              )
+            ],
+          )
+        ],
+      );
+
+    if (index % 2 == 0) {
+      row = Container(color: themeColors().outputListOddRows(), child: row);
+    } else {
+      row =  Container(child: row);
+    }
+
+    return row;
+  }
 }
 
 Column createMultiDecoderToolConfiguration(BuildContext context, Map<String, Widget> widgets) {
