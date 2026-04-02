@@ -45,9 +45,9 @@ void clearMultiDecoderTools() {
 
 int moveMultiDecoderTool(int oldIndex, int newIndex) {
   newIndex = max(newIndex, 0);
-  newIndex = min(newIndex, multiDecoderTools.length -1);
+  newIndex = min(newIndex, multiDecoderTools.length - 1);
 
-  if (oldIndex > 0 && oldIndex < multiDecoderTools.length - 1) {
+  if (oldIndex >= 0 && oldIndex < multiDecoderTools.length) {
     var mdtTool = multiDecoderTools.removeAt(oldIndex);
     multiDecoderTools.insert(newIndex, mdtTool);
 
