@@ -38,6 +38,7 @@ Future<AudioInfo> _bytesAudioInfo(Uint8List bytes, String format) async {
       status: AUDIO_INFO_STATUS.OK,
       error: '');
 }
+
 Future<AudioInfo> getSoundfileAudioInfo(Uint8List bytes) async {
   switch (getFileType(bytes)) {
     case FileType.WAV:

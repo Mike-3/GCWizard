@@ -77,9 +77,9 @@ class WavParser {
       // throw FormatException('File to short');
     }
 
-    if (String.fromCharCodes(bytes.sublist(0, 3)) == 'ID3') {
-      int size = ByteData.sublistView(bytes).getInt32(6, Endian.big);
-    }
+    // if (String.fromCharCodes(bytes.sublist(0, 3)) == 'ID3') {
+    //   int size = ByteData.sublistView(bytes).getInt32(6, Endian.big);
+    // }
 
     // if (String.fromCharCodes(bytes.sublist(0, 4)) == 'OggS') {
     //   int size = ByteData.sublistView(bytes).getInt32(6, Endian.big);
@@ -608,7 +608,7 @@ _Units _estimateUnitsCluster(List<_Run> runs) {
   }
 
   final onCenters = _kMeans1D(on, 2);   // dot, dash
-  final offCenters = _kMeans1D(off, 3); // intra, letter, word
+  // final offCenters = _kMeans1D(off, 3); // intra, letter, word
 
   return _Units(
     onCenters[0],          // dot
@@ -792,11 +792,11 @@ Future<WaveformAndMorseResult> renderAndAnalyzeWav({
   final totalSamples = wavData.length;
 
   // Downsampling-Faktor
-  double samplesPerPixel = 1.0;
-
-  if (totalSamples > webMaxTextureSize) {
-    samplesPerPixel = totalSamples / webMaxTextureSize;
-  }
+  // double samplesPerPixel = 1.0;
+  //
+  // if (totalSamples > webMaxTextureSize) {
+  //   samplesPerPixel = totalSamples / webMaxTextureSize;
+  // }
 
   int width = math.min(totalSamples, webMaxTextureSize);
 
