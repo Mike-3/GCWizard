@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:gc_wizard/application/settings/logic/preferences.dart';
 import 'package:gc_wizard/tools/crypto_and_encodings/general_codebreakers/multi_decoder/persistence/model.dart';
@@ -42,28 +43,17 @@ void clearMultiDecoderTools() {
   _saveData();
 }
 
-int moveMultiDecoderToolUp(int toolId) {
-  var index = multiDecoderTools.indexWhere((tool) => tool.id == toolId);
-  if (index == 0) return index;
+int moveMultiDecoderTool(int oldIndex, int newIndex) {
+  newIndex = max(newIndex, 0);
+  newIndex = min(newIndex, multiDecoderTools.length -1);
 
-  var tool = multiDecoderTools.removeAt(index);
-  multiDecoderTools.insert(index - 1, tool);
+  if (oldIndex > 0 && oldIndex < multiDecoderTools.length - 1) {
+    var mdtTool = multiDecoderTools.removeAt(oldIndex);
+    multiDecoderTools.insert(newIndex, mdtTool);
 
-  _saveData();
-
-  return index;
-}
-
-int moveMultiDecoderToolDown(int toolId) {
-  var index = multiDecoderTools.indexWhere((tool) => tool.id == toolId);
-  if (index == multiDecoderTools.length - 1) return index;
-
-  var tool = multiDecoderTools.removeAt(index);
-  multiDecoderTools.insert(index + 1, tool);
-
-  _saveData();
-
-  return index;
+    _saveData();
+  }
+  return newIndex;
 }
 
 void updateMultiDecoderTools() {
