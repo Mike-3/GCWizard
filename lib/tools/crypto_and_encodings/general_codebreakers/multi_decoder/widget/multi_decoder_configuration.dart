@@ -99,8 +99,8 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
 
   void _moveTool(int oldIndex, int newIndex) {
     newIndex = moveMultiDecoderTool(oldIndex, newIndex);
-    if (oldIndex > 0 && oldIndex < mdtTools.length - 1 &&
-        newIndex > 0 && newIndex < mdtTools.length - 1) {
+    if (oldIndex >= 0 && oldIndex < mdtTools.length &&
+        newIndex >= 0 && newIndex < mdtTools.length) {
 
       var mdtTool = mdtTools.removeAt(oldIndex);
       mdtTools.insert(newIndex, mdtTool);
