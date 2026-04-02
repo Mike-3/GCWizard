@@ -97,23 +97,11 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
     }).toList();
   }
 
-  void _moveUp(int id) {
-    var oldIndex = moveMultiDecoderToolUp(id);
-    if (oldIndex > 0) {
-      var mdtTool = mdtTools.removeAt(oldIndex);
-      mdtTools.insert(oldIndex - 1, mdtTool);
-    }
-  }
-
-  void _moveDown(int id) {
-    var oldIndex = moveMultiDecoderToolDown(id);
-    if (oldIndex < mdtTools.length - 1) {
-      var mdtTool = mdtTools.removeAt(oldIndex);
-      mdtTools.insert(oldIndex + 1, mdtTool);
-    }
-  }
   void _moveTool(int oldIndex, int newIndex) {
-    if (oldIndex < mdtTools.length - 1) {
+    newIndex = moveMultiDecoderTool(oldIndex, newIndex);
+    if (oldIndex > 0 && oldIndex < mdtTools.length - 1 &&
+        newIndex > 0 && newIndex < mdtTools.length - 1) {
+
       var mdtTool = mdtTools.removeAt(oldIndex);
       mdtTools.insert(newIndex, mdtTool);
     }
@@ -223,26 +211,6 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
       horizontalTitleGap: 0,
       tileColor: index % 2 == 0 ? themeColors().outputListOddRows() : null,
       title: _buildToolRow(mdtTools[index], index),
-      trailing:
-      // ReorderableDragStartListener(
-      //   index: index,
-      //   child:
-           Column(
-               children:[
-           Expanded(
-             child:
-            Container (
-              width: 40+20,
-              //height: 2 * (38.0 + 4),
-              decoration: ShapeDecoration(
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
-                    borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
-                  )),
-              child: const Icon(Icons.drag_handle),
-            ))]
-         ),
-      // ),
     );
   }
 
@@ -328,6 +296,24 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
             )
           ],
         ),
+        Column(
+          children: [
+            ReorderableDragStartListener(
+              index: index,
+              child:
+                Container(
+                  width: 40,
+                  height: 2 * (38.0 + 4),
+                  decoration: ShapeDecoration(
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
+                        borderRadius: BorderRadius.all(Radius.circular(ROUNDED_BORDER_RADIUS)),
+                      )),
+                  child: const Icon(Icons.drag_handle),
+                )
+            )
+          ]
+        )
       ],
     );
   }
