@@ -24,13 +24,6 @@ import 'package:gc_wizard/tools/crypto_and_encodings/substitution/logic/substitu
 import 'package:gc_wizard/utils/collection_utils.dart';
 import 'package:gc_wizard/utils/constants.dart';
 
-class Offset {
-  final int xOffset;
-  final int yOffset;
-  final int leftBorder;
-  Offset(this.xOffset, this.yOffset, this.leftBorder);
-}
-
 enum WASD_TYPE { CURSORS, WASD, IJMK, ESDF, ULDR, OLUR, VLZR, WQSE, ARROWS, NWSE, NWSO, NUMERIC, CUSTOM }
 
 enum WASD_DIRECTION { UP, DOWN, LEFT, RIGHT, START, UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT }

@@ -7,6 +7,7 @@ class _MultiDecoderConfiguration extends StatefulWidget {
 
 class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> {
   late TextEditingController _editingToolNameController;
+  final ScrollController _scrollController = ScrollController();
 
   int? _currentChosenTool;
   String _editingToolName = '';
@@ -15,6 +16,7 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
 
   List<String> _sortedToolRegistry = [];
   List<AbstractMultiDecoderTool> mdtTools = [];
+  static const _iconHeight = 38;
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
   @override
   void dispose() {
     _editingToolNameController.dispose();
+    _scrollController.dispose();
 
     super.dispose();
   }
@@ -122,7 +125,7 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
       }
     }
 
-    return Column(
+    var header = Column(
       children: <Widget>[
         GCWButton(
           text: i18n(context, 'multidecoder_configuration_reset'),
@@ -178,16 +181,23 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
         GCWTextDivider(
           text: i18n(context, 'multidecoder_configuration_configurecreated'),
         ),
-        _buildToollist()
+      ]);
+
+    return Column(
+      children: <Widget>[
+        SizedBox(
+          height: maxScreenHeight(context) - _iconHeight,
+          child: _buildToollist(header)
+        )
       ],
     );
   }
 
-  Widget _buildToollist() {
+  Widget _buildToollist(Widget header) {
     return ReorderableListView.builder(
-      shrinkWrap: true,
+      header: header,
       buildDefaultDragHandles: false,
-      physics:  const ClampingScrollPhysics(),
+      physics:  const AlwaysScrollableScrollPhysics(),
       itemCount: mdtTools.length,
       onReorder: (int oldIndex, int newIndex) {
         setState(() {
@@ -298,12 +308,12 @@ class _MultiDecoderConfigurationState extends State<_MultiDecoderConfiguration> 
         ),
         Column(
           children: [
-            ReorderableDragStartListener(
+            ReorderableDelayedDragStartListener(
               index: index,
               child:
                 Container(
                   width: 40,
-                  height: 2 * (38.0 + 4),
+                  height: 2 * (_iconHeight + 4),
                   decoration: ShapeDecoration(
                       shape: RoundedRectangleBorder(
                         side: BorderSide(color: themeColors().secondary(), width: 1, style: BorderStyle.solid),
